@@ -1,0 +1,6 @@
+{
+    "AUTHOR" : "SpatulaFish",
+    "DESCRIPTION" : "Usage: [p]fact <bear|snek>",
+    "DISABLED" : false,
+    "NAME" : "Bear and Snek Facts"
+}
