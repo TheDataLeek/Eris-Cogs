@@ -6,11 +6,11 @@ import aiohttp
 import html
 import random
 
-class Insult:
-    """Insult Cog"""
+class Fact:
     def __init__(self, bot):
         self.bot = bot
         self.bearfacts = bearfacts
+        self.snekfacts = snekfacts
 
     @commands.command(pass_context=True, no_pm=True)
     async def fact(self, ctx, user : discord.Member=None):
@@ -19,7 +19,7 @@ class Insult:
 
 
 def setup(bot):
-    n = Insult(bot)
+    n = Fact(bot)
     bot.add_cog(n)
 
 snekfacts = [
