@@ -17,9 +17,10 @@ class Fact:
     async def fact(self, ctx, user : discord.Member=None):
         """gimme a fact"""
         if random.random() < (1 / 3):
-            d = requests.get('https://catfacts-api.appspot.com/api/facts?number=1')
-            msg = json.loads(d.contents)['facts'][0]
-            await self.bot.say(msg)
+            async with aiohttp.ClientSession() as session:
+                async with session.get('https://catfacts-api.appspot.com/api/facts?number=1') as resp:
+                    msg = json.loads(resp.text)['facts'][0]
+                    await self.bot.say(msg)
         else:
             await self.bot.say(randchoice(randchoice([self.bearfacts, self.snekfacts])))
 
