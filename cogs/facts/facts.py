@@ -19,7 +19,7 @@ class Fact:
         if random.random() < (1 / 3):
             async with aiohttp.ClientSession() as session:
                 async with session.get('https://catfacts-api.appspot.com/api/facts?number=1') as resp:
-                    msg = json.loads(resp.text())['facts'][0]
+                    msg = json.loads(str(resp.text()))['facts'][0]
                     await self.bot.say(msg)
         else:
             await self.bot.say(randchoice(randchoice([self.bearfacts, self.snekfacts])))
