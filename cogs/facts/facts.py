@@ -4,6 +4,7 @@ from .utils.dataIO import fileIO
 from random import choice as randchoice
 import aiohttp
 import html
+import json
 import random
 
 class Fact:
@@ -15,7 +16,12 @@ class Fact:
     @commands.command(pass_context=True, no_pm=True)
     async def fact(self, ctx, user : discord.Member=None):
         """gimme a fact"""
-        await self.bot.say(randchoice(randchoice([self.bearfacts, self.snekfacts])))
+        if random.random < (1 / 3):
+            d = requests.get('https://catfacts-api.appspot.com/api/facts?number=1')
+            msg = json.loads(d.contents)['facts'][0]
+            await self.bot.say(msg)
+        else:
+            await self.bot.say(randchoice(randchoice([self.bearfacts, self.snekfacts])))
 
 
 def setup(bot):
@@ -331,3 +337,5 @@ bearfacts = [
 "Sloth bears love to eat termites. The roof of a sloth bear's mouth is hollowed out, creating a vacuum effect when the sloth bear sucks up termites. The sloth bear inserts its mouth into a termite pillar and sucks up the insects, creating a sucking noise that is so loud it can be heard 200 yards away! ",
 "Spectacled bears climb trees and stay in the tree for three or four days eating its fruit before they move on to the next tree. Orchard farmers find these bears a nuisance, but spectacled bears scatter the seeds of trees and other plants, making them important for forest growth. "
 ]
+
+
