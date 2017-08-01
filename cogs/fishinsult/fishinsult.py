@@ -27,7 +27,7 @@ class Insult:
                         "bot than me, predictable answers, and absolutely dull to have an actual conversation with.")
                 await self.bot.say(user.mention + msg)
             else:
-                if random.random() <= -1.2:
+                if random.random() <= 0.8:
                     msg = ' {}'.format(randchoice(self.insults))
                     await self.bot.say(user.mention + msg)
                 else:
