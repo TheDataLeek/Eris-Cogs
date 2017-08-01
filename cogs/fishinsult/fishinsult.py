@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from .utils.dataIO import fileIO
 from random import choice as randchoice
-from random import random
+import random
 import aiohttp
 import html
 import random
@@ -26,7 +26,7 @@ class Insult:
                         "bot than me, predictable answers, and absolutely dull to have an actual conversation with.")
                 await self.bot.say(user.mention + msg)
             else:
-                if random() <= 0.2:
+                if random.random() <= -1.2:
                     msg = ' {}'.format(randchoice(self.insults))
                     await self.bot.say(user.mention + msg)
                 else:
