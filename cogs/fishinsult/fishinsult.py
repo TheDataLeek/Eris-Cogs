@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from .utils.dataIO import fileIO
 from random import choice as randchoice
+from random import random
 import aiohttp
 import html
 import random
@@ -25,8 +26,16 @@ class Insult:
                         "bot than me, predictable answers, and absolutely dull to have an actual conversation with.")
                 await self.bot.say(user.mention + msg)
             else:
-                msg = ' {}'.format(randchoice(self.insults))
-                await self.bot.say(user.mention + msg)
+                if random() <= 0.2:
+                    msg = ' {}'.format(randchoice(self.insults))
+                    await self.bot.say(user.mention + msg)
+                else:
+                    url = 'http://www.dickless.org/api/insult.xml'
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(url) as resp:
+                            insult = await resp.text()
+                            await self.bot.say("{} {}".format(user.mention, insult))
+
         else:
             await self.bot.say(ctx.message.author.mention + msg + randchoice(self.insults))
 
