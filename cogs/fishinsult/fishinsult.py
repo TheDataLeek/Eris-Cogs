@@ -36,10 +36,7 @@ class Insult:
                         async with session.get(url) as resp:
                             raw_insult = await resp.text()
                             root = ET.fromstring(raw_insult)
-                            print(root)
-                            print(root[0])
-                            print(root[1])
-                            insult = root[0].text
+                            insult = root[1].text
                             await self.bot.say("{} {}".format(user.mention, insult))
 
         else:
