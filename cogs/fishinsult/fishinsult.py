@@ -6,6 +6,7 @@ import random
 import aiohttp
 import html
 import random
+import xml.etree.ElementTree as ET
 
 class Insult:
     """Insult Cog"""
@@ -33,7 +34,9 @@ class Insult:
                     url = 'http://www.dickless.org/api/insult.xml'
                     async with aiohttp.ClientSession() as session:
                         async with session.get(url) as resp:
-                            insult = await resp.text()
+                            raw_insult = await resp.text()
+                            root = ET.fromstring(raw_insult)
+                            insult = root[0][1].text
                             await self.bot.say("{} {}".format(user.mention, insult))
 
         else:
