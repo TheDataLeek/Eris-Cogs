@@ -15,7 +15,7 @@ class Zalgo:
     async def zalgo(self, ctx, user : discord.Member=None):
         """Zalgo the text"""
         print(ctx.message)
-        discord.client.delete_message(ctx.message)
+        self.bot.delete_message(ctx.message)
         await self.bot.say('testing')
 
 
