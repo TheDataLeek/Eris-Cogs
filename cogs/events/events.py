@@ -7,8 +7,14 @@ def setup(bot):
         # DO NOT RESPOND TO SELF MESSAGES
         if bot.user.id == message.author.id:
             return
+
         if 'zeb' in message.clean_content.lower():
-            await bot.send_message(message.channel, 'I :heart: Zeb-kun')
+            await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
+            await bot.send_message(message.channel, ':eggplant: :eggplant: :sweat_drops: :sweat_drops:')
+
+        print(message.author.roles)
+
+
 
     bot.add_listener(message_events, 'on_message')
 
