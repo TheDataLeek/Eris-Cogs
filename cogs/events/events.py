@@ -12,7 +12,7 @@ def setup(bot):
             await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
             await bot.send_message(message.channel, ':eggplant: :eggplant: :sweat_drops: :sweat_drops:')
 
-        print(message.author.roles)
+        print([x.name for x in message.author.roles])
 
 
 
