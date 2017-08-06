@@ -16,6 +16,8 @@ class Zalgo:
         """Zalgo the text"""
         # first pull out the .zalgo part of the message
         raw_msg = ' '.join(ctx.message.content.split(' ')[1:])
+        if raw_msg == '':
+            raw_msg = 'HE COMES'
 
         zalgo_msg = raw_msg
 
