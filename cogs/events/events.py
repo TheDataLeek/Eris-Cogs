@@ -38,7 +38,7 @@ dragonart = """
 def setup(bot):
     async def message_events(message):
         # DO NOT RESPOND TO SELF MESSAGES
-        if bot.user.id == message.author.id or message.content.startswith('.zalgo'):
+        if bot.user.id == message.author.id or message.content.startswith('.'):
             return
 
         if 'zeb' in message.clean_content.lower():
