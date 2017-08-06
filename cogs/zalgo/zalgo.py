@@ -21,7 +21,8 @@ class Zalgo:
         # zalgo characters to fuck with
         zalgo_chrs = [chr(x) for x in range(0x0300, 0x036F + 1)]
         zalgo_chrs += [u'\u0488', u'\u0489']
-        zalgo_chrs += [chr(i) for i in range(0x1D023, 0x1D045 + 1)]
+        # these fuck it up too much
+        # zalgo_chrs += [chr(i) for i in range(0x1D023, 0x1D045 + 1)]
 
         msg_array = list(raw_msg)
         for i in range(intensity):
