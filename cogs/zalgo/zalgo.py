@@ -1,10 +1,6 @@
 import discord
 from discord.ext import commands
 from .utils.dataIO import fileIO
-from random import choice as randchoice
-import aiohttp
-import html
-import json
 import random
 
 class Zalgo:
@@ -19,10 +15,22 @@ class Zalgo:
         if raw_msg == '':
             raw_msg = 'HE COMES'
 
-        zalgo_msg = raw_msg
+        # random intensity
+        intensity = random.randint(20, 100)
+
+        # zalgo characters to fuck with
+        zalgo_chrs = [chr(x) for x in range(0x0300, 0x036F + 1)]
+        zalgo_chrs += [u'\u0488', u'\u0489']
+        zalgo_chrs += [chr(i) for i in range(0x1D023, 0x1D045 + 1)]
+
+        msg_array = list(raw_msg)
+        for i in range(intensity):
+            index = random.randint(0, len(msg_array) - 1)
+            msg_array.insert(index, random.choice(zalgo_chrs))
+
+        zalgo_msg = ''.join(msg_array)
 
         await self.bot.delete_message(ctx.message)
-
         await self.bot.say(zalgo_msg)
 
 
