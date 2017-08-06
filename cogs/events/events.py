@@ -4,7 +4,8 @@ import random
 
 def setup(bot):
     async def message_events(message):
-        await bot.say('its working')
+        if 'zeb' in message.clean_content.lower():
+            await bot.say(message.channel, 'I :heart: Zeb-kun')
 
     bot.add_listener(message_events, 'on_message')
 
