@@ -1,0 +1,6 @@
+{
+    "AUTHOR" : "SpatulaFish",
+    "DESCRIPTION" : "Usage: [p]zalgo <message>",
+    "DISABLED" : false,
+    "NAME" : "Zalgoify and anonymize text"
+}
