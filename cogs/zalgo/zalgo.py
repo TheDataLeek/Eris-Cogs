@@ -11,7 +11,7 @@ class Zalgo:
     async def zalgo(self, ctx):
         """Zalgo the text"""
         # first pull out the .zalgo part of the message
-        raw_msg = ' '.join(ctx.message.content.split(' ')[1:])
+        raw_msg = ' '.join(ctx.message.clean_content.split(' ')[1:])
         if raw_msg == '':
             raw_msg = 'HE COMES'
 
@@ -21,8 +21,6 @@ class Zalgo:
         # zalgo characters to fuck with
         zalgo_chrs = [chr(x) for x in range(0x0300, 0x036F + 1)]
         zalgo_chrs += [u'\u0488', u'\u0489']
-        # these fuck it up too much
-        # zalgo_chrs += [chr(i) for i in range(0x1D023, 0x1D045 + 1)]
 
         msg_array = list(raw_msg)
         for i in range(intensity):
