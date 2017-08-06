@@ -12,7 +12,7 @@ class Zalgo:
         self.bot = bot
 
     @commands.command(pass_context=True, no_pm=True)
-    async def zalgo(self, ctx, user : discord.Member=None):
+    async def zalgo(self, ctx):
         """Zalgo the text"""
         # first pull out the .zalgo part of the message
         raw_msg = ' '.join(ctx.message.content.split(' ')[1:])
