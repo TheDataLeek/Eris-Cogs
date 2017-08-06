@@ -14,8 +14,14 @@ class Zalgo:
     @commands.command(pass_context=True, no_pm=True)
     async def zalgo(self, ctx, user : discord.Member=None):
         """Zalgo the text"""
-        self.bot.delete_message(ctx.message)
-        await self.bot.say('testing')
+        # first pull out the .zalgo part of the message
+        raw_msg = ' '.join(ctx.message.content.split(' ')[1:])
+
+        zalgo_msg = raw_msg
+
+        await self.bot.delete_message(ctx.message)
+
+        await self.bot.say(zalgo_msg)
 
 
 def setup(bot):
