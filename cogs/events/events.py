@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import bot
 import random
 
 class Events:
