@@ -16,7 +16,7 @@ class Zalgo:
             raw_msg = 'HE COMES'
 
         # random intensity
-        intensity = random.randint(20, 100)
+        intensity = random.randint(50, 150)
 
         # zalgo characters to fuck with
         zalgo_chrs = [chr(x) for x in range(0x0300, 0x036F + 1)]
