@@ -43,6 +43,7 @@ def setup(bot):
 
         if 'zeb' in message.clean_content.lower():
             new_message = await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
+            await bot.add_reaction(new_message, '🐍')
             await bot.add_reaction(new_message, '🍆')
             await bot.add_reaction(new_message, '💦')
 
