@@ -35,6 +35,31 @@ dragonart = """
 ```
 """
 
+penisart = """
+……………………„„-~^^~„-„„_
+………………„-^*'' : : „'' : : : : *-„
+…………..„-* : : :„„--/ : : : : : : : '\
+…………./ : : „-* . .| : : : : : : : : '|
+……….../ : „-* . . . | : : : : : : : : |
+………...\„-* . . . . .| : : : : : : : :'|
+……….../ . . . . . . '| : : : : : : : :|
+……..../ . . . . . . . .'\ : : : : : : : |
+……../ . . . . . . . . . .\ : : : : : : :|
+……./ . . . . . . . . . . . '\ : : : : : /
+….../ . . . . . . . . . . . . . *-„„„„-*'
+….'/ . . . . . . . . . . . . . . '|
+…/ . . . . . . . ./ . . . . . . .| 
+../ . . . . . . . .'/ . . . . . . .'|
+./ . . . . . . . . / . . . . . . .'|
+'/ . . . . . . . . . . . . . . . .'|
+'| . . . . . \ . . . . . . . . . .|
+'| . . . . . . \„_^- „ . . . . .'|
+'| . . . . . . . . .'\ .\ ./ '/ . |
+| .\ . . . . . . . . . \ .'' / . '|
+| . . . . . . . . . . / .'/ . . .|
+| . . . . . . .| . . / ./ ./ . .|
+"""
+
 def setup(bot):
     async def message_events(message):
         # DO NOT RESPOND TO SELF MESSAGES
@@ -61,6 +86,8 @@ def setup(bot):
 
         elif 'dragon' in message.clean_content.lower():
             await bot.send_message(message.channel, dragonart)
+        elif 'penis' in message.clean_content.lower():
+            await bot.send_message(message.channel, penisart)
 
     bot.add_listener(message_events, 'on_message')
 
