@@ -7,10 +7,10 @@ class Emoji:
         self.bot = bot
 
     @commands.command(pass_context=True, no_pm=True)
-    async def emoji(self, ctx, emoji: str):
+    async def emoji(self, ctx, emoji: discord.Emoji):
         """ Expand an emoji """
-        emoji = emoji.split(' ')[0]
         print(emoji)
+        print(emoji.url)
         await self.bot.say(emoji)
 
 
