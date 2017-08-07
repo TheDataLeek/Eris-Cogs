@@ -42,8 +42,9 @@ def setup(bot):
             return
 
         if 'zeb' in message.clean_content.lower():
-            await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
-            await bot.send_message(message.channel, ':eggplant: :eggplant: :sweat_drops: :sweat_drops:')
+            new_message = await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
+            await bot.add_reaction(new_message, ':eggplant:')
+            await bot.add_reaction(new_message, ':sweat_drops:')
 
         elif 'masters' in [x.name.lower() for x in message.author.roles] and random.random() <= 0.01:
             await bot.send_message(message.channel, 'PIPE DOWN NIGGA')
