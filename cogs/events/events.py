@@ -65,6 +65,9 @@ def setup(bot):
         elif 'penis' in message.clean_content.lower():
             with open('./data/events/penis.gif', 'rb') as fobj:
                 new_msg = await bot.send_file(message.channel, fobj)
+            await bot.add_reaction(new_msg, '🌈')
+            await bot.add_reaction(new_msg, '🍆')
+            await bot.add_reaction(new_msg, '💦')
 
     bot.add_listener(message_events, 'on_message')
 
