@@ -294,13 +294,14 @@ def setup(bot):
         # BLACKLIST CHANNELS
         blacklist = [
             'news',
-            'rpg'
+            'rpg',
+            'events'
         ]
         message_channel = message.channel.name.lower()
         if reduce(
-            lambda acc, n: acc or (n == message_channel),
-            blacklist,
-            False):
+                lambda acc, n: acc or (n == message_channel),
+                blacklist,
+                False):
             return
 
 
