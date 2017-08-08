@@ -229,6 +229,59 @@ dickwords += [
     'yogurt gun'
 ]
 
+vag_words = [
+    'Vag',
+    'Vajayjay',
+    'Box',
+    'Nether regions',
+    'Lady business',
+    'Lady V',
+    'Hoo-haw',
+    'Cha-cha',
+    'Lady bits',
+    'Crotch',
+    'Muff',
+    'Kitty',
+    'Cooch',
+    'Cooter',
+    'Snatch',
+    'Snapper',
+    'Beaver',
+    'Cookie',
+    'Cupcake',
+    'Coin purse',
+    'Lady flower',
+    'Honey pot',
+    'Poon',
+    'Punani',
+    'Twat',
+    'Gash',
+    'Banana basket',
+    'Flower pot',
+    'Fine china',
+    'Juice box',
+    'Pink panther',
+    'Hot pocket',
+    'Bikini bizkit',
+    'Penis fly trap',
+    'Vertical smile',
+    'Dew flaps',
+    'Flaming lips',
+    'Puff pillow',
+    'Notorious V.A.G.',
+    'Furburger',
+    'Bearded clam',
+    'Sausage wallet',
+    'Panty hamster',
+    'Meat curtains',
+    'Penis garage',
+    'ink taco',
+    'Axe wound',
+    'Penis snuggie',
+    'Pussy',
+    'Cunt'
+]
+
 dickwords = list(set(dickwords))
 
 
@@ -279,6 +332,11 @@ def setup(bot):
             await bot.add_reaction(message, '🇳')
             await bot.add_reaction(message, '🇮')
             await bot.add_reaction(message, '🇸')
+        elif reduce(
+                lambda acc, n: acc or (n in clean_message),
+                vag_words,
+                False):
+            await bot.add_reaction(message, '😞')
 
     bot.add_listener(message_events, 'on_message')
 
