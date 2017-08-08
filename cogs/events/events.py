@@ -295,7 +295,8 @@ def setup(bot):
         blacklist = [
             'news',
             'rpg',
-            'events'
+            'events',
+            'recommends'
         ]
         message_channel = message.channel.name.lower()
         if reduce(
