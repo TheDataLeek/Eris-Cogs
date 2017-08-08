@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands
 import random
@@ -63,7 +64,11 @@ def setup(bot):
         elif 'dragon' in message.clean_content.lower():
             await bot.send_message(message.channel, dragonart)
         elif 'penis' in message.clean_content.lower():
-            with open('./data/events/penis.gif', 'rb') as fobj:
+            root_dir = './data/events'
+            files_to_choose = [os.path.join(root_dir, f)
+                               for f in os.listdir(root_dir)
+                               if os.path.isfile(os.path.join(root_dir, f))]
+            with open(random.choice(files_to_choose, 'rb')) as fobj:
                 new_msg = await bot.send_file(message.channel, fobj)
             await bot.add_reaction(new_msg, '🌈')
             await bot.add_reaction(new_msg, '🍆')
