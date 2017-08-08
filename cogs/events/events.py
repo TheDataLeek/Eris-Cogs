@@ -305,6 +305,9 @@ def setup(bot):
                 False):
             return
 
+        # only do this half the time cause fuck it it's tooo much
+        if random.random() <= 0.5:
+            return
 
         clean_message = message.clean_content.lower()
 
