@@ -291,6 +291,19 @@ def setup(bot):
         if bot.user.id == message.author.id or message.content.startswith('.'):
             return
 
+        # BLACKLIST CHANNELS
+        blacklist = [
+            'news',
+            'rpg'
+        ]
+        message_channel = message.channel.name.lower()
+        if reduce(
+            lambda acc, n: acc or (n == message_channel),
+            blacklist,
+            False):
+            return
+
+
         clean_message = message.clean_content.lower()
 
         if 'zeb' in clean_message:
