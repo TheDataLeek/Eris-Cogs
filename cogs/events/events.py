@@ -238,7 +238,7 @@ def setup(bot):
         if bot.user.id == message.author.id or message.content.startswith('.'):
             return
 
-        clean_message = message.clean_content.lower():
+        clean_message = message.clean_content.lower()
 
         if 'zeb' in clean_message:
             new_message = await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
