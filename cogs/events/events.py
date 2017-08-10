@@ -305,11 +305,21 @@ def setup(bot):
                 False):
             return
 
-        # only do this half the time cause fuck it it's tooo much
-        if random.random() <= 0.5:
+        clean_message = message.clean_content.lower()
+
+        if 'praise' in clean_message or 'pray' in clean_message:
+            root_dir = './data/events/pray'
+            files_to_choose = [os.path.join(root_dir, f)
+                               for f in os.listdir(root_dir)
+                               if os.path.isfile(os.path.join(root_dir, f))]
+            with open(random.choice(files_to_choose), 'rb') as fobj:
+                new_msg = await bot.send_file(message.channel, fobj)
+            await bot.add_reaction(new_msg, '🙏')
             return
 
-        clean_message = message.clean_content.lower()
+        # only do the others half the time cause fuck it it's tooo much
+        if random.random() <= 0.5:
+            return
 
         if 'zeb' in clean_message:
             new_message = await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
@@ -341,14 +351,6 @@ def setup(bot):
             await bot.add_reaction(new_msg, '🌈')
             await bot.add_reaction(new_msg, '🍆')
             await bot.add_reaction(new_msg, '💦')
-        elif 'praise' in clean_message or 'pray' in clean_message:
-            root_dir = './data/events/pray'
-            files_to_choose = [os.path.join(root_dir, f)
-                               for f in os.listdir(root_dir)
-                               if os.path.isfile(os.path.join(root_dir, f))]
-            with open(random.choice(files_to_choose), 'rb') as fobj:
-                new_msg = await bot.send_file(message.channel, fobj)
-            await bot.add_reaction(new_msg, '🙏')
         elif reduce(
                 lambda acc, n: acc or (n in clean_message),
                 dickwords,
