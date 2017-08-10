@@ -18,7 +18,9 @@ class Insult:
     async def insult(self, ctx, user : discord.Member=None):
         """Insult the user"""
         msg = ' '
-        if user != None:
+        if user == None or user.id == '142431859148718080':
+            await self.bot.say(ctx.message.author.mention + msg + randchoice(self.insults))
+        else:
             if user.id == self.bot.user.id:
                 user = ctx.message.author
                 msg = (" How original. No one else had thought of trying to get the bot to insult "
@@ -39,8 +41,6 @@ class Insult:
                             insult = root[1].text
                             await self.bot.say("{} {}".format(user.mention, insult))
 
-        else:
-            await self.bot.say(ctx.message.author.mention + msg + randchoice(self.insults))
 
 
 def setup(bot):
