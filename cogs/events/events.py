@@ -332,7 +332,7 @@ def setup(bot):
         elif 'dragon' in clean_message:
             await bot.send_message(message.channel, dragonart)
         elif 'penis' in clean_message:
-            root_dir = './data/events'
+            root_dir = './data/events/penis'
             files_to_choose = [os.path.join(root_dir, f)
                                for f in os.listdir(root_dir)
                                if os.path.isfile(os.path.join(root_dir, f))]
@@ -341,6 +341,14 @@ def setup(bot):
             await bot.add_reaction(new_msg, '🌈')
             await bot.add_reaction(new_msg, '🍆')
             await bot.add_reaction(new_msg, '💦')
+        elif 'praise' in clean_message or 'pray' in clean_message:
+            root_dir = './data/events/pray'
+            files_to_choose = [os.path.join(root_dir, f)
+                               for f in os.listdir(root_dir)
+                               if os.path.isfile(os.path.join(root_dir, f))]
+            with open(random.choice(files_to_choose), 'rb') as fobj:
+                new_msg = await bot.send_file(message.channel, fobj)
+            await bot.add_reaction(new_msg, '🙏')
         elif reduce(
                 lambda acc, n: acc or (n in clean_message),
                 dickwords,
