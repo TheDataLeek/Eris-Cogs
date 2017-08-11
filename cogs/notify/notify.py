@@ -10,6 +10,22 @@ class Notify:
     def __init__(self, bot):
         self.bot = bot
 
+        self.client = Client()
+
+        async def message_events(message):
+            if '@everyone' in message.clean_content and 'masters' in [x.name.lower() for x in message.author.roles]:
+                with open('./data/notify/numbers.txt', 'r') as fobj:
+                    current_numbers = [x for x in
+                                       fobj.read().split('\n')
+                                       if len(x) > 0]
+                current_numbers = ['+1{}'.format(x) if len(x) == 10 else x
+                                   for x in current_numbers]
+                for number in current_numbers:
+                    message = self.client.messages.create(to=number, body=message.clean_content)
+                await self.bot.send_message(message.channel, '[{}] have been notified.'.format(', '.join(current_numbers)))
+
+        self.bot.add_listener(message_events, 'on_message')
+
     @commands.group(pass_context=True, no_pm=True)
     async def notify(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -24,8 +40,6 @@ class Notify:
                                    fobj.read().split('\n')
                                    if len(x) > 0]
 
-            print(number)
-            print(current_numbers)
             if number in current_numbers:
                 await self.bot.say('This number is already registered')
                 return
@@ -71,11 +85,3 @@ class Notify:
 def setup(bot):
     n = Notify(bot)
     bot.add_cog(n)
-
-    client = Client()
-
-    async def message_events(message):
-        if '@everyone' in message.clean_content and 'masters' in [x.name.lower() for x in message.author.roles]:
-            await bot.send_message(message.channel, 'test')
-
-    bot.add_listener(message_events, 'on_message')
