@@ -65,8 +65,7 @@ def setup(bot):
     client = twilio.rest.Client()
 
     async def message_events(message):
-        if '@everyone' in message.clean_content and
-            'masters' in [x.name.lower() for x in message.author.roles]:
+        if '@everyone' in message.clean_content and 'masters' in [x.name.lower() for x in message.author.roles]:
             await bot.send_message(message.channel, 'test')
 
     bot.add_listener(message_events, 'on_message')
