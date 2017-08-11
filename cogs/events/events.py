@@ -305,6 +305,15 @@ def setup(bot):
                 False):
             return
 
+        # first let's have a tiny chance of snek actually responding with ooc content
+        if random.random() <= 0.01:
+            with open('./data/events/ooc/ooc.txt', 'r') as fobj:
+                quotes = fobj.readlines()
+                await bot.send_message(message.channel, random.choice(quotes))
+            return
+
+        # now lets check for contents
+
         clean_message = message.clean_content.lower()
 
         if 'praise' in clean_message or 'pray' in clean_message:
