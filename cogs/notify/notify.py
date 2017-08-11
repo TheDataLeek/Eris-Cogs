@@ -50,6 +50,7 @@ class Notify:
                 await self.bot.say('This number is not registered')
                 return
 
+            current_numbers = list(set(current_numbers) - set([number]))
             with open('./data/notify/numbers.txt', 'w') as fobj:
                 for num in current_numbers:
                     fobj.write(num)
