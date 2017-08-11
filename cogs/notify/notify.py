@@ -56,7 +56,7 @@ class Notify:
             current_numbers = [x for x in
                                fobj.read().split('\n')
                                if len(x) > 0]
-            await self.bot.say('The following numbers have been registered: {}'.format(', '.join(current_numbers)))
+            await self.bot.say('The following numbers have been registered: [{}]'.format(', '.join(current_numbers)))
 
 
 def setup(bot):
