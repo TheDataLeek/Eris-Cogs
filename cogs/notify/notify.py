@@ -4,6 +4,7 @@ from discord.ext import commands
 import re
 
 import twilio
+from twilio.rest import Client
 
 class Notify:
     def __init__(self, bot):
@@ -62,7 +63,7 @@ def setup(bot):
     n = Notify(bot)
     bot.add_cog(n)
 
-    client = twilio.rest.Client()
+    client = Client()
 
     async def message_events(message):
         if '@everyone' in message.clean_content and 'masters' in [x.name.lower() for x in message.author.roles]:
