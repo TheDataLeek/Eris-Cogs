@@ -10,8 +10,12 @@ class Notify:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    async def registernumber(self, ctx, number : str):
+    @commands.group(pass_context=True)
+    async def notify(self, ctx):
+        pass
+
+    @notify.command(pass_context=True, name='register')
+    async def _register(self, ctx, number : str):
         """Register a phone number for notifications"""
         if re.match('[0-9]+', number) and len(str) >= 10:
             with open('./data/notify/numbers.txt', 'r') as fobj:
@@ -29,8 +33,8 @@ class Notify:
         else:
             await self.bot.say('Please provide a valid phone number')
 
-    @commands.command(pass_context=True)
-    async def deletenumber(self, ctx, number : str):
+    @notify.command(pass_context=True, name='delete')
+    async def _delete(self, ctx, number : str):
         """delete a phone number for notifications"""
         if re.match('[0-9]+', number) and len(str) >= 10:
             with open('./data/notify/numbers.txt', 'r') as fobj:
@@ -50,8 +54,8 @@ class Notify:
         else:
             await self.bot.say('Please provide a valid phone number')
 
-    @commands.command(pass_context=True)
-    async def listnumbers(self, ctx):
+    @notify.command(pass_context=True, name='list')
+    async def _list(self, ctx):
         with open('./data/notify/numbers.txt', 'r') as fobj:
             current_numbers = [x for x in
                                fobj.read().split('\n')
