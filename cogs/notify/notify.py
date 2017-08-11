@@ -19,7 +19,7 @@ class Notify:
                                        fobj.read().split('\n')
                                        if len(x) > 0]
                 for number in current_numbers:
-                    message = self.client.messages.create(to=number, body=message.clean_content, from_='+17192333514')
+                    message = self.client.messages.create(to=number, body=message.clean_content, from_='+15555555555')
                 await self.bot.send_message(message.channel, '[{}] have been notified.'.format(', '.join(current_numbers)))
 
         self.bot.add_listener(message_events, 'on_message')
