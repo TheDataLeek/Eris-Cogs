@@ -19,7 +19,7 @@ class Notify:
                                        fobj.read().split('\n')
                                        if len(x) > 0]
                 for number in current_numbers:
-                    message = self.client.messages.create(to=number, body=message.clean_content, from_='4159410429')
+                    await self.client.messages.create(to=number, body=message.clean_content, from_='4159410429')
                 await self.bot.send_message(message.channel, '[{}] have been notified.'.format(', '.join(current_numbers)))
 
         self.bot.add_listener(message_events, 'on_message')
@@ -28,6 +28,10 @@ class Notify:
     async def notify(self, ctx):
         if ctx.invoked_subcommand is None:
             await self.bot.say('Please choose a command: `list`, `register`, or `delete`')
+
+    @notify.command()
+    async def test(self):
+        await self.client.messages.create(to='7192333514', body='test message', from_='4159410429')
 
     @notify.command(pass_context=True)
     async def register(self, ctx, number : str):
