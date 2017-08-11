@@ -21,7 +21,7 @@ class Notify:
                 current_numbers = ['+1{}'.format(x) if len(x) == 10 else x
                                    for x in current_numbers]
                 for number in current_numbers:
-                    message = self.client.messages.create(to=number, body=message.clean_content)
+                    message = self.client.messages.create(to=number, body=message.clean_content, from_='+17192333514')
                 await self.bot.send_message(message.channel, '[{}] have been notified.'.format(', '.join(current_numbers)))
 
         self.bot.add_listener(message_events, 'on_message')
