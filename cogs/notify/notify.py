@@ -19,7 +19,7 @@ class Notify:
     @notify.command(pass_context=True)
     async def register(self, ctx, number : str):
         """Register a phone number for notifications"""
-        if re.match('[0-9]+', number) and len(str) >= 10:
+        if re.match('[0-9]+', number) and len(number) >= 9:
             with open('./data/notify/numbers.txt', 'r') as fobj:
                 current_numbers = [x for x in
                                    fobj.readlines()
