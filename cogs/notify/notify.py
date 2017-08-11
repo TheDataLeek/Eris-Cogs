@@ -10,8 +10,9 @@ class Notify:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(pass_context=True)
+    @commands.group(pass_context=True, no_pm=True)
     async def notify(self, ctx):
+        print('here')
         if ctx.invoked_subcommand is None:
             await self.bot.say('Please choose a command')
 
