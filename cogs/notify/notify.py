@@ -12,7 +12,8 @@ class Notify:
 
     @commands.group(pass_context=True)
     async def notify(self, ctx):
-        pass
+        if ctx.invoked_subcommand is None:
+            await self.bot.say('Please choose a command')
 
     @notify.command(pass_context=True, name='register')
     async def _register(self, ctx, number : str):
