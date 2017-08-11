@@ -40,7 +40,7 @@ class Notify:
     @notify.command(pass_context=True)
     async def delete(self, ctx, number : str):
         """delete a phone number for notifications"""
-        if re.match('[0-9]+', number) and len(str) >= 10:
+        if re.match('[0-9]+', number) and len(number) >= 10:
             with open('./data/notify/numbers.txt', 'r') as fobj:
                 current_numbers = [x for x in
                                    fobj.read().split('\n')
