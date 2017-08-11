@@ -14,7 +14,7 @@ class Notify:
 
         async def message_events(message):
             print(list(message.clean_content))
-            print('@here' in message.clean_content)
+            print('@\u200bhere' in message.clean_content)
             if '@here' in message.clean_content and 'masters' in [x.name.lower() for x in message.author.roles]:
                 with open('./data/notify/numbers.txt', 'r') as fobj:
                     current_numbers = [x for x in
