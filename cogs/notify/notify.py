@@ -12,9 +12,8 @@ class Notify:
 
     @commands.group(pass_context=True, no_pm=True)
     async def notify(self, ctx):
-        print('here')
         if ctx.invoked_subcommand is None:
-            await self.bot.say('Please choose a command')
+            await self.bot.say('Please choose a command: `list`, `register`, or `delete`')
 
     @notify.command(pass_context=True)
     async def register(self, ctx, number : str):
@@ -25,6 +24,8 @@ class Notify:
                                    fobj.readlines()
                                    if len(x) > 0]
 
+            print(number)
+            print(current_numbers)
             if number in current_numbers:
                 await self.bot.say('This number is already registered')
                 return
@@ -32,6 +33,7 @@ class Notify:
             with open('./data/notify/numbers.txt', 'a') as fobj:
                 fobj.write(number)
                 fobj.write('\n')
+                await self.bot.say('{} has been registered'.format(number))
         else:
             await self.bot.say('Please provide a valid phone number')
 
