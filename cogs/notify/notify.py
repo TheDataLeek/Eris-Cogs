@@ -21,7 +21,7 @@ class Notify:
         if re.match('[0-9]+', number) and len(number) >= 9:
             with open('./data/notify/numbers.txt', 'r') as fobj:
                 current_numbers = [x for x in
-                                   fobj.readlines()
+                                   fobj.read().split('\n')
                                    if len(x) > 0]
 
             print(number)
