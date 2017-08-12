@@ -31,7 +31,9 @@ class Notify:
 
     @notify.command()
     async def test(self):
-        await self.client.messages.create(to='7192333514', body='test message', from_='4159410429')
+        await self.client.messages.create(to='7192333514', body='test message1', from_='4159410429')
+        await self.client.messages.create(to='7192333514', body='test message2', from_='4159410429')
+        await self.client.messages.create(to='7192333514', body='test message3', from_='4159410429')
 
     @notify.command(pass_context=True)
     async def register(self, ctx, number : str):
