@@ -12,14 +12,18 @@ class Notify:
 
         self.client = Client()
 
+        self.previous_message = None
+
         async def message_events(message):
             if '@\u200beveryone' in message.clean_content and 'masters' in [x.name.lower() for x in message.author.roles]:
                 with open('./data/notify/numbers.txt', 'r') as fobj:
                     current_numbers = [x for x in
                                        fobj.read().split('\n')
                                        if len(x) > 0]
+                self.previous_message = message.clean_content
+                message_to_send = '{}: {}'.format(message.author.display_name, message.clean_content)
                 for number in current_numbers:
-                    self.client.messages.create(to=number, body=message.clean_content, from_='4159410429')
+                    self.client.messages.create(to=number, body=message_to_send, from_='4159410429')
                 await self.bot.send_message(message.channel, '[{}] have been notified.'.format(', '.join(current_numbers)))
 
         self.bot.add_listener(message_events, 'on_message')
