@@ -2,9 +2,21 @@ import os
 import discord
 from discord.ext import commands
 import re
+import requests
+
+from flask import Flask, request
+from gevent.wsgi import WSGIServer
 
 import twilio
 from twilio.rest import Client
+
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.urandom(24)
+
+discord_url = os.environ.get('DISCORDWEBHOOKURL')
+assert discord_url is not None
+
 
 class Notify:
     def __init__(self, bot):
@@ -90,6 +102,27 @@ class Notify:
             await self.bot.say('The following numbers have been registered: [{}]'.format(', '.join(current_numbers)))
 
 
+def run_server():
+    http_server = WSGIServer(('', 9999), app)
+    http_server.serve_forever()
+
+
+@app.route('/', methods=['GET', 'POST'])
+def handle_event():
+    r = requests.post(discord_url, data={
+        content: 'lipsum'
+        })
+    print(r)
+
+
 def setup(bot):
-    n = Notify(bot)
-    bot.add_cog(n)
+    pid = os.fork()
+
+    if pid == 0:
+        try:
+            run_server()
+        except OSError:
+            pass
+    else:
+        n = Notify(bot)
+        bot.add_cog(n)
