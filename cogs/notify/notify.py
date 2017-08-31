@@ -14,8 +14,8 @@ from twilio.rest import Client
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 
-discord_url = os.environ.get('DISCORDWEBHOOKURL')
-assert discord_url is not None
+# discord_url = os.environ.get('DISCORDWEBHOOKURL')
+# assert discord_url is not None
 
 
 class Notify:
