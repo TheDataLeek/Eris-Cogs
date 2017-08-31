@@ -10,9 +10,8 @@ import requests
 import twilio
 from twilio.rest import Client
 
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24)
+# app = Flask(__name__)
+# app.config['SECRET_KEY'] = os.urandom(24)
 
 # discord_url = os.environ.get('DISCORDWEBHOOKURL')
 # assert discord_url is not None
