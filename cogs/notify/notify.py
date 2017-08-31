@@ -123,6 +123,6 @@ def setup(bot):
     #         run_server()
     #     except OSError:
     #         pass
-    else:
-        n = Notify(bot)
-        bot.add_cog(n)
+    # else:
+    n = Notify(bot)
+    bot.add_cog(n)
