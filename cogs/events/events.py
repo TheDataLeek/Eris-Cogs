@@ -330,7 +330,10 @@ def setup(bot):
         if random.random() <= 0.5:
             return
 
-        if 'zeb' in clean_message:
+        if 'thank' in clean_message:
+            await bot.send_message(message.channel, 'you\'re welcome')
+
+        elif 'zeb' in clean_message:
             new_message = await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
             await bot.add_reaction(new_message, '🐍')
             await bot.add_reaction(new_message, '🍆')
