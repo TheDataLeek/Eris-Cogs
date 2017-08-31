@@ -4,8 +4,8 @@ from discord.ext import commands
 import re
 import requests
 
-from flask import Flask, request
-from gevent.wsgi import WSGIServer
+# from flask import Flask, request
+# from gevent.wsgi import WSGIServer
 
 import twilio
 from twilio.rest import Client
@@ -102,27 +102,27 @@ class Notify:
             await self.bot.say('The following numbers have been registered: [{}]'.format(', '.join(current_numbers)))
 
 
-def run_server():
-    http_server = WSGIServer(('', 9999), app)
-    http_server.serve_forever()
+# def run_server():
+#     http_server = WSGIServer(('', 9999), app)
+#     http_server.serve_forever()
 
 
-@app.route('/', methods=['GET', 'POST'])
-def handle_event():
-    r = requests.post(discord_url, data={
-        content: 'lipsum'
-        })
-    print(r)
+# @app.route('/', methods=['GET', 'POST'])
+# def handle_event():
+#     r = requests.post(discord_url, data={
+#         content: 'lipsum'
+#         })
+#     print(r)
 
 
 def setup(bot):
-    pid = os.fork()
+    # pid = os.fork()
 
-    if pid == 0:
-        try:
-            run_server()
-        except OSError:
-            pass
+    # if pid == 0:
+    #     try:
+    #         run_server()
+    #     except OSError:
+    #         pass
     else:
         n = Notify(bot)
         bot.add_cog(n)
