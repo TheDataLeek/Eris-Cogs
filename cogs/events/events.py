@@ -310,7 +310,7 @@ def setup(bot):
             with open('./data/events/ooc/ooc.txt', 'r') as fobj:
                 quotes = fobj.readlines()
             if random.random() < 0.2:
-                await bot.send_message(message.author, random.choice(quotes))
+                await bot.send_message(message.author, 'I *see* you')
             else:
                 await bot.send_message(message.channel, random.choice(quotes))
             return
