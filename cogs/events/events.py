@@ -106,7 +106,6 @@ dickwords += [
     'groin',
     'heat-seeking moisture missile',
     'hog',
-    'hose',
     'jackhammer',
     'jimmy',
     'john',
