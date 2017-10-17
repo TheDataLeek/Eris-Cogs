@@ -359,9 +359,6 @@ def setup(bot):
             await bot.add_reaction(new_message, '🍆')
             await bot.add_reaction(new_message, '💦')
 
-        elif 'masters' in [x.name.lower() for x in message.author.roles] and random.random() <= 0.01:
-            await bot.send_message(message.channel, 'PIPE DOWN NIGGA')
-
         elif 'snek' in clean_message:
             await bot.send_message(message.channel, ':snake: ~ !! I :black_heart: you senpai !! ~ :snake:')
         elif 'blood' in clean_message:
