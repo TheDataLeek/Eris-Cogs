@@ -332,7 +332,7 @@ def setup(bot):
 
         if 'thank' in clean_message:
             message = "you're welcome"
-            if random.random() < 0.1:
+            if random.random() < 0.5:
                 message += " {}".format(str(message.author.mention))
             await bot.send_message(message.channel, '')
 
