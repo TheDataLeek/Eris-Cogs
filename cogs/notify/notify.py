@@ -4,17 +4,12 @@ from discord.ext import commands
 import re
 import requests
 
-# from flask import Flask, request
-# from gevent.wsgi import WSGIServer
-
 import twilio
 from twilio.rest import Client
 
-# app = Flask(__name__)
-# app.config['SECRET_KEY'] = os.urandom(24)
+import pathlib
 
-# discord_url = os.environ.get('DISCORDWEBHOOKURL')
-# assert discord_url is not None
+NUMBERFILE = os.path.join(str(pathlib.Path.Home()), 'numbers.txt')
 
 
 class Notify:
@@ -27,7 +22,7 @@ class Notify:
 
         async def message_events(message):
             if '@\u200beveryone' in message.clean_content and 'masters' in [x.name.lower() for x in message.author.roles]:
-                with open('./data/notify/numbers.txt', 'r') as fobj:
+                with open(NUMBERFILE, 'r') as fobj:
                     current_numbers = [x for x in
                                        fobj.read().split('\n')
                                        if len(x) > 0]
@@ -54,7 +49,7 @@ class Notify:
     async def register(self, ctx, number : str):
         """Register a phone number for notifications"""
         if re.match('[0-9]+', number) and len(number) >= 9:
-            with open('./data/notify/numbers.txt', 'r') as fobj:
+            with open(NUMBERFILE, 'r') as fobj:
                 current_numbers = [x for x in
                                    fobj.read().split('\n')
                                    if len(x) > 0]
@@ -63,7 +58,7 @@ class Notify:
                 await self.bot.say('This number is already registered')
                 return
 
-            with open('./data/notify/numbers.txt', 'a') as fobj:
+            with open(NUMBERFILE, 'a') as fobj:
                 fobj.write(number)
                 fobj.write('\n')
                 await self.bot.say('{} has been registered'.format(number))
@@ -74,7 +69,7 @@ class Notify:
     async def delete(self, ctx, number : str):
         """delete a phone number for notifications"""
         if re.match('[0-9]+', number) and len(number) >= 10:
-            with open('./data/notify/numbers.txt', 'r') as fobj:
+            with open(NUMBERFILE, 'r') as fobj:
                 current_numbers = [x for x in
                                    fobj.read().split('\n')
                                    if len(x) > 0]
@@ -84,7 +79,7 @@ class Notify:
                 return
 
             current_numbers = list(set(current_numbers) - set([number]))
-            with open('./data/notify/numbers.txt', 'w') as fobj:
+            with open(NUMBERFILE, 'w') as fobj:
                 for num in current_numbers:
                     fobj.write(num)
                     fobj.write('\n')
@@ -94,34 +89,13 @@ class Notify:
 
     @notify.command(pass_context=True)
     async def list(self, ctx):
-        with open('./data/notify/numbers.txt', 'r') as fobj:
+        with open(NUMBERFILE, 'r') as fobj:
             current_numbers = [x for x in
                                fobj.read().split('\n')
                                if len(x) > 0]
             await self.bot.say('The following numbers have been registered: [{}]'.format(', '.join(current_numbers)))
 
 
-# def run_server():
-#     http_server = WSGIServer(('', 9999), app)
-#     http_server.serve_forever()
-
-
-# @app.route('/', methods=['GET', 'POST'])
-# def handle_event():
-#     r = requests.post(discord_url, data={
-#         content: 'lipsum'
-#         })
-#     print(r)
-
-
 def setup(bot):
-    # pid = os.fork()
-
-    # if pid == 0:
-    #     try:
-    #         run_server()
-    #     except OSError:
-    #         pass
-    # else:
     n = Notify(bot)
     bot.add_cog(n)
