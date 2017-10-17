@@ -9,7 +9,7 @@ from twilio.rest import Client
 
 import pathlib
 
-NUMBERFILE = os.path.join(str(pathlib.Path.Home()), 'numbers.txt')
+NUMBERFILE = os.path.join(str(pathlib.Path.home()), 'numbers.txt')
 
 
 class Notify:
