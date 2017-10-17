@@ -333,7 +333,7 @@ def setup(bot):
         if 'thank' in clean_message:
             new_message = "you're welcome"
             if random.random() < 0.5:
-                new_message += " {}".format(str(message.author))
+                new_message += " {}".format(message.author.mention)
             await bot.send_message(message.channel, new_message)
 
         elif 'zeb' in clean_message:
