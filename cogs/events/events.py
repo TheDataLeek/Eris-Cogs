@@ -283,6 +283,21 @@ vag_words = [
 
 dickwords = list(set(dickwords))
 
+yandere = [
+    'I *see* you...',
+    'Have you forgotten about me?',
+    'I missed you last night.',
+    'Where have you been?',
+    "Don't try to run from me.",
+    'I can always find you.',
+    'Are you feeling ok?',
+    'Hiding only delays the inevitable.',
+    'Did you think that would work?',
+    "I'm *always* watching",
+    "Do you think I've forgotten about what you did?",
+    'Hush. Only dreams now.'
+]
+
 
 def setup(bot):
     async def message_events(message):
@@ -309,7 +324,7 @@ def setup(bot):
             with open('./data/events/ooc/ooc.txt', 'r') as fobj:
                 quotes = fobj.readlines()
             if random.random() < 0.2:
-                await bot.send_message(message.author, 'I *see* you')
+                await bot.send_message(message.author, random.choice(yandere))
             else:
                 await bot.send_message(message.channel, random.choice(quotes))
             return
