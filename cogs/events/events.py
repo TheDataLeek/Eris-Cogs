@@ -331,10 +331,10 @@ def setup(bot):
             return
 
         if 'thank' in clean_message:
-            message = "you're welcome"
+            new_message = "you're welcome"
             if random.random() < 0.5:
-                message += " {}".format(str(message.author))
-            await bot.send_message(message.channel, '')
+                new_message += " {}".format(str(message.author))
+            await bot.send_message(message.channel, new_message)
 
         elif 'zeb' in clean_message:
             new_message = await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
