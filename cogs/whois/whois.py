@@ -29,7 +29,6 @@ class WhoIs:
                     'nick TEXT'
                 ')'
             )
-        con.close()
 
     @commands.command(pass_context=True, no_pm=True)
     async def whois(self, ctx, user: discord.Member=None):
@@ -41,26 +40,31 @@ class WhoIs:
             return
 
         con = sq.connect(WHOFILE)
-        with con:
-            name = con.execute(
-                'SELECT name FROM usernames WHERE userid=?',
-                (user.id,)
-            )
 
-            nicks = con.execute(
-                'SELECT nick FROM usernicks WHERE userid=?',
-                (user.id,)
-            )
+        cursor = con.cursor()
+        cursor.execute(
+            'SELECT name FROM usernames WHERE userid=?',
+            (user.id,)
+        )
+        names = cursor.fetchall()
 
-            message = (
-                'User: {}\n'
-                'Realname: {}\n'
-                'Known Aliases: {}'
-            ).format(
-                user.name,
-                'No Name Known!' if len(name) == 0 else name[0][0],
-                str(list(x[0] for x in nicks))
-            )
+        cursor.execute(
+            'SELECT nick FROM usernicks WHERE userid=?',
+            (user.id,)
+        )
+        nicks = cursor.fetchall()
+
+        message = (
+            'User: {}\n'
+            'Realname: {}\n'
+            'Known Aliases: {}'
+        ).format(
+            user.name,
+            'No Name Known!' if len(name) == 0 else name[0][0],
+            str(list(x[0] for x in nicks))
+        )
+
+        con.close()
 
         await self.bot.send_message(ctx.author, message)
 
@@ -71,27 +75,30 @@ class WhoIs:
             return
 
         con = sq.connect(WHOFILE)
-        with con:
-            name_entry = con.execute(
-                'SELECT * FROM usernames WHERE userid=?',
-                user.id
-            )
+        cursor = con.cursor()
 
-            if len(name_entry) != 0:
-                userid = name_entry[0][0]
-                con.execute(
-                    'UPDATE usernames '
-                        'SET name=? '
-                        'WHERE userid=?',
-                    (realname, userid)
-                )
-            else:
-                con.execute(
-                    'INSERT INTO usernames('
-                        'userid, name)'
-                    'VALUES(?,?)',
-                    (user.id, realname)
-                )
+        con.execute(
+            'SELECT * FROM usernames WHERE userid=?',
+            user.id
+        )
+        name_entry = cursor.fetchall()
+
+        if len(name_entry) != 0:
+            userid = name_entry[0][0]
+            cursor.execute(
+                'UPDATE usernames '
+                    'SET name=? '
+                    'WHERE userid=?',
+                (realname, userid)
+            )
+        else:
+            cursor.execute(
+                'INSERT INTO usernames('
+                    'userid, name)'
+                'VALUES(?,?)',
+                (user.id, realname)
+            )
+        con.close()
 
 
 def setup(bot):
