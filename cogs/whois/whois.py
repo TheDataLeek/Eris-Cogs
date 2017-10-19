@@ -66,7 +66,7 @@ class WhoIs:
 
         con.close()
 
-        await self.bot.send_message(ctx.author, message)
+        await self.bot.send_message(ctx.message.author, message)
 
     @commands.command(pass_context=True)
     async def theyare(self, ctx, user: discord.Member=None, realname: str=None):
