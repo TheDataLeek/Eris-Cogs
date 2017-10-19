@@ -425,7 +425,10 @@ def setup(bot):
 
         # spoopy factor
         if random.random() < 0.05:
-            await bot.send_message(message.author, random.choice(yandere))
+            new_message = random.choice(yandere)
+            new_message = ' '.join(x.format(message.author.mention)
+                                   for x in new_message.split(' '))
+            await bot.send_message(message.author, new_message)
             return
 
         # first let's have a tiny chance of snek actually responding with ooc content
