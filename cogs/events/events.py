@@ -426,7 +426,6 @@ def setup(bot):
         # spoopy factor
         if random.random() < 0.05:
             new_message = random.choice(yandere)
-            new_message = "Oh, {}, {}, {}! You know, I should shoot you in a jealous rage. Now wouldn't that be sexy?"
             print(new_message)
             new_message = ' '.join(x.format(message.author.mention)
                                    for x in new_message.split(' '))
