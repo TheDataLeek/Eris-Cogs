@@ -91,6 +91,7 @@ class WhoIs:
                     'WHERE userid=?',
                 (realname, userid)
             )
+            con.commit()
         else:
             cursor.execute(
                 'INSERT INTO usernames('
@@ -98,7 +99,10 @@ class WhoIs:
                 'VALUES(?,?)',
                 (user.id, realname)
             )
+            con.commit()
         con.close()
+
+        await self.bot.say('User Registered')
 
 
 def setup(bot):
