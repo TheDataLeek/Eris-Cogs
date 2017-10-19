@@ -85,6 +85,8 @@ class WhoIs:
 
         if len(name_entry) != 0:
             userid = name_entry[0][0]
+            print(name_entry)
+            print(userid)
             cursor.execute(
                 'UPDATE usernames '
                     'SET name=? '
