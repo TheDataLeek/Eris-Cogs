@@ -419,7 +419,7 @@ class Spoop(object):
         new_message = random.choice(yandere)
         new_message = ' '.join(x.format(ctx.message.author.mention)
                                for x in new_message.split(' '))
-        await bot.send_message(user, new_message)
+        await self.bot.send_message(user, new_message)
 
 
 def setup(bot):
