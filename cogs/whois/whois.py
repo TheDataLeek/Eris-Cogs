@@ -60,7 +60,7 @@ class WhoIs:
             'Known Aliases: {}'
         ).format(
             user.name,
-            'No Name Known!' if len(name) == 0 else name[0][0],
+            'No Name Known!' if len(names) == 0 else name[0][0],
             str(list(x[0] for x in nicks))
         )
 
