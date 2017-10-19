@@ -417,6 +417,7 @@ def setup(bot):
             'recommends'
         ]
         message_channel = message.channel.name.lower()
+        print(message.channel)
         if reduce(
                 lambda acc, n: acc or (n == message_channel),
                 blacklist,
@@ -426,12 +427,8 @@ def setup(bot):
         # spoopy factor
         if random.random() < 0.05:
             new_message = random.choice(yandere)
-            print(new_message)
             new_message = ' '.join(x.format(message.author.mention)
                                    for x in new_message.split(' '))
-            print(new_message)
-            print(message)
-            print(message.author)
             await bot.send_message(message.author, new_message)
             return
 
