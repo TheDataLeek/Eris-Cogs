@@ -417,7 +417,7 @@ class Spoop(object):
             return
 
         new_message = random.choice(yandere)
-        new_message = ' '.join(x.format(message.author.mention)
+        new_message = ' '.join(x.format(ctx.message.author.mention)
                                for x in new_message.split(' '))
         await bot.send_message(user, new_message)
 
