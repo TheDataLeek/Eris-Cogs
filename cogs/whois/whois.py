@@ -7,6 +7,7 @@ import sqlite3 as sq
 
 import pathlib
 
+
 WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
 
 
@@ -18,6 +19,7 @@ class WhoIs:
         with con:
             con.execute(
                 'CREATE TABLE IF NOT EXISTS usernames('
+                    'id INT PRIMARY KEY,'
                     'userid TEXT,'
                     'name TEXT'
                 ')'
@@ -25,6 +27,7 @@ class WhoIs:
 
             con.execute(
                 'CREATE TABLE IF NOT EXISTS usernicks('
+                    'id INT PRIMARY KEY,'
                     'userid TEXT,'
                     'nick TEXT'
                 ')'
@@ -82,6 +85,7 @@ class WhoIs:
             (user.id,)
         )
         name_entry = cursor.fetchall()
+        print(name_entry)
 
         if len(name_entry) != 0:
             userid = name_entry[0][0]
