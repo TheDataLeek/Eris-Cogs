@@ -403,6 +403,25 @@ yandere = [
 ]
 
 
+class Spoop(object):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(pass_context=True, no_pm=True)
+    async def spoop(self, ctx, user: discord.Member=None):
+        if 'masters' not in [x.name.lower() for x in ctx.message.author.roles]:
+            return
+
+        if user is None:
+            await self.bot.send_message(ctx.message.author, 'Stop being such a fuckup')
+            return
+
+        new_message = random.choice(yandere)
+        new_message = ' '.join(x.format(message.author.mention)
+                               for x in new_message.split(' '))
+        await bot.send_message(user, new_message)
+
+
 def setup(bot):
     async def message_events(message):
         # DO NOT RESPOND TO SELF MESSAGES
@@ -514,5 +533,7 @@ def setup(bot):
                 False):
             await bot.add_reaction(message, '😞')
 
+    n = Spoop(bot)
+    bot.add_cog(n)
     bot.add_listener(message_events, 'on_message')
 
