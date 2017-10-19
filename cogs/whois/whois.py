@@ -64,7 +64,7 @@ class WhoIs:
 
         await self.bot.send_message(ctx.author, message)
 
-    @commands.comand(pass_context=True)
+    @commands.command(pass_context=True)
     async def theyare(self, ctx, user: discord.Member=None, realname: str=None):
         if user is None or realname is None:
             await self.bot.say('Please specify a <user> and a <realname>')
