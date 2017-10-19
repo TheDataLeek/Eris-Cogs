@@ -79,7 +79,7 @@ class WhoIs:
 
         con.execute(
             'SELECT * FROM usernames WHERE userid=?',
-            user.id
+            (user.id,)
         )
         name_entry = cursor.fetchall()
 
