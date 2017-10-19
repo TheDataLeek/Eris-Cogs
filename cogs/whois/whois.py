@@ -44,12 +44,12 @@ class WhoIs:
         with con:
             name = con.execute(
                 'SELECT name FROM usernames WHERE userid=?',
-                str(user.id)
+                (user.id,)
             )
 
             nicks = con.execute(
                 'SELECT nick FROM usernicks WHERE userid=?',
-                str(user.id)
+                (user.id,)
             )
 
             message = (
@@ -90,7 +90,7 @@ class WhoIs:
                     'INSERT INTO usernames('
                         'userid, name)'
                     'VALUES(?,?)',
-                    user.id, realname
+                    (user.id, realname)
                 )
 
 
