@@ -416,7 +416,16 @@ def setup(bot):
             'events',
             'recommends'
         ]
-        print(message.channel)
+
+        # IF DM's
+        if message.channel.name is None:
+            if random.random() < 0.1:
+                new_message = random.choice(yandere)
+                new_message = ' '.join(x.format(message.author.mention)
+                                       for x in new_message.split(' '))
+                await bot.send_message(message.author, new_message)
+            return
+
         message_channel = message.channel.name.lower()
         if reduce(
                 lambda acc, n: acc or (n == message_channel),
