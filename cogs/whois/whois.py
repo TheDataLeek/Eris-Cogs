@@ -63,7 +63,7 @@ class WhoIs:
             'Known Aliases: {}'
         ).format(
             user.name,
-            'No Name Known!' if len(names) == 0 else names[0][0],
+            'No Name Known!' if len(names) == 0 else ', '.join(x[0] for x in names),
             str(list(x[0] for x in nicks))
         )
 
@@ -80,17 +80,14 @@ class WhoIs:
         con = sq.connect(WHOFILE)
         cursor = con.cursor()
 
-        con.execute(
+        cursor.execute(
             'SELECT * FROM usernames WHERE userid=?',
             (user.id,)
         )
         name_entry = cursor.fetchall()
-        print(name_entry)
 
         if len(name_entry) != 0:
             userid = name_entry[0][0]
-            print(name_entry)
-            print(userid)
             cursor.execute(
                 'UPDATE usernames '
                     'SET name=? '
