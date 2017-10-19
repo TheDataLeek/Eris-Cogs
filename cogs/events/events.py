@@ -295,7 +295,10 @@ yandere = [
     'Did you think that would work?',
     "I'm *always* watching",
     "Do you think I've forgotten about what you did?",
-    'Hush. Only dreams now.'
+    'Hush. Only dreams now.',
+    'Are you still there?',
+    'Why are you like this',
+    "What do you think you're doing?"
 ]
 
 
@@ -319,14 +322,16 @@ def setup(bot):
                 False):
             return
 
+        # spoopy factor
+        if random.random() < 0.01:
+            await bot.send_message(message.author, random.choice(yandere))
+            return
+
         # first let's have a tiny chance of snek actually responding with ooc content
         if random.random() <= 0.01:
             with open('./data/events/ooc/ooc.txt', 'r') as fobj:
                 quotes = fobj.readlines()
-            if random.random() < 0.5:
-                await bot.send_message(message.author, random.choice(yandere))
-            else:
-                await bot.send_message(message.channel, random.choice(quotes))
+            await bot.send_message(message.channel, random.choice(quotes))
             return
 
         # now lets check for contents
