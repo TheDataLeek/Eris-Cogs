@@ -420,6 +420,7 @@ class Spoop(object):
         new_message = ' '.join(x.format(ctx.message.author.mention)
                                for x in new_message.split(' '))
         await self.bot.send_message(user, new_message)
+        await self.bot.delete_message(ctx.message)
 
 
 def setup(bot):
