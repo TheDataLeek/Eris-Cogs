@@ -304,7 +304,7 @@ yandere = [
     "Okay, okay... OKAY, okay!",
     "You need to stop it now...",
     "Say that you want me every day",
-    "Say that you want me every way",
+    "Say that you want me in every way",
     "Say that you need me",
     "Got me trippin' super psycho love"
     "Aim, pull the trigger",
