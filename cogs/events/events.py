@@ -416,8 +416,8 @@ def setup(bot):
             'events',
             'recommends'
         ]
-        message_channel = message.channel.name.lower()
         print(message.channel)
+        message_channel = message.channel.name.lower()
         if reduce(
                 lambda acc, n: acc or (n == message_channel),
                 blacklist,
