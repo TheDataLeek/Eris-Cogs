@@ -505,7 +505,7 @@ def setup(bot):
 
         # IF DM's
         if message.channel.name is None:
-            if random.random() < 0.11:
+            if random.random() < 0.1:
                 realname = get_realname(message.author.id)
                 if realname is None:
                     formatname = message.author.mention
