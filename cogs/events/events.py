@@ -4,6 +4,12 @@ from discord.ext import commands
 import random
 from functools import reduce
 
+import sqlite3
+import pathlib
+
+
+WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
+
 dragonart = """
 ```
                                                  /===-_---~~~~~~~~~------____
@@ -439,6 +445,23 @@ yandere = [
 ]
 
 
+def get_realname(userid: str):
+    con = sqlite3.connect(WHOFILE)
+    c = con.cursor()
+    c.execute(
+        'SELECT name '
+        'FROM usernames '
+        'WHERE userid=?'
+        (userid,)
+    )
+    name = c.fetchall()
+    con.close()
+    if len(name) == 0:
+        return None
+    else:
+        return name[0][0]
+
+
 class Spoop(object):
     def __init__(self, bot):
         self.bot = bot
@@ -448,13 +471,19 @@ class Spoop(object):
         if 'masters' not in [x.name.lower() for x in ctx.message.author.roles]:
             return
 
+        realname = get_realname(user.id)
+
         if user is None:
             await self.bot.send_message(ctx.message.author, 'Stop being such a fuckup')
             await self.bot.delete_message(ctx.message)
             return
 
         new_message = random.choice(yandere)
-        new_message = ' '.join(x.format(user.mention)
+        if realname is None:
+            formatname = user.mention
+        else:
+            formatname = realname
+        new_message = ' '.join(x.format(formatname)
                                for x in new_message.split(' '))
         await self.bot.send_message(user, new_message)
         await self.bot.delete_message(ctx.message)
@@ -477,8 +506,13 @@ def setup(bot):
         # IF DM's
         if message.channel.name is None:
             if random.random() < 0.11:
+                realname = get_realname(message.author.id)
+                if realname is None:
+                    formatname = message.author.mention
+                else:
+                    formatname = realname
                 new_message = random.choice(yandere)
-                new_message = ' '.join(x.format(message.author.mention)
+                new_message = ' '.join(x.format(formatname)
                                        for x in new_message.split(' '))
                 await bot.send_message(message.author, new_message)
             return
