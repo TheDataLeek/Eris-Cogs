@@ -409,7 +409,7 @@ yandere = [
     "I'll be watching over you, I'll be there forever, so don't think you're alone, darling :heart:",
     "I'm crazy?! What's crazy is that this world refuses to let me be with you!!!",
     "I command, that you'll love me and let me protect you!",
-    "Despair of tomorrow! Despair of the unknown!  Despair of my love!",
+    "Despair of tomorrow! Despair of the unknown!  Despair of my love {}!",
     "I imagine many things most of these \"things\" has something to do with you. Touch you, love you, kiss you, hug "
     "you, smell you, squeeze you, break you, crush you, own you, until your soul, every bloody bit of your soul, is "
     "mine.",
@@ -423,7 +423,7 @@ yandere = [
     "What is mine is only mine.  And I'm ready to kill for it.",
     "Do you think if you ignore me, I would stop following you?  Do you think if you would get some help, I would "
     "back down and give up?  Or have you ever thought, if you hide somewhere, I'd never find you in this world? "
-    "Oh no no no my dear!",
+    "Oh no no no my dear {}!",
     "Roses are red, handcuffs are naughty, if you ever left me, they'd never find your body.",
     "If you aren't all mine I can't stand it!",
     "I was your cure, and you we're my disease, I was saving you, an you were killing me.",
@@ -437,10 +437,10 @@ yandere = [
     "Whatever you do, whenever you hide, wherever you try to escape from me, you should accept the simple fact, "
     "I'm always right behind you.",
     "You'll love me forever and ever, right?  And you'll never think about anything but my own happiness, right?!",
-    "Catching your heart whit my left hand, I smile at you while you shout and cry, why do you react like this? "
-    "Didn't you tell me you'd do anything for me?  The scissors are stained now.  But at least, finally, your "
+    "Catching your heart with my left hand, I smile at you while you shout and cry, why do you react like this {}? "
+    "Didn't you tell me you'd do anything for me {}?  The scissors are stained now.  But at least, finally, your "
     "heart will be mine.",
-    "Twinkle twinkle little star, You're my man, oh yes you are!  Soon you'll want to marry me, or I'll hang you "
+    "Twinkle twinkle little star, You're my {}, oh yes you are!  Soon you'll want to marry me, or I'll hang you "
     "from the highest tree. Twinkle twinkle sweetie pie :heart:"
 ]
 
