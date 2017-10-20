@@ -399,7 +399,43 @@ yandere = [
     "'till you stop it- stop it- stop it- stop it- stop it, "
     "stop this madness, "
     "I want you....",
-    "Never stick your dick in crazy."
+    "Never stick your dick in crazy.",
+    "I'll be watching over you, I'll be there forever, so don't think you're alone, darling :heart:",
+    "I'm crazy?! What's crazy is that this world refuses to let me be with you!!!",
+    "I command, that you'll love me and let me protect you!",
+    "Despair of tomorrow! Despair of the unknown!  Despair of my love!",
+    "I imagine many things most of these \"things\" has something to do with you. Touch you, love you, kiss you, hug "
+    "you, smell you, squeeze you, break you, crush you, own you, until your soul, every bloody bit of your soul, is "
+    "mine.",
+    "Catching your heart with my left heart, I smile while you shout and scream, why do you react like this? Didn't "
+    "you tell me you'd do anything for me? The scissors are stained in blood now. But at least, finally your heart "
+    "will be mine.",
+    "I'll cut of your hand, so I can hold it forever!",
+    "Friends are like balloons, when you stab them they die!",
+    "A half moon..., a bright half and a dark half, just like me.",
+    "Do you like my cookies?  They're made just for you.  A little bit of sugar but a lots of poison too.",
+    "What is mine is only mine.  And I'm ready to kill for it.",
+    "Do you think if you ignore me, I would stop following you?  Do you think if you would get some help, I would "
+    "back down and give up?  Or have you ever thought, if you hide somewhere, I'd never find you in this world? "
+    "Oh no no no my dear!",
+    "Roses are red, handcuffs are naughty, if you ever left me, they'd never find your body.",
+    "If you aren't all mine I can't stand it!",
+    "I was your cure, and you we're my disease, I was saving you, an you were killing me.",
+    "The only way to stop the pain, is to destroy the source of it.",
+    "If I can not have you, no one can.",
+    "I will forgive you, but there is a price to pay.",
+    "Don't let go, don't leave me alone, whit myself, the voices won't leave me alone!",
+    "If you love something set it free..., if it doesn't come back, hunt it down and kill it.",
+    "It's not stalking it is called taking an interest",
+    "You are mine, no one except me can have you!",
+    "Whatever you do, whenever you hide, wherever you try to escape from me, you should accept the simple fact, "
+    "I'm always right behind you.",
+    "You'll love me forever and ever, right?  And you'll never think about anything but my own happiness, right?!",
+    "Catching your heart whit my left hand, I smile at you while you shout and cry, why do you react like this? "
+    "Didn't you tell me you'd do anything for me?  The scissors are stained now.  But at least, finally, your "
+    "heart will be mine.",
+    "Twinkle twinkle little star, You're my man, oh yes you are!  Soon you'll want to marry me, or I'll hang you "
+    "from the highest tree. Twinkle twinkle sweetie pie :heart:"
 ]
 
 
@@ -414,6 +450,7 @@ class Spoop(object):
 
         if user is None:
             await self.bot.send_message(ctx.message.author, 'Stop being such a fuckup')
+            await self.bot.delete_message(ctx.message)
             return
 
         new_message = random.choice(yandere)
@@ -439,7 +476,7 @@ def setup(bot):
 
         # IF DM's
         if message.channel.name is None:
-            if random.random() < 0.1:
+            if random.random() < 0.11:
                 new_message = random.choice(yandere)
                 new_message = ' '.join(x.format(message.author.mention)
                                        for x in new_message.split(' '))
