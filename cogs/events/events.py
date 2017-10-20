@@ -451,7 +451,7 @@ def get_realname(userid: str):
     c.execute(
         'SELECT name '
         'FROM usernames '
-        'WHERE userid=?'
+        'WHERE userid=?',
         (userid,)
     )
     name = c.fetchall()
