@@ -471,12 +471,12 @@ class Spoop(object):
         if 'masters' not in [x.name.lower() for x in ctx.message.author.roles]:
             return
 
-        realname = get_realname(user.id)
-
         if user is None:
             await self.bot.send_message(ctx.message.author, 'Stop being such a fuckup')
             await self.bot.delete_message(ctx.message)
             return
+
+        realname = get_realname(user.id)
 
         new_message = random.choice(yandere)
         if realname is None:
