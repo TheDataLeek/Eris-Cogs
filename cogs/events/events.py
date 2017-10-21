@@ -565,7 +565,12 @@ def setup(bot):
         if 'thank' in clean_message:
             new_message = "you're welcome"
             if random.random() < 0.5:
-                new_message += " {}".format(message.author.mention)
+                realname = get_realname(message.author.id)
+                if realname is None:
+                    formatname = message.author.mention
+                else:
+                    formatname = realname
+                new_message += " {}".format(formatname)
             await bot.send_message(message.channel, new_message)
 
         elif 'zeb' in clean_message:
