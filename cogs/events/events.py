@@ -526,8 +526,13 @@ def setup(bot):
 
         # spoopy factor
         if random.random() < 0.05:
+            realname = get_realname(message.author.id)
+            if realname is None:
+                formatname = message.author.mention
+            else:
+                formatname = realname
             new_message = random.choice(yandere)
-            new_message = ' '.join(x.format(message.author.mention)
+            new_message = ' '.join(x.format(formatname)
                                    for x in new_message.split(' '))
             await bot.send_message(message.author, new_message)
             return
