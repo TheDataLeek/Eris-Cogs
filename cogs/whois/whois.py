@@ -35,6 +35,26 @@ class WhoIs:
             )
 
     @commands.command(pass_context=True, no_pm=True)
+    async def iseveryone(self, ctx):
+        con = sq.connect(WHOFILE)
+        cursor = con.cursor()
+        cursor.execute(
+            'SELECT userid, name '
+            'FROM usernames'
+        )
+        results = cursor.fetchall()
+        results = [
+            (disc_util.find(
+                lambda x: x.id == userid,
+                ctx.message.channel.server.members
+            ), name)
+            for userid, name in results
+        ]
+        for (mention, name) in results:
+            await self.bot.say('{} is {}'.format(mention, name))
+        con.close()
+
+    @commands.command(pass_context=True, no_pm=True)
     async def iswho(self, ctx):
         name = ' '.join(ctx.message.clean_content.split(' ')[1:]).lower()
         if name == '':
@@ -63,6 +83,7 @@ class WhoIs:
             )
             members.append(member.mention)
         await self.bot.say('The following users match: {}'.format(', '.join(members)))
+        con.close()
 
     @commands.command(pass_context=True, no_pm=True)
     async def whois(self, ctx, user: discord.Member=None):
