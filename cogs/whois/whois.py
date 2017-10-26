@@ -3,6 +3,7 @@
 import os
 import discord
 from discord.ext import commands
+import discord.utils as disc_util
 import sqlite3 as sq
 
 import pathlib
@@ -32,6 +33,36 @@ class WhoIs:
                     'nick TEXT'
                 ')'
             )
+
+    @commands.command(pass_context=True, no_pm=True)
+    async def iswho(self, ctx):
+        name = ' '.join(ctx.message.clean_content.split(' ')[1:]).lower()
+        if name == '':
+            await self.bot.say('Please specify a person')
+            return
+
+        con = sq.connect(WHOFILE)
+
+        cursor = con.cursor()
+
+        cursor.execute(
+            'SELECT userid '
+            'FROM usernames '
+            'WHERE name LIKE \'%{}%\''.format(name)
+        )
+        results = cursor.fetchall()
+        if len(results) == 0:
+            await self.bot.say('No users found! Please try again.')
+            return
+
+        members = []
+        for (userid,) in results:
+            member = disc_util.find(
+                lambda x: x.id == userid,
+                ctx.message.channel.server.members
+            )
+            members.append(member.mention)
+        await self.bot.say('The following users match: {}'.format(', '.join(members)))
 
     @commands.command(pass_context=True, no_pm=True)
     async def whois(self, ctx, user: discord.Member=None):
@@ -106,6 +137,8 @@ class WhoIs:
         con.close()
 
         await self.bot.say('User Registered')
+
+
 
 
 def setup(bot):
