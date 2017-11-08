@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import re
 import requests
+import sqlite3
 
 import twilio
 from twilio.rest import Client
