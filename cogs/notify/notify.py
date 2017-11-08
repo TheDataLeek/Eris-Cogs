@@ -10,6 +10,24 @@ from twilio.rest import Client
 import pathlib
 
 NUMBERFILE = os.path.join(str(pathlib.Path.home()), 'numbers.txt')
+WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
+
+
+def get_realname(userid: str):
+    con = sqlite3.connect(WHOFILE)
+    c = con.cursor()
+    c.execute(
+        'SELECT name '
+        'FROM usernames '
+        'WHERE userid=?',
+        (userid,)
+    )
+    name = c.fetchall()
+    con.close()
+    if len(name) == 0:
+        return None
+    else:
+        return name[0][0]
 
 
 class Notify:
@@ -27,7 +45,8 @@ class Notify:
                                        fobj.read().split('\n')
                                        if len(x) > 0]
                 self.previous_message = message.clean_content
-                message_to_send = '{}: {}'.format(message.author.display_name, message.clean_content)
+                message_to_send = '{}: {}'.format(get_realname(message.author.id) or message.author.display_name,
+                                                  message.clean_content)
                 for number in current_numbers:
                     self.client.messages.create(to=number, body=message_to_send, from_='4159410429')
                 await self.bot.send_message(message.channel, '[{}] have been notified.'.format(', '.join(current_numbers)))
