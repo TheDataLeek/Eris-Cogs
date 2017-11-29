@@ -16,9 +16,9 @@ class Dice:
             await self.bot.say('Please Roll dice in the form {}'.format(dice_format))
 
         terms = re.findall(dice_format, roll)
-        numdice = int(terms.group(1))
-        typedice = int(terms.group(2))
-        dropdice = terms.group(2)
+        numdice = int(terms[0])
+        typedice = int(terms[1])
+        dropdice = terms[2]
 
         rolls = [random.randint(1, typedice) for _ in range(numdice)]
         rolls.sort()
