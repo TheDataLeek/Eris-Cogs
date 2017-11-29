@@ -15,7 +15,7 @@ class Dice:
         if not re.match(dice_format, roll):
             await self.bot.say('Please Roll dice in the form {}'.format(dice_format))
 
-        terms = re.findall(dice_format, roll)
+        terms = re.findall(dice_format, roll)[0]
         numdice = int(terms[0])
         typedice = int(terms[1])
         dropdice = terms[2]
