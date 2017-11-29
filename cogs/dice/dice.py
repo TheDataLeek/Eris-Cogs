@@ -11,7 +11,7 @@ class Dice:
         self.bot = bot
 
     @commands.command(pass_context=True, no_pm=True)
-    async def zalgo(self, ctx, roll: str):
+    async def dice(self, ctx, roll: str):
         if not re.match(dice_format, roll):
             await self.bot.say('Please Roll dice in the form {}'.format(dice_format))
 
