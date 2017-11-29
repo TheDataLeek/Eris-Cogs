@@ -22,7 +22,7 @@ class Dice:
         dropdice = terms[2]
 
         rolls = [random.randint(1, typedice) for _ in range(numdice)]
-        rolls.sort()
+        rolls.sort(key=lambda x: -x)
         if dropdice != '':
             rolls = rolls[:-int(dropdice[1:])]
         await self.bot.say('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
