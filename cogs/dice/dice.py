@@ -14,6 +14,7 @@ class Dice:
     async def dice(self, ctx, roll: str):
         if not re.match(dice_format, roll):
             await self.bot.say('Please Roll dice in the form {}'.format(dice_format))
+            return
 
         terms = re.findall(dice_format, roll)[0]
         numdice = int(terms[0])
@@ -22,7 +23,7 @@ class Dice:
 
         rolls = [random.randint(1, typedice) for _ in range(numdice)]
         rolls.sort()
-        if dropdice is not None:
+        if dropdice != '':
             rolls = rolls[:-int(dropdice)]
         await self.bot.say('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
 
