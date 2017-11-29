@@ -4,7 +4,7 @@ from .utils.dataIO import fileIO
 import random
 import re
 
-dice_format = '([0-9]+)d([0-9]+)v?([0-9])?'
+dice_format = '([0-9]+)d([0-9]+)(v[0-9])?'
 
 class Dice:
     def __init__(self, bot):
@@ -24,7 +24,7 @@ class Dice:
         rolls = [random.randint(1, typedice) for _ in range(numdice)]
         rolls.sort()
         if dropdice != '':
-            rolls = rolls[:-int(dropdice)]
+            rolls = rolls[:-int(dropdice[1:])]
         await self.bot.say('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
 
 
