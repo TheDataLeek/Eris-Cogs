@@ -1,0 +1,6 @@
+{
+    "AUTHOR" : "SpatulaFish",
+    "DESCRIPTION" : "Usage: [p]dice #d#(v#)?",
+    "DISABLED" : false,
+    "NAME" : "Roll Dice"
+}
