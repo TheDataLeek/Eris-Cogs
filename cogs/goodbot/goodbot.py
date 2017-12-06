@@ -41,14 +41,16 @@ def get_user_rating(userid, cursor=None):
     else:
         c = cursor
 
+    print(userid)
     c.execute('SELECT good, bad FROM ratings WHERE userid=?', (userid,))
 
     results = c.fetchall()
+    print(results)
 
     rating = None
 
     if len(results) != 0:
-        rating = results[0]
+        rating = (results[0][0], results[0][1])
 
     if cursor is None:
         con.close()
@@ -117,9 +119,9 @@ def setup(bot):
                 c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
                           (message.author.id, *rating))
             else:
-                old_rating = get_user_rating(message.author.id, cursor=c)
-                good, bad = (old_rating[0] + rating[0],
-                             old_rating[1] + rating[1])
+                oldgood, oldbad = get_user_rating(message.author.id, cursor=c)
+                good, bad = (oldgood + rating[0],
+                             oldbad + rating[1])
                 c.execute('UPDATE ratings SET good=?, bad=? WHERE id=?', (good, bad, userid))
             con.commit()
             con.close()
