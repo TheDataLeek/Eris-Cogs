@@ -84,7 +84,7 @@ class GoodBot:
             await self.bot.say('{} hasn\'t been rated'.format(user.mention))
             return
         good, bad = get_user_rating(user.id)
-        await self.bot.say('User {} has a score of {} ({}{}{})'.format(
+        await self.bot.say('User {} has a score of {} ({}/{}/{})'.format(
                             user.mention,
                             good - bad,
                             good,
