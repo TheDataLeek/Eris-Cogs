@@ -73,7 +73,7 @@ class GoodBot:
             )
             con.commit()
 
-        self.previous_author = None
+        self.previous_author = dict()
 
     @commands.command(pass_context=True, no_pm=True)
     async def rating(self, ctx, user: discord.Member=None):
@@ -105,6 +105,8 @@ def setup(bot):
             return
 
         clean_message = message.clean_content.lower()
+        server = message.channel.server.id
+        channel = message.channel.id
 
         rating = None
         if 'good bot' in clean_message:
@@ -112,21 +114,24 @@ def setup(bot):
         elif 'bad bot' in clean_message:
             rating = (0, 1)
         else:
-            n.previous_author = message.author.id
+            prev_author = message.author.id
+            if server not in n.previous_author:
+                n.previous_author[server] = dict()
+            n.previous_author[server][channel] = prev_author
 
-        if ((rating is not None) and (n.previous_author is not None)):
+        if ((rating is not None) and (n.previous_author[server].get(channel) is not None)):
             con = sq.connect(RATINGSFILE)
             c = con.cursor()
-            if not user_exists(n.previous_author):
+            if not user_exists(n.previous_author[server][channel]):
                 c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
-                          (n.previous_author, *rating))
+                          (n.previous_author[server][channel], *rating))
                 con.commit()
             else:
-                oldgood, oldbad = get_user_rating(n.previous_author, cursor=c)
+                oldgood, oldbad = get_user_rating(n.previous_author[server][channel], cursor=c)
                 good, bad = (oldgood + rating[0],
                              oldbad + rating[1])
                 c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
-                          (good, bad, n.previous_author))
+                          (good, bad, n.previous_author[server][channel]))
                 con.commit()
             con.close()
 
