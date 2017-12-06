@@ -102,10 +102,10 @@ class GoodBot:
         c.execute('SELECT userid, good, bad from ratings')
         results = c.fetchall()
         results = [(ctx.message.server.get_member(userid).mention,
-                    good - bad,
-                    good,
-                    bad,
-                    good + bad) for userid, good, bad in results]
+                    str(good - bad),
+                    str(good),
+                    str(bad),
+                    str(good + bad)) for userid, good, bad in results]
         results.sort(key=lambda tup: -tup[1])
         results = [' - '.join(row) for row in results]
         scores = '\n'.join(results)
