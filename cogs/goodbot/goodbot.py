@@ -19,11 +19,9 @@ def user_exists(userid, cursor=None):
     else:
         c = cursor
 
-    print(userid)
     c.execute('SELECT * FROM ratings WHERE userid=?', (userid,))
 
     results = c.fetchall()
-    print(results)
 
     exists = False
 
@@ -116,7 +114,7 @@ def setup(bot):
         if ((rating is not None) and (n.previous_author is not None)):
             con = sq.connect(RATINGSFILE)
             c = con.cursor()
-            if user_exists(message.author.id):
+            if not user_exists(message.author.id):
                 c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
                           (message.author.id, *rating))
                 con.commit()
