@@ -62,13 +62,18 @@ class GoodBot:
                 ')'
             )
 
+        self.previous_author = None
+
     @commands.command(pass_context=True, no_pm=True)
     async def rating(self, ctx, user: discord.Member=None):
         if user is None:
             await self.bot.say('Please actually provide a user you bot.')
             return
+        if get_user_dbid(user.id) is None:
+            await self.bot.say('{} hasn\'t been rated'.format(user.mention))
+            return
         good, bad = get_user_rating(user.id)
-        await self.bot.say('User {} has a score of {}  ({}{}{})'.format(
+        await self.bot.say('User {} has a score of {} ({}{}{})'.format(
                             user.mention,
                             good - bad,
                             good,
@@ -82,14 +87,18 @@ def setup(bot):
     bot.add_cog(n)
 
     async def goodbot(message):
-        if bot.user.id == message.author.id or message.content.startswith('.'):
+        if ((bot.user.id == message.author.id) or (n.previous_author is None)):
             return
+
         clean_message = message.clean_content.lower()
+
         rating = None
         if 'good bot' in clean_message:
             rating = (1, 0)
         elif 'bad bot' in clean_message:
             rating = (0, 1)
+        else:
+            n.previous_author = message.author.id
 
         if rating is not None:
             con = sq.connect(RATINGSFILE)
