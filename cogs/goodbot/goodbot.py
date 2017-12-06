@@ -29,7 +29,7 @@ def get_user_dbid(userid):
     return userid
 
 
-def get_user_rating(userid)
+def get_user_rating(userid):
     con = sq.connect(RATINGSFILE)
     c = con.cursor()
 
