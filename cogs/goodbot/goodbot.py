@@ -90,6 +90,8 @@ def setup(bot):
         if ((bot.user.id == message.author.id) or (n.previous_author is None)):
             return
 
+        print(n.previous_author)
+
         clean_message = message.clean_content.lower()
 
         rating = None
