@@ -19,9 +19,11 @@ def user_exists(userid, cursor=None):
     else:
         c = cursor
 
+    print(userid)
     c.execute('SELECT * FROM ratings WHERE userid=?', (userid,))
 
     results = c.fetchall()
+    print(results)
 
     exists = False
 
@@ -41,11 +43,9 @@ def get_user_rating(userid, cursor=None):
     else:
         c = cursor
 
-    print(userid)
     c.execute('SELECT good, bad FROM ratings WHERE userid=?', (userid,))
 
     results = c.fetchall()
-    print(results)
 
     rating = None
 
@@ -73,6 +73,7 @@ class GoodBot:
                     'bad INT'
                 ')'
             )
+            con.commit()
 
         self.previous_author = None
 
@@ -118,12 +119,13 @@ def setup(bot):
             if user_exists(message.author.id):
                 c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
                           (message.author.id, *rating))
+                con.commit()
             else:
                 oldgood, oldbad = get_user_rating(message.author.id, cursor=c)
                 good, bad = (oldgood + rating[0],
                              oldbad + rating[1])
                 c.execute('UPDATE ratings SET good=?, bad=? WHERE id=?', (good, bad, userid))
-            con.commit()
+                con.commit()
             con.close()
 
     bot.add_listener(goodbot, 'on_message')
