@@ -107,7 +107,7 @@ class GoodBot:
                     bad,
                     good + bad) for userid, good, bad in results]
         results.sort(key=lambda tup: -tup[1])
-        results = [' - '.join([str(_) for _ in row]) for row in results]
+        results = ['  '.join([str(_) for _ in row]) for row in results]
         scores = '\n'.join(results)
         await self.bot.say('```\nScores\n===========\n{}```'.format(scores))
         con.close()
