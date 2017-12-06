@@ -12,9 +12,12 @@ import pathlib
 RATINGSFILE = os.path.join(str(pathlib.Path.home()), 'bots.db')
 
 
-def get_user_dbid(userid):
-    con = sq.connect(RATINGSFILE)
-    c = con.cursor()
+def get_user_dbid(userid, cursor=None):
+    if cursor is None:
+        con = sq.connect(RATINGSFILE)
+        c = con.cursor()
+    else:
+        c = cursor
 
     c.execute('SELECT id FROM ratings WHERE userid=?', (userid,))
 
@@ -25,13 +28,18 @@ def get_user_dbid(userid):
     if len(results) != 0:
         userid = results[0][0]
 
-    con.close()
+    if cursor is None:
+        con.close()
+
     return userid
 
 
-def get_user_rating(userid):
-    con = sq.connect(RATINGSFILE)
-    c = con.cursor()
+def get_user_rating(userid, cursor=None):
+    if cursor is None:
+        con = sq.connect(RATINGSFILE)
+        c = con.cursor()
+    else:
+        c = cursor
 
     c.execute('SELECT good, bad FROM ratings WHERE userid=?', (userid,))
 
@@ -42,7 +50,9 @@ def get_user_rating(userid):
     if len(results) != 0:
         rating = results[0]
 
-    con.close()
+    if cursor is None:
+        con.close()
+
     return userid
 
 
@@ -92,8 +102,6 @@ def setup(bot):
 
         clean_message = message.clean_content.lower()
 
-        print(clean_message)
-
         rating = None
         if 'good bot' in clean_message:
             rating = (1, 0)
@@ -105,12 +113,12 @@ def setup(bot):
         if ((rating is not None) and (n.previous_author is not None)):
             con = sq.connect(RATINGSFILE)
             c = con.cursor()
-            userid = get_user_dbid(message.author.id)
+            userid = get_user_dbid(message.author.id, cursor=c)
             if userid is None:
                 c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
                           (message.author.id, *rating))
             else:
-                old_rating = get_user_rating(message.author.id)
+                old_rating = get_user_rating(message.author.id, cursor=c)
                 good, bad = (old_rating[0] + rating[0],
                              old_rating[1] + rating[1])
                 c.execute('UPDATE ratings SET good=?, bad=? WHERE id=?', (good, bad, userid))
