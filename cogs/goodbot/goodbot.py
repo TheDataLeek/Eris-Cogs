@@ -101,7 +101,7 @@ class GoodBot:
         c = con.cursor()
         c.execute('SELECT userid, good, bad from ratings')
         results = c.fetchall()
-        results = [(ctx.server.get_member(userid).mention,
+        results = [(ctx.message.server.get_member(userid).mention,
                     good - bad,
                     good,
                     bad,
