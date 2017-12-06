@@ -19,9 +19,13 @@ def get_user_dbid(userid, cursor=None):
     else:
         c = cursor
 
+    print('-------------------------------')
+    print(userid)
     c.execute('SELECT id FROM ratings WHERE userid=?', (userid,))
 
     results = c.fetchall()
+    print(results)
+    print('-------------------------------')
 
     userid = None
 
