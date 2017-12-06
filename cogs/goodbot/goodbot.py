@@ -102,12 +102,12 @@ class GoodBot:
         c.execute('SELECT userid, good, bad from ratings')
         results = c.fetchall()
         results = [(ctx.message.server.get_member(userid).mention,
-                    str(good - bad),
-                    str(good),
-                    str(bad),
-                    str(good + bad)) for userid, good, bad in results]
+                    good - bad,
+                    good,
+                    bad,
+                    good + bad) for userid, good, bad in results]
         results.sort(key=lambda tup: -tup[1])
-        results = [' - '.join(row) for row in results]
+        results = [' - '.join([str(_) for _ in row]) for row in results]
         scores = '\n'.join(results)
         await self.bot.say('```Scores\n===========\n{}```'.format(scores))
         con.close()
