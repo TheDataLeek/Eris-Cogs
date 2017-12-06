@@ -95,6 +95,12 @@ class GoodBot:
                             good + bad
             ))
 
+    @commands.command(pass_context=True)
+    async def see_previous(self, ctx):
+        if ctx.message.author.id != '142431859148718080':
+            return
+        await self.bot.say(str(self.previous_author))
+
 
 def setup(bot):
     n = GoodBot(bot)
