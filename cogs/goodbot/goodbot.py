@@ -125,7 +125,9 @@ def setup(bot):
                 n.previous_author[server] = dict()
             n.previous_author[server][channel] = prev_author
 
-        if ((rating is not None) and (n.previous_author[server].get(channel) is not None)):
+        if ((rating is not None) and
+            (n.previous_author[server].get(channel) is not None) and
+            (n.previous_author[server][channel] != message.author.id)):
             con = sq.connect(RATINGSFILE)
             c = con.cursor()
             if not user_exists(n.previous_author[server][channel]):
