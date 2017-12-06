@@ -77,6 +77,9 @@ class GoodBot:
 
     @commands.command(pass_context=True, no_pm=True)
     async def rating(self, ctx, user: discord.Member=None):
+        """
+        Displays a user rating
+        """
         if user is None:
             await self.bot.say('Please actually provide a user you bot.')
             return
