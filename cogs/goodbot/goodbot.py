@@ -114,15 +114,16 @@ def setup(bot):
         if ((rating is not None) and (n.previous_author is not None)):
             con = sq.connect(RATINGSFILE)
             c = con.cursor()
-            if not user_exists(message.author.id):
+            if not user_exists(n.previous_author):
                 c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
-                          (message.author.id, *rating))
+                          (n.previous_author, *rating))
                 con.commit()
             else:
-                oldgood, oldbad = get_user_rating(message.author.id, cursor=c)
+                oldgood, oldbad = get_user_rating(n.previous_author, cursor=c)
                 good, bad = (oldgood + rating[0],
                              oldbad + rating[1])
-                c.execute('UPDATE ratings SET good=?, bad=? WHERE id=?', (good, bad, userid))
+                c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
+                          (good, bad, n.previous_author))
                 con.commit()
             con.close()
 
