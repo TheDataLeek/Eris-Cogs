@@ -56,7 +56,7 @@ class GoodBot:
             con.execute(
                 'CREATE TABLE IF NOT EXISTS ratings('
                     'id INT PRIMARY KEY,'
-                    'userid TEXT,'
+                    'userid TEXT UNIQUE,'
                     'good INT,'
                     'bad INT'
                 ')'
@@ -90,9 +90,9 @@ def setup(bot):
         if bot.user.id == message.author.id:
             return
 
-        print(n.previous_author)
-
         clean_message = message.clean_content.lower()
+
+        print(clean_message)
 
         rating = None
         if 'good bot' in clean_message:
