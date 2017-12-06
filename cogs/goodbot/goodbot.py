@@ -101,7 +101,7 @@ class GoodBot:
         c = con.cursor()
         c.execute('SELECT userid, good, bad from ratings')
         results = c.fetchall()
-        results = [(ctx.message.server.get_member(userid).mention,
+        results = [(ctx.message.server.get_member(userid).name,
                     good - bad,
                     good,
                     bad,
@@ -109,7 +109,7 @@ class GoodBot:
         results.sort(key=lambda tup: -tup[1])
         results = [' - '.join([str(_) for _ in row]) for row in results]
         scores = '\n'.join(results)
-        await self.bot.say('```Scores\n===========\n{}```'.format(scores))
+        await self.bot.say('```\nScores\n===========\n{}```'.format(scores))
         con.close()
 
     @commands.command(pass_context=True)
