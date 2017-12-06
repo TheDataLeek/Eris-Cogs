@@ -80,7 +80,7 @@ class GoodBot:
         if user is None:
             await self.bot.say('Please actually provide a user you bot.')
             return
-        if user_exists(user.id):
+        if not user_exists(user.id):
             await self.bot.say('{} hasn\'t been rated'.format(user.mention))
             return
         good, bad = get_user_rating(user.id)
