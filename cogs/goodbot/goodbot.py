@@ -53,7 +53,7 @@ def get_user_rating(userid, cursor=None):
     if cursor is None:
         con.close()
 
-    return userid
+    return rating
 
 
 
