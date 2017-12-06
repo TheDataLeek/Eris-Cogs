@@ -96,6 +96,23 @@ class GoodBot:
             ))
 
     @commands.command(pass_context=True)
+    async def botleaderboard(self, ctx):
+        con = sq.connect(RATINGSFILE)
+        c = con.cursor()
+        c.execute('SELECT userid, good, bad from ratings')
+        results = c.fetchall()
+        results = [(ctx.server.get_member(userid).mention,
+                    good - bad,
+                    good,
+                    bad,
+                    good + bad) for userid, good, bad in results]
+        results.sort(key=lambda tup: -tup[1])
+        results = [' - '.join(row) for row in results]
+        scores = '\n'.join(results)
+        await self.bot.say('```Scores\n===========\n{}```'.format(scores))
+        con.close()
+
+    @commands.command(pass_context=True)
     async def see_previous(self, ctx):
         if ctx.message.author.id != '142431859148718080':
             return
