@@ -87,7 +87,7 @@ def setup(bot):
     bot.add_cog(n)
 
     async def goodbot(message):
-        if ((bot.user.id == message.author.id) or (n.previous_author is None)):
+        if bot.user.id == message.author.id:
             return
 
         print(n.previous_author)
@@ -102,7 +102,7 @@ def setup(bot):
         else:
             n.previous_author = message.author.id
 
-        if rating is not None:
+        if ((rating is not None) and (n.previous_author is not None)):
             con = sq.connect(RATINGSFILE)
             c = con.cursor()
             userid = get_user_dbid(message.author.id)
