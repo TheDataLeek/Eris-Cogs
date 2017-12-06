@@ -12,30 +12,26 @@ import pathlib
 RATINGSFILE = os.path.join(str(pathlib.Path.home()), 'bots.db')
 
 
-def get_user_dbid(userid, cursor=None):
+def user_exists(userid, cursor=None):
     if cursor is None:
         con = sq.connect(RATINGSFILE)
         c = con.cursor()
     else:
         c = cursor
 
-    print('-------------------------------')
-    print(userid)
-    c.execute('SELECT id FROM ratings WHERE userid=?', (userid,))
+    c.execute('SELECT * FROM ratings WHERE userid=?', (userid,))
 
     results = c.fetchall()
-    print(results)
-    print('-------------------------------')
 
-    userid = None
+    exists = False
 
     if len(results) != 0:
-        userid = results[0][0]
+        exists = True
 
     if cursor is None:
         con.close()
 
-    return userid
+    return exists
 
 
 def get_user_rating(userid, cursor=None):
@@ -83,7 +79,7 @@ class GoodBot:
         if user is None:
             await self.bot.say('Please actually provide a user you bot.')
             return
-        if get_user_dbid(user.id) is None:
+        if user_exists(user.id):
             await self.bot.say('{} hasn\'t been rated'.format(user.mention))
             return
         good, bad = get_user_rating(user.id)
@@ -117,8 +113,7 @@ def setup(bot):
         if ((rating is not None) and (n.previous_author is not None)):
             con = sq.connect(RATINGSFILE)
             c = con.cursor()
-            userid = get_user_dbid(message.author.id, cursor=c)
-            if userid is None:
+            if user_exists(message.author.id):
                 c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
                           (message.author.id, *rating))
             else:
