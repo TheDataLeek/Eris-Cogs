@@ -170,6 +170,11 @@ def setup(bot):
 
     bot.add_listener(goodbot, 'on_message')
 
+    async def test(*args):
+        print(args)
+
+    bot.add_listener(test, 'on_reaction')
+
 
 if __name__ == '__main__':
     GoodBot(None)
