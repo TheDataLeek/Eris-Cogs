@@ -120,7 +120,7 @@ class GoodBot:
             return
         resolved_previous = await {
             await self.bot.get_guild(server_id).name: {
-                await self.bot.get_channel(channel_id).name: (await self.bot.get_user_info(user_id)).name
+                await self.bot.get_channel(channel_id).name: None
                 for channel_id, user_id
                 in channels.items()
             }
