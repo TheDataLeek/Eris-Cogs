@@ -118,9 +118,9 @@ class GoodBot:
     async def see_previous(self, ctx):
         if ctx.message.author.id != '142431859148718080':
             return
-        resolved_previous = {
-            self.bot.get_guild(server_id).name: {
-                self.bot.get_channel(channel_id).name: await self.bot.get_user_info(user_id).name
+        resolved_previous = await {
+            await self.bot.get_guild(server_id).name: {
+                await self.bot.get_channel(channel_id).name: await self.bot.get_user_info(user_id).name
                 for channel_id, user_id
                 in channels.items()
             }
