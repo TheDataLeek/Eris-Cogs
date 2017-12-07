@@ -6,6 +6,8 @@ from discord.ext import commands
 import discord.utils as disc_util
 import sqlite3 as sq
 
+import pprint as pp
+
 import pathlib
 
 
@@ -116,7 +118,17 @@ class GoodBot:
     async def see_previous(self, ctx):
         if ctx.message.author.id != '142431859148718080':
             return
-        await self.bot.say(str(self.previous_author))
+        resolved_previous = {
+            self.bot.get_guild(server_id).name: {
+                self.bot.get_channel(channel_id).name: self.bot.get_user(user_id).name
+                for channel_id, user_id
+                in channels
+            }
+            for server_id, channels
+            in self.previous_author.items()
+        }
+        pretty_version = pp.pformat(resolved_previous)
+        await self.bot.say('```{}```'.format(pretty_version))
 
 
 def setup(bot):
