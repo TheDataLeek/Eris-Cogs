@@ -89,12 +89,9 @@ class GoodBot:
             await self.bot.say('{} hasn\'t been rated'.format(user.mention))
             return
         good, bad = get_user_rating(user.id)
-        await self.bot.say('User {} has a score of {} ({}/{}/{})'.format(
+        await self.bot.say('User {} has a score of {}'.format(
                             user.mention,
-                            good - bad,
-                            good,
-                            bad,
-                            good + bad
+                            good - bad
             ))
 
     @commands.command(pass_context=True)
@@ -105,9 +102,7 @@ class GoodBot:
         results = c.fetchall()
         results = [(ctx.message.server.get_member(userid).name,
                     good - bad,
-                    good,
-                    bad,
-                    good + bad) for userid, good, bad in results]
+                   ) for userid, good, bad in results]
         results.sort(key=lambda tup: -tup[1])
         results = ['  '.join([str(_) for _ in row]) for row in results]
         scores = '\n'.join(results)
