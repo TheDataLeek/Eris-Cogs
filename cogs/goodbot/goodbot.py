@@ -120,7 +120,7 @@ class GoodBot:
             return
         resolved_previous = {
             self.bot.get_guild(server_id).name: {
-                self.bot.get_channel(channel_id).name: self.bot.get_user(user_id).name
+                self.bot.get_channel(channel_id).name: self.bot.get_user_info(user_id).name
                 for channel_id, user_id
                 in channels.items()
             }
