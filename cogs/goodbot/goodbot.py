@@ -173,7 +173,7 @@ def setup(bot):
     async def test(*args):
         print(args)
 
-    bot.add_listener(test, 'on_reaction')
+    bot.add_listener(test, 'on_reaction_add')
 
 
 if __name__ == '__main__':
