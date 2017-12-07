@@ -122,7 +122,7 @@ class GoodBot:
             self.bot.get_guild(server_id).name: {
                 self.bot.get_channel(channel_id).name: self.bot.get_user(user_id).name
                 for channel_id, user_id
-                in channels
+                in channels.items()
             }
             for server_id, channels
             in self.previous_author.items()
