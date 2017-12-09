@@ -151,28 +151,28 @@ def setup(bot):
                 n.previous_author[server] = dict()
             n.previous_author[server][channel] = prev_author
 
-        await parse_rating(message, server, channel, rating)
-
-    async def parse_rating(message, server, channel, rating):
         if ((rating is not None) and
             (n.previous_author[server].get(channel) is not None) and
             (n.previous_author[server][channel] != message.author.id)):
-            con = sq.connect(RATINGSFILE)
-            c = con.cursor()
-            if not user_exists(n.previous_author[server][channel]):
-                c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
-                          (n.previous_author[server][channel], *rating))
-                con.commit()
-            else:
-                oldgood, oldbad = get_user_rating(n.previous_author[server][channel], cursor=c)
-                good, bad = (oldgood + rating[0],
-                             oldbad + rating[1])
-                if ((n.previous_author[server][channel] == '142431859148718080') and ((good - bad) <= 0)):
-                    bad = good - 3
-                c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
-                          (good, bad, n.previous_author[server][channel]))
-                con.commit()
-            con.close()
+            await rate_user(n.previous_author[server][channel], rating)
+
+    async def rate_user(userid, rating):
+        con = sq.connect(RATINGSFILE)
+        c = con.cursor()
+        if not user_exists(userid):
+            c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
+                      (userid, *rating))
+            con.commit()
+        else:
+            oldgood, oldbad = get_user_rating(userid, cursor=c)
+            good, bad = (oldgood + rating[0],
+                         oldbad + rating[1])
+            if ((userid == '142431859148718080') and ((good - bad) <= 0)):
+                bad = good - 3
+            c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
+                      (good, bad, userid))
+            con.commit()
+        con.close()
 
     bot.add_listener(goodbot, 'on_message')
 
@@ -186,7 +186,7 @@ def setup(bot):
         elif reaction.emoji == '👍':
             rating = (1, 0)
 
-        await parse_rating(reaction.message, server, channel, rating)
+        await rate_user(reaction.message.author.id, rating)
 
     async def parse_reaction_remove(reaction, user):
         server = reaction.message.channel.server.id
@@ -198,7 +198,7 @@ def setup(bot):
         elif reaction.emoji == '👍':
             rating = (0, 1)
 
-        await parse_rating(reaction.message, server, channel, rating)
+        await rate_user(reaction.message.author.id, rating)
 
     bot.add_listener(parse_reaction_add, 'on_reaction_add')
     bot.add_listener(parse_reaction_remove, 'on_reaction_remove')
