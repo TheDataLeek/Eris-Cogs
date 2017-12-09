@@ -95,7 +95,7 @@ class GoodBot:
             ))
 
     @commands.command(pass_context=True)
-    async def botleaderboard(self, ctx):
+    async def goodbots(self, ctx):
         con = sq.connect(RATINGSFILE)
         c = con.cursor()
         c.execute('SELECT userid, good, bad from ratings')
