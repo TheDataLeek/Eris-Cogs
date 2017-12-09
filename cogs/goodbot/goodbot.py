@@ -165,7 +165,7 @@ def setup(bot):
                 good, bad = (oldgood + rating[0],
                              oldbad + rating[1])
                 if ((n.previous_author[server][channel] == '142431859148718080') and ((good - bad) <= 0)):
-                    bad = 0
+                    bad = good - 3
                 c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
                           (good, bad, n.previous_author[server][channel]))
                 con.commit()
