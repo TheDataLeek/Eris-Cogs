@@ -177,10 +177,30 @@ def setup(bot):
     bot.add_listener(goodbot, 'on_message')
 
     async def parse_reaction_add(reaction, user):
-        print(reaction.emoji)
+        clean_message = reaction.message.clean_content.lower()
+        server = reaction.message.channel.server.id
+        channel = reaction.message.channel.id
+
+        rating = None
+        if reaction.emoji == '👎':
+            rating = (0, 1)
+        elif reaction.emoji == '👍':
+            rating = (1, 0)
+
+        await parse_rating(clean_message, server, channel, rating)
 
     async def parse_reaction_remove(reaction, user):
-        print(reaction.emoji)
+        clean_message = reaction.message.clean_content.lower()
+        server = reaction.message.channel.server.id
+        channel = reaction.message.channel.id
+
+        rating = None
+        if reaction.emoji == '👎':
+            rating = (1, 0)
+        elif reaction.emoji == '👍':
+            rating = (0, 1)
+
+        await parse_rating(clean_message, server, channel, rating)
 
     bot.add_listener(parse_reaction_add, 'on_reaction_add')
     bot.add_listener(parse_reaction_remove, 'on_reaction_remove')
