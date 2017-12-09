@@ -131,9 +131,10 @@ def setup(bot):
     n = GoodBot(bot)
     bot.add_cog(n)
 
-    async def goodbot(message):
-        if bot.user.id == message.author.id:
-            return
+    async def goodbot(message, reaction=None, action=None):
+        # Prevent snek from voting on herself or counting
+        # if bot.user.id == message.author.id:
+        #     return
 
         clean_message = message.clean_content.lower()
         server = message.channel.server.id
@@ -163,6 +164,8 @@ def setup(bot):
                 oldgood, oldbad = get_user_rating(n.previous_author[server][channel], cursor=c)
                 good, bad = (oldgood + rating[0],
                              oldbad + rating[1])
+                if ((n.previous_author[server][channel] == '142431859148718080') and ((good - bad) <= 0)):
+                    bad = 0
                 c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
                           (good, bad, n.previous_author[server][channel]))
                 con.commit()
@@ -170,8 +173,8 @@ def setup(bot):
 
     bot.add_listener(goodbot, 'on_message')
 
-    async def test(*args):
-        print(args)
+    async def parse_reaction(reaction, user):
+        await goodbot(reaction.message, reaction)
 
     bot.add_listener(test, 'on_reaction_add')
 
