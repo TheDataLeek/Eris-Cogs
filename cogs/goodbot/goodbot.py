@@ -151,9 +151,9 @@ def setup(bot):
                 n.previous_author[server] = dict()
             n.previous_author[server][channel] = prev_author
 
-        await parse_rating(clean_message, server, channel, rating)
+        await parse_rating(message, server, channel, rating)
 
-    async def parse_rating(clean_message, server, channel, rating):
+    async def parse_rating(message, server, channel, rating):
         if ((rating is not None) and
             (n.previous_author[server].get(channel) is not None) and
             (n.previous_author[server][channel] != message.author.id)):
@@ -177,7 +177,6 @@ def setup(bot):
     bot.add_listener(goodbot, 'on_message')
 
     async def parse_reaction_add(reaction, user):
-        clean_message = reaction.message.clean_content.lower()
         server = reaction.message.channel.server.id
         channel = reaction.message.channel.id
 
@@ -187,10 +186,9 @@ def setup(bot):
         elif reaction.emoji == '👍':
             rating = (1, 0)
 
-        await parse_rating(clean_message, server, channel, rating)
+        await parse_rating(reaction.message, server, channel, rating)
 
     async def parse_reaction_remove(reaction, user):
-        clean_message = reaction.message.clean_content.lower()
         server = reaction.message.channel.server.id
         channel = reaction.message.channel.id
 
@@ -200,7 +198,7 @@ def setup(bot):
         elif reaction.emoji == '👍':
             rating = (0, 1)
 
-        await parse_rating(clean_message, server, channel, rating)
+        await parse_rating(reaction.message, server, channel, rating)
 
     bot.add_listener(parse_reaction_add, 'on_reaction_add')
     bot.add_listener(parse_reaction_remove, 'on_reaction_remove')
