@@ -151,6 +151,9 @@ def setup(bot):
                 n.previous_author[server] = dict()
             n.previous_author[server][channel] = prev_author
 
+        await parse_rating(clean_message, server, channel, rating)
+
+    async def parse_rating(clean_message, server, channel, rating):
         if ((rating is not None) and
             (n.previous_author[server].get(channel) is not None) and
             (n.previous_author[server][channel] != message.author.id)):
@@ -173,7 +176,11 @@ def setup(bot):
 
     bot.add_listener(goodbot, 'on_message')
 
-#     async def parse_reaction(reaction, user):
-#         await goodbot(reaction.message, reaction)
+    async def parse_reaction_add(reaction, user):
+        print(reaction.emoji)
 
-    # bot.add_listener(test, 'on_reaction_add')
+    async def parse_reaction_remove(reaction, user):
+        print(reaction.emoji)
+
+    bot.add_listener(parse_reaction_add, 'on_reaction_add')
+    bot.add_listener(parse_reaction_remove, 'on_reaction_remove')
