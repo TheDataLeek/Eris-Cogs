@@ -173,11 +173,7 @@ def setup(bot):
 
     bot.add_listener(goodbot, 'on_message')
 
-    async def parse_reaction(reaction, user):
-        await goodbot(reaction.message, reaction)
+#     async def parse_reaction(reaction, user):
+#         await goodbot(reaction.message, reaction)
 
-    bot.add_listener(test, 'on_reaction_add')
-
-
-if __name__ == '__main__':
-    GoodBot(None)
+    # bot.add_listener(test, 'on_reaction_add')
