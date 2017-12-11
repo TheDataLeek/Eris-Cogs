@@ -517,10 +517,6 @@ def setup(bot):
                 await bot.send_message(message.author, new_message)
             return
 
-        if ((message.author.id == '142431859148718080') and (random.random() < 0.1)):
-            await bot.send_message(message.channel, 'good bot')
-            return
-
         message_channel = message.channel.name.lower()
         if reduce(
                 lambda acc, n: acc or (n == message_channel),
