@@ -136,6 +136,10 @@ def setup(bot):
         # if bot.user.id == message.author.id:
         #     return
 
+        # Prevent acting on DM's
+        if message.channel.name is None:
+            return
+
         clean_message = message.clean_content.lower()
         server = message.channel.server.id
         channel = message.channel.id
@@ -177,6 +181,10 @@ def setup(bot):
     bot.add_listener(goodbot, 'on_message')
 
     async def parse_reaction_add(reaction, user):
+        # Prevent acting on DM's
+        if reaction.message.channel.name is None:
+            return
+
         server = reaction.message.channel.server.id
         channel = reaction.message.channel.id
 
@@ -189,6 +197,10 @@ def setup(bot):
         await rate_user(reaction.message.author.id, rating)
 
     async def parse_reaction_remove(reaction, user):
+        # Prevent acting on DM's
+        if reaction.message.channel.name is None:
+            return
+
         server = reaction.message.channel.server.id
         channel = reaction.message.channel.id
 
