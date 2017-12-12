@@ -525,7 +525,7 @@ def setup(bot):
             return
 
         # spoopy factor
-        if random.random() < 0.01:
+        if random.random() < 0.001:
             realname = get_realname(message.author.id)
             if realname is None:
                 formatname = message.author.mention
