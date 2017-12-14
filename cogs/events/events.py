@@ -574,7 +574,7 @@ def setup(bot):
             await bot.send_message(message.channel, new_message)
 
         elif 'zeb' in clean_message:
-            new_message = await bot.send_message(message.channel, 'Daisuki, Zeb-kun!')
+            new_message = await bot.send_message(message.channel, 'RIP Zeb-kun!')
             await bot.add_reaction(new_message, '🐍')
             await bot.add_reaction(new_message, '🍆')
             await bot.add_reaction(new_message, '💦')
