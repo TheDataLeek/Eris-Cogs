@@ -191,11 +191,15 @@ def setup(bot):
         rating = None
         if reaction.emoji == '👎':
             rating = (0, 1)
-            if sum([1 for x in reaction.message.reactions if x.emoji == '👎']) > 5:
+            total_downvotes = sum(1 for x in reaction.message.reactions if x.emoji == '👎')
+            print(total_downvotes)
+            if total_downvotes >= 5:
                 await bot.delete_message(reaction.message)
         elif reaction.emoji == '👍':
             rating = (1, 0)
-            if sum([1 for x in reaction.message.reactions if x.emoji == '👍']) > 5:
+            total_upvotes = sum(1 for x in reaction.message.reactions if x.emoji == '👍')
+            print(total_upvotes)
+            if total_upvotes >= 5:
                 await bot.send_message(reaction.message.channel,
                                        '{} IS A GOOD BOT'.format(reaction.message.author.mention))
 
