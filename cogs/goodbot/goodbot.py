@@ -76,6 +76,7 @@ class GoodBot:
             con.commit()
 
         self.previous_author = dict()
+        self.noticed = set()
 
     @commands.command(pass_context=True, no_pm=True)
     async def rating(self, ctx, user: discord.Member=None):
@@ -195,9 +196,10 @@ def setup(bot):
                 await bot.delete_message(reaction.message)
         elif reaction.emoji == '👍':
             rating = (1, 0)
-            if reaction.count >= 5:
+            if ((reaction.count >= 5) and (reaction.message.id not in n.noticed)):
                 await bot.send_message(reaction.message.channel,
                                        '{} IS A GOOD BOT'.format(reaction.message.author.mention))
+                n.noticed.add(reaction.message.id)
 
         await rate_user(reaction.message.author.id, rating)
 
