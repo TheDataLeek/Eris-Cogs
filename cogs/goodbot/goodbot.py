@@ -191,7 +191,7 @@ def setup(bot):
         rating = None
         if reaction.emoji == '👎':
             rating = (0, 1)
-            if reaction.count >= 5:
+            if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
                 await bot.delete_message(reaction.message)
         elif reaction.emoji == '👍':
             rating = (1, 0)
