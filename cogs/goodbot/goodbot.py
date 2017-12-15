@@ -196,7 +196,8 @@ def setup(bot):
         elif reaction.emoji == '👍':
             rating = (1, 0)
             if sum([1 for x in reaction.message.reactions if x.emoji == '👍']) > 5:
-                await bot.send_message('{} IS A GOOD BOT'.format(reaction.message.author.mention))
+                await bot.send_message(reaction.message.channel,
+                                       '{} IS A GOOD BOT'.format(reaction.message.author.mention))
 
         await rate_user(reaction.message.author.id, rating)
 
