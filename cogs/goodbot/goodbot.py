@@ -51,6 +51,11 @@ def get_user_rating(userid, cursor=None):
 
     if len(results) != 0:
         rating = (results[0][0], results[0][1])
+    else:
+        # Add if doesn't exist, hopefully prevent crashes
+        c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
+                  (userid, 0, 0))
+        con.commit()
 
     if cursor is None:
         con.close()
