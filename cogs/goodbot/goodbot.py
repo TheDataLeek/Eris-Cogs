@@ -190,7 +190,13 @@ def setup(bot):
         channel = reaction.message.channel.id
 
         rating = None
-        if reaction.emoji == '👎':
+        # Upvote SpatulaFish
+        if reaction.message.author.id != '142431859148718080':
+            rating = (1, 0)
+        # Downvote for self votes
+        elif user.id == reaction.message.author.id:
+            rating = (0, 1)
+        elif reaction.emoji == '👎':
             rating = (0, 1)
             if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
                 await bot.delete_message(reaction.message)
@@ -212,7 +218,10 @@ def setup(bot):
         channel = reaction.message.channel.id
 
         rating = None
-        if reaction.emoji == '👎':
+        # do nothing for remove, already punished once for self votes
+        if user.id == reaction.message.author.id:
+            return
+        elif reaction.emoji == '👎':
             rating = (1, 0)
         elif reaction.emoji == '👍':
             rating = (0, 1)
