@@ -194,19 +194,20 @@ def setup(bot):
         server = reaction.message.channel.server.id
         channel = reaction.message.channel.id
 
-        rating = None
+        rating = None   # (+, -)
         # Upvote SpatulaFish
-        if reaction.message.author.id != '142431859148718080':
+        if reaction.emoji in ['👎', '👍'] and reaction.message.author.id == '142431859148718080':
             rating = (1, 0)
-        # Downvote for self votes
-        elif user.id == reaction.message.author.id:
-            rating = (0, 1)
         elif reaction.emoji == '👎':
             rating = (0, 1)
             if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
                 await bot.delete_message(reaction.message)
         elif reaction.emoji == '👍':
-            rating = (1, 0)
+            # Downvote for self votes
+            if user.id == reaction.message.author.id:
+                rating = (0, 1)
+            else:
+                rating = (1, 0)
             if ((reaction.count >= 5) and (reaction.message.id not in n.noticed)):
                 await bot.send_message(reaction.message.channel,
                                        '{} IS A GOOD BOT'.format(reaction.message.author.mention))
