@@ -492,6 +492,13 @@ class Spoop(object):
 
 def setup(bot):
     async def message_events(message):
+        clean_message = message.clean_content.lower()
+
+        if 'zeb' in clean_message:
+            await self.bot.delete_message(message)
+            await bot.send_message(message.channel, 'what was that?')
+            return
+
         # DO NOT RESPOND TO SELF MESSAGES
         if bot.user.id == message.author.id or message.content.startswith('.'):
             return
@@ -546,12 +553,6 @@ def setup(bot):
             return
 
         # now lets check for contents
-
-        clean_message = message.clean_content.lower()
-        if 'zeb' in clean_message:
-            await self.bot.delete_message(message)
-            await bot.send_message(message.channel, 'what was that?')
-            return
 
         if 'praise' in clean_message or 'pray' in clean_message:
             root_dir = './data/events/pray'
