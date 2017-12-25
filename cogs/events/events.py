@@ -562,7 +562,11 @@ def setup(bot):
         if random.random() <= 0.5:
             return
 
-        if 'thank' in clean_message:
+        if random.random() <= 0.1:
+            with open('./data/e7sgd020ew501.png', 'rb') as fobj:
+                new_msg = await bot.send_file(message.channel, fobj)
+            return
+        elif 'thank' in clean_message:
             new_message = "you're welcome"
             if random.random() < 0.5:
                 realname = get_realname(message.author.id)
