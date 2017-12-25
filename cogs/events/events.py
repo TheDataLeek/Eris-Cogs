@@ -1,4 +1,5 @@
 import os
+import re
 import discord
 from discord.ext import commands
 import random
@@ -547,6 +548,9 @@ def setup(bot):
         # now lets check for contents
 
         clean_message = message.clean_content.lower()
+        if re.match(r'.*z(\s)?e(\s)?b.*', clean_message) is not None:
+            await self.bot.delete_message(message)
+            return
 
         if 'praise' in clean_message or 'pray' in clean_message:
             root_dir = './data/events/pray'
@@ -576,12 +580,6 @@ def setup(bot):
                     formatname = realname
                 new_message += " {}".format(formatname)
             await bot.send_message(message.channel, new_message)
-
-        elif 'zeb' in clean_message:
-            new_message = await bot.send_message(message.channel, 'RIP Zeb-kun!')
-            await bot.add_reaction(new_message, '🐍')
-            await bot.add_reaction(new_message, '🍆')
-            await bot.add_reaction(new_message, '💦')
 
         elif 'snek' in clean_message:
             await bot.send_message(message.channel, ':snake: ~ !! I :black_heart: you senpai !! ~ :snake:')
