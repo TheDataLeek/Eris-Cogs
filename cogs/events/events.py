@@ -548,8 +548,9 @@ def setup(bot):
         # now lets check for contents
 
         clean_message = message.clean_content.lower()
-        if re.match(r'.*z(\s)?e(\s)?b.*', clean_message) is not None:
+        if 'zeb' in clean_message:
             await self.bot.delete_message(message)
+            await bot.send_message(message.channel, 'what was that?')
             return
 
         if 'praise' in clean_message or 'pray' in clean_message:
