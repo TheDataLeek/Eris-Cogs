@@ -494,7 +494,7 @@ def setup(bot):
     async def message_events(message):
         clean_message = message.clean_content.lower()
 
-        if 'zeb' in clean_message:
+        if re.search('z+ *e+ *b+', clean_message) is not None:
             await bot.delete_message(message)
             await bot.send_message(message.channel, 'what was that?')
             return
