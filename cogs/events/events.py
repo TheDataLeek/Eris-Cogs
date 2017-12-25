@@ -495,7 +495,7 @@ def setup(bot):
         clean_message = message.clean_content.lower()
 
         if 'zeb' in clean_message:
-            await self.bot.delete_message(message)
+            await bot.delete_message(message)
             await bot.send_message(message.channel, 'what was that?')
             return
 
