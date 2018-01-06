@@ -447,6 +447,7 @@ yandere = [
 
 # MM Edit: Loads puns.csv and arranges it appropriately
 # Potential issue: filepath may not be correct
+# Credit for most puns: https://onelinefun.com/puns/
 with open('./data/events/puns.csv',newline='') as csvfile:
     # Puns.csv is arranged into two columns titled 'word' and 'response'
     punreader = csv.DictReader(csvfile,delimiter='|')
