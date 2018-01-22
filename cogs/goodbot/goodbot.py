@@ -205,7 +205,7 @@ def setup(bot):
             # MM proposal:
             # Element of randomness: Self downvotes could result in updoot
             if user.id == reaction.message.author.id:
-                if random.random()<0.5:
+                if random.random() < 0.5:
                     rating = (1, 0)
                 else:
                     rating = (0, 1)
@@ -216,9 +216,7 @@ def setup(bot):
             # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
             #     await bot.delete_message(reaction.message)
             if ((reaction.count >= 5) and (reaction.message.id not in n.noticed):
-                await bot.send_message(reaction.message.channel,
-                                    '{} IS A BAD BOT'.format
-                                    (reaction.message.author.mention))
+                await bot.send_message(reaction.message.channel,'{} IS A BAD BOT'.format(reaction.message.author.mention))
                 n.noticed.add(reaction.message.id)
         elif reaction.emoji == '👍':
             # Downvote for self votes
