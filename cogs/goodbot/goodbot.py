@@ -215,7 +215,7 @@ def setup(bot):
             # Just call the poor sod a bad bot
             # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
             #     await bot.delete_message(reaction.message)
-            if ((reaction.count >= 5) and (reaction.message.id not in n.noticed):
+            if ((reaction.count >= 5) and (reaction.message.id not in n.noticed)):
                 await bot.send_message(reaction.message.channel,'{} IS A BAD BOT'.format(reaction.message.author.mention))
                 n.noticed.add(reaction.message.id)
         elif reaction.emoji == '👍':
