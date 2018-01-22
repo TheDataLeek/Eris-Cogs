@@ -9,6 +9,7 @@ import sqlite3 as sq
 import pprint as pp
 
 import pathlib
+import random
 
 
 RATINGSFILE = os.path.join(str(pathlib.Path.home()), 'bots.db')
@@ -177,8 +178,9 @@ def setup(bot):
             oldgood, oldbad = get_user_rating(userid, cursor=c)
             good, bad = (oldgood + rating[0],
                          oldbad + rating[1])
-            if ((userid == '142431859148718080') and ((good - bad) <= 0)):
-                bad = good - 3
+            # MM: You've had your fun
+            # if ((userid == '142431859148718080') and ((good - bad) <= 0)):
+            #     bad = good - 3
             c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
                       (good, bad, userid))
             con.commit()
@@ -195,13 +197,27 @@ def setup(bot):
         channel = reaction.message.channel.id
 
         rating = None   # (+, -)
+        # MM: you've had your fun
         # Upvote SpatulaFish
-        if reaction.emoji in ['👎', '👍'] and reaction.message.author.id == '142431859148718080':
-            rating = (1, 0)
-        elif reaction.emoji == '👎':
-            rating = (0, 1)
-            if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
-                await bot.delete_message(reaction.message)
+        # if reaction.emoji in ['👎', '👍'] and reaction.message.author.id == '142431859148718080':
+        #     rating = (1, 0)
+        if reaction.emoji == '👎':
+            # MM proposal:
+            # Element of randomness: Self downvotes could result in updoot
+            if user.id == reaction.message.author.id:
+                if random.random() < 0.5:
+                    rating = (1, 0)
+                else:
+                    rating = (0, 1)
+            else:
+                rating = (0, 1)
+            # MM proposal:
+            # Just call the poor sod a bad bot
+            # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
+            #     await bot.delete_message(reaction.message)
+            if ((reaction.count >= 5) and (reaction.message.id not in n.noticed):
+                await bot.send_message(reaction.message.channel,'{} IS A BAD BOT'.format(reaction.message.author.mention))
+                n.noticed.add(reaction.message.id)
         elif reaction.emoji == '👍':
             # Downvote for self votes
             if user.id == reaction.message.author.id:
