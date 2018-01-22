@@ -7,6 +7,7 @@ from functools import reduce
 
 import sqlite3
 import pathlib
+import csv
 
 
 WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
@@ -445,6 +446,16 @@ yandere = [
     "from the highest tree. Twinkle twinkle sweetie pie :heart:"
 ]
 
+# MM Edit: Loads puns.csv and arranges it appropriately
+# Potential issue: filepath may not be correct
+# Credit for most puns: https://onelinefun.com/puns/
+with open('./events/data/puns.csv', newline='') as csvfile:
+    # Puns.csv is arranged into two columns titled 'word' and 'response'
+    punreader = csv.DictReader(csvfile,delimiter='|')
+    # Make those columns two separate lists
+    triggers = {}
+    for row in punreader:
+        triggers[row[0]] = row[1]
 
 def get_realname(userid: str):
     con = sqlite3.connect(WHOFILE)
@@ -493,6 +504,8 @@ class Spoop(object):
 def setup(bot):
     async def message_events(message):
         clean_message = message.clean_content.lower()
+        # MM: Added so list instead of string
+        message_split = clean_message.split(' ')
 
         if re.search('z+e+b+', re.sub('[^a-z]', '', clean_message)) is not None:
             await bot.delete_message(message)
@@ -553,7 +566,6 @@ def setup(bot):
             return
 
         # now lets check for contents
-
         if 'praise' in clean_message or 'pray' in clean_message:
             root_dir = './data/events/pray'
             files_to_choose = [os.path.join(root_dir, f)
@@ -618,7 +630,12 @@ def setup(bot):
                 vag_words,
                 False):
             await bot.add_reaction(message, '😞')
-
+        # NEW (MM): check for punny words and respond
+        trigger = set(triggers.keys()).union(message_split)
+        elif len(trigger) != 0:
+            await bot.send_message(message.channel,
+                            response[triggers[trigger[0]])])
+            
     n = Spoop(bot)
     bot.add_cog(n)
     bot.add_listener(message_events, 'on_message')
