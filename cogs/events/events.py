@@ -457,8 +457,6 @@ with open('./data/events/puns.csv', newline='') as csvfile:
     for row in punreader:
         triggers[row[0]] = row[1]
 
-print(triggers)
-
 def get_realname(userid: str):
     con = sqlite3.connect(WHOFILE)
     c = con.cursor()
@@ -584,6 +582,7 @@ def setup(bot):
 
         # NEW (MM): check for punny words and respond
         trigger = set(triggers.keys()).union(message_split)
+        print(trigger)
 
         if random.random() <= 0.1:
             with open('./data/e7sgd020ew501.png', 'rb') as fobj:
