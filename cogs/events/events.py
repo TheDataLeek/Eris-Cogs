@@ -634,9 +634,8 @@ def setup(bot):
                 False):
             await bot.add_reaction(message, '😞')
         elif len(trigger) != 0:
-            await bot.send_message(message.channel,
-                            response[triggers[trigger[0]])])
-            
+            await bot.send_message(message.channel, triggers[trigger[0]])
+
     n = Spoop(bot)
     bot.add_cog(n)
     bot.add_listener(message_events, 'on_message')
