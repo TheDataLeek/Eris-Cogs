@@ -229,7 +229,8 @@ def setup(bot):
                                        '{} IS A GOOD BOT'.format(reaction.message.author.mention))
                 n.noticed.add(reaction.message.id)
 
-        await rate_user(reaction.message.author.id, rating)
+        if rating is not None:
+            await rate_user(reaction.message.author.id, rating)
 
     async def parse_reaction_remove(reaction, user):
         # Prevent acting on DM's
