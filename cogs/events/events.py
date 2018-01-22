@@ -451,7 +451,7 @@ yandere = [
 # Credit for most puns: https://onelinefun.com/puns/
 with open('./data/events/puns.csv', newline='') as csvfile:
     # Puns.csv is arranged into two columns titled 'word' and 'response'
-    punreader = csv.DictReader(csvfile,delimiter='|')
+    punreader = csv.reader(csvfile, delimiter='|')
     # Make those columns two separate lists
     triggers = {}
     for row in punreader:
