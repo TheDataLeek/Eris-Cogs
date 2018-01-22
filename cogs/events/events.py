@@ -449,15 +449,13 @@ yandere = [
 # MM Edit: Loads puns.csv and arranges it appropriately
 # Potential issue: filepath may not be correct
 # Credit for most puns: https://onelinefun.com/puns/
-with open('./events/data/puns.csv',newline='') as csvfile:
+with open('./events/data/puns.csv', newline='') as csvfile:
     # Puns.csv is arranged into two columns titled 'word' and 'response'
     punreader = csv.DictReader(csvfile,delimiter='|')
     # Make those columns two separate lists
-    keywords = []
-    response = [];
+    triggers = {}
     for row in punreader:
-        keywords.append(row['word'])
-        response.append(row['response'])
+        triggers[row[0]] = row[1]
 
 def get_realname(userid: str):
     con = sqlite3.connect(WHOFILE)
@@ -507,7 +505,7 @@ def setup(bot):
     async def message_events(message):
         clean_message = message.clean_content.lower()
         # MM: Added so list instead of string
-        mset = clean_message.split(' ')
+        message_split = clean_message.split(' ')
 
         if re.search('z+e+b+', re.sub('[^a-z]', '', clean_message)) is not None:
             await bot.delete_message(message)
@@ -633,10 +631,10 @@ def setup(bot):
                 False):
             await bot.add_reaction(message, '😞')
         # NEW (MM): check for punny words and respond
-        elif list(set(keywords) & set(mset))
-            q = list(set(keywords) & set(mset))
+        trigger = set(triggers.keys()).union(message_split)
+        elif len(trigger) != 0:
             await bot.send_message(message.channel,
-                            response[keywords.index(q[0])])
+                            response[triggers[trigger[0]])])
             
     n = Spoop(bot)
     bot.add_cog(n)
