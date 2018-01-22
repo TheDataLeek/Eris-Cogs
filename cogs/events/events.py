@@ -457,6 +457,8 @@ with open('./data/events/puns.csv', newline='') as csvfile:
     for row in punreader:
         triggers[row[0]] = row[1]
 
+print(triggers)
+
 def get_realname(userid: str):
     con = sqlite3.connect(WHOFILE)
     c = con.cursor()
