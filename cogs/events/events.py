@@ -580,6 +580,9 @@ def setup(bot):
         if random.random() <= 0.5:
             return
 
+        # NEW (MM): check for punny words and respond
+        trigger = set(triggers.keys()).union(message_split)
+
         if random.random() <= 0.1:
             with open('./data/e7sgd020ew501.png', 'rb') as fobj:
                 new_msg = await bot.send_file(message.channel, fobj)
@@ -630,8 +633,6 @@ def setup(bot):
                 vag_words,
                 False):
             await bot.add_reaction(message, '😞')
-        # NEW (MM): check for punny words and respond
-        trigger = set(triggers.keys()).union(message_split)
         elif len(trigger) != 0:
             await bot.send_message(message.channel,
                             response[triggers[trigger[0]])])
