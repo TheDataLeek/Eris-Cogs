@@ -633,7 +633,9 @@ def setup(bot):
                 vag_words,
                 False):
             await bot.add_reaction(message, '😞')
-        elif len(trigger) != 0:
+        # Reduced likelihood again because when a person uses a keyword,
+        # The server keeps using it
+        elif len(trigger) != 0 and random.random()<=0.25:
             await bot.send_message(message.channel, triggers[list(trigger)[0]])
 
     n = Spoop(bot)
