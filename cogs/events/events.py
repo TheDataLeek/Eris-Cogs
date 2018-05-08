@@ -507,7 +507,8 @@ def setup(bot):
         # MM: Added so list instead of string
         message_split = clean_message.split(' ')
 
-        if re.search('z+e+b+', re.sub('[^a-z]', '', clean_message)) is not None:
+        regex = '\b[Zz]\s[eE]\s[bB]([uU]|\b)'
+        if re.search(regex, re.sub('[^a-z]', '', clean_message)) is not None:
             await bot.delete_message(message)
             await bot.send_message(message.channel, 'what was that?')
             return
