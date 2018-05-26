@@ -584,6 +584,19 @@ def setup(bot):
         # NEW (MM): check for punny words and respond
         trigger = set(triggers.keys()).intersection(message_split)
 
+        for word in message_split:
+            if 'man' in word:
+                bits = word.split('man')
+                await bot.send_message(
+                    message.channel,
+                    'Not just the {} but the {} and {} too!'.format(
+                        word,
+                        'women'.join(bits),
+                        'children'.join(bits),
+                    )
+                )
+                return
+
         if random.random() <= 0.1:
             with open('./data/e7sgd020ew501.png', 'rb') as fobj:
                 new_msg = await bot.send_file(message.channel, fobj)
