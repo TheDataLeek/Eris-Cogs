@@ -585,8 +585,8 @@ def setup(bot):
         trigger = set(triggers.keys()).intersection(message_split)
 
         for word in message_split:
-            if 'man' in word:
-                bits = word.split('man')
+            if 'men' in word:
+                bits = word.split('men')
                 await bot.send_message(
                     message.channel,
                     'Not just the {} but the {} and {} too!'.format(
