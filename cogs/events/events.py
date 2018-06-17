@@ -522,7 +522,13 @@ def setup(bot):
             'news',
             'rpg',
             'events',
-            'recommends'
+            'recommends',
+            'politisophy',
+            'eyebleach',
+            'weeb-lyfe',
+            'out-of-context',
+            'jokes',
+            'anime-club',
         ]
 
         # IF DM's
@@ -584,18 +590,19 @@ def setup(bot):
         # NEW (MM): check for punny words and respond
         trigger = set(triggers.keys()).intersection(message_split)
 
-        for word in message_split:
-            if 'men' in word:
-                bits = word.split('men')
-                await bot.send_message(
-                    message.channel,
-                    'Not just the {} but the {} and {} too!'.format(
-                        word,
-                        'women'.join(bits),
-                        'children'.join(bits),
+        if random.random() <= 0.25:
+            for word in message_split:
+                if 'men' in word:
+                    bits = word.split('men')
+                    await bot.send_message(
+                        message.channel,
+                        'Not just the {} but the {} and {} too!'.format(
+                            word,
+                            'women'.join(bits),
+                            'children'.join(bits),
+                        )
                     )
-                )
-                return
+                    return
 
         if random.random() <= 0.1:
             with open('./data/e7sgd020ew501.png', 'rb') as fobj:
