@@ -86,7 +86,7 @@ def setup(bot):
         if userID not in POINT_TIMINGS:
             POINT_TIMINGS[userID] = time.time()
             add_points_to_user(userID)
-        else if time.time() - POINT_TIMINGS[userID] > 60:
+        elif time.time() - POINT_TIMINGS[userID] > 60:
             add_points_to_user(userID)
 
     bot.add_listener(count_message, 'on_message')
