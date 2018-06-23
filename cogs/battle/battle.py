@@ -46,17 +46,17 @@ class Battle(object):
     @commands.command(pass_context=True, no_pm=True)
     async def points(self, ctx, user: discord.Member=None):
         """
-        Displays a user rating in the form <score> (<updoots>/<downdoots>/<totaldoots>)
         """
         if user is None:
             user = ctx.message.author
 
-        userPoints = User[user.id].points
+        user = User.get(user.id)
 
-        await self.bot.say('User {} has {} points'.format(
-                            user.mention,
-                            userPoints
-            ))
+        if user is not None:
+            await self.bot.say('User {} has {} points'.format(
+                                user.mention,
+                                user.points
+                ))
 
 
 def setup(bot):
