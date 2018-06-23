@@ -31,7 +31,7 @@ db = orm.Database()
 
 db.bind(provider='sqlite', filename=str(db_file), create_db=True)
 
-db.generate_mapping(create_tables=True)
+# db.generate_mapping(create_tables=True)
 
 
 class User(db.Entity):
