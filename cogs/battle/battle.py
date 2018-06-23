@@ -29,6 +29,10 @@ db_file = pathlib.Path().home() / 'battle.db'
 
 db = orm.Database()
 
+db.bind(provider='sqlite', filename=str(db_file), create_db=True)
+
+db.generate_mapping(create_tables=True)
+
 
 class User(db.Entity):
     userID = Required(str)
@@ -38,8 +42,6 @@ class User(db.Entity):
 class Battle(object):
     def __init__(self, bot):
         self.bot = bot
-
-        db.bind(provider='sqlite', filename=str(db_file), create_db=True)
 
     @commands.command(pass_context=True, no_pm=True)
     async def points(self, ctx, user: discord.Member=None):
