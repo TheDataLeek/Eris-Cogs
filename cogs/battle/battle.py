@@ -41,6 +41,21 @@ class Battle(object):
 
         db.bind(provider='sqlite', filename=str(db_file), create_db=True)
 
+    @commands.command(pass_context=True, no_pm=True)
+    async def rating(self, ctx, user: discord.Member=None):
+        """
+        Displays a user rating in the form <score> (<updoots>/<downdoots>/<totaldoots>)
+        """
+        if user is None:
+            user = message.author
+
+        userPoints = User[user.id].points
+
+        await self.bot.say('User {} has {} points'.format(
+                            user.mention,
+                            userPoints
+            ))
+
 
 def setup(bot):
     # initialize instance of the battle
