@@ -47,11 +47,12 @@ class Battle(object):
     @db_session
     async def points(self, ctx, user: discord.Member=None):
         """
+        List points that the user has
         """
         if user is None:
             user = ctx.message.author
 
-        db_user = User.get(user.id)
+        db_user = User.select(lambda u: u.userID == user.id).first()
 
         if db_user is not None:
             await self.bot.say('User {} has {} points'.format(
@@ -99,9 +100,8 @@ def setup(bot):
 
 @db_session
 def add_points_to_user(userID, multiplier=1):
-    if User.get(userID=userID) is None:
-        user = User(userID=userID)
-    else:
-        user = User[userID]
+    db_user = User.select(lambda u: u.userID == userID).first()
+    if db_user is None:
+        db_user = User(userID=userID)
 
-    user.points += multiplier * random.randint(1, 15)
+    db_user.points += multiplier * random.randint(1, 15)
