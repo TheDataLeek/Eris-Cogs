@@ -26,17 +26,14 @@ Let's start by defining our database
 """
 
 db_file = pathlib.Path().home() / 'battle.db'
-
 db = orm.Database()
-
-db.bind(provider='sqlite', filename=str(db_file), create_db=True)
-
-db.generate_mapping(create_tables=True)
-
 
 class User(db.Entity):
     userID = Required(str)
     points = Required(int, default=0)
+
+db.bind(provider='sqlite', filename=str(db_file), create_db=True)
+db.generate_mapping(create_tables=True)
 
 
 class Battle(object):
@@ -100,6 +97,8 @@ def setup(bot):
 
 @db_session
 def add_points_to_user(userID, multiplier=1):
+    print("Adding points to user")
+
     db_user = User.select(lambda u: u.userID == userID).first()
     if db_user is None:
         db_user = User(userID=userID)
