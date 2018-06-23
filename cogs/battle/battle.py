@@ -31,12 +31,12 @@ db = orm.Database()
 
 db.bind(provider='sqlite', filename=str(db_file), create_db=True)
 
-# db.generate_mapping(create_tables=True)
+db.generate_mapping(create_tables=True)
 
 
 class User(db.Entity):
     userID = Required(str)
-    points = Required(int)
+    points = Required(int, default=0)
 
 
 class Battle(object):
@@ -96,6 +96,11 @@ def setup(bot):
 
 @db_session
 def add_points_to_user(userID):
-    user = User[userID]
+    if User.get(userID=userID) is None:
+        user = User(userID=userID)
+    else:
+        user = User[userID]
+
     user.points += random.randint(1, 15)
+
     orm.commit()
