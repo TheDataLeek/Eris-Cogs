@@ -178,9 +178,7 @@ def setup(bot):
             oldgood, oldbad = get_user_rating(userid, cursor=c)
             good, bad = (oldgood + rating[0],
                          oldbad + rating[1])
-            # MM: You've had your fun
-            # if ((userid == '142431859148718080') and ((good - bad) <= 0)):
-            #     bad = good - 3
+            # MM: Deleting code to make discord
             c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
                       (good, bad, userid))
             con.commit()
@@ -197,10 +195,7 @@ def setup(bot):
         channel = reaction.message.channel.id
 
         rating = None   # (+, -)
-        # MM: you've had your fun
-        # Upvote SpatulaFish
-        # if reaction.emoji in ['👎', '👍'] and reaction.message.author.id == '142431859148718080':
-        #     rating = (1, 0)
+        # MM: Deleting code to make discord
         if reaction.emoji == '👎':
             # MM proposal:
             # Element of randomness: Self downvotes could result in updoot
@@ -211,10 +206,8 @@ def setup(bot):
                     rating = (0, 1)
             else:
                 rating = (0, 1)
-            # MM proposal:
+            # MM: Deleting code to delete message
             # Just call the poor sod a bad bot
-            # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
-            #     await bot.delete_message(reaction.message)
             if ((reaction.count >= 5) and (reaction.message.id not in n.noticed)):
                 await bot.send_message(reaction.message.channel,'{} IS A BAD BOT'.format(reaction.message.author.mention))
                 n.noticed.add(reaction.message.id)
