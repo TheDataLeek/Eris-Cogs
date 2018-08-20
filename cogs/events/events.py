@@ -508,9 +508,9 @@ def setup(bot):
         message_split = clean_message.split(' ')
 
         regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
-        if re.search(regex, re.sub('[^a-z]', '', clean_message)) is not None:
+        if re.search(regex, clean_message) is not None:
+            await bot.send_message(message.channel, 'what was that? - sean')
             await bot.delete_message(message)
-            await bot.send_message(message.channel, 'what was that?')
             return
 
         # DO NOT RESPOND TO SELF MESSAGES
