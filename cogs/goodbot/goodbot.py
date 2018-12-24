@@ -106,9 +106,9 @@ class GoodBot:
         con = sq.connect(RATINGSFILE)
         c = con.cursor()
         c.execute('SELECT userid, good, bad from ratings')
-        results = c.fetchall()
+        db_results = c.fetchall()
         results = []
-        for userid, good, bad in results:
+        for userid, good, bad in db_results:
             try:
                 results.append((ctx.message.server.get_member(userid).nick, good - bad))
             except Exception as e:
