@@ -107,7 +107,6 @@ class GoodBot:
         c = con.cursor()
         c.execute('SELECT userid, good, bad from ratings ORDER BY (good - bad) DESC')
         db_results = c.fetchall()
-        await self.bot.say(f'```{db_results}```')
         results = []
         for userid, good, bad in db_results:
             try:
