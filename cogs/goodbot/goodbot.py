@@ -111,7 +111,8 @@ class GoodBot:
         for userid, good, bad in results:
             try:
                 results.append((ctx.message.server.get_member(userid).nick, good - bad))
-            except:
+            except Exception as e:
+                print(e)
                 pass
         results.sort(key=lambda tup: -tup[1])
         results = ['  '.join([str(_) for _ in row]) for row in results]
