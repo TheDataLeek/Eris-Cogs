@@ -123,17 +123,17 @@ def setup(bot):
     # We need to count each message
     async def count_reaction_add(reaction, _):
         # Prevent snek from voting on herself or counting
-        if bot.user.id == message.author.id:
+        if bot.user.id == reaction.message.author.id:
             return
 
         # Prevent acting on DM's
-        if message.channel.name is None:
+        if reaction.message.channel.name is None:
             return
 
-        server          = message.channel.server.id
-        channel         = message.channel.id
-        userID          = message.author.id
-        message_channel = message.channel.name.lower()
+        server          = reaction.message.channel.server.id
+        channel         = reaction.message.channel.id
+        userID          = reaction.message.author.id
+        message_channel = reaction.message.channel.name.lower()
 
         user = get_user(userID)
         if user is None:
@@ -151,7 +151,7 @@ def setup(bot):
             return
 
         # Prevent acting on DM's
-        if message.channel.name is None:
+        if reaction.message.channel.name is None:
             return
 
         server          = reaction.message.channel.server.id
