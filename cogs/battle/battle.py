@@ -36,6 +36,11 @@ db.bind(provider='sqlite', filename=str(db_file), create_db=True)
 db.generate_mapping(create_tables=True)
 
 
+@db_session
+def get_user(uid):
+    return User.select(lambda u: u.userID == uid).first()
+
+
 class Battle(object):
     def __init__(self, bot):
         self.bot = bot
@@ -49,7 +54,7 @@ class Battle(object):
             if user is None:
                 user = ctx.message.author
 
-            db_user = User.select(lambda u: u.userID == user.id).first()
+            db_user = get_user(user.id)
 
             if db_user is not None:
                 await self.bot.say('User {} has {} points'.format(
@@ -58,6 +63,23 @@ class Battle(object):
                     ))
             else:
                 User(userID=user.id)
+
+    @commands.command(pass_context=True, no_pm=True)
+    async def battle(self, ctx, user: discord.Member=None):
+        """
+        battles another user!
+        """
+        with db_session:
+            author = get_user(ctx.message.author.id)
+            member = get_user(user.id)
+
+            if author.points <= 0:
+                await self.bot.say('You have no points!')
+                return
+            if member.points <=0:
+                await self.bot.say('They have no points!')
+                return
+
 
 
 def setup(bot):
@@ -86,21 +108,66 @@ def setup(bot):
         if 'battle' in message_channel:
             return
 
-        if userID not in POINT_TIMINGS:
+        add_points = False
+        if (userID not in POINT_TIMINGS) or (time.time() - POINT_TIMINGS[userID] > 60):
             POINT_TIMINGS[userID] = time.time()
-            add_points_to_user(userID)
-        elif time.time() - POINT_TIMINGS[userID] > 60:
-            add_points_to_user(userID)
+            add_points = True
+
+        user = get_user(userID)
+        if user is None:
+            user = User(userID=userID)
+
+        if add_points:
+            user.points += 1
+
+    # We need to count each message
+    async def count_reaction_add(reaction, _):
+        # Prevent snek from voting on herself or counting
+        if bot.user.id == message.author.id:
+            return
+
+        # Prevent acting on DM's
+        if message.channel.name is None:
+            return
+
+        server          = message.channel.server.id
+        channel         = message.channel.id
+        userID          = message.author.id
+        message_channel = message.channel.name.lower()
+
+        user = get_user(userID)
+        if user is None:
+            user = User(userID=userID)
+
+        if reaction.emoji == '👎':
+            user.points -= 3
+        elif reaction.emoji == '👍':
+            user.points += 3
+
+    # We need to count each message
+    async def count_reaction_remove(reaction, _):
+        # Prevent snek from voting on herself or counting
+        if bot.user.id == message.author.id:
+            return
+
+        # Prevent acting on DM's
+        if message.channel.name is None:
+            return
+
+        server          = message.channel.server.id
+        channel         = message.channel.id
+        userID          = message.author.id
+        message_channel = message.channel.name.lower()
+
+        user = get_user(userID)
+        if user is None:
+            user = User(userID=userID)
+
+        if reaction.emoji == '👎':
+            user.points += 3
+        elif reaction.emoji == '👍':
+            user.points -= 3
 
     bot.add_listener(count_message, 'on_message')
-
-
-@db_session
-def add_points_to_user(userID, multiplier=1):
-    print("Adding points to user")
-
-    db_user = User.select(lambda u: u.userID == userID).first()
-    if db_user is None:
-        db_user = User(userID=userID)
-
-    db_user.points += multiplier * random.randint(1, 15)
+    bot.add_listener(count_reaction_add, 'on_reaction_add')
+    bot.add_listener(count_reaction_remove, 'on_reaction_remove')
