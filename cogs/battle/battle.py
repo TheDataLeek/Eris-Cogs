@@ -170,4 +170,4 @@ def setup(bot):
 
     bot.add_listener(count_message, 'on_message')
     bot.add_listener(count_reaction_add, 'on_reaction_add')
-    bot.add_listener(parse_reaction_remove, 'on_reaction_remove')
+    bot.add_listener(count_reaction_remove, 'on_reaction_remove')
