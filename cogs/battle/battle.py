@@ -41,23 +41,23 @@ class Battle(object):
         self.bot = bot
 
     @commands.command(pass_context=True, no_pm=True)
-    @db_session
     async def points(self, ctx, user: discord.Member=None):
         """
         List points that the user has
         """
-        if user is None:
-            user = ctx.message.author
+        with db_session:
+            if user is None:
+                user = ctx.message.author
 
-        db_user = User.select(lambda u: u.userID == user.id).first()
+            db_user = User.select(lambda u: u.userID == user.id).first()
 
-        if db_user is not None:
-            await self.bot.say('User {} has {} points'.format(
-                                user.mention,
-                                db_user.points
-                ))
-        else:
-            User(userID=user.id)
+            if db_user is not None:
+                await self.bot.say('User {} has {} points'.format(
+                                    user.mention,
+                                    db_user.points
+                    ))
+            else:
+                User(userID=user.id)
 
 
 def setup(bot):
