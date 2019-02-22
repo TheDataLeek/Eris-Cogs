@@ -62,7 +62,9 @@ class Battle(object):
                                     db_user.points
                     ))
             else:
-                User(userID=user.id)
+                await self.bot.say('User {} has no points'.format(
+                        user.mention,
+                    ))
 
     @commands.command(pass_context=True, no_pm=True)
     async def battle(self, ctx, user: discord.Member=None):
@@ -113,12 +115,13 @@ def setup(bot):
             POINT_TIMINGS[userID] = time.time()
             add_points = True
 
-        user = get_user(userID)
-        if user is None:
-            user = User(userID=userID)
+        with db_session:
+            user = get_user(userID)
+            if user is None:
+                user = User(userID=userID)
 
-        if add_points:
-            user.points += 1
+            if add_points:
+                user.points += 1
 
     # We need to count each message
     async def count_reaction_add(reaction, _):
@@ -135,14 +138,15 @@ def setup(bot):
         userID          = reaction.message.author.id
         message_channel = reaction.message.channel.name.lower()
 
-        user = get_user(userID)
-        if user is None:
-            user = User(userID=userID)
+        with db_session:
+            user = get_user(userID)
+            if user is None:
+                user = User(userID=userID)
 
-        if reaction.emoji == '👎':
-            user.points -= 3
-        elif reaction.emoji == '👍':
-            user.points += 3
+            if reaction.emoji == '👎':
+                user.points -= 3
+            elif reaction.emoji == '👍':
+                user.points += 3
 
     # We need to count each message
     async def count_reaction_remove(reaction, _):
@@ -159,14 +163,15 @@ def setup(bot):
         userID          = reaction.message.author.id
         message_channel = reaction.message.channel.name.lower()
 
-        user = get_user(userID)
-        if user is None:
-            user = User(userID=userID)
+        with db_session:
+            user = get_user(userID)
+            if user is None:
+                user = User(userID=userID)
 
-        if reaction.emoji == '👎':
-            user.points += 3
-        elif reaction.emoji == '👍':
-            user.points -= 3
+            if reaction.emoji == '👎':
+                user.points += 3
+            elif reaction.emoji == '👍':
+                user.points -= 3
 
     bot.add_listener(count_message, 'on_message')
     bot.add_listener(count_reaction_add, 'on_reaction_add')
