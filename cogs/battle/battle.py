@@ -32,6 +32,50 @@ class User(db.Entity):
     userID = Required(str)
     points = Required(int, default=0)
 
+    strength = Optional(int)
+    wisdom = Optional(int)
+    dexterity = Optional(int)
+    charisma = Optional(int)
+    intelligence = Optional(int)
+    constitution = Optional(int)
+
+    hp = Optional(int)
+    player_race = Optional(str)
+    player_class = Optional(str)
+
+    def generate_stat(self):
+        rolls = sum(list(sorted(list(random.randint(1, 6) for _ in range(4))))[1:])
+        return rolls
+
+    @property
+    def level(self):
+        breaks = [
+            0,
+            300,
+            900,
+            2_700,
+            6_500,
+            14_000,
+            23_000,
+            34_000,
+            48_000,
+            64_000,
+            85_000,
+            100_000,
+            120_000,
+            140_000,
+            165_000,
+            195_000,
+            225_000,
+            265_000,
+            305_000,
+            355_000,
+        ]
+        for i in range(len(breaks)):
+            if breaks[i] <= points <= breaks[i + 1]:
+                return i + 1
+
+
 db.bind(provider='sqlite', filename=str(db_file), create_db=True)
 db.generate_mapping(create_tables=True)
 
@@ -45,6 +89,7 @@ class Battle(object):
     def __init__(self, bot):
         self.bot = bot
 
+
     @commands.command(pass_context=True, no_pm=True)
     async def points(self, ctx, user: discord.Member=None):
         """
@@ -57,12 +102,13 @@ class Battle(object):
             db_user = get_user(user.id)
 
             if db_user is not None:
-                await self.bot.say('User {} has {} points'.format(
+                await self.bot.say('User {} has {} experience and is level {}'.format(
                                     user.mention,
-                                    db_user.points
+                                    db_user.points,
+                                    db_user.level,
                     ))
             else:
-                await self.bot.say('User {} has no points'.format(
+                await self.bot.say('User {} has no experience'.format(
                         user.mention,
                     ))
 
@@ -144,7 +190,7 @@ def setup(bot):
                 user = User(userID=userID)
 
             if reaction.emoji == '👎':
-                user.points -= 3
+                user.points = max(0, user.points - 3)
             elif reaction.emoji == '👍':
                 user.points += 3
 
@@ -171,7 +217,7 @@ def setup(bot):
             if reaction.emoji == '👎':
                 user.points += 3
             elif reaction.emoji == '👍':
-                user.points -= 3
+                user.points = max(0, user.points - 3)
 
     bot.add_listener(count_message, 'on_message')
     bot.add_listener(count_reaction_add, 'on_reaction_add')
