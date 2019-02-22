@@ -566,7 +566,7 @@ def setup(bot):
             return
 
         # love
-        if love in clean_message and random.random() <= 0.1:
+        if 'love' in clean_message and random.random() <= 0.1:
             await bot.send_message(message.channel, '*WHAT IS LOVE?*')
             time.sleep(2)
             await bot.send_message(message.channel, '*baby don\'t hurt me*')
