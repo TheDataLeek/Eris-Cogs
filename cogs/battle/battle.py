@@ -72,7 +72,7 @@ class User(db.Entity):
             355_000,
         ]
         for i in range(len(breaks)):
-            if breaks[i] <= points <= breaks[i + 1]:
+            if breaks[i] <= self.points <= breaks[i + 1]:
                 return i + 1
 
 
