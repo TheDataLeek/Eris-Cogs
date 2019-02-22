@@ -117,7 +117,8 @@ def get_user(uid):
 
 @db_session
 def generate_user_if_not_exists(uid):
-    if get_user(uid) is None:
+    user = get_user(uid)
+    if user is None:
         user = User(userID=userID)
 
     if user.strength is None:
