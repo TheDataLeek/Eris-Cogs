@@ -43,9 +43,39 @@ class User(db.Entity):
     player_race = Optional(str)
     player_class = Optional(str)
 
+    @property
+    def st_mod(self): return int((self.strength - 10) / 2)
+
+    @property
+    def ws_mod(self): return int((self.wisdom - 10) / 2)
+
+    @property
+    def dx_mod(self): return int((self.dexterity - 10) / 2)
+
+    @property
+    def cr_mod(self): return int((self.charisma - 10) / 2)
+
+    @property
+    def in_mod(self): return int((self.intelligence - 10) / 2)
+
+    @property
+    def cn_mod(self): return int((self.constitution - 10) / 2)
+
     def generate_stat(self):
         rolls = sum(list(sorted(list(random.randint(1, 6) for _ in range(4))))[1:])
         return rolls
+
+    @property
+    def attack_roll(self):
+        return random.randint(1, 20) + self.proficiency + self.dexterity
+
+    @property
+    def proficiency(self):
+        breaks = [1, 5, 8, 12, 16, 21]
+        level = self.level
+        for i in range(len(breaks)):
+            if breaks[i] <= level < breaks[i + 1]:
+                return i + 2
 
     @property
     def level(self):
@@ -72,7 +102,7 @@ class User(db.Entity):
             355_000,
         ]
         for i in range(len(breaks)):
-            if breaks[i] <= self.points <= breaks[i + 1]:
+            if breaks[i] <= self.points < breaks[i + 1]:
                 return i + 1
 
 
@@ -85,15 +115,31 @@ def get_user(uid):
     return User.select(lambda u: u.userID == uid).first()
 
 
+@db_session
+def generate_user_if_not_exists(uid):
+    if get_user(uid) is None:
+        user = User(userID=userID)
+
+    if user.strength is None:
+        user.strength = user.generate_stat()
+        user.charisma = user.generate_stat()
+        user.wisdom = user.generate_stat()
+        user.dexterity = user.generate_stat()
+        user.constitution = user.generate_stat()
+        user.intelligence = user.generate_stat()
+        user.hp = random.randint(1, 6) * user.level
+
+
+
 class Battle(object):
     def __init__(self, bot):
         self.bot = bot
 
 
     @commands.command(pass_context=True, no_pm=True)
-    async def points(self, ctx, user: discord.Member=None):
+    async def status(self, ctx, user: discord.Member=None):
         """
-        List points that the user has
+        List status of user
         """
         with db_session:
             if user is None:
@@ -101,11 +147,27 @@ class Battle(object):
 
             db_user = get_user(user.id)
 
+            message = '\n'.join([
+            'User {} has {} experience and is level {}',
+            'Strength: {}',
+            'Intelligence: {}',
+            'Dexterity: {}',
+            'Wisdom: {}',
+            'Charisma: {}',
+            'Constitution: {}',
+            ])
+
             if db_user is not None:
-                await self.bot.say('User {} has {} experience and is level {}'.format(
+                await self.bot.say(message.format(
                                     user.mention,
                                     db_user.points,
                                     db_user.level,
+                                    db_user.strength,
+                                    db_user.intelligence,
+                                    db_user.dexterity,
+                                    db_user.wisdom,
+                                    db_user.charisma,
+                                    db_user.constitution,
                     ))
             else:
                 await self.bot.say('User {} has no experience'.format(
