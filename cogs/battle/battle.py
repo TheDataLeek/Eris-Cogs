@@ -67,7 +67,7 @@ class User(db.Entity):
 
     @property
     def attack_roll(self):
-        return random.randint(1, 20) + self.proficiency + self.dexterity
+        return random.randint(1, 20) + self.proficiency + self.dx_mod
 
     @property
     def proficiency(self):
