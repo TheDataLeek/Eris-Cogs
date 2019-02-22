@@ -123,7 +123,8 @@ def get_user(uid):
         user.dexterity = user.generate_stat()
         user.constitution = user.generate_stat()
         user.intelligence = user.generate_stat()
-        user.hp = random.randint(1, 6) * user.level
+
+        user.hp = (Math.max(3, random.randint(1, 6)) + user.cn_mod) * user.level
 
     return user
 
@@ -180,7 +181,6 @@ class Battle(object):
         """
         with db_session:
             author = get_user(ctx.message.author.id)
-            member = get_user(user.id)
 
             await self.bot.say(author.attack_roll)
 
