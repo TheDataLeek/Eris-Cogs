@@ -14,7 +14,7 @@ import time
 
 from pony import orm
 
-from pony.orm import Required, db_session
+from pony.orm import Optional, Required, db_session
 
 import pathlib
 
