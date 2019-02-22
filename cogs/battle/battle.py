@@ -112,14 +112,9 @@ db.generate_mapping(create_tables=True)
 
 @db_session
 def get_user(uid):
-    return User.select(lambda u: u.userID == uid).first()
-
-
-@db_session
-def generate_user_if_not_exists(uid):
-    user = get_user(uid)
+    user = User.select(lambda u: u.userID == uid).first()
     if user is None:
-        user = User(userID=userID)
+        user = User(userID=uid)
 
     if user.strength is None:
         user.strength = user.generate_stat()
@@ -130,6 +125,7 @@ def generate_user_if_not_exists(uid):
         user.intelligence = user.generate_stat()
         user.hp = random.randint(1, 6) * user.level
 
+    return user
 
 
 class Battle(object):
@@ -158,22 +154,17 @@ class Battle(object):
             'Constitution: {}',
             ])
 
-            if db_user is not None:
-                await self.bot.say(message.format(
-                                    user.mention,
-                                    db_user.points,
-                                    db_user.level,
-                                    db_user.strength,
-                                    db_user.intelligence,
-                                    db_user.dexterity,
-                                    db_user.wisdom,
-                                    db_user.charisma,
-                                    db_user.constitution,
-                    ))
-            else:
-                await self.bot.say('User {} has no experience'.format(
-                        user.mention,
-                    ))
+            await self.bot.say(message.format(
+                                user.mention,
+                                db_user.points,
+                                db_user.level,
+                                db_user.strength,
+                                db_user.intelligence,
+                                db_user.dexterity,
+                                db_user.wisdom,
+                                db_user.charisma,
+                                db_user.constitution,
+                ))
 
     @commands.command(pass_context=True, no_pm=True)
     async def battle(self, ctx, user: discord.Member=None):
@@ -226,8 +217,6 @@ def setup(bot):
 
         with db_session:
             user = get_user(userID)
-            if user is None:
-                user = User(userID=userID)
 
             if add_points:
                 user.points += 1
@@ -249,8 +238,6 @@ def setup(bot):
 
         with db_session:
             user = get_user(userID)
-            if user is None:
-                user = User(userID=userID)
 
             if reaction.emoji == '👎':
                 user.points = max(0, user.points - 3)
@@ -274,8 +261,6 @@ def setup(bot):
 
         with db_session:
             user = get_user(userID)
-            if user is None:
-                user = User(userID=userID)
 
             if reaction.emoji == '👎':
                 user.points += 3
