@@ -1,4 +1,5 @@
 import os
+import time
 import re
 import discord
 from discord.ext import commands
@@ -509,7 +510,6 @@ def setup(bot):
 
         regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
         if re.search(regex, clean_message) is not None:
-            await bot.send_message(message.channel, 'what was that? - sean')
             await bot.delete_message(message)
             return
 
@@ -563,6 +563,17 @@ def setup(bot):
             new_message = ' '.join(x.format(formatname)
                                    for x in new_message.split(' '))
             await bot.send_message(message.author, new_message)
+            return
+
+        # love
+        if love in clean_message and random.random() <= 0.1:
+            await bot.send_message(message.channel, '*WHAT IS LOVE?*')
+            time.sleep(2)
+            await bot.send_message(message.channel, '*baby don\'t hurt me*')
+            time.sleep(2)
+            await bot.send_message(message.channel, '*don\'t hurt me*')
+            time.sleep(2)
+            await bot.send_message(message.channel, '*no more*')
             return
 
         # first let's have a tiny chance of snek actually responding with ooc content
