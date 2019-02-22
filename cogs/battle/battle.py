@@ -146,12 +146,12 @@ class Battle(object):
 
             message = '\n'.join([
             'User {} has {} experience and is level {}',
-            'Strength: {}',
-            'Intelligence: {}',
-            'Dexterity: {}',
-            'Wisdom: {}',
-            'Charisma: {}',
-            'Constitution: {}',
+            'Strength: {} ({})',
+            'Intelligence: {} ({})',
+            'Dexterity: {} ({})',
+            'Wisdom: {} ({})',
+            'Charisma: {} ({})',
+            'Constitution: {} ({})',
             ])
 
             await self.bot.say(message.format(
@@ -159,11 +159,17 @@ class Battle(object):
                                 db_user.points,
                                 db_user.level,
                                 db_user.strength,
+                                db_user.st_mod,
                                 db_user.intelligence,
+                                db_user.in_mod,
                                 db_user.dexterity,
+                                db_user.dx_mod,
                                 db_user.wisdom,
+                                db_user.ws_mod,
                                 db_user.charisma,
+                                db_user.cr_mod,
                                 db_user.constitution,
+                                db_user.cn_mod,
                 ))
 
     @commands.command(pass_context=True, no_pm=True)
