@@ -145,7 +145,7 @@ class Battle(object):
             db_user = get_user(user.id)
 
             message = '\n'.join([
-            'User {} has {} experience and is level {}',
+            'User {} has {} experience and is level {} with {} hitpoints',
             'Strength: {} ({})',
             'Intelligence: {} ({})',
             'Dexterity: {} ({})',
@@ -158,6 +158,7 @@ class Battle(object):
                                 user.mention,
                                 db_user.points,
                                 db_user.level,
+                                db_user.hp,
                                 db_user.strength,
                                 db_user.st_mod,
                                 db_user.intelligence,
@@ -173,7 +174,7 @@ class Battle(object):
                 ))
 
     @commands.command(pass_context=True, no_pm=True)
-    async def battle(self, ctx, user: discord.Member=None):
+    async def attack(self, ctx):
         """
         battles another user!
         """
@@ -181,12 +182,7 @@ class Battle(object):
             author = get_user(ctx.message.author.id)
             member = get_user(user.id)
 
-            if author.points <= 0:
-                await self.bot.say('You have no points!')
-                return
-            if member.points <=0:
-                await self.bot.say('They have no points!')
-                return
+            await self.bot.say(author.attack_roll)
 
 
 
