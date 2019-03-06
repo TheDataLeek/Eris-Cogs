@@ -40,7 +40,7 @@ class Notify:
         self.previous_message = None
 
         async def message_events(message):
-            if '@\u200beveryone' in message.clean_content and 'masters' in [x.name.lower() for x in message.author.roles]:
+            if '@\u200beveryone' in message.clean_content and 'police' in [x.name.lower() for x in message.author.roles]:
                 with open(NUMBERFILE, 'r') as fobj:
                     current_numbers = [x for x in
                                        fobj.read().split('\n')
