@@ -61,7 +61,7 @@ def setup(bot):
             return
 
         # first let's have a tiny chance of snek actually responding with ooc content
-        if random.random() <= 0.05:
+        if random.random() <= 0.02:
             await bot.send_message(message.channel, add_sarcasm(clean_message))
             return
 
