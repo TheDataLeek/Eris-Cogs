@@ -531,10 +531,11 @@ def setup(bot):
             'anime-club',
         ]
 
+        realname = get_realname(message.author.id)
+
         # IF DM's
         if message.channel.name is None:
             if random.random() < 0.1:
-                realname = get_realname(message.author.id)
                 if realname is None:
                     formatname = message.author.mention
                 else:
@@ -554,7 +555,6 @@ def setup(bot):
 
         # spoopy factor
         if random.random() < 0.001:
-            realname = get_realname(message.author.id)
             if realname is None:
                 formatname = message.author.mention
             else:
@@ -622,7 +622,6 @@ def setup(bot):
         elif 'thank' in clean_message:
             new_message = "you're welcome"
             if random.random() < 0.5:
-                realname = get_realname(message.author.id)
                 if realname is None:
                     formatname = message.author.mention
                 else:
@@ -631,7 +630,12 @@ def setup(bot):
             await bot.send_message(message.channel, new_message)
 
         elif 'snek' in clean_message:
-            await bot.send_message(message.channel, ':snake: ~ !! I :black_heart: you senpai !! ~ :snake:')
+            msg = ':snake: ~ !! I :heart: you {}!!! ~ :snake:'
+            if realname is not None and random.random() <= 0.5:
+                msg.format(realname)
+            else:
+                msg.format('senpai')
+            await bot.send_message(message.channel, msg)
         elif 'blood' in clean_message:
             await bot.send_message(message.channel, 'B̵̪̳̣͍̙̳̬̭͞͝L͢͏̸͏̧̙̼͓̘̯͉̩̩̞͚͕̲̰̼̘̦ͅÒ̮͈̖͔̰̞͝O̵͖͔̟̰͔͚̬͟͝ͅḐ̸̭͙̜̺̞͍͎͔͜͡͡ ̨̨̟̝̦̬̩̳̖͟ͅF̤̭̬͙̀̀͘͠O̶̯̠̞̲̫̱̻̮͎̦̳̝͉̮̕ͅŔ̡͈͕̼͖̥̰̭̟̝͟ ̡̲̯͉̤͈̘͎̬͎̺̟͞T̴̸̟̺̬̼̣̖͓̩̯͇̣̩̺̮͘Ḫ̣̥͍͙͍͓͔͈̖̬̘̩͔͖̝͖̀͘E̶̡̛̯̞̱̯̗͍͖͇̹̖̳̩̥̳̳̙͢͝ ̡͓͍͕͔̳̠͍̥̞̙͖̙̦͕̠̪̘̕ͅB̪͕̻̺͈̤̟̻͖̣͙̪̝̭̀͘͠Ḻ̵̨̞̯̥̭͈̪̻̰̭́́͝O̧͜͏̰͓̘̖̘̬̤ͅǪ̥̟̘̪̱͔͇̖͟D̸̡҉̶̫͕͖̹̤̜̪̟̝̯͚ ̵̨̛̯̺̤̮̲͓̦̜̪̕͝G̙̩͖̭̘̤̩̕Ǫ͎͉̲̤͓͇̦̖̯͇̥͔͓̣̘̦̪̀D͘͘͏͡͏͙̠͈̮̱̼')
         elif 'skull' in clean_message:
