@@ -52,7 +52,7 @@ def setup(bot):
         if random.random() <= 0.02:
             await bot.send_message(message.channel, add_sarcasm(clean_message))
             if random.random() <= 0.5:
-                with open('../data/sarcasm/img.png', 'rb') as fobj:
+                with open('./data/sarcasm/img.png', 'rb') as fobj:
                     await bot.send_file(message.channel, fobj)
             return
 
