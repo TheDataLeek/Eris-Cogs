@@ -21,10 +21,6 @@ def setup(bot):
         # MM: Added so list instead of string
         message_split = clean_message.split(' ')
 
-        # DO NOT RESPOND TO SELF MESSAGES
-        if bot.user.id == message.author.id or message.content.startswith('.'):
-            return
-
         # BLACKLIST CHANNELS
         blacklist = [
             'news',
@@ -39,28 +35,20 @@ def setup(bot):
             'anime-club',
         ]
 
-        # IF DM's
-        if message.channel.name is None:
-            if random.random() < 0.1:
-                realname = get_realname(message.author.id)
-                if realname is None:
-                    formatname = message.author.mention
-                else:
-                    formatname = realname
-                new_message = random.choice(yandere)
-                new_message = ' '.join(x.format(formatname)
-                                       for x in new_message.split(' '))
-                await bot.send_message(message.author, new_message)
-            return
-
         message_channel = message.channel.name.lower()
-        if reduce(
+
+        if (
+            # DO NOT RESPOND TO SELF MESSAGES
+            (bot.user.id == message.author.id or message.content.startswith('.')) or
+            (message.channel.name is None) or
+            (reduce(
                 lambda acc, n: acc or (n == message_channel),
                 blacklist,
-                False):
+                False)) or
+            ('@' in clean_message or 'thank' in clean_message)
+            ):
             return
 
-        # first let's have a tiny chance of snek actually responding with ooc content
         if random.random() <= 0.02:
             await bot.send_message(message.channel, add_sarcasm(clean_message))
             if random.random() <= 0.5:
