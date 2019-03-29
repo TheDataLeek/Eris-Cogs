@@ -513,6 +513,9 @@ async def message_events(message):
     # MM: Added so list instead of string
     message_split = clean_message.split(' ')
 
+    print(message)
+    print(message.author)
+
     regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
     if re.search(regex, clean_message) is not None:
         await bot.delete_message(message)
