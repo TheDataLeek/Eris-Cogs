@@ -50,7 +50,7 @@ class Sarcasm(BaseCog):
                 ):
                 return
 
-            ctx = bot.get_context(message)
+            ctx = await bot.get_context(message)
 
             # if random.random() <= 0.02:
             if random.random() <= 1:
