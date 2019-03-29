@@ -149,7 +149,7 @@ def generate_handlers(bot):
         # Prevent acting on DM's
         if message.channel.name is None:
             return
-
+        print(message)
         clean_message = message.clean_content.lower()
         server = message.server.id
         channel = message.channel.id
