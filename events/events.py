@@ -681,5 +681,3 @@ def generate_handler(bot):
         elif len(trigger) != 0:
             await bot.send_message(message.channel, triggers[list(trigger)[0]])
 
-    return message_events
-
