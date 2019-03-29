@@ -111,6 +111,7 @@ class GoodBot(BaseCog):
         results = []
         for userid, good, bad in db_results:
             try:
+                print(userid)
                 results.append((ctx.guild.get_member(userid).nick, good - bad))
             except Exception as e:
                 print(e)
