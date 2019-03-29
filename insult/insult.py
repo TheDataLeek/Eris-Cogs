@@ -19,7 +19,6 @@ class Insult(BaseCog):
     async def insult(self, ctx, user : discord.Member=None):
         """Insult the user"""
         msg = ' '
-        print('here')
         if user == None: # or user.id == '142431859148718080':
             await ctx.send(ctx.message.author.mention + msg + randchoice(self.insults))
         else:

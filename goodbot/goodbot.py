@@ -2,14 +2,15 @@
 
 import os
 import discord
-from discord.ext import commands
-import discord.utils as disc_util
+from redbot.core import commands
 import sqlite3 as sq
 
 import pprint as pp
 
 import pathlib
 import random
+
+BaseCog = getattr(commands, "Cog", object)
 
 
 RATINGSFILE = os.path.join(str(pathlib.Path.home()), 'bots.db')
@@ -65,7 +66,7 @@ def get_user_rating(userid, cursor=None):
 
 
 
-class GoodBot:
+class GoodBot(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -84,24 +85,24 @@ class GoodBot:
         self.previous_author = dict()
         self.noticed = set()
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command()
     async def rating(self, ctx, user: discord.Member=None):
         """
         Displays a user rating in the form <score> (<updoots>/<downdoots>/<totaldoots>)
         """
         if user is None:
-            await self.bot.say('Please actually provide a user you bot.')
+            await ctx.send('Please actually provide a user you bot.')
             return
         if not user_exists(user.id):
-            await self.bot.say('{} hasn\'t been rated'.format(user.mention))
+            await ctx.send('{} hasn\'t been rated'.format(user.mention))
             return
         good, bad = get_user_rating(user.id)
-        await self.bot.say('User {} has a score of {}'.format(
+        await ctx.send('User {} has a score of {}'.format(
                             user.mention,
                             good - bad
             ))
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def goodbots(self, ctx):
         con = sq.connect(RATINGSFILE)
         c = con.cursor()
@@ -117,10 +118,10 @@ class GoodBot:
         results.sort(key=lambda tup: -tup[1])
         results = ['  '.join([str(_) for _ in row]) for row in results]
         scores = '\n'.join(results)
-        await self.bot.say('```\nScores\n===========\n{}```'.format(scores))
+        await ctx.send('```\nScores\n===========\n{}```'.format(scores))
         con.close()
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def see_previous(self, ctx):
         if ctx.message.author.id != '142431859148718080':
             return
@@ -135,12 +136,10 @@ class GoodBot:
             in self.previous_author.items()
         }
         pretty_version = pp.pformat(resolved_previous)
-        await self.bot.say('```{}```'.format(pretty_version))
+        await ctx.send('```{}```'.format(pretty_version))
 
 
-def setup(bot):
-    n = GoodBot(bot)
-    bot.add_cog(n)
+def generate_handlers(bot):
 
     async def goodbot(message, reaction=None, action=None):
         # Prevent snek from voting on herself or counting
@@ -190,8 +189,6 @@ def setup(bot):
             con.commit()
         con.close()
 
-    bot.add_listener(goodbot, 'on_message')
-
     async def parse_reaction_add(reaction, user):
         # Prevent acting on DM's
         if reaction.message.channel.name is None:
@@ -220,7 +217,10 @@ def setup(bot):
             # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
             #     await bot.delete_message(reaction.message)
             if ((reaction.count >= 8) and (reaction.message.id not in n.noticed)):
-                await bot.send_message(reaction.message.channel,'{} IS A BAD BOT'.format(reaction.message.author.mention))
+                await bot.send_filtered(
+                    reaction.message.channel,
+                    content='{} IS A BAD BOT'.format(reaction.message.author.mention)
+                )
                 n.noticed.add(reaction.message.id)
         elif reaction.emoji == '👍':
             # Downvote for self votes
@@ -229,8 +229,10 @@ def setup(bot):
             else:
                 rating = (1, 0)
             if ((reaction.count >= 8) and (reaction.message.id not in n.noticed)):
-                await bot.send_message(reaction.message.channel,
-                                       '{} IS A GOOD BOT'.format(reaction.message.author.mention))
+                await bot.send_filtered(
+                    reaction.message.channel,
+                   content='{} IS A GOOD BOT'.format(reaction.message.author.mention)
+               )
                 n.noticed.add(reaction.message.id)
 
         if rating is not None:
@@ -255,5 +257,5 @@ def setup(bot):
 
         await rate_user(reaction.message.author.id, rating)
 
-    bot.add_listener(parse_reaction_add, 'on_reaction_add')
-    bot.add_listener(parse_reaction_remove, 'on_reaction_remove')
+
+    return goodbot, parse_reaction_add, parse_reaction_remove

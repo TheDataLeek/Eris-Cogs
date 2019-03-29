@@ -1,6 +1,5 @@
 {
-    "AUTHOR" : "SpatulaFish",
-    "DESCRIPTION" : "Good Bot Bad Bot",
-    "DISABLED" : false,
-    "NAME" : "goodbot"
+    "author" : "Eris",
+    "description" : "Good Bot Bad Bot",
+    "name" : "goodbot"
 }
