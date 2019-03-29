@@ -2,13 +2,18 @@ import os
 import time
 import re
 import discord
-from discord.ext import commands
 import random
 from functools import reduce
 
 import sqlite3
 import pathlib
 import csv
+
+from redbot.core import checks, Config, commands
+
+__author__ = 'Eris'
+
+BaseCog = getattr(commands, 'Cog', object)
 
 
 WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
@@ -475,8 +480,9 @@ def get_realname(userid: str):
         return name[0][0]
 
 
-class Spoop(object):
+class Spoop(BaseCog):
     def __init__(self, bot):
+        super().__init__()
         self.bot = bot
 
     @commands.command(pass_context=True, no_pm=True)
@@ -502,59 +508,39 @@ class Spoop(object):
         await self.bot.delete_message(ctx.message)
 
 
-def setup(bot):
-    async def message_events(message):
-        clean_message = message.clean_content.lower()
-        # MM: Added so list instead of string
-        message_split = clean_message.split(' ')
+async def message_events(message):
+    clean_message = message.clean_content.lower()
+    # MM: Added so list instead of string
+    message_split = clean_message.split(' ')
 
-        regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
-        if re.search(regex, clean_message) is not None:
-            await bot.delete_message(message)
-            return
+    regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
+    if re.search(regex, clean_message) is not None:
+        await bot.delete_message(message)
+        return
 
-        # DO NOT RESPOND TO SELF MESSAGES
-        if bot.user.id == message.author.id or message.content.startswith('.'):
-            return
+    # DO NOT RESPOND TO SELF MESSAGES
+    if bot.user.id == message.author.id or message.content.startswith('.'):
+        return
 
-        # BLACKLIST CHANNELS
-        blacklist = [
-            'news',
-            'rpg',
-            'events',
-            'recommends',
-            'politisophy',
-            'eyebleach',
-            'weeb-lyfe',
-            'out-of-context',
-            'jokes',
-            'anime-club',
-        ]
+    # BLACKLIST CHANNELS
+    blacklist = [
+        'news',
+        'rpg',
+        'events',
+        'recommends',
+        'politisophy',
+        'eyebleach',
+        'weeb-lyfe',
+        'out-of-context',
+        'jokes',
+        'anime-club',
+    ]
 
-        realname = get_realname(message.author.id)
+    realname = get_realname(message.author.id)
 
-        # IF DM's
-        if message.channel.name is None:
-            if random.random() < 0.1:
-                if realname is None:
-                    formatname = message.author.mention
-                else:
-                    formatname = realname
-                new_message = random.choice(yandere)
-                new_message = ' '.join(x.format(formatname)
-                                       for x in new_message.split(' '))
-                await bot.send_message(message.author, new_message)
-            return
-
-        message_channel = message.channel.name.lower()
-        if reduce(
-                lambda acc, n: acc or (n == message_channel),
-                blacklist,
-                False):
-            return
-
-        # spoopy factor
-        if random.random() < 0.001:
+    # IF DM's
+    if message.channel.name is None:
+        if random.random() < 0.1:
             if realname is None:
                 formatname = message.author.mention
             else:
@@ -563,116 +549,132 @@ def setup(bot):
             new_message = ' '.join(x.format(formatname)
                                    for x in new_message.split(' '))
             await bot.send_message(message.author, new_message)
-            return
+        return
 
-        # love
-        if 'love' in clean_message and random.random() <= 0.1:
-            await bot.send_message(message.channel, '*WHAT IS LOVE?*')
-            time.sleep(2)
-            await bot.send_message(message.channel, '*baby don\'t hurt me*')
-            time.sleep(2)
-            await bot.send_message(message.channel, '*don\'t hurt me*')
-            time.sleep(2)
-            await bot.send_message(message.channel, '*no more*')
-            return
+    message_channel = message.channel.name.lower()
+    if reduce(
+            lambda acc, n: acc or (n == message_channel),
+            blacklist,
+            False):
+        return
 
-        # first let's have a tiny chance of snek actually responding with ooc content
-        if random.random() <= 0.01:
-            with open('./data/events/ooc/ooc.txt', 'r') as fobj:
-                quotes = fobj.readlines()
-            await bot.send_message(message.channel, random.choice(quotes))
-            return
+    # spoopy factor
+    if random.random() < 0.001:
+        if realname is None:
+            formatname = message.author.mention
+        else:
+            formatname = realname
+        new_message = random.choice(yandere)
+        new_message = ' '.join(x.format(formatname)
+                               for x in new_message.split(' '))
+        await bot.send_message(message.author, new_message)
+        return
 
-        # now lets check for contents
-        if 'praise' in clean_message or 'pray' in clean_message:
-            root_dir = './data/events/pray'
-            files_to_choose = [os.path.join(root_dir, f)
-                               for f in os.listdir(root_dir)
-                               if os.path.isfile(os.path.join(root_dir, f))]
-            with open(random.choice(files_to_choose), 'rb') as fobj:
-                new_msg = await bot.send_file(message.channel, fobj)
-            await bot.add_reaction(new_msg, '🙏')
-            return
+    # love
+    if 'love' in clean_message and random.random() <= 0.1:
+        await bot.send_message(message.channel, '*WHAT IS LOVE?*')
+        time.sleep(2)
+        await bot.send_message(message.channel, '*baby don\'t hurt me*')
+        time.sleep(2)
+        await bot.send_message(message.channel, '*don\'t hurt me*')
+        time.sleep(2)
+        await bot.send_message(message.channel, '*no more*')
+        return
 
-        # only do the others half the time cause fuck it it's tooo much
-        if random.random() <= 0.5:
-            return
+    # first let's have a tiny chance of snek actually responding with ooc content
+    if random.random() <= 0.01:
+        with open('./data/events/ooc/ooc.txt', 'r') as fobj:
+            quotes = fobj.readlines()
+        await bot.send_message(message.channel, random.choice(quotes))
+        return
 
-        # NEW (MM): check for punny words and respond
-        trigger = set(triggers.keys()).intersection(message_split)
+    # now lets check for contents
+    if 'praise' in clean_message or 'pray' in clean_message:
+        root_dir = './data/events/pray'
+        files_to_choose = [os.path.join(root_dir, f)
+                           for f in os.listdir(root_dir)
+                           if os.path.isfile(os.path.join(root_dir, f))]
+        with open(random.choice(files_to_choose), 'rb') as fobj:
+            new_msg = await bot.send_file(message.channel, fobj)
+        await bot.add_reaction(new_msg, '🙏')
+        return
 
-        if random.random() <= 0.25:
-            for word in message_split:
-                if 'men' in word:
-                    bits = word.split('men')
-                    await bot.send_message(
-                        message.channel,
-                        'Not just the {} but the {} and {} too!'.format(
-                            word,
-                            'women'.join(bits),
-                            'children'.join(bits),
-                        )
+    # only do the others half the time cause fuck it it's tooo much
+    if random.random() <= 0.5:
+        return
+
+    # NEW (MM): check for punny words and respond
+    trigger = set(triggers.keys()).intersection(message_split)
+
+    if random.random() <= 0.25:
+        for word in message_split:
+            if 'men' in word:
+                bits = word.split('men')
+                await bot.send_message(
+                    message.channel,
+                    'Not just the {} but the {} and {} too!'.format(
+                        word,
+                        'women'.join(bits),
+                        'children'.join(bits),
                     )
-                    return
+                )
+                return
 
-        if random.random() <= 0.1:
-            with open('./data/e7sgd020ew501.png', 'rb') as fobj:
-                new_msg = await bot.send_file(message.channel, fobj)
-            return
-        elif 'thank' in clean_message:
-            new_message = "you're welcome"
-            if random.random() < 0.5:
-                if realname is None:
-                    formatname = message.author.mention
-                else:
-                    formatname = realname
-                new_message += " {}".format(formatname)
-            await bot.send_message(message.channel, new_message)
-
-        elif 'snek' in clean_message:
-            msg = ':snake: ~ !! I :heart: you {}!!! ~ :snake:'
-            if realname is not None and random.random() <= 0.5:
-                msg = msg.format(realname)
+    if random.random() <= 0.1:
+        with open('./data/e7sgd020ew501.png', 'rb') as fobj:
+            new_msg = await bot.send_file(message.channel, fobj)
+        return
+    elif 'thank' in clean_message:
+        new_message = "you're welcome"
+        if random.random() < 0.5:
+            if realname is None:
+                formatname = message.author.mention
             else:
-                msg = msg.format('senpai')
-            await bot.send_message(message.channel, msg)
-        # elif 'blood' in clean_message:
-        #     await bot.send_message(message.channel, 'B̵̪̳̣͍̙̳̬̭͞͝L͢͏̸͏̧̙̼͓̘̯͉̩̩̞͚͕̲̰̼̘̦ͅÒ̮͈̖͔̰̞͝O̵͖͔̟̰͔͚̬͟͝ͅḐ̸̭͙̜̺̞͍͎͔͜͡͡ ̨̨̟̝̦̬̩̳̖͟ͅF̤̭̬͙̀̀͘͠O̶̯̠̞̲̫̱̻̮͎̦̳̝͉̮̕ͅŔ̡͈͕̼͖̥̰̭̟̝͟ ̡̲̯͉̤͈̘͎̬͎̺̟͞T̴̸̟̺̬̼̣̖͓̩̯͇̣̩̺̮͘Ḫ̣̥͍͙͍͓͔͈̖̬̘̩͔͖̝͖̀͘E̶̡̛̯̞̱̯̗͍͖͇̹̖̳̩̥̳̳̙͢͝ ̡͓͍͕͔̳̠͍̥̞̙͖̙̦͕̠̪̘̕ͅB̪͕̻̺͈̤̟̻͖̣͙̪̝̭̀͘͠Ḻ̵̨̞̯̥̭͈̪̻̰̭́́͝O̧͜͏̰͓̘̖̘̬̤ͅǪ̥̟̘̪̱͔͇̖͟D̸̡҉̶̫͕͖̹̤̜̪̟̝̯͚ ̵̨̛̯̺̤̮̲͓̦̜̪̕͝G̙̩͖̭̘̤̩̕Ǫ͎͉̲̤͓͇̦̖̯͇̥͔͓̣̘̦̪̀D͘͘͏͡͏͙̠͈̮̱̼')
-        # elif 'skull' in clean_message:
-        #     await bot.send_message(message.channel, 'S̡̟͉̻͔̩͕͙̳͜͟͜K҉̵͏̳͕͉͈̟͙̰͖͍̦͙̱̙̥̤̞̱U͏̥̲͉̞͉̭͟͟ͅL̵̶̯̼̪͉̮̰͙͍͟͜Ḻ̶̗̬̬͉̗̖̮̰̹̺̬̺͢͢͡ͅͅŚ̶̢͎̳̯͚̠̞͉̦̙̥̟̲̺̗̮̱͚̬͡͠ ̶̡̧̲̟͖̤͓̮̮͕̭͍̟͔͓͚̺̣̱͙͍͜͜F̶̡̢̨̯͖͎̻̝̱͚̣̦̭̞̣̰̳̣̩O̴̴̷̠̜̥̭̳̩̤͎̦̲͈͝ͅŔ̡̨̼̝̩̣͙̬̱̫͉̭͈̗̙͢͡ ͠͏̗̙͎̫̟̜̻̹̹̘̬̖ͅT̴͉̙̥̲̠͎̭͇͚̟͝͡Ḩ̺͕̦̭̪̼̼̮̰͍̲͍̯̗͇͘͘͝͝E̡̻̮̘̭͎̥̺̘͉̟̪̮̮͜͢͡ ̡̰͙̮͙͈̠͍̞̠̀͠Ṣ̷̡̡̛̜̞̣͙͇̭̣̳͕̖̺̱̳̭͖͞ͅͅK̵҉̨͇̭̯͍̱̞̦͎̥̼͢U̡̧̯̗̙͇͈̣̪̲͜L̸̢͖͇̲̤̼͕͡L̻̻͖̭̪͖͙̫͎̜̲̬̕͜͞͡ͅ ̷̸̨̛̩͉̺̩͔̯͖̠̳͖̞̠̩͖̠ͅT̶̷̤̩͉̝̗̲͕̩̪̮̝̜̰̻̗̪̀ͅH̵̴̷̯̮͎̖͙̦̙͇̣̩̣̭̝́͝ͅR̨̧͍̮̪̜̯̖̹̜̹͈̗̕͡͠O҉̶͚͎̻͉̮̞͉̳ͅN̷̛̩̤̟̣͕͍͎̻̜͓̖̭͖̠͎̲̺͝ͅĘ̸̸͍̪̼̜͎̫̘̳͓̥')
-        # elif 'god' in clean_message:
-        #     await bot.send_message(message.channel, 'P̸̨̛͖̦̮̘̯͙̭͍̣̠͕͜Ŕ̵̷̨̗̱͖̦̰͈͍̩̯̼͍̟̙͓̱̤͘ͅA̸̴̡͇̠͈͍̲͘͘ͅĮ̨͈͙̣̘̼́̕S̴̥̯̱̜̟͙̘̘͉̟̮̱̙̘̻͖͟͠͞E̢̨̘̮͕̺̖̰̹͢͝ ̷̴̡̛̗͈͓̻͔̭̫̝̦͎͙̳͙͓̠̞̪͔̱B̵̸̻̼̯̲̻͢͝E̱̘͇͔͙̯̥͉̪̱̤̪̩͍͉̲̟̖̗͜͢͢͜ ̨̡͕̮̤͉̙̦̱͚̬̖͈͢͞ͅÙ̳̫̙̰̙͓͘͘N̞̳͉̬͈̦̭̱̕̕͜T̶̳̝̼̗̝͡O̡̡͔̬͍͚͔̲̳͞ ̵̰͔̙̦̩͕͖̝N̡̡̬̗̣͔̗͔͖̳͚̠͙̤̙̼̘̞I̛̛̬̥̝̘̖̣̩G̵̕͝҉̖̮̩̼͓̯͙̳̀Ģ̵̹͇̙͔̼̼͎̞̤̬̜̭̣͙͕̳̻͘͡ͅǪ̴͕͈̮̮̩͔͎̼̫̝̼̹Ţ̸̧͚̬̣̪͉̲̪̖̹̻̪͚͉̟͚̥̹̀̕H̷͘҉̩͔̩̦̳̪̼̬͙̰̙͕̼͈ͅ ̸̯̤̠̙͓͇̣͙͓̗̙̜̞̯͜͞ͅŢ҉̵̯̥̩͖̬̺̻̮̘̼͔͍̞͈̼̲̪͜͟H̨͟҉̨̟̠̫̠̬̦̪̞͎͍͇̮͔ͅĘ̥̫͉̫͖̱͈̖̦̳̥͙̱͙̱͡ ̷̢̭̠͔̖̱W̟̩̪͍̘̩̦͟͟͞Ǫ̡͔̮̜̝̩̗̱̙͇̣̤̰̲̭̝̳̘̩́̀́ͅR̸̳̰̪̝͉̲̙̖̯̠̞̞̗͘͢M̴̨̭̦̗͖͎̬̳̖̲͢͡ ̨̛̙̰͕̦̠͚̠̖̘̲̱͜͡G̼̬̞̜̭͔̯̪̠̯̲̟̙̻̜̀͘͜O̡̖̰͕͙̯͖̙͍͙̲͈̘͓̥̱͢͢͠D̵̞̤̗͕̪͘͟͝͡ͅ')
+                formatname = realname
+            new_message += " {}".format(formatname)
+        await bot.send_message(message.channel, new_message)
 
-        # elif 'dragon' in clean_message:
-        #     await bot.send_message(message.channel, dragonart)
-        elif 'penis' in clean_message:
-            root_dir = './data/events/penis'
-            files_to_choose = [os.path.join(root_dir, f)
-                               for f in os.listdir(root_dir)
-                               if os.path.isfile(os.path.join(root_dir, f))]
-            with open(random.choice(files_to_choose), 'rb') as fobj:
-                new_msg = await bot.send_file(message.channel, fobj)
-            await bot.add_reaction(new_msg, '🌈')
-            await bot.add_reaction(new_msg, '🍆')
-            await bot.add_reaction(new_msg, '💦')
-        elif reduce(
-                lambda acc, n: acc or (n in clean_message),
-                dickwords,
-                False):
-            await bot.add_reaction(message, '🇵')
-            await bot.add_reaction(message, '🇪')
-            await bot.add_reaction(message, '🇳')
-            await bot.add_reaction(message, '🇮')
-            await bot.add_reaction(message, '🇸')
-        elif reduce(
-                lambda acc, n: acc or (n in clean_message),
-                vag_words,
-                False):
-            await bot.add_reaction(message, '😞')
-        elif len(trigger) != 0:
-            await bot.send_message(message.channel, triggers[list(trigger)[0]])
+    elif 'snek' in clean_message:
+        msg = ':snake: ~ !! I :heart: you {}!!! ~ :snake:'
+        if realname is not None and random.random() <= 0.5:
+            msg = msg.format(realname)
+        else:
+            msg = msg.format('senpai')
+        await bot.send_message(message.channel, msg)
+    # elif 'blood' in clean_message:
+    #     await bot.send_message(message.channel, 'B̵̪̳̣͍̙̳̬̭͞͝L͢͏̸͏̧̙̼͓̘̯͉̩̩̞͚͕̲̰̼̘̦ͅÒ̮͈̖͔̰̞͝O̵͖͔̟̰͔͚̬͟͝ͅḐ̸̭͙̜̺̞͍͎͔͜͡͡ ̨̨̟̝̦̬̩̳̖͟ͅF̤̭̬͙̀̀͘͠O̶̯̠̞̲̫̱̻̮͎̦̳̝͉̮̕ͅŔ̡͈͕̼͖̥̰̭̟̝͟ ̡̲̯͉̤͈̘͎̬͎̺̟͞T̴̸̟̺̬̼̣̖͓̩̯͇̣̩̺̮͘Ḫ̣̥͍͙͍͓͔͈̖̬̘̩͔͖̝͖̀͘E̶̡̛̯̞̱̯̗͍͖͇̹̖̳̩̥̳̳̙͢͝ ̡͓͍͕͔̳̠͍̥̞̙͖̙̦͕̠̪̘̕ͅB̪͕̻̺͈̤̟̻͖̣͙̪̝̭̀͘͠Ḻ̵̨̞̯̥̭͈̪̻̰̭́́͝O̧͜͏̰͓̘̖̘̬̤ͅǪ̥̟̘̪̱͔͇̖͟D̸̡҉̶̫͕͖̹̤̜̪̟̝̯͚ ̵̨̛̯̺̤̮̲͓̦̜̪̕͝G̙̩͖̭̘̤̩̕Ǫ͎͉̲̤͓͇̦̖̯͇̥͔͓̣̘̦̪̀D͘͘͏͡͏͙̠͈̮̱̼')
+    # elif 'skull' in clean_message:
+    #     await bot.send_message(message.channel, 'S̡̟͉̻͔̩͕͙̳͜͟͜K҉̵͏̳͕͉͈̟͙̰͖͍̦͙̱̙̥̤̞̱U͏̥̲͉̞͉̭͟͟ͅL̵̶̯̼̪͉̮̰͙͍͟͜Ḻ̶̗̬̬͉̗̖̮̰̹̺̬̺͢͢͡ͅͅŚ̶̢͎̳̯͚̠̞͉̦̙̥̟̲̺̗̮̱͚̬͡͠ ̶̡̧̲̟͖̤͓̮̮͕̭͍̟͔͓͚̺̣̱͙͍͜͜F̶̡̢̨̯͖͎̻̝̱͚̣̦̭̞̣̰̳̣̩O̴̴̷̠̜̥̭̳̩̤͎̦̲͈͝ͅŔ̡̨̼̝̩̣͙̬̱̫͉̭͈̗̙͢͡ ͠͏̗̙͎̫̟̜̻̹̹̘̬̖ͅT̴͉̙̥̲̠͎̭͇͚̟͝͡Ḩ̺͕̦̭̪̼̼̮̰͍̲͍̯̗͇͘͘͝͝E̡̻̮̘̭͎̥̺̘͉̟̪̮̮͜͢͡ ̡̰͙̮͙͈̠͍̞̠̀͠Ṣ̷̡̡̛̜̞̣͙͇̭̣̳͕̖̺̱̳̭͖͞ͅͅK̵҉̨͇̭̯͍̱̞̦͎̥̼͢U̡̧̯̗̙͇͈̣̪̲͜L̸̢͖͇̲̤̼͕͡L̻̻͖̭̪͖͙̫͎̜̲̬̕͜͞͡ͅ ̷̸̨̛̩͉̺̩͔̯͖̠̳͖̞̠̩͖̠ͅT̶̷̤̩͉̝̗̲͕̩̪̮̝̜̰̻̗̪̀ͅH̵̴̷̯̮͎̖͙̦̙͇̣̩̣̭̝́͝ͅR̨̧͍̮̪̜̯̖̹̜̹͈̗̕͡͠O҉̶͚͎̻͉̮̞͉̳ͅN̷̛̩̤̟̣͕͍͎̻̜͓̖̭͖̠͎̲̺͝ͅĘ̸̸͍̪̼̜͎̫̘̳͓̥')
+    # elif 'god' in clean_message:
+    #     await bot.send_message(message.channel, 'P̸̨̛͖̦̮̘̯͙̭͍̣̠͕͜Ŕ̵̷̨̗̱͖̦̰͈͍̩̯̼͍̟̙͓̱̤͘ͅA̸̴̡͇̠͈͍̲͘͘ͅĮ̨͈͙̣̘̼́̕S̴̥̯̱̜̟͙̘̘͉̟̮̱̙̘̻͖͟͠͞E̢̨̘̮͕̺̖̰̹͢͝ ̷̴̡̛̗͈͓̻͔̭̫̝̦͎͙̳͙͓̠̞̪͔̱B̵̸̻̼̯̲̻͢͝E̱̘͇͔͙̯̥͉̪̱̤̪̩͍͉̲̟̖̗͜͢͢͜ ̨̡͕̮̤͉̙̦̱͚̬̖͈͢͞ͅÙ̳̫̙̰̙͓͘͘N̞̳͉̬͈̦̭̱̕̕͜T̶̳̝̼̗̝͡O̡̡͔̬͍͚͔̲̳͞ ̵̰͔̙̦̩͕͖̝N̡̡̬̗̣͔̗͔͖̳͚̠͙̤̙̼̘̞I̛̛̬̥̝̘̖̣̩G̵̕͝҉̖̮̩̼͓̯͙̳̀Ģ̵̹͇̙͔̼̼͎̞̤̬̜̭̣͙͕̳̻͘͡ͅǪ̴͕͈̮̮̩͔͎̼̫̝̼̹Ţ̸̧͚̬̣̪͉̲̪̖̹̻̪͚͉̟͚̥̹̀̕H̷͘҉̩͔̩̦̳̪̼̬͙̰̙͕̼͈ͅ ̸̯̤̠̙͓͇̣͙͓̗̙̜̞̯͜͞ͅŢ҉̵̯̥̩͖̬̺̻̮̘̼͔͍̞͈̼̲̪͜͟H̨͟҉̨̟̠̫̠̬̦̪̞͎͍͇̮͔ͅĘ̥̫͉̫͖̱͈̖̦̳̥͙̱͙̱͡ ̷̢̭̠͔̖̱W̟̩̪͍̘̩̦͟͟͞Ǫ̡͔̮̜̝̩̗̱̙͇̣̤̰̲̭̝̳̘̩́̀́ͅR̸̳̰̪̝͉̲̙̖̯̠̞̞̗͘͢M̴̨̭̦̗͖͎̬̳̖̲͢͡ ̨̛̙̰͕̦̠͚̠̖̘̲̱͜͡G̼̬̞̜̭͔̯̪̠̯̲̟̙̻̜̀͘͜O̡̖̰͕͙̯͖̙͍͙̲͈̘͓̥̱͢͢͠D̵̞̤̗͕̪͘͟͝͡ͅ')
 
-    n = Spoop(bot)
-    bot.add_cog(n)
-    bot.add_listener(message_events, 'on_message')
+    # elif 'dragon' in clean_message:
+    #     await bot.send_message(message.channel, dragonart)
+    elif 'penis' in clean_message:
+        root_dir = './data/events/penis'
+        files_to_choose = [os.path.join(root_dir, f)
+                           for f in os.listdir(root_dir)
+                           if os.path.isfile(os.path.join(root_dir, f))]
+        with open(random.choice(files_to_choose), 'rb') as fobj:
+            new_msg = await bot.send_file(message.channel, fobj)
+        await bot.add_reaction(new_msg, '🌈')
+        await bot.add_reaction(new_msg, '🍆')
+        await bot.add_reaction(new_msg, '💦')
+    elif reduce(
+            lambda acc, n: acc or (n in clean_message),
+            dickwords,
+            False):
+        await bot.add_reaction(message, '🇵')
+        await bot.add_reaction(message, '🇪')
+        await bot.add_reaction(message, '🇳')
+        await bot.add_reaction(message, '🇮')
+        await bot.add_reaction(message, '🇸')
+    elif reduce(
+            lambda acc, n: acc or (n in clean_message),
+            vag_words,
+            False):
+        await bot.add_reaction(message, '😞')
+    elif len(trigger) != 0:
+        await bot.send_message(message.channel, triggers[list(trigger)[0]])
+
 
