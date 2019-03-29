@@ -1,6 +1,5 @@
 {
-    "AUTHOR" : "SpatulaFish",
-    "DESCRIPTION" : "Sarcasm Module",
-    "DISABLED" : false,
-    "NAME" : "Sarcasm"
+    "author" : "Eris",
+    "description" : "Sarcasm Module",
+    "name" : "Sarcasm"
 }
