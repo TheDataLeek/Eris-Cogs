@@ -15,7 +15,7 @@ class Insult(BaseCog):
         self.bot = bot
         self.insults = insults
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command
     async def insult(self, ctx, user : discord.Member=None):
         """Insult the user"""
         msg = ' '
