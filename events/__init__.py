@@ -1,5 +1,8 @@
-from .events import Spoop, message_events
+from .events import Spoop, generate_handler
 
 def setup(bot):
     bot.add_cog(Spoop(bot))
-    bot.add_listener(message_events, 'on_message')
+
+    message_handler = generate_handler(bot)
+
+    bot.add_listener(message_handler, 'on_message')
