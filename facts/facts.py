@@ -1,11 +1,6 @@
 import discord
 from redbot.core import commands
-from .utils.dataIO import fileIO
 from random import choice as randchoice
-import aiohttp
-import html
-import json
-import random
 
 BaseCog = getattr(commands, "Cog", object)
 
