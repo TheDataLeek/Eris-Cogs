@@ -151,7 +151,7 @@ def generate_handlers(bot):
             return
 
         clean_message = message.clean_content.lower()
-        server = message.channel.server.id
+        server = message.server.id
         channel = message.channel.id
 
         rating = None
