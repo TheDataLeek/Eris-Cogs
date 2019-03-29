@@ -111,7 +111,7 @@ class GoodBot(BaseCog):
         results = []
         for userid, good, bad in db_results:
             try:
-                results.append((ctx.message.server.get_member(userid).nick, good - bad))
+                results.append((ctx.guild.get_member(userid).nick, good - bad))
             except Exception as e:
                 print(e)
                 pass
@@ -126,9 +126,9 @@ class GoodBot(BaseCog):
         if ctx.message.author.id != '142431859148718080':
             return
         resolved_previous = {
-            self.bot.get_server(server_id).name: {
+            self.bot.get_guild(server_id).name: {
                 self.bot.get_channel(channel_id).name:
-                    self.bot.get_server(server_id).get_member(user_id).name
+                    self.bot.get_guild(server_id).get_member(user_id).name
                 for channel_id, user_id
                 in channels.items()
             }
@@ -194,7 +194,7 @@ def generate_handlers(bot, gb_instance):
         if reaction.message.channel.name is None:
             return
 
-        server = reaction.message.channel.server.id
+        server = reaction.message.guild.id
         channel = reaction.message.channel.id
 
         rating = None   # (+, -)
@@ -243,7 +243,7 @@ def generate_handlers(bot, gb_instance):
         if reaction.message.channel.name is None:
             return
 
-        server = reaction.message.channel.server.id
+        server = reaction.message.guild.id
         channel = reaction.message.channel.id
 
         rating = None
