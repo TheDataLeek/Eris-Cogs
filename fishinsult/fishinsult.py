@@ -20,7 +20,7 @@ class Insult(BaseCog):
         """Insult the user"""
         msg = ' '
         if user == None: # or user.id == '142431859148718080':
-            await self.bot.say(ctx.message.author.mention + msg + randchoice(self.insults))
+            await ctx.send(ctx.message.author.mention + msg + randchoice(self.insults))
         else:
             if user.id == self.bot.user.id:
                 user = ctx.message.author
