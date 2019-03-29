@@ -1,6 +1,5 @@
 import discord
-from discord.ext import commands
-from .utils.dataIO import fileIO
+from redbot.core import commands
 from random import choice as randchoice
 import random
 import aiohttp
@@ -8,7 +7,9 @@ import html
 import random
 import xml.etree.ElementTree as ET
 
-class Insult:
+BaseCog = getattr(commands, "Cog", object)
+
+class Insult(BaseCog):
     """Insult Cog"""
     def __init__(self, bot):
         self.bot = bot
@@ -27,11 +28,11 @@ class Insult:
                         "itself. I applaud your creativity. Yawn. Perhaps this is why you don't have "
                         "friends. You don't add anything new to any conversation. You are more of a "
                         "bot than me, predictable answers, and absolutely dull to have an actual conversation with.")
-                await self.bot.say(user.mention + msg)
+                await ctx.send(user.mention + msg)
             else:
                 if random.random() <= 0.8:
                     msg = ' {}'.format(randchoice(self.insults))
-                    await self.bot.say(user.mention + msg)
+                    await ctx.send(user.mention + msg)
                 else:
                     url = 'http://www.dickless.org/api/insult.xml'
                     async with aiohttp.ClientSession() as session:
@@ -39,13 +40,7 @@ class Insult:
                             raw_insult = await resp.text()
                             root = ET.fromstring(raw_insult)
                             insult = root[1].text
-                            await self.bot.say("{} {}".format(user.mention, insult))
-
-
-
-def setup(bot):
-    n = Insult(bot)
-    bot.add_cog(n)
+                            await ctx.send("{} {}".format(user.mention, insult))
 
 
 # Insults are listed here for ease. Separate data file /could/ be added, but it makes installation simpler
