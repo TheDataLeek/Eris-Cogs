@@ -515,7 +515,7 @@ def generate_handler(bot):
         message_split = clean_message.split(' ')
 
         print('here')
-        ctx = bot.get_context()
+        ctx = bot.get_context(message)
         print(ctx)
         await ctx.send('foobar')
 
