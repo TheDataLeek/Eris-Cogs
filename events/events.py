@@ -514,6 +514,8 @@ def generate_handler(bot):
         # MM: Added so list instead of string
         message_split = clean_message.split(' ')
 
+        print('here')
+
         regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
         if re.search(regex, clean_message) is not None:
             await bot.delete_message(message)
