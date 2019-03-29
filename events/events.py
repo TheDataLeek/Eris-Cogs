@@ -515,6 +515,9 @@ def generate_handler(bot):
         message_split = clean_message.split(' ')
 
         print('here')
+        ctx = bot.get_context()
+        print(ctx)
+        await ctx.send('foobar')
 
         regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
         if re.search(regex, clean_message) is not None:
