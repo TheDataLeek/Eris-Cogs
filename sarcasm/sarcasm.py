@@ -52,7 +52,7 @@ class Sarcasm(BaseCog):
 
             # if random.random() <= 0.02:
             if random.random() <= 1:
-                await bot.send_message(message.channel, add_sarcasm(clean_message))
+                await bot.send_filtered(message.channel, add_sarcasm(clean_message))
                 if random.random() <= 0.5:
                     with open('./data/sarcasm/img.png', 'rb') as fobj:
                         await bot.send_file(message.channel, fobj)
