@@ -59,14 +59,14 @@ class Notify(BaseCog):
     @commands.group()
     async def notify(self, ctx):
         if ctx.invoked_subcommand is None:
-            await self.bot.say('Please choose a command: `list`, `register`, or `delete`')
+            pass
 
     @notify.command()
     async def test(self, ctx):
         self.client.messages.create(to='7192333514', body='test message1', from_='4159410429')
         self.client.messages.create(to='7192333514', body='test message2', from_='4159410429')
         self.client.messages.create(to='7192333514', body='test message3', from_='4159410429')
-        await ctx.send('Messages Send Successfully')
+        await ctx.send('Messages Sent Successfully')
 
     @notify.command()
     async def register(self, ctx, number : str):
