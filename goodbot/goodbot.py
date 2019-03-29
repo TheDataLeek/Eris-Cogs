@@ -3,6 +3,7 @@
 import os
 import discord
 from redbot.core import commands
+from redbot.core import utils
 import sqlite3 as sq
 
 import pprint as pp
@@ -91,12 +92,14 @@ class GoodBot(BaseCog):
         Displays a user rating in the form <score> (<updoots>/<downdoots>/<totaldoots>)
         """
         if user is None:
-            await ctx.send('Please actually provide a user you bot.')
-            return
+            user = ctx.author
+
         if not user_exists(user.id):
             await ctx.send('{} hasn\'t been rated'.format(user.mention))
             return
+
         good, bad = get_user_rating(user.id)
+
         await ctx.send('User {} has a score of {}'.format(
                             user.mention,
                             good - bad

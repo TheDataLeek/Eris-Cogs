@@ -54,18 +54,19 @@ class Notify:
 
         self.bot.add_listener(message_events, 'on_message')
 
-    @commands.group(pass_context=True, no_pm=True)
+    @commands.group()
     async def notify(self, ctx):
         if ctx.invoked_subcommand is None:
             await self.bot.say('Please choose a command: `list`, `register`, or `delete`')
 
     @notify.command()
-    async def test(self):
+    async def test(self, ctx):
         self.client.messages.create(to='7192333514', body='test message1', from_='4159410429')
         self.client.messages.create(to='7192333514', body='test message2', from_='4159410429')
         self.client.messages.create(to='7192333514', body='test message3', from_='4159410429')
+        await ctx.send('Messages Send Successfully')
 
-    @notify.command(pass_context=True)
+    @notify.command()
     async def register(self, ctx, number : str):
         """Register a phone number for notifications"""
         if re.match('[0-9]+', number) and len(number) >= 9:
@@ -75,17 +76,17 @@ class Notify:
                                    if len(x) > 0]
 
             if number in current_numbers:
-                await self.bot.say('This number is already registered')
+                await ctx.send('This number is already registered')
                 return
 
             with open(NUMBERFILE, 'a') as fobj:
                 fobj.write(number)
                 fobj.write('\n')
-                await self.bot.say('{} has been registered'.format(number))
+                await ctx.send('{} has been registered'.format(number))
         else:
-            await self.bot.say('Please provide a valid phone number')
+            await ctx.send('Please provide a valid phone number')
 
-    @notify.command(pass_context=True)
+    @notify.command()
     async def delete(self, ctx, number : str):
         """delete a phone number for notifications"""
         if re.match('[0-9]+', number) and len(number) >= 10:
@@ -95,7 +96,7 @@ class Notify:
                                    if len(x) > 0]
 
             if number not in current_numbers:
-                await self.bot.say('This number is not registered')
+                await ctx.send('This number is not registered')
                 return
 
             current_numbers = list(set(current_numbers) - set([number]))
@@ -103,19 +104,15 @@ class Notify:
                 for num in current_numbers:
                     fobj.write(num)
                     fobj.write('\n')
-                await self.bot.say('{} has been deleted'.format(number))
+                await ctx.send('{} has been deleted'.format(number))
         else:
-            await self.bot.say('Please provide a valid phone number')
+            await ctx.send('Please provide a valid phone number')
 
-    @notify.command(pass_context=True)
+    @notify.command()
     async def list(self, ctx):
         with open(NUMBERFILE, 'r') as fobj:
             current_numbers = [x for x in
                                fobj.read().split('\n')
                                if len(x) > 0]
-            await self.bot.say('The following numbers have been registered: [{}]'.format(', '.join(current_numbers)))
+            await ctx.send('The following numbers have been registered: [{}]'.format(', '.join(current_numbers)))
 
-
-def setup(bot):
-    n = Notify(bot)
-    bot.add_cog(n)

@@ -1,6 +1,5 @@
 {
-    "AUTHOR" : "SpatulaFish",
-    "DESCRIPTION" : "Twilio Notifications for @everyone tags",
-    "DISABLED" : false,
-    "NAME" : "notify"
+    "author" : "Eris",
+    "description" : "Twilio Notifications for @everyone tags",
+    "name" : "notify"
 }
