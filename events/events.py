@@ -509,10 +509,13 @@ class Spoop(BaseCog):
 
 
 def generate_handler(bot):
-    async def message_events(message):
+    @bot.event
+    async def on_message(message):
         clean_message = message.clean_content.lower()
         # MM: Added so list instead of string
         message_split = clean_message.split(' ')
+
+        print('here')
 
         regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
         if re.search(regex, clean_message) is not None:
