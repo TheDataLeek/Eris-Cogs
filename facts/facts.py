@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from redbot.core import commands
 from .utils.dataIO import fileIO
 from random import choice as randchoice
 import aiohttp
@@ -7,7 +7,9 @@ import html
 import json
 import random
 
-class Fact:
+BaseCog = getattr(commands, "Cog", object)
+
+class Fact(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         self.bearfacts = bearfacts
@@ -18,10 +20,6 @@ class Fact:
         """gimme a fact"""
         await self.bot.say(randchoice(randchoice([self.bearfacts, self.snekfacts])))
 
-
-def setup(bot):
-    n = Fact(bot)
-    bot.add_cog(n)
 
 snekfacts = [
 "Snakes are carnivores (meat eaters).",
