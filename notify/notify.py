@@ -1,6 +1,6 @@
 import os
 import discord
-from discord.ext import commands
+from redbot.core import commands
 import re
 import requests
 import sqlite3
@@ -9,6 +9,8 @@ import twilio
 from twilio.rest import Client
 
 import pathlib
+
+BaseCog = getattr(commands, "Cog", object)
 
 NUMBERFILE = os.path.join(str(pathlib.Path.home()), 'numbers.txt')
 WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
@@ -31,7 +33,7 @@ def get_realname(userid: str):
         return name[0][0]
 
 
-class Notify:
+class Notify(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
