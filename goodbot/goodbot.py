@@ -139,7 +139,7 @@ class GoodBot(BaseCog):
         await ctx.send('```{}```'.format(pretty_version))
 
 
-def generate_handlers(bot):
+def generate_handlers(bot, gb_instance):
 
     async def goodbot(message, reaction=None, action=None):
         # Prevent snek from voting on herself or counting
@@ -161,14 +161,14 @@ def generate_handlers(bot):
             rating = (0, 1)
         else:
             prev_author = message.author.id
-            if server not in n.previous_author:
-                n.previous_author[server] = dict()
-            n.previous_author[server][channel] = prev_author
+            if server not in gb_instance.previous_author:
+                gb_instance.previous_author[server] = dict()
+            gb_instance.previous_author[server][channel] = prev_author
 
         if ((rating is not None) and
-            (n.previous_author[server].get(channel) is not None) and
-            (n.previous_author[server][channel] != message.author.id)):
-            await rate_user(n.previous_author[server][channel], rating)
+            (gb_instance.previous_author[server].get(channel) is not None) and
+            (gb_instance.previous_author[server][channel] != message.author.id)):
+            await rate_user(gb_instance.previous_author[server][channel], rating)
 
     async def rate_user(userid, rating):
         con = sq.connect(RATINGSFILE)
@@ -216,24 +216,24 @@ def generate_handlers(bot):
             # Just call the poor sod a bad bot
             # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
             #     await bot.delete_message(reaction.message)
-            if ((reaction.count >= 8) and (reaction.message.id not in n.noticed)):
+            if ((reaction.count >= 8) and (reaction.message.id not in gb_instance.noticed)):
                 await bot.send_filtered(
                     reaction.message.channel,
                     content='{} IS A BAD BOT'.format(reaction.message.author.mention)
                 )
-                n.noticed.add(reaction.message.id)
+                gb_instance.noticed.add(reaction.message.id)
         elif reaction.emoji == '👍':
             # Downvote for self votes
             if user.id == reaction.message.author.id:
                 rating = (0, 1)
             else:
                 rating = (1, 0)
-            if ((reaction.count >= 8) and (reaction.message.id not in n.noticed)):
+            if ((reaction.count >= 8) and (reaction.message.id not in gb_instance.noticed)):
                 await bot.send_filtered(
                     reaction.message.channel,
                    content='{} IS A GOOD BOT'.format(reaction.message.author.mention)
                )
-                n.noticed.add(reaction.message.id)
+                gb_instance.noticed.add(reaction.message.id)
 
         if rating is not None:
             await rate_user(reaction.message.author.id, rating)
