@@ -16,9 +16,9 @@ class Fact(BaseCog):
         self.snekfacts = snekfacts
 
     @commands.command(pass_context=True, no_pm=True)
-    async def fact(self, ctx, user : discord.Member=None):
+    async def fact(self, ctx):
         """gimme a fact"""
-        await self.bot.say(randchoice(randchoice([self.bearfacts, self.snekfacts])))
+        await ctx.send(randchoice(randchoice([self.bearfacts, self.snekfacts])))
 
 
 snekfacts = [
