@@ -486,13 +486,11 @@ class Spoop(BaseCog):
         self.bot = bot
 
     @commands.command(pass_context=True, no_pm=True)
+    @checks.is_owner()
     async def spoop(self, ctx, user: discord.Member=None):
-        if 'masters' not in [x.name.lower() for x in ctx.message.author.roles]:
-            return
-
         if user is None:
-            await self.bot.send_message(ctx.message.author, 'Stop being such a fuckup')
-            await self.bot.delete_message(ctx.message)
+            await ctx.message.author.send('Stop being such a fuckup')
+            await ctx.message.delete()
             return
 
         realname = get_realname(user.id)
@@ -504,8 +502,8 @@ class Spoop(BaseCog):
             formatname = realname
         new_message = ' '.join(x.format(formatname)
                                for x in new_message.split(' '))
-        await self.bot.send_message(user, new_message)
-        await self.bot.delete_message(ctx.message)
+        await user.send(new_message)
+        await ctx.message.delete()
 
 
 def generate_handler(bot):
