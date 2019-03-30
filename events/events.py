@@ -612,7 +612,7 @@ async def message_events(message):
 
     if random.random() <= 0.1:
         with open('./data/events/e7sgd020ew501.png', 'rb') as fobj:
-            new_msg = await message.channel(file=discord.File(fobj))
+            new_msg = await message.channel.send(file=discord.File(fobj))
         return
 
     elif 'thank' in clean_message:
