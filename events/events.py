@@ -523,11 +523,11 @@ async def message_events(message):
 
     regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
     if re.search(regex, clean_message) is not None:
-        await bot.delete_message(message)
+        await message.delete()
         return
 
     # DO NOT RESPOND TO SELF MESSAGES
-    if bot.user.id == message.author.id or message.content.startswith('.'):
+    if '195663495189102593' == str(message.author.id) or message.content.startswith('.'):
         return
 
     # BLACKLIST CHANNELS
