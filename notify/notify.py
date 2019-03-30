@@ -15,6 +15,9 @@ BaseCog = getattr(commands, "Cog", object)
 NUMBERFILE = os.path.join(str(pathlib.Path.home()), 'numbers.txt')
 WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
 
+ZOEPHONE = os.environ.get('ZOEPHONE')
+SNEKPHONE = os.environ.get('SNEKPHONE')
+
 
 def get_realname(userid: str):
     con = sqlite3.connect(WHOFILE)
@@ -67,10 +70,11 @@ class Notify(BaseCog):
         """
         Testing twilio integration, strictly for Zoe
         """
-        self.client.messages.create(to='7192333514', body='test message1', from_='4159410429')
-        self.client.messages.create(to='7192333514', body='test message2', from_='4159410429')
-        self.client.messages.create(to='7192333514', body='test message3', from_='4159410429')
-        await ctx.send('Messages Sent Successfully')
+        if ZOEPHONE is not None:
+            self.client.messages.create(to=ZOEPHONE, body='test message1', from_='4159410429')
+            self.client.messages.create(to=ZOEPHONE, body='test message2', from_='4159410429')
+            self.client.messages.create(to=ZOEPHONE, body='test message3', from_='4159410429')
+            await ctx.send('Messages Sent Successfully')
 
     @notify.command()
     async def register(self, ctx, number : str):
