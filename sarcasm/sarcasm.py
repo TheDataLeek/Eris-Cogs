@@ -56,8 +56,9 @@ class Sarcasm(BaseCog):
             if random.random() <= 1:
                 await ctx.send(add_sarcasm(clean_message))
                 if random.random() <= 0.5:
-                    with open('./data/sarcasm/img.png', 'rb') as fobj:
-                        await ctx.send(discord.File(str(fobj)))
+                    await ctx.send(discord.File('./data/sarcasm/img.png'))
+                    # with open('./data/sarcasm/img.png', 'rb') as fobj:
+                    #     await ctx.send(discord.File(str(fobj)))
                 return
 
         self.bot.add_listener(sarcasm_module, 'on_message')
