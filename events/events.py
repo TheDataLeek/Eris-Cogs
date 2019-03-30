@@ -505,7 +505,7 @@ class Spoop(BaseCog):
         await ctx.message.delete()
 
 
-def spoop(self, message, realname):
+async def spoop(self, message, realname):
     if realname is None:
         formatname = message.author.mention
     else:
@@ -548,7 +548,7 @@ async def message_events(message):
 
     # IF DM's
     if random.random() < 0.001:
-        spoop(message, realname)
+        await spoop(message, realname)
         return
 
     if message.guild is None:
