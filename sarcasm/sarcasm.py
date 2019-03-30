@@ -19,6 +19,8 @@ class Sarcasm(BaseCog):
         self.bot = bot
 
         async def sarcasm_module(message):
+            if message.guild is None:
+                return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
             message_split = clean_message.split(' ')
