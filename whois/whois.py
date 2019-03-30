@@ -11,7 +11,7 @@ BaseCog = getattr(commands, "Cog", object)
 WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
 
 
-class WhoIs:
+class WhoIs(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -33,7 +33,7 @@ class WhoIs:
                 ')'
             )
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command()
     async def iseveryone(self, ctx):
         con = sq.connect(WHOFILE)
         cursor = con.cursor()
@@ -50,14 +50,14 @@ class WhoIs:
             for userid, name in results
         ]
         for (mention, name) in results:
-            await self.bot.say('{} is {}'.format(mention, name))
+            await ctx.send('{} is {}'.format(mention, name))
         con.close()
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command()
     async def iswho(self, ctx):
         name = ' '.join(ctx.message.clean_content.split(' ')[1:]).lower()
         if name == '':
-            await self.bot.say('Please specify a person')
+            await ctx.send('Please specify a person')
             return
 
         con = sq.connect(WHOFILE)
@@ -71,7 +71,7 @@ class WhoIs:
         )
         results = cursor.fetchall()
         if len(results) == 0:
-            await self.bot.say('No users found! Please try again.')
+            await ctx.send('No users found! Please try again.')
             return
 
         members = []
@@ -81,7 +81,7 @@ class WhoIs:
                 ctx.message.channel.server.members
             )
             members.append(member.mention)
-        await self.bot.say('The following users match: {}'.format(', '.join(members)))
+        await ctx.send('The following users match: {}'.format(', '.join(members)))
         con.close()
 
     @commands.command(pass_context=True, no_pm=True)
@@ -90,7 +90,7 @@ class WhoIs:
         Ask who a person is
         """
         if user is None:
-            await self.bot.say('Please provide a user to specify')
+            await ctx.send('Please provide a user to specify')
             return
 
         con = sq.connect(WHOFILE)
@@ -125,7 +125,7 @@ class WhoIs:
     @commands.command(pass_context=True)
     async def theyare(self, ctx, user: discord.Member=None, realname: str=None):
         if user is None or realname is None:
-            await self.bot.say('Please specify a <user> and a <realname>')
+            await ctx.send('Please specify a <user> and a <realname>')
             return
 
         con = sq.connect(WHOFILE)
@@ -156,15 +156,6 @@ class WhoIs:
             con.commit()
         con.close()
 
-        await self.bot.say('User Registered')
+        await ctx.send('User Registered')
 
 
-
-
-def setup(bot):
-    n = WhoIs(bot)
-    bot.add_cog(n)
-
-
-if __name__ == '__main__':
-    WhoIs(None)
