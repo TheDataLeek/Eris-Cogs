@@ -565,11 +565,11 @@ async def message_events(message):
     if 'love' in clean_message and random.random() <= 0.1:
         await message.channel.send('*WHAT IS LOVE?*')
         time.sleep(2)
-        await message.channel('*baby don\'t hurt me*')
+        await message.channel.send('*baby don\'t hurt me*')
         time.sleep(2)
-        await message.channel('*don\'t hurt me*')
+        await message.channel.send('*don\'t hurt me*')
         time.sleep(2)
-        await message.channel('*no more*')
+        await message.channel.send('*no more*')
         return
 
     # first let's have a tiny chance of snek actually responding with ooc content
