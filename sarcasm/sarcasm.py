@@ -58,7 +58,7 @@ class Sarcasm(BaseCog):
             # if str(ctx.author.id) == '142431859148718080' and random.random() <= 1:
             if random.random() <= 0.02:
                 await ctx.send(add_sarcasm(clean_message))
-                if random.random() <= 0.5:
+                if random.random() <= 0.1:
                     with open('./data/sarcasm/img.png', 'rb') as fobj:
                         await ctx.send(file=discord.File(fobj))
                 return
