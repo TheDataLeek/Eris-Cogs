@@ -152,7 +152,7 @@ def generate_handlers(bot, gb_instance):
         #     return
 
         # Prevent acting on DM's
-        if message.channel.name is None:
+        if message.guild is None:
             return
 
         clean_message = message.clean_content.lower()
