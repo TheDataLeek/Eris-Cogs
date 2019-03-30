@@ -53,8 +53,8 @@ class Sarcasm(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            # if random.random() <= 0.02:
-            if str(ctx.author.id) == '142431859148718080' and random.random() <= 1:
+            # if str(ctx.author.id) == '142431859148718080' and random.random() <= 1:
+            if random.random() <= 0.02:
                 await ctx.send(add_sarcasm(clean_message))
                 if random.random() <= 0.5:
                     with open('./data/sarcasm/img.png', 'rb') as fobj:
