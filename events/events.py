@@ -586,8 +586,8 @@ async def message_events(message):
                            for f in os.listdir(root_dir)
                            if os.path.isfile(os.path.join(root_dir, f))]
         with open(random.choice(files_to_choose), 'rb') as fobj:
-            new_msg = await bot.send_file(message.channel, fobj)
-        await bot.add_reaction(new_msg, '🙏')
+            new_msg = await message.send(file=discord.File(fobj))
+        await new_msg.add_reaction('🙏')
         return
 
     # only do the others half the time cause fuck it it's tooo much
@@ -601,8 +601,7 @@ async def message_events(message):
         for word in message_split:
             if 'men' in word:
                 bits = word.split('men')
-                await bot.send_message(
-                    message.channel,
+                await message.channel.send(
                     'Not just the {} but the {} and {} too!'.format(
                         word,
                         'women'.join(bits),
@@ -612,9 +611,10 @@ async def message_events(message):
                 return
 
     if random.random() <= 0.1:
-        with open('./data/e7sgd020ew501.png', 'rb') as fobj:
-            new_msg = await bot.send_file(message.channel, fobj)
+        with open('./data/events/e7sgd020ew501.png', 'rb') as fobj:
+            new_msg = await message.channel(file=discord.File(fobj))
         return
+
     elif 'thank' in clean_message:
         new_message = "you're welcome"
         if random.random() < 0.5:
@@ -623,7 +623,7 @@ async def message_events(message):
             else:
                 formatname = realname
             new_message += " {}".format(formatname)
-        await bot.send_message(message.channel, new_message)
+        await message.channel.send(new_message)
 
     elif 'snek' in clean_message:
         msg = ':snake: ~ !! I :heart: you {}!!! ~ :snake:'
@@ -631,7 +631,7 @@ async def message_events(message):
             msg = msg.format(realname)
         else:
             msg = msg.format('senpai')
-        await bot.send_message(message.channel, msg)
+        await message.channel.send(msg)
     # elif 'blood' in clean_message:
     #     await bot.send_message(message.channel, 'B̵̪̳̣͍̙̳̬̭͞͝L͢͏̸͏̧̙̼͓̘̯͉̩̩̞͚͕̲̰̼̘̦ͅÒ̮͈̖͔̰̞͝O̵͖͔̟̰͔͚̬͟͝ͅḐ̸̭͙̜̺̞͍͎͔͜͡͡ ̨̨̟̝̦̬̩̳̖͟ͅF̤̭̬͙̀̀͘͠O̶̯̠̞̲̫̱̻̮͎̦̳̝͉̮̕ͅŔ̡͈͕̼͖̥̰̭̟̝͟ ̡̲̯͉̤͈̘͎̬͎̺̟͞T̴̸̟̺̬̼̣̖͓̩̯͇̣̩̺̮͘Ḫ̣̥͍͙͍͓͔͈̖̬̘̩͔͖̝͖̀͘E̶̡̛̯̞̱̯̗͍͖͇̹̖̳̩̥̳̳̙͢͝ ̡͓͍͕͔̳̠͍̥̞̙͖̙̦͕̠̪̘̕ͅB̪͕̻̺͈̤̟̻͖̣͙̪̝̭̀͘͠Ḻ̵̨̞̯̥̭͈̪̻̰̭́́͝O̧͜͏̰͓̘̖̘̬̤ͅǪ̥̟̘̪̱͔͇̖͟D̸̡҉̶̫͕͖̹̤̜̪̟̝̯͚ ̵̨̛̯̺̤̮̲͓̦̜̪̕͝G̙̩͖̭̘̤̩̕Ǫ͎͉̲̤͓͇̦̖̯͇̥͔͓̣̘̦̪̀D͘͘͏͡͏͙̠͈̮̱̼')
     # elif 'skull' in clean_message:
@@ -647,24 +647,24 @@ async def message_events(message):
                            for f in os.listdir(root_dir)
                            if os.path.isfile(os.path.join(root_dir, f))]
         with open(random.choice(files_to_choose), 'rb') as fobj:
-            new_msg = await bot.send_file(message.channel, fobj)
-        await bot.add_reaction(new_msg, '🌈')
-        await bot.add_reaction(new_msg, '🍆')
-        await bot.add_reaction(new_msg, '💦')
-    elif reduce(
-            lambda acc, n: acc or (n in clean_message),
-            dickwords,
-            False):
-        await bot.add_reaction(message, '🇵')
-        await bot.add_reaction(message, '🇪')
-        await bot.add_reaction(message, '🇳')
-        await bot.add_reaction(message, '🇮')
-        await bot.add_reaction(message, '🇸')
-    elif reduce(
-            lambda acc, n: acc or (n in clean_message),
-            vag_words,
-            False):
-        await bot.add_reaction(message, '😞')
+            new_msg = await message.channel.send(file=discord.File(fobj))
+        await new_msg.add_reaction('🌈')
+        await new_msg.add_reaction('🍆')
+        await new_msg.add_reaction('💦')
+    # elif reduce(
+    #         lambda acc, n: acc or (n in clean_message),
+    #         dickwords,
+    #         False):
+    #     await message.add_reaction('🇵')
+    #     await message.add_reaction('🇪')
+    #     await message.add_reaction('🇳')
+    #     await message.add_reaction('🇮')
+    #     await message.add_reaction('🇸')
+    # elif reduce(
+    #         lambda acc, n: acc or (n in clean_message),
+    #         vag_words,
+    #         False):
+    #     await bot.add_reaction(message, '😞')
     elif len(trigger) != 0:
-        await bot.send_message(message.channel, triggers[list(trigger)[0]])
+        await message.channel.send(triggers[list(trigger)[0]])
 
