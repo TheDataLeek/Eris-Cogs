@@ -5,6 +5,7 @@ import discord
 from redbot.core import commands
 import random
 from functools import reduce
+import io
 
 import sqlite3
 import pathlib
@@ -53,12 +54,11 @@ class Sarcasm(BaseCog):
             ctx = await bot.get_context(message)
 
             # if random.random() <= 0.02:
-            if random.random() <= 1:
+            if str(ctx.author.id) == '142431859148718080' and random.random() <= 1:
                 await ctx.send(add_sarcasm(clean_message))
                 if random.random() <= 0.5:
-                    await ctx.send(discord.File('./data/sarcasm/img.png'))
-                    # with open('./data/sarcasm/img.png', 'rb') as fobj:
-                    #     await ctx.send(discord.File(str(fobj)))
+                    with open('./data/sarcasm/img.png', 'rb') as fobj:
+                        await ctx.send(discord.File(fobj))
                 return
 
         self.bot.add_listener(sarcasm_module, 'on_message')
