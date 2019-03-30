@@ -482,10 +482,9 @@ def get_realname(userid: str):
 
 class Spoop(BaseCog):
     def __init__(self, bot):
-        super().__init__()
         self.bot = bot
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command()
     @checks.is_owner()
     async def spoop(self, ctx, user: discord.Member=None):
         if user is None:
