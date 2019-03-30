@@ -54,7 +54,7 @@ class Notify(BaseCog):
                 message_to_send = '{}: {}'.format(get_realname(message.author.id) or message.author.display_name,
                                                   message.clean_content)
                 for number in current_numbers:
-                    self.client.messages.create(to=number, body=message_to_send, from_='4159410429')
+                    self.client.messages.create(to=number, body=message_to_send, from_=SNEKPHONE)
                 await self.bot.send_message(message.channel, '[{}] have been notified.'.format(', '.join(current_numbers)))
 
         self.bot.add_listener(message_events, 'on_message')
@@ -71,9 +71,9 @@ class Notify(BaseCog):
         Testing twilio integration, strictly for Zoe
         """
         if ZOEPHONE is not None:
-            self.client.messages.create(to=ZOEPHONE, body='test message1', from_='4159410429')
-            self.client.messages.create(to=ZOEPHONE, body='test message2', from_='4159410429')
-            self.client.messages.create(to=ZOEPHONE, body='test message3', from_='4159410429')
+            self.client.messages.create(to=ZOEPHONE, body='test message1', from_=SNEKPHONE)
+            self.client.messages.create(to=ZOEPHONE, body='test message2', from_=SNEKPHONE)
+            self.client.messages.create(to=ZOEPHONE, body='test message3', from_=SNEKPHONE)
             await ctx.send('Messages Sent Successfully')
 
     @notify.command()
