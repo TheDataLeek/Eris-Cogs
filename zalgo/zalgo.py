@@ -1,13 +1,14 @@
 import discord
-from discord.ext import commands
-from .utils.dataIO import fileIO
+from redbot.core import commands
 import random
 
-class Zalgo:
+BaseCog = getattr(commands, "Cog", object)
+
+class Zalgo(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command()
     async def zalgo(self, ctx):
         """Zalgo the text"""
         # first pull out the .zalgo part of the message
@@ -29,11 +30,6 @@ class Zalgo:
 
         zalgo_msg = ''.join(msg_array)
 
-        await self.bot.delete_message(ctx.message)
-        await self.bot.say(zalgo_msg)
-
-
-def setup(bot):
-    n = Zalgo(bot)
-    bot.add_cog(n)
+        await ctx.message.delete()
+        await ctx.send(zalgo_msg)
 

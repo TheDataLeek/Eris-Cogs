@@ -1,13 +1,12 @@
-#!/usr/bin/env python3
-
 import os
 import discord
-from discord.ext import commands
+from redbot.core import commands
 import discord.utils as disc_util
 import sqlite3 as sq
 
 import pathlib
 
+BaseCog = getattr(commands, "Cog", object)
 
 WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
 
