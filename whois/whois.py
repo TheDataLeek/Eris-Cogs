@@ -120,7 +120,7 @@ class WhoIs(BaseCog):
 
         con.close()
 
-        await self.bot.send_message(ctx.message.author, message)
+        await ctx.send(message)
 
     @commands.command(pass_context=True)
     async def theyare(self, ctx, user: discord.Member=None, realname: str=None):
