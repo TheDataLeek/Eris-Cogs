@@ -1,7 +1,6 @@
 import os
 import discord
 from redbot.core import commands
-import discord.utils as disc_util
 import sqlite3 as sq
 
 import pathlib
@@ -43,10 +42,7 @@ class WhoIs(BaseCog):
         )
         results = cursor.fetchall()
         results = [
-            (disc_util.find(
-                lambda x: x.id == userid,
-                ctx.message.channel.server.members
-            ), name)
+            (ctx.guild.get_member(int(userid)), name)
             for userid, name in results
         ]
         for (mention, name) in results:
@@ -76,10 +72,7 @@ class WhoIs(BaseCog):
 
         members = []
         for (userid,) in results:
-            member = disc_util.find(
-                lambda x: x.id == userid,
-                ctx.message.channel.server.members
-            )
+            member = ctx.guild.get_member(int(userid))
             members.append(member.mention)
         await ctx.send('The following users match: {}'.format(', '.join(members)))
         con.close()
