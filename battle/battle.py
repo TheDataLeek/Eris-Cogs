@@ -116,7 +116,7 @@ class User(db.Entity):
         self.constitution = self.generate_stat()
         self.intelligence = self.generate_stat()
 
-        self.hp = (Math.max(3, random.randint(1, 6)) + self.cn_mod) * self.level
+        self.hp = (max(3, random.randint(1, 6)) + self.cn_mod) * self.level
 
         self.current_hp = self.hp
 
