@@ -2,7 +2,7 @@
 
 import os
 import discord
-from redbot.core import commands
+from redbot.core import commands, checks
 import sqlite3 as sq
 
 
@@ -42,6 +42,7 @@ class User(db.Entity):
     constitution = Optional(int)
 
     hp = Optional(int)
+    current_hp = Optional(int)
     player_race = Optional(str)
     player_class = Optional(str)
 
@@ -107,6 +108,18 @@ class User(db.Entity):
             if breaks[i] <= self.points < breaks[i + 1]:
                 return i + 1
 
+    def generate_user(self):
+        self.strength = self.generate_stat()
+        self.charisma = self.generate_stat()
+        self.wisdom = self.generate_stat()
+        self.dexterity = self.generate_stat()
+        self.constitution = self.generate_stat()
+        self.intelligence = self.generate_stat()
+
+        self.hp = (Math.max(3, random.randint(1, 6)) + self.cn_mod) * self.level
+
+        self.current_hp = self.hp
+
 
 db.bind(provider='sqlite', filename=str(db_file), create_db=True)
 db.generate_mapping(create_tables=True)
@@ -119,14 +132,7 @@ def get_user(uid):
         user = User(userID=uid)
 
     if user.strength is None:
-        user.strength = user.generate_stat()
-        user.charisma = user.generate_stat()
-        user.wisdom = user.generate_stat()
-        user.dexterity = user.generate_stat()
-        user.constitution = user.generate_stat()
-        user.intelligence = user.generate_stat()
-
-        user.hp = (Math.max(3, random.randint(1, 6)) + user.cn_mod) * user.level
+        user.generate_user()
 
     return user
 
@@ -257,6 +263,17 @@ class Battle(BaseCog):
                 ))
 
     @commands.command()
+    @checks.is_owner()
+    async def reload_user(self, ctx, user: discord.Member=None):
+        """
+        reloads user stats
+        """
+        with db_session:
+            author = get_user(ctx.message.author.id)
+
+            author.generate_user()
+
+    @commands.command()
     async def attack(self, ctx):
         """
         battles another user!
@@ -264,4 +281,4 @@ class Battle(BaseCog):
         with db_session:
             author = get_user(ctx.message.author.id)
 
-            await self.bot.say(author.attack_roll)
+            await ctx.send(author.attack_roll)
