@@ -2,9 +2,9 @@
 
 import os
 import discord
-from discord.ext import commands
-import discord.utils as disc_util
+from redbot.core import commands
 import sqlite3 as sq
+
 
 import pprint as pp
 
@@ -17,6 +17,8 @@ from pony import orm
 from pony.orm import Optional, Required, db_session
 
 import pathlib
+
+BaseCog = getattr(commands, 'Cog', object)
 
 # we're gonna keep track of last point given in memory
 POINT_TIMINGS = {}
@@ -129,12 +131,92 @@ def get_user(uid):
     return user
 
 
-class Battle(object):
+class Battle(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
+        # We need to count each message
+        async def count_message(message, reaction=None, action=None):
+            # Prevent snek from voting on herself or counting
+            if bot.user.id == message.author.id:
+                return
 
-    @commands.command(pass_context=True, no_pm=True)
+            # Prevent acting on DM's
+            if message.guild is None:
+                return
+
+            server          = message.guild.id
+            channel         = message.channel.id
+            userID          = message.author.id
+            message_channel = message.channel.name.lower()
+
+            # don't do the #battle channel
+            if 'battle' in message_channel:
+                return
+
+            add_points = False
+            if (userID not in POINT_TIMINGS) or (time.time() - POINT_TIMINGS[userID] > 60):
+                POINT_TIMINGS[userID] = time.time()
+                add_points = True
+
+            with db_session:
+                user = get_user(userID)
+
+                if add_points:
+                    user.points += 1
+
+        # We need to count each message
+        async def count_reaction_add(reaction, _):
+            # Prevent snek from voting on herself or counting
+            if bot.user.id == reaction.message.author.id:
+                return
+
+            # Prevent acting on DM's
+            if reaction.message.guild is None:
+                return
+
+            server          = reaction.message.guild.id
+            channel         = reaction.message.channel.id
+            userID          = reaction.message.author.id
+            message_channel = reaction.message.channel.name.lower()
+
+            with db_session:
+                user = get_user(userID)
+
+                if reaction.emoji == '👎':
+                    user.points = max(0, user.points - 3)
+                elif reaction.emoji == '👍':
+                    user.points += 3
+
+        # We need to count each message
+        async def count_reaction_remove(reaction, _):
+            # Prevent snek from voting on herself or counting
+            if bot.user.id == reaction.message.author.id:
+                return
+
+            # Prevent acting on DM's
+            if reaction.message.guild is None:
+                return
+
+            server          = reaction.message.guild.id
+            channel         = reaction.message.channel.id
+            userID          = reaction.message.author.id
+            message_channel = reaction.message.channel.name.lower()
+
+            with db_session:
+                user = get_user(userID)
+
+                if reaction.emoji == '👎':
+                    user.points += 3
+                elif reaction.emoji == '👍':
+                    user.points = max(0, user.points - 3)
+
+        bot.add_listener(count_message, 'on_message')
+        bot.add_listener(count_reaction_add, 'on_reaction_add')
+        bot.add_listener(count_reaction_remove, 'on_reaction_remove')
+
+
+    @commands.command()
     async def status(self, ctx, user: discord.Member=None):
         """
         List status of user
@@ -155,7 +237,7 @@ class Battle(object):
             'Constitution: {} ({})',
             ])
 
-            await self.bot.say(message.format(
+            await ctx.send(message.format(
                                 user.mention,
                                 db_user.points,
                                 db_user.level,
@@ -174,7 +256,7 @@ class Battle(object):
                                 db_user.cn_mod,
                 ))
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command()
     async def attack(self, ctx):
         """
         battles another user!
@@ -183,92 +265,3 @@ class Battle(object):
             author = get_user(ctx.message.author.id)
 
             await self.bot.say(author.attack_roll)
-
-
-
-def setup(bot):
-    # initialize instance of the battle
-    n = Battle(bot)
-
-    # Add the battle to the main bot instance
-    bot.add_cog(n)
-
-    # We need to count each message
-    async def count_message(message, reaction=None, action=None):
-        # Prevent snek from voting on herself or counting
-        if bot.user.id == message.author.id:
-            return
-
-        # Prevent acting on DM's
-        if message.channel.name is None:
-            return
-
-        server          = message.channel.server.id
-        channel         = message.channel.id
-        userID          = message.author.id
-        message_channel = message.channel.name.lower()
-
-        # don't do the #battle channel
-        if 'battle' in message_channel:
-            return
-
-        add_points = False
-        if (userID not in POINT_TIMINGS) or (time.time() - POINT_TIMINGS[userID] > 60):
-            POINT_TIMINGS[userID] = time.time()
-            add_points = True
-
-        with db_session:
-            user = get_user(userID)
-
-            if add_points:
-                user.points += 1
-
-    # We need to count each message
-    async def count_reaction_add(reaction, _):
-        # Prevent snek from voting on herself or counting
-        if bot.user.id == reaction.message.author.id:
-            return
-
-        # Prevent acting on DM's
-        if reaction.message.channel.name is None:
-            return
-
-        server          = reaction.message.channel.server.id
-        channel         = reaction.message.channel.id
-        userID          = reaction.message.author.id
-        message_channel = reaction.message.channel.name.lower()
-
-        with db_session:
-            user = get_user(userID)
-
-            if reaction.emoji == '👎':
-                user.points = max(0, user.points - 3)
-            elif reaction.emoji == '👍':
-                user.points += 3
-
-    # We need to count each message
-    async def count_reaction_remove(reaction, _):
-        # Prevent snek from voting on herself or counting
-        if bot.user.id == reaction.message.author.id:
-            return
-
-        # Prevent acting on DM's
-        if reaction.message.channel.name is None:
-            return
-
-        server          = reaction.message.channel.server.id
-        channel         = reaction.message.channel.id
-        userID          = reaction.message.author.id
-        message_channel = reaction.message.channel.name.lower()
-
-        with db_session:
-            user = get_user(userID)
-
-            if reaction.emoji == '👎':
-                user.points += 3
-            elif reaction.emoji == '👍':
-                user.points = max(0, user.points - 3)
-
-    bot.add_listener(count_message, 'on_message')
-    bot.add_listener(count_reaction_add, 'on_reaction_add')
-    bot.add_listener(count_reaction_remove, 'on_reaction_remove')
