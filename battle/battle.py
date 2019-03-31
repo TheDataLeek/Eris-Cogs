@@ -127,9 +127,9 @@ db.generate_mapping(create_tables=True)
 
 @db_session
 def get_user(uid):
-    user = User.select(lambda u: u.userID == uid).first()
+    user = User.select(lambda u: u.userID == str(uid)).first()
     if user is None:
-        user = User(userID=uid)
+        user = User(userID=str(uid))
 
     if user.strength is None:
         user.generate_user()
