@@ -196,7 +196,7 @@ def generate_handlers(bot, gb_instance):
 
     async def parse_reaction_add(reaction, user):
         # Prevent acting on DM's
-        if reaction.message.channel.name is None:
+        if reaction.message.guild is None:
             return
 
         server = reaction.message.guild.id
@@ -245,7 +245,7 @@ def generate_handlers(bot, gb_instance):
 
     async def parse_reaction_remove(reaction, user):
         # Prevent acting on DM's
-        if reaction.message.channel.name is None:
+        if reaction.message.guild is None:
             return
 
         server = reaction.message.guild.id
@@ -259,6 +259,8 @@ def generate_handlers(bot, gb_instance):
             rating = (1, 0)
         elif reaction.emoji == '👍':
             rating = (0, 1)
+        else:
+            return
 
         await rate_user(reaction.message.author.id, rating)
 
