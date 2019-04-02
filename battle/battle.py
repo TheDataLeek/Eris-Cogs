@@ -121,6 +121,7 @@ class User(db.Entity):
 
     def go_up_a_level(self):
         self.hp += max(3, random.randint(1, 6)) + self.cn_mod
+        self.current_hp = self.hp
 
     def generate_user(self):
         self.strength = self.generate_stat()
