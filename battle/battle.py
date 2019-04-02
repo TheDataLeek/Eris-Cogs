@@ -307,15 +307,15 @@ class Battle(BaseCog):
         with db_session:
             if user is None:
                 author.current_hp -= author.attack_roll
-                await ctx.send((f'{ctx.message.author.mention} hurt itself in its confusion!')
-                               (f' Current HP = {author.current_hp}'))
+                await ctx.send(f'{ctx.message.author.mention} hurt itself in its confusion!'
+                               f' Current HP = {author.current_hp}')
                 return
 
             target = get_user(user.id)
             if author.attack_roll >= 15:
                 target.current_hp -= author.attack_roll
-                await ctx.send((f'{ctx.message.author.mention} attacks {user.mention}!')
-                               (f' Current HP = {target.current_hp}'))
+                await ctx.send(f'{ctx.message.author.mention} attacks {user.mention}!'
+                               f' Current HP = {target.current_hp}')
                 return
             else:
                 await ctx.send('The attack misses!')
