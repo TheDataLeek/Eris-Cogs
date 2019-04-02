@@ -73,6 +73,10 @@ class User(db.Entity):
         return random.randint(1, 20) + self.proficiency + self.dx_mod
 
     @property
+    def damage_roll(self):
+        return random.randint(1, 6)
+
+    @property
     def proficiency(self):
         breaks = [1, 5, 8, 12, 16, 21]
         level = self.level
@@ -137,13 +141,23 @@ def get_user(uid):
     return user
 
 
+@db_session
+def heal_user(author):
+    user = get_user(author.id)
+    user.current_hp += random.randint(1, 6)
+
+
 class Battle(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
+        self.last_heal = {}
+
         # We need to count each message
         async def count_message(message, reaction=None, action=None):
             # Prevent snek from voting on herself or counting
+            heal_user(message.author)
+
             if bot.user.id == message.author.id:
                 return
 
@@ -269,16 +283,37 @@ class Battle(BaseCog):
         reloads user stats
         """
         with db_session:
-            author = get_user(ctx.message.author.id)
+            author = get_user(ctx.message.author.id if user is None else user.id)
 
             author.generate_user()
 
     @commands.command()
-    async def attack(self, ctx):
+    @checks.is_owner()
+    async def heal_user(self, ctx, user: discord.Member=None):
+        """
+        reloads user stats
+        """
+        user = ctx.message.author if user is None else user
+        heal_user(user)
+
+
+    @commands.command()
+    async def attack(self, ctx, user: discord.Member=None):
         """
         battles another user!
         """
-        with db_session:
-            author = get_user(ctx.message.author.id)
+        author = get_user(ctx.message.author.id)
 
-            await ctx.send(author.attack_roll)
+        with db_session:
+            if user is None:
+                author.current_hp -= author.attack_roll
+                await ctx.send((f'{ctx.message.author.mention} hurt itself in its confusion!')
+                               (f' Current HP = {author.current_hp}'))
+                return
+
+            target = get_user(user.id)
+            if author.attack_roll >= 15:
+                target.current_hp -= author.attack_roll
+                await ctx.send((f'{ctx.message.author.mention} attacks {user.mention}!')
+                               (f' Current HP = {target.current_hp}'))
+                return
