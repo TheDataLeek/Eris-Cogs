@@ -381,8 +381,13 @@ class Battle(BaseCog):
                 roll = author.damage_roll
                 target.current_hp = max(0, target.current_hp - roll)
                 if target.current_hp == 0:
+                    new_xp = random.randint(1, 3) * target.level
+
+                    author.points += new_xp
                     await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
                                    f' {user.mention} is unconscious!')
+
+                    await ctx.send(f'{ctx.message.author.mention} gains {new_xp} XP')
                 else:
                     await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
                                    f' Current HP = {target.current_hp}')
