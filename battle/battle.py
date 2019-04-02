@@ -156,7 +156,8 @@ class Battle(BaseCog):
         # We need to count each message
         async def count_message(message, reaction=None, action=None):
             # Prevent snek from voting on herself or counting
-            if random.random() <= 0.1:
+            clean_message = message.clean_content.lower()
+            if not clean_message.startswith('.') and random.random() <= 0.1:
                 heal_user(message.author)
 
             if bot.user.id == message.author.id:
