@@ -145,7 +145,7 @@ def get_user(uid):
 def heal_user(author):
     user = get_user(author.id)
     heal_amount = random.randint(1, 6)
-    user.current_hp = min(user.hp, user.current + heal_amount)
+    user.current_hp = min(user.hp, user.current_hp + heal_amount)
 
     print(heal_amount)
     print(user.current_hp)
