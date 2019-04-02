@@ -161,6 +161,14 @@ def heal_user(author):
     return heal_amount
 
 
+@db_session
+def full_heal_user(author):
+    user = get_user(author.id)
+    user.current_hp = user.hp
+
+    return user.hp
+
+
 class Battle(BaseCog):
     def __init__(self, bot):
         self.bot = bot
@@ -316,6 +324,15 @@ class Battle(BaseCog):
         """
         user = ctx.message.author if user is None else user
         heal_user(user)
+
+    @commands.command()
+    @checks.is_owner()
+    async def full_heal_user(self, ctx, user: discord.Member=None):
+        """
+        reloads user stats
+        """
+        user = ctx.message.author if user is None else user
+        full_heal_user(user)
 
 
     @commands.command()
