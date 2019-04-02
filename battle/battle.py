@@ -156,7 +156,8 @@ class Battle(BaseCog):
         # We need to count each message
         async def count_message(message, reaction=None, action=None):
             # Prevent snek from voting on herself or counting
-            heal_user(message.author)
+            if random.random() <= 0.1:
+                heal_user(message.author)
 
             if bot.user.id == message.author.id:
                 return
@@ -248,7 +249,7 @@ class Battle(BaseCog):
             db_user = get_user(user.id)
 
             message = '\n'.join([
-            'User {} has {} experience and is level {} with {} hitpoints',
+            'User {} has {} experience and is level {} with {}/{} hitpoints',
             'Strength: {} ({})',
             'Intelligence: {} ({})',
             'Dexterity: {} ({})',
@@ -261,6 +262,7 @@ class Battle(BaseCog):
                                 user.mention,
                                 db_user.points,
                                 db_user.level,
+                                db_user.current_hp,
                                 db_user.hp,
                                 db_user.strength,
                                 db_user.st_mod,
