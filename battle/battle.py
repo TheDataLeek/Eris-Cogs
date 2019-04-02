@@ -378,7 +378,7 @@ class Battle(BaseCog):
                     await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
                                    f' {user.mention} is unconscious!')
                 else:
-                    await ctx.send(f'{ctx.message.author.mention} attacks {user.mention}!'
+                    await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
                                    f' Current HP = {target.current_hp}')
                 return
             else:
