@@ -348,7 +348,6 @@ class Battle(BaseCog):
             target.points += target.xp_to_next_level + 1
             target.go_up_a_level()
 
-
     @commands.command()
     async def attack(self, ctx, user: discord.Member=None):
         """
