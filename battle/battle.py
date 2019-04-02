@@ -144,7 +144,13 @@ def get_user(uid):
 @db_session
 def heal_user(author):
     user = get_user(author.id)
-    user.current_hp = min(user.hp, user.current + random.randint(1, 6))
+    heal_amount = random.randint(1, 6)
+    user.current_hp = min(user.hp, user.current + heal_amount)
+
+    print(heal_amount)
+    print(user.current_hp)
+
+    return heal_amount
 
 
 class Battle(BaseCog):
