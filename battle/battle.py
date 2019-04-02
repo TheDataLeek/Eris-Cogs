@@ -373,9 +373,10 @@ class Battle(BaseCog):
 
             target = get_user(user.id)
             if author.attack_roll >= 15:
-                target.current_hp = max(0, target.current_hp - author.damage_roll)
+                roll = author.damage_roll
+                target.current_hp = max(0, target.current_hp - roll)
                 if target.current_hp == 0:
-                    await ctx.send(f'{ctx.message.author.mention} attacks {user.mention}!'
+                    await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {}!'
                                    f' {user.mention} is unconscious!')
                 else:
                     await ctx.send(f'{ctx.message.author.mention} attacks {user.mention}!'
