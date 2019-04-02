@@ -119,6 +119,8 @@ class User(db.Entity):
             if breaks[i] <= self.points < breaks[i + 1]:
                 return breaks[i + 1] - breaks[i]
 
+    def go_up_a_level(self):
+        self.hp += max(3, random.randint(1, 6)) + self.cn_mod
 
     def generate_user(self):
         self.strength = self.generate_stat()
@@ -195,8 +197,12 @@ class Battle(BaseCog):
             with db_session:
                 user = get_user(userID)
 
+                initial_level = user.level
                 if add_points:
                     user.points += 1
+
+                if initial_level != user.level:
+                    user.go_up_a_level()
 
         # We need to count each message
         async def count_reaction_add(reaction, _):
@@ -322,7 +328,7 @@ class Battle(BaseCog):
         with db_session:
             target = get_user(user.id)
             target.points += target.xp_to_next_level + 1
-
+            target.go_up_a_level()
 
 
     @commands.command()
