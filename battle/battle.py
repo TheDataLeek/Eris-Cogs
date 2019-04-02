@@ -335,7 +335,11 @@ class Battle(BaseCog):
     @commands.command()
     async def attack(self, ctx, user: discord.Member=None):
         """
-        battles another user!
+        Battles another user!
+
+        You can't attack if you're unconscious, and you have a 10% chance of healing for every message you send.
+
+        In order to hit someone, you have to roll 1d20 + prof + dx_mod and beat 15
         """
         with db_session:
             author = get_user(ctx.message.author.id)
