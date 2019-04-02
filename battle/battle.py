@@ -379,15 +379,20 @@ class Battle(BaseCog):
         """
         protected = PROTECTIONS.get(ctx.message.author.id)
 
-        if protected is not None and time.time() - protected <= ONE_HOUR:
+        if protected is not None and time.time() - protected >= ONE_HOUR:
             await ctx.send(f'{ctx.message.author.mention} is protected!')
             return
+        else:
+            del PROTECTIONS[ctx.message.author.id]
+
 
         target_protected = PROTECTIONS.get(user.id)
 
-        if target_protected is not None and time.time() - target_protected <= ONE_HOUR:
+        if target_protected is not None and time.time() - target_protected >= ONE_HOUR:
             await ctx.send(f'{user.mention} is protected!')
             return
+        else:
+            del PROTECTIONS[user.id]
 
         with db_session:
             author = get_user(ctx.message.author.id)
