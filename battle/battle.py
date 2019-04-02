@@ -365,7 +365,7 @@ class Battle(BaseCog):
 
         ctime = time.time()
 
-        PROTECTIONS[ctx.message.author.id] = ctime
+        PROTECTIONS[user.id] = ctime
 
 
     @commands.command()
@@ -381,7 +381,7 @@ class Battle(BaseCog):
 
         if protected is not None:
             if time.time() - protected >= ONE_HOUR:
-                await ctx.send(f'{ctx.message.author.mention} is protected!')
+                await ctx.send(f'{ctx.message.author.mention} is protected and cannot attack!')
                 return
             else:
                 del PROTECTIONS[ctx.message.author.id]
