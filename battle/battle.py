@@ -92,6 +92,10 @@ class User(db.Entity):
         return rolls
 
     @property
+    def armor_class(self):
+        return self.dx_mod + self.ws_mod + 10
+
+    @property
     def attack_roll(self):
         return random.randint(1, 20) + self.proficiency + self.dx_mod
 
@@ -277,6 +281,7 @@ class Battle(BaseCog):
 
             message = '\n'.join([
             'User {} has {} experience and is level {} with {}/{} hitpoints',
+            'Armor Class: {}',
             'Strength: {} ({})',
             'Intelligence: {} ({})',
             'Dexterity: {} ({})',
@@ -291,6 +296,7 @@ class Battle(BaseCog):
                                 db_user.level,
                                 db_user.current_hp,
                                 db_user.hp,
+                                db_user.armor_class,
                                 db_user.strength,
                                 db_user.st_mod,
                                 db_user.intelligence,
@@ -355,7 +361,7 @@ class Battle(BaseCog):
 
         You can't attack if you're unconscious, and you have a 10% chance of healing for every message you send.
 
-        In order to hit someone, you have to roll 1d20 + prof + dx_mod and beat 15
+        In order to hit someone, you have to roll 1d20 + prof + dx_mod and beat 10 + dx_mod + ws_mod
         """
         with db_session:
             author = get_user(ctx.message.author.id)
@@ -371,7 +377,7 @@ class Battle(BaseCog):
                 return
 
             target = get_user(user.id)
-            if author.attack_roll >= 15:
+            if author.attack_roll >= target.armor_class:
                 roll = author.damage_roll
                 target.current_hp = max(0, target.current_hp - roll)
                 if target.current_hp == 0:
