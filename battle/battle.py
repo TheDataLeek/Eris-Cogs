@@ -101,7 +101,7 @@ class User(db.Entity):
 
     @property
     def damage_roll(self):
-        return random.randint(1, 6)
+        return random.randint(1, 4)
 
     @property
     def proficiency(self):
