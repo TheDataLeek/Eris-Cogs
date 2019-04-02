@@ -21,7 +21,9 @@ import pathlib
 BaseCog = getattr(commands, 'Cog', object)
 
 # we're gonna keep track of last point given in memory
+ONE_HOUR = 60 * 60
 POINT_TIMINGS = {}
+PROTECTIONS = {}
 
 """
 Let's start by defining our database
@@ -355,6 +357,18 @@ class Battle(BaseCog):
             target.go_up_a_level()
 
     @commands.command()
+    async def protect(self, ctx, user: discord.Member=None):
+        """
+        reloads user stats
+        """
+        user = ctx.message.author if user is None else user
+
+        ctime = time.time()
+
+        PROTECTIONS[ctx.message.author.id] = ctime
+
+
+    @commands.command()
     async def attack(self, ctx, user: discord.Member=None):
         """
         Battles another user!
@@ -363,6 +377,18 @@ class Battle(BaseCog):
 
         In order to hit someone, you have to roll 1d20 + prof + dx_mod and beat 10 + dx_mod + ws_mod
         """
+        protected = PROTECTIONS.get(ctx.message.author.id)
+
+        if protected is not None and time.time() - protected <= ONE_HOUR:
+            await ctx.send(f'{ctx.message.author.mention} is protected!')
+            return
+
+        target_protected = PROTECTIONS.get(user.id)
+
+        if target_protected is not None and time.time() - target_protected <= ONE_HOUR:
+            await ctx.send(f'{user.mention} is protected!')
+            return
+
         with db_session:
             author = get_user(ctx.message.author.id)
 
