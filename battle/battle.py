@@ -30,6 +30,29 @@ Let's start by defining our database
 db_file = pathlib.Path().home() / 'battle.db'
 db = orm.Database()
 
+breaks = [
+    0,
+    300,
+    900,
+    2_700,
+    6_500,
+    14_000,
+    23_000,
+    34_000,
+    48_000,
+    64_000,
+    85_000,
+    100_000,
+    120_000,
+    140_000,
+    165_000,
+    195_000,
+    225_000,
+    265_000,
+    305_000,
+    355_000,
+]
+
 class User(db.Entity):
     userID = Required(str)
     points = Required(int, default=0)
@@ -86,31 +109,16 @@ class User(db.Entity):
 
     @property
     def level(self):
-        breaks = [
-            0,
-            300,
-            900,
-            2_700,
-            6_500,
-            14_000,
-            23_000,
-            34_000,
-            48_000,
-            64_000,
-            85_000,
-            100_000,
-            120_000,
-            140_000,
-            165_000,
-            195_000,
-            225_000,
-            265_000,
-            305_000,
-            355_000,
-        ]
         for i in range(len(breaks)):
             if breaks[i] <= self.points < breaks[i + 1]:
                 return i + 1
+
+    @property
+    def xp_to_next_level(self):
+        for i in range(len(breaks)):
+            if breaks[i] <= self.points < breaks[i + 1]:
+                return breaks[i + 1] - breaks[i]
+
 
     def generate_user(self):
         self.strength = self.generate_stat()
@@ -146,9 +154,6 @@ def heal_user(author):
     user = get_user(author.id)
     heal_amount = random.randint(1, 6)
     user.current_hp = min(user.hp, user.current_hp + heal_amount)
-
-    print(heal_amount)
-    print(user.current_hp)
 
     return heal_amount
 
@@ -304,6 +309,20 @@ class Battle(BaseCog):
         """
         user = ctx.message.author if user is None else user
         heal_user(user)
+
+
+    @commands.command()
+    @checks.is_owner()
+    async def elevate(self, ctx, user: discord.Member=None):
+        """
+        reloads user stats
+        """
+        user = ctx.message.author if user is None else user
+
+        with db_session:
+            target = get_user(user.id)
+            target.points += target.xp_to_next_level + 1
+
 
 
     @commands.command()
