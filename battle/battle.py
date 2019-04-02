@@ -317,3 +317,6 @@ class Battle(BaseCog):
                 await ctx.send((f'{ctx.message.author.mention} attacks {user.mention}!')
                                (f' Current HP = {target.current_hp}'))
                 return
+            else:
+                await ctx.send('The attack misses!')
+                return
