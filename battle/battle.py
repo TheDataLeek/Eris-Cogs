@@ -144,7 +144,7 @@ def get_user(uid):
 @db_session
 def heal_user(author):
     user = get_user(author.id)
-    user.current_hp += random.randint(1, 6)
+    user.current_hp = max(user.hp, user.current + random.randint(1, 6))
 
 
 class Battle(BaseCog):
