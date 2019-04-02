@@ -380,7 +380,7 @@ class Battle(BaseCog):
         protected = PROTECTIONS.get(ctx.message.author.id)
 
         if protected is not None:
-            if time.time() - protected >= ONE_HOUR:
+            if time.time() - protected <= ONE_HOUR:
                 await ctx.send(f'{ctx.message.author.mention} is protected and cannot attack!')
                 return
             else:
