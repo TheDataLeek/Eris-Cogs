@@ -302,9 +302,9 @@ class Battle(BaseCog):
         """
         battles another user!
         """
-        author = get_user(ctx.message.author.id)
-
         with db_session:
+            author = get_user(ctx.message.author.id)
+
             if user is None:
                 author.current_hp -= author.attack_roll
                 await ctx.send(f'{ctx.message.author.mention} hurt itself in its confusion!'
