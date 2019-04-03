@@ -255,7 +255,7 @@ class Battle(BaseCog):
                 user = get_user(userID)
 
                 if reaction.emoji == '👎':
-                    if user.points:
+                    if user.points >=3:
                         user.update_points(-3)
                 elif reaction.emoji == '👍':
                     user.update_points(3)
@@ -281,7 +281,7 @@ class Battle(BaseCog):
                 if reaction.emoji == '👎':
                     user.update_points(3)
                 elif reaction.emoji == '👍':
-                    if user.points:
+                    if user.points >=3:
                         user.update_points(-3)
 
         bot.add_listener(count_message, 'on_message')
