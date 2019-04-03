@@ -425,6 +425,8 @@ class Battle(BaseCog):
             target = get_user(user.id)
             target.__dict__[attribute] = int(new_value)
 
+            orm.commit()
+
 
     @commands.command()
     async def protect(self, ctx, user: discord.Member=None):
