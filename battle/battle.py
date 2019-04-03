@@ -397,8 +397,9 @@ class Battle(BaseCog):
             * intelligence
             * constitution
         """
-        user = ctx.message.author if user is None else user
-
+        print(user)
+        print(attribute)
+        print(new_value)
         attributes = [
             'hp',
             'points',
@@ -422,7 +423,7 @@ class Battle(BaseCog):
 
         with db_session:
             target = get_user(user.id)
-            target.__dict__[attribute] = new_value
+            target.__dict__[attribute] = int(new_value)
 
 
     @commands.command()
