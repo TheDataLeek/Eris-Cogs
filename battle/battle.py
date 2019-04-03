@@ -24,6 +24,8 @@ BaseCog = getattr(commands, 'Cog', object)
 ONE_HOUR = 60 * 60
 POINT_TIMINGS = {}
 PROTECTIONS = {}
+FARM_LIST = {}
+MAX_FARM = 5
 
 """
 Let's start by defining our database
@@ -386,6 +388,8 @@ class Battle(BaseCog):
         PROTECTIONS[user.id] = ctime
 
 
+
+
     @commands.command()
     async def attack(self, ctx, user: discord.Member=None):
         """
@@ -396,14 +400,13 @@ class Battle(BaseCog):
         In order to hit someone, you have to roll 1d20 + prof + dx_mod and beat 10 + dx_mod + ws_mod
         """
         protected = PROTECTIONS.get(ctx.message.author.id)
-
+        punish_author = False
         if protected is not None:
             if time.time() - protected <= ONE_HOUR:
                 await ctx.send(f'{ctx.message.author.mention} is protected and cannot attack!')
                 return
             else:
                 del PROTECTIONS[ctx.message.author.id]
-
         target_protected = PROTECTIONS.get(user.id)
 
         if target_protected is not None:
@@ -413,12 +416,25 @@ class Battle(BaseCog):
             else:
                 del PROTECTIONS[user.id]
 
+        farmed = FARM_LIST.get(user.id)
+        if farmed is not None:
+            if farmed == MAX_FARM:
+                await ctx.send(f'{user.mention} has been killed too many times since they last attacked.'
+                                   f'They are now under farm protection')
+            elif farmed > MAX_FARM:
+                await ctx.send(f'Stop Farming {user.mention}! You get an asshole punishment!')
+                punish_author = True
         with db_session:
             author = get_user(ctx.message.author.id)
 
             if user is None:
                 author.current_hp -= author.attack_roll
                 await ctx.send(f'{ctx.message.author.mention} hurt itself in its confusion!'
+                               f' Current HP = {author.current_hp}')
+                return
+            if punish_author:
+                author.current_hp -= author.attack_roll
+                await ctx.send(f'{ctx.message.author.mention} is a jerk',
                                f' Current HP = {author.current_hp}')
                 return
 
@@ -428,9 +444,17 @@ class Battle(BaseCog):
 
             target = get_user(user.id)
             if author.attack_roll >= target.armor_class:
+                #Once a user attacks successfully they are no longer under farm protection.
+                farm_check = FARM_LIST.get(ctx.message.author.id)
+                if farm_check is not None:
+                    del FARM_LIST[ctx.message.author.id]
                 roll = author.damage_roll
                 target.current_hp = max(0, target.current_hp - roll)
                 if target.current_hp == 0:
+                    if farmed is None:
+                        FARM_LIST[user.id] = 0
+                    else:
+                        FARM_LIST[user.id] += 1
                     new_xp = random.randint(1, 3) * target.level
                     level_diff=author.update_points(new_xp)
                     await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
