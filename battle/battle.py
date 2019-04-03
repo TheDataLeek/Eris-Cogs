@@ -397,33 +397,46 @@ class Battle(BaseCog):
             * intelligence
             * constitution
         """
-        print(user)
-        print(attribute)
-        print(new_value)
-        attributes = [
-            'hp',
-            'points',
-            'strength',
-            'wisdom',
-            'dexterity',
-            'charisma',
-            'intelligence',
-            'constitution',
-        ]
-
-        if attribute not in attributes:
-            await ctx.send(f'Please chose one of {", ".join(attributes)}')
-            return
-
-        try:
-            int(new_value)
-        except ValueError:
-            await ctx.send('Please enter an integer')
-            return
-
         with db_session:
             target = get_user(user.id)
-            target.__dict__[attribute] = int(new_value)
+
+            attributes = [
+                'hp',
+                'points',
+                'strength',
+                'wisdom',
+                'dexterity',
+                'charisma',
+                'intelligence',
+                'constitution',
+            ]
+
+            if attribute not in attributes:
+                await ctx.send(f'Please chose one of {", ".join(attributes)}')
+                return
+
+            try:
+                int(new_value)
+            except ValueError:
+                await ctx.send('Please enter an integer')
+                return
+
+            if attribute == 'hp':
+                target.hp = int(new_value)
+            elif attribute == 'points':
+                target.points = int(new_value)
+            elif attribute == 'strength':
+                target.strength = int(new_value)
+            elif attribute == 'wisdom':
+                target.wisdom = int(new_value)
+            elif attribute == 'dexterity':
+                target.dexterity = int(new_value)
+            elif attribute == 'charisma':
+                target.charisma = int(new_value)
+            elif attribute == 'intelligence':
+                target.intelligence = int(new_value)
+            elif attribute == 'constitution':
+                target.constitution = int(new_value)
 
             orm.commit()
 
