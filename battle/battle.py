@@ -400,7 +400,6 @@ class Battle(BaseCog):
         In order to hit someone, you have to roll 1d20 + prof + dx_mod and beat 10 + dx_mod + ws_mod
         """
         protected = PROTECTIONS.get(ctx.message.author.id)
-        farm_check = FARM_LIST.get(ctx.message.author.id)
         punish_author = False
         if protected is not None:
             if time.time() - protected <= ONE_HOUR:
@@ -446,6 +445,7 @@ class Battle(BaseCog):
             target = get_user(user.id)
             if author.attack_roll >= target.armor_class:
                 #Once a user attacks successfully they are no longer under farm protection.
+                farm_check = FARM_LIST.get(ctx.message.author.id)
                 if farm_check is not None:
                     del FARM_LIST[ctx.message.author.id]
                 roll = author.damage_roll
