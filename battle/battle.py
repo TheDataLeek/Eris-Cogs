@@ -384,7 +384,7 @@ class Battle(BaseCog):
 
     @commands.command()
     @checks.is_owner()
-    async def set_attribute(self, ctx, user: discord.Member=None, attribute, new_value):
+    async def set_attribute(self, ctx, user: discord.Member=None, attribute=None, new_value=None):
         """
         Sets a chosen attribute
 
