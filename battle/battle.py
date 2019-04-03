@@ -444,7 +444,7 @@ class Battle(BaseCog):
                                f' Current HP = {author.current_hp}')
                 return
 
-            if author.current_hp == 0:
+            if author.current_hp <= 0:
                 await ctx.send(f'{ctx.message.author.mention} is unconscious and cannot attack!')
                 return
 
