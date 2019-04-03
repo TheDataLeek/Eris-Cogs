@@ -434,7 +434,7 @@ class Battle(BaseCog):
                 return
             if punish_author:
                 author.current_hp -= author.attack_roll
-                await ctx.send(f'{ctx.message.author.mention} is a jerk',
+                await ctx.send(f'{ctx.message.author.mention} is a jerk'
                                f' Current HP = {author.current_hp}')
                 return
 
