@@ -129,6 +129,27 @@ class User(db.Entity):
         self.hp += max(3, random.randint(1, 6)) + self.cn_mod
         self.current_hp = self.hp
 
+    def go_down_a_level(self):
+        self.hp -= max(3, random.randint(1, 6)) + self.cn_mod
+        if self.hp <=0: #Shouldn't happen but eh. Dice fall as they may.
+            self.hp = max(3, random.randint(1, 6)) + self.cn_mod
+        self.current_hp = self.hp
+
+    def update_points(self, points: int) -> int:
+        """
+        A cleaner wrapper function for adding points and leveling users. Makes sure levels stay working
+        :param points: How many points to add.
+        :return: the change in level as applied i.e 0 if level stays the same. 1 if it goes up and -1 if it goes down.
+        if for some reason level change by more then 1 that's fine too.
+        """
+        initial_level = self.level
+        self.points += points
+        if self.level > initial_level:
+            self.go_up_a_level()
+        elif self.level < initial_level:
+            self.go_down_a_level()
+        return self.level - initial_level
+
     def generate_user(self):
         self.strength = self.generate_stat()
         self.charisma = self.generate_stat()
@@ -212,12 +233,8 @@ class Battle(BaseCog):
             with db_session:
                 user = get_user(userID)
 
-                initial_level = user.level
                 if add_points:
-                    user.points += 1
-
-                if initial_level != user.level:
-                    user.go_up_a_level()
+                    user.update_points(1)
 
         # We need to count each message
         async def count_reaction_add(reaction, _):
@@ -238,9 +255,10 @@ class Battle(BaseCog):
                 user = get_user(userID)
 
                 if reaction.emoji == '👎':
-                    user.points = max(0, user.points - 3)
+                    if user.points >=3:
+                        user.update_points(-3)
                 elif reaction.emoji == '👍':
-                    user.points += 3
+                    user.update_points(3)
 
         # We need to count each message
         async def count_reaction_remove(reaction, _):
@@ -261,9 +279,10 @@ class Battle(BaseCog):
                 user = get_user(userID)
 
                 if reaction.emoji == '👎':
-                    user.points += 3
+                    user.update_points(3)
                 elif reaction.emoji == '👍':
-                    user.points = max(0, user.points - 3)
+                    if user.points >=3:
+                        user.update_points(-3)
 
         bot.add_listener(count_message, 'on_message')
         bot.add_listener(count_reaction_add, 'on_reaction_add')
@@ -353,8 +372,7 @@ class Battle(BaseCog):
 
         with db_session:
             target = get_user(user.id)
-            target.points += target.xp_to_next_level + 1
-            target.go_up_a_level()
+            target.update_points(target.xp_to_next_level + 1)
 
     @commands.command()
     async def protect(self, ctx, user: discord.Member=None):
@@ -414,14 +432,12 @@ class Battle(BaseCog):
                 target.current_hp = max(0, target.current_hp - roll)
                 if target.current_hp == 0:
                     new_xp = random.randint(1, 3) * target.level
-                    initial_level = author.level
-                    author.points += new_xp
+                    level_diff=author.update_points(new_xp)
                     await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
                                    f' {user.mention} is unconscious!')
 
                     await ctx.send(f'{ctx.message.author.mention} gains {new_xp} XP')
-                    if author.level > initial_level:
-                        author.go_up_a_level()
+                    if level_diff:
                         await ctx.send(f'{ctx.message.author.mention} has leveled up and is now {author.level}')
                 else:
                     await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
