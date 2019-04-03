@@ -475,7 +475,7 @@ class Battle(BaseCog):
 
                 if str(user.id) in the_chosen:
                     roll = random.randint(1, 20)
-                    author.hp -= roll
+                    author.current_hp -= roll
                     await ctx.send(f'{user.mention} is one of the chosen!'
                             f'{ctx.message.author.mention} is smited for {roll}')
 
