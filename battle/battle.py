@@ -383,6 +383,49 @@ class Battle(BaseCog):
             target.update_points(target.xp_to_next_level + 1)
 
     @commands.command()
+    @checks.is_owner()
+    async def set_attribute(self, ctx, user: discord.Member=None, attribute, new_value):
+        """
+        Sets a chosen attribute
+
+            * hp
+            * points
+            * strength
+            * wisdom
+            * dexterity
+            * charisma
+            * intelligence
+            * constitution
+        """
+        user = ctx.message.author if user is None else user
+
+        attributes = [
+            'hp',
+            'points',
+            'strength',
+            'wisdom',
+            'dexterity',
+            'charisma',
+            'intelligence',
+            'constitution',
+        ]
+
+        if attribute not in attributes:
+            await ctx.send(f'Please chose one of {", ".join(attributes)}')
+            return
+
+        try:
+            int(new_value)
+        except ValueError:
+            await ctx.send('Please enter an integer')
+            return
+
+        with db_session:
+            target = get_user(user.id)
+            target.__dict__[attribute] = new_value
+
+
+    @commands.command()
     async def protect(self, ctx, user: discord.Member=None):
         """
         reloads user stats
@@ -392,8 +435,6 @@ class Battle(BaseCog):
         ctime = time.time()
 
         PROTECTIONS[user.id] = ctime
-
-
 
 
     @commands.command()
