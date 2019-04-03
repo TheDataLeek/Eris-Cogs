@@ -27,6 +27,12 @@ PROTECTIONS = {}
 FARM_LIST = {}
 MAX_FARM = 5
 
+the_chosen = [
+    '195663495189102593', # snek
+    '142431859148718080', # eris
+    '223869486736867328' # relm
+]
+
 """
 Let's start by defining our database
 """
@@ -466,6 +472,13 @@ class Battle(BaseCog):
                 else:
                     await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
                                    f' Current HP = {target.current_hp}')
+
+                if str(user.id) in the_chosen:
+                    roll = random.randint(1, 20)
+                    author.hp -= roll
+                    await ctx.send(f'{user.mention} is one of the chosen!'
+                            f'{ctx.message.author.mention} is smited for {roll}')
+
                 return
             else:
                 await ctx.send('The attack misses!')
