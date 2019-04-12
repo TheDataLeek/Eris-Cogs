@@ -10,7 +10,7 @@ class Say(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, hidden=True, rest_is_raw=True)
     @checks.is_owner()
     async def say(self, ctx, what_to_say: str):
         """gimme a fact"""
