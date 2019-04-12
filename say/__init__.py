@@ -1,4 +1,4 @@
-from .facts import Fact
+from .say import Say
 
 def setup(bot):
-    bot.add_cog(Fact(bot))
+    bot.add_cog(Say(bot))
