@@ -14,5 +14,8 @@ class Say(BaseCog):
     @checks.is_owner()
     async def say(self, ctx, what_to_say: str):
         """gimme a fact"""
+        print(what_to_say)
         channel = discord.client.get_channel(GENERAL)
+        print(channel)
         await channel.send(what_to_say)
+        print('done')
