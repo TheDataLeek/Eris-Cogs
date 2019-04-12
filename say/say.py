@@ -15,5 +15,4 @@ class Say(BaseCog):
     async def say(self, ctx, what_to_say: str):
         """gimme a fact"""
         channel = self.bot.get_channel(GENERAL)
-        print(ctx.message.content)
-        # await channel.send(what_to_say)
+        await channel.send(ctx.message.content[5:])
