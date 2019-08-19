@@ -51,7 +51,7 @@ class Zalgo(BaseCog):
 
         new_msg = raw_msg
         for regex, replacement in replacements.items():
-            new_msg = re.subn(regex, replacement, new_msg)
+            new_msg, _ = re.subn(regex, replacement, new_msg)
 
         await ctx.message.delete()
         await ctx.send(new_msg)
