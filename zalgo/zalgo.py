@@ -44,9 +44,17 @@ class Zalgo(BaseCog):
 
         replacements = {
             'r': 'w',
+            'R': 'W',
             'l': 'w',
+            'L': 'W',
             'this': 'dis',
+            'This': 'Dis',
+            'they': 'dey',
+            'They': 'Dey',
+            'there': 'dere',
+            'There': 'Dere',
             'the': 'da',
+            'The': 'Da',
         }
 
         new_msg = raw_msg
