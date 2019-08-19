@@ -1,6 +1,7 @@
 import discord
 from redbot.core import commands
 import random
+import re
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -32,4 +33,26 @@ class Zalgo(BaseCog):
 
         await ctx.message.delete()
         await ctx.send(zalgo_msg)
+
+    @commands.command()
+    async def uwu(self, ctx):
+        """uwu the text"""
+        # first pull out the .zalgo part of the message
+        raw_msg = ' '.join(ctx.message.content.split(' ')[1:])
+        if raw_msg == '':
+            raw_msg = 'uwu'
+
+        replacements = {
+            'r': 'w',
+            'l': 'w',
+            'this': 'dis',
+            'the': 'da',
+        }
+
+        new_msg = raw_msg
+        for regex, replacement in replacements.items():
+            new_msg = re.subn(regex, replacement, new_msg)
+
+        await ctx.message.delete()
+        await ctx.send(new_msg)
 
