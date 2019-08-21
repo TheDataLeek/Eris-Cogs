@@ -526,6 +526,10 @@ async def message_events(message):
         await message.delete()
         return
 
+    regex = r'http|www'
+    if re.search(regex, clean_message) is not None:
+        return
+
     # DO NOT RESPOND TO SELF MESSAGES
     if '195663495189102593' == str(message.author.id) or message.content.startswith('.'):
         return
