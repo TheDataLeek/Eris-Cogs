@@ -565,7 +565,6 @@ async def message_events(message):
             False):
         return
 
-    print(message.content)
     if 'unflip' in message.clean_content or message.content == '┬┬ ノ( ゜-゜ノ)':
         await message.channel.send('(╯°□°）╯︵ ┻━┻')
         return
