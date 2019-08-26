@@ -565,7 +565,7 @@ async def message_events(message):
             False):
         return
 
-    if 'ノ(゜-゜ノ)' in message.content:
+    if '゜-゜' in message.content:
         await message.channel.send('(╯°□°）╯︵ ┻━┻')
         return
 
