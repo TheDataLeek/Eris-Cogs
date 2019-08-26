@@ -565,6 +565,10 @@ async def message_events(message):
             False):
         return
 
+    if message.content == '┬┬ ノ( ゜-゜ノ )':
+        await message.channel.send('(╯°□°）╯︵ ┻━┻')
+        return
+
     # love
     if 'love' in clean_message and random.random() <= 0.1:
         await message.channel.send('*WHAT IS LOVE?*')
