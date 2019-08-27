@@ -551,7 +551,7 @@ async def message_events(message):
     realname = get_realname(message.author.id)
 
     # IF DM's
-    if random.random() < 0.001:
+    if random.random() < 0.005:
         await spoop(message, realname)
         return
 
