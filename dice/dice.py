@@ -13,7 +13,7 @@ class Dice(BaseCog):
 
     @commands.command(pass_context=True, no_pm=True)
     async def dice(self, ctx, roll: str):
-        """ Roll dice in the format '([0-9]+)d([0-9]+)(v[0-9])?' """
+        """ Roll dice in the format '([0-9]+)d([0-9]+)(v([0-9]))?' """
         if not re.match(dice_format, roll):
             return
 
@@ -29,8 +29,8 @@ class Dice(BaseCog):
         rolls = [random.randint(1, typedice) for _ in range(numdice)]
         rolls.sort(key=lambda x: -x)
 
-        if match.group(3) is not None:
-            rolls = rolls[:-int(match.group(3))]
+        if match.group(4) is not None:
+            rolls = rolls[:-int(match.group(4))]
 
         await ctx.send('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
 
