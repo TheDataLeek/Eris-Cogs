@@ -19,7 +19,7 @@ class Sarcasm(BaseCog):
         self.bot = bot
 
         async def sarcasm_module(message):
-            if message.guild is None or if message.guild.id != '142435106257240064':
+            if message.guild is None or message.guild.id != '142435106257240064':
                 return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
