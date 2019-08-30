@@ -1,6 +1,5 @@
 import discord
-from discord.ext import commands
-from .utils.dataIO import fileIO
+from redbot.core import commands
 import random
 import re
 
