@@ -27,8 +27,3 @@ class Dice:
             rolls = rolls[:-int(dropdice[1:])]
         await self.bot.say('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
 
-
-def setup(bot):
-    n = Dice(bot)
-    bot.add_cog(n)
-

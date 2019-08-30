@@ -1,6 +1,5 @@
 {
-    "AUTHOR" : "SpatulaFish",
-    "DESCRIPTION" : "Usage: [p]dice #d#(v#)?",
-    "DISABLED" : false,
-    "NAME" : "Roll Dice"
+    "author" : "Eris",
+    "description" : "Usage: [p]dice #d#(v#)?",
+    "name" : "Roll Dice"
 }
