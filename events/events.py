@@ -518,7 +518,7 @@ async def spoop(self, message, realname):
 
 async def message_events(message):
     if message.guild.id != '142435106257240064':
-	return
+        return
     clean_message = message.clean_content.lower()
     # MM: Added so list instead of string
     message_split = clean_message.split(' ')
