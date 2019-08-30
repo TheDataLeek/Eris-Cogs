@@ -14,12 +14,9 @@ class Dice(BaseCog):
     @commands.command(pass_context=True, no_pm=True)
     async def dice(self, ctx, roll: str):
         """ Roll dice in the format '([0-9]+)d([0-9]+)(v[0-9])?' """
-        if not re.match(dice_format, roll):
-            return
-
         match = re.match(dice_format, roll)
 
-        if match.group(1) is None or match.group(2) is None:
+        if match is None or match.group(1) is None or match.group(2) is None:
             await ctx.send('Please use the correct format, ex: 4d6v1')
             return
 
