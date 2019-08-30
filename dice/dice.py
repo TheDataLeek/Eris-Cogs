@@ -17,15 +17,20 @@ class Dice(BaseCog):
         if not re.match(dice_format, roll):
             return
 
-        terms = re.findall(dice_format, roll)[0]
-        numdice = int(terms[0])
-        typedice = int(terms[1])
-        dropdice = terms[2]
+        match = re.match(dice_format, roll)
+
+        if match.group(1) is None or match.group(2) is None:
+            await ctx.send('Please use the correct format, ex: 4d6v1')
+            return
+
+        numdice = int(match.group(1))
+        typedice = int(match.group(2))
 
         rolls = [random.randint(1, typedice) for _ in range(numdice)]
         rolls.sort(key=lambda x: -x)
-        if dropdice != '':
-            rolls = rolls[:-int(dropdice[1:])]
+
+        if match.group(3) is not None
+            rolls = rolls[:-int(match.group(3))]
 
         await ctx.send('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
 
