@@ -29,7 +29,7 @@ class Dice(BaseCog):
         rolls = [random.randint(1, typedice) for _ in range(numdice)]
         rolls.sort(key=lambda x: -x)
 
-        if match.group(3) is not None
+        if match.group(3) is not None:
             rolls = rolls[:-int(match.group(3))]
 
         await ctx.send('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
