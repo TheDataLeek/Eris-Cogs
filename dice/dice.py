@@ -3,9 +3,11 @@ from redbot.core import commands
 import random
 import re
 
+BaseCog = getattr(commands, "Cog", object)
+
 dice_format = '([0-9]+)d([0-9]+)(v[0-9])?'
 
-class Dice:
+class Dice(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
