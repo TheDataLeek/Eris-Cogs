@@ -90,7 +90,7 @@ class Boo(BaseCog):
             parts = user.nick.split(' ')
             to_remove = random.choice(parts)
             parts.remove(to_remove)
-            new_nick = random.choice(prefixes) + ' '.join(parts)
+            new_nick = random.choice(prefixes) + ' ' + ' '.join(parts)
 
         try:
             await user.edit(nick=new_nick)
