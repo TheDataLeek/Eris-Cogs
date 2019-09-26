@@ -85,6 +85,8 @@ class Boo(BaseCog):
         if user is None:  # or user.id == '142431859148718080':
             user = ctx.message.author
 
+        original_nick = user.nick or user.display_name
+
         new_nick = random.choice(prefixes) + ' ' + user.nick
         while len(new_nick) >= 32:
             parts = user.nick.split(' ')
