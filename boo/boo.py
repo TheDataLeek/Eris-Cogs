@@ -6,33 +6,59 @@ import re
 BaseCog = getattr(commands, "Cog", object)
 
 prefixes = list(
-    {'Afraid', 'Apparition', 'Bat', 'Bloodcurdling', 'Bloody', 'Bones', 'Broomstick', 'Cackle', 'Cadaver', 'Carved',
-     'Casket', 'Cauldron', 'Cemetery', 'Cobweb', 'Coffin', 'Corpse', 'Creepy', 'Decapitated', 'Decomposing', 'Eerie',
-     'Fangs', 'Frightening', 'Ghost', 'Ghoulish', 'Goblin', 'Gory', 'Grim Reaper', 'Gruesome', 'Haunted', 'Horrifying',
-     'Howling', 'Jack - O - Lantern', 'Lurking', 'Macabre', 'Magic', 'Mausoleum', 'Morbid', 'Mummy', 'Occult', 'Owl',
-     'Petrified', 'Phantom', 'Poltergeist', 'Scary', 'Scream', 'Shadow', 'Skeleton', 'Skull', 'Specter', 'Spell',
-     'Spider', 'Spirit', 'Superstition', 'Tomb', 'Trick or treat', 'Undead', 'Unearthly', 'Unnerving', 'Vampire',
-     'Warlock', 'Werewolf', 'Witch', 'Wizard', 'Wraith', 'Zombie', 'Afraid', 'Afterlife', 'Alarming', 'Alien', 'Angel',
-     'Apparition', 'Astronaut', 'Autumn', 'Ballerina', 'Bat', 'Beast', 'Bizarre', 'Black', 'Black cat', 'Blood',
-     'Bloodcurdling', 'Bogeyman', 'Bone', 'Boo', 'Broomstick', 'Cackle', 'Cadaver', 'Candy', 'Cape', 'Carve', 'Casket',
-     'Cat', 'Cauldron', 'Cemetery', 'Chilling', 'Cloak', 'Clown', 'Cobweb', 'Coffin', 'Corpse', 'Costume', 'Cowboy',
-     'Cowgirl', 'Creepy', 'Crown', 'Crypt', 'Dark', 'Darkness', 'Dead', 'Death', 'Demon', 'Devil', 'Devilish',
-     'Disguise', 'Dreadful', 'Dress-up', 'Eerie', 'Elf', 'Enchant', 'Evil', 'Eyeballs', 'Eyepatch', 'Face paint',
-     'Fairy', 'Fall', 'Fangs', 'Fantasy', 'Fear', 'Firefighter', 'Flashlight', 'Fog', 'Fright', 'Frighten',
-     'Frightening', 'Frightful', 'Genie', 'Ghastly', 'Ghost', 'Ghostly', 'Ghoul', 'Ghoulish', 'Goblin', 'Goodies',
-     'Gory', 'Gown', 'Grave', 'Gravestone', 'Grim', 'Grim Reaper', 'Grisly', 'Gruesome', 'Hair-raising', 'Halloween',
-     'Hat', 'Haunt', 'Haunted house', 'Hayride', 'Headstone', 'Hobgoblin', 'Hocus pocus', 'Horrible', 'Horrify', 'Howl',
-     'Imp', 'Jack-o\'-lantern', 'Jumpsuit', 'Kimono', 'King', 'Lantern', 'Macabre', 'Magic', 'Magic wand',
-     'Make-believe', 'Make-up', 'Mask', 'Masquerade', 'Mausoleum', 'Midnight', 'Mist', 'Monster', 'Moon', 'Moonlight',
-     'Moonlit', 'Morbid', 'Mummy', 'Mysterious', 'Night', 'Nightmare', 'Ninja', 'October', 'Ogre', 'Orange',
-     'Otherworldly', 'Owl', 'Party', 'Petrify', 'Phantasm', 'Phantom', 'Pirate', 'Pitchfork', 'Poltergeist', 'Potion',
-     'Prank', 'Pretend', 'Prince', 'Princess', 'Pumpkin', 'Queen', 'Repulsive', 'Revolting', 'Robe', 'Robot', 'Scare',
-     'Scarecrow', 'Scary', 'Scream', 'Shadow', 'Shadowy', 'Shock', 'Shocking', 'Skeleton', 'Skull', 'Soldier',
-     'Specter', 'Spell', 'Spider', 'Spider web', 'Spine-chilling', 'Spirit', 'Spook', 'Spooky', 'Startling', 'Strange',
-     'Superhero', 'Supernatural', 'Superstition', 'Sweets', 'Tarantula', 'Terrible', 'Terrify', 'Thirty-first',
-     'Thrilling', 'Tiara', 'Toga', 'Tomb', 'Tombstone', 'Treat', 'Treats', 'Trick', 'Trick-or-treat', 'Troll', 'Tutu',
-     'Unearthly', 'Unnerving', 'Vampire', 'Vanish', 'Wand', 'Warlock', 'Web', 'Weird', 'Werewolf', 'Wicked', 'Wig',
-     'Witch', 'Witchcraft', 'Wizard', 'Wizardry', 'Wraith', 'Zombie'})
+    {
+        "afraid", "apparition", "bat", "bloodcurdling", "bloody", "bones", "broomstick", "cackle", "cadaver", "carved",
+        "casket", "cauldron", "cemetery", "cobweb", "coffin", "corpse", "creepy", "decapitated", "decomposing", "eerie",
+        "fangs", "frightening", "ghost", "ghoulish", "goblin", "gory", "grim reaper", "gruesome", "haunted",
+        "horrifying", "howling", "jack - o - lantern", "lurking", "macabre", "magic", "mausoleum", "morbid", "mummy",
+        "occult", "owl", "petrified", "phantom", "poltergeist", "scary", "scream", "shadow", "skeleton", "skull",
+        "specter", "spell", "spider", "spirit", "superstition", "tomb", "trick or treat", "undead", "unearthly",
+        "unnerving", "vampire", "warlock", "werewolf", "witch", "wizard", "wraith", "zombie", "afraid", "afterlife",
+        "alarming", "alien", "angel", "apparition", "astronaut", "autumn", "ballerina", "bat", "beast", "bizarre",
+        "black", "black cat", "blood", "bloodcurdling", "bogeyman", "bone", "boo", "broomstick", "cackle", "cadaver",
+        "candy", "cape", "carve", "casket", "cat", "cauldron", "cemetery", "chilling", "cloak", "clown", "cobweb",
+        "coffin", "corpse", "costume", "cowboy", "cowgirl", "creepy", "crown", "crypt", "dark", "darkness", "dead",
+        "death", "demon", "devil", "devilish", "disguise", "dreadful", "dress-up", "eerie", "elf", "enchant", "evil",
+        "eyeballs", "eyepatch", "face paint", "fairy", "fall", "fangs", "fantasy", "fear", "firefighter", "flashlight",
+        "fog", "fright", "frighten", "frightening", "frightful", "genie", "ghastly", "ghost", "ghostly", "ghoul",
+        "ghoulish", "goblin", "goodies", "gory", "gown", "grave", "gravestone", "grim", "grim reaper", "grisly",
+        "gruesome", "hair-raising", "halloween", "hat", "haunt", "haunted house", "hayride", "headstone", "hobgoblin",
+        "hocus pocus", "horrible", "horrify", "howl", "imp", "jack-o'-lantern", "jumpsuit", "kimono", "king", "lantern",
+        "macabre", "magic", "magic wand", "make-believe", "make-up", "mask", "masquerade", "mausoleum", "midnight",
+        "mist", "monster", "moon", "moonlight", "moonlit", "morbid", "mummy", "mysterious", "night", "nightmare",
+        "ninja", "october", "ogre", "orange", "otherworldly", "owl", "party", "petrify", "phantasm", "phantom",
+        "pirate", "pitchfork", "poltergeist", "potion", "prank", "pretend", "prince", "princess", "pumpkin", "queen",
+        "repulsive", "revolting", "robe", "robot", "scare", "scarecrow", "scary", "scream", "shadow", "shadowy",
+        "shock", "shocking", "skeleton", "skull", "soldier", "specter", "spell", "spider", "spider web",
+        "spine-chilling", "spirit", "spook", "spooky", "startling", "strange", "superhero", "supernatural",
+        "superstition", "sweets", "tarantula", "terrible", "terrify", "thirty-first", "thrilling", "tiara", "toga",
+        "tomb", "tombstone", "treat", "treats", "trick", "trick-or-treat", "troll", "tutu", "unearthly", "unnerving",
+        "vampire", "vanish", "wand", "warlock", "web", "weird", "werewolf", "wicked", "wig", "witch", "witchcraft",
+        "wizard", "wizardry", "wraith", "zombie", 'awful', 'disgusting', 'disturbing', 'eerie', 'frightening',
+        'hideous', 'dead', 'haunted', 'rude', 'low', 'creepy', 'deceased', 'defiant', 'foul', 'sinful', 'bereftoflife',
+        'horrid', 'divine', 'black', 'cold', 'up-to-no-good', 'holy', 'phantasmal', 'direful', 'ungodly', 'slimy',
+        'ignominious', 'indecent', 'degrading', 'strange', 'threatening', 'pitiful', 'gross', 'spooky', 'gruesome',
+        'grievous', 'distasteful', 'horrible', 'pagan', 'unearthly', 'objectionable', 'terrifying', 'offending',
+        'weird', 'reprehensible', 'dark', 'frightful', 'alarming', 'nauseating', 'abusive', 'nasty', 'disreputable',
+        'supernatural', 'scary', 'corpselike', 'obnoxious', 'abhorrent', 'monstrous', 'base', 'fearful', 'deadly',
+        'shocking', 'superstitious', 'annoying', 'intense', 'contemptible', 'beastly', 'pale', 'minacious',
+        'irritating', 'distressing', 'irreverent', 'dirty', 'uncanny', 'ghostlike', 'spectral', 'terrible', 'dire',
+        'bad', 'disguised', 'godless', 'no-good', 'phantom', 'repulsive', 'illusory', 'rotten', 'biting', 'masked',
+        'bloody', 'appalling', 'dreadful', 'sordid', 'formidable', 'off-color', 'odious', 'detestable', 'mean',
+        'insolent', 'frozen', 'vampiric', 'spooked', 'infamous', 'lousy', 'ghostly', 'disgraceful', 'invidious',
+        'horrific', 'cutting', 'unholy', 'baleful', 'blasphemous', 'scared', 'nightmarish', 'hair-raising', 'repugnant',
+        'spiritual', 'wicked', 'grody', 'heathen', 'blood-curdling', 'violating', 'filthy', 'evil', 'desecrating',
+        'horrendous', 'grisly', 'repellent', 'grim', 'undead', 'tragic', 'icky', 'cheap', 'loathsome', 'obscene',
+        'abominable', 'haunting', 'menacing', 'ghastly', 'lifeless', 'wraithlike', 'worthless', 'macabre',
+        'bone-chilling', 'trembling', 'moonlit', 'shadowy', 'atrocious', 'buried', 'deathlike', 'unhallowed',
+        'chilling', 'low-life', 'wretched', 'vile', 'ominous', 'stiff', 'departed', 'godawful', 'ghoulish',
+        'impertinent', 'offensive', 'sinister', 'costumed', 'cowardly', 'crawly', 'fear-inspiring', 'gory', 'haunting',
+        'magical', 'mischievous', 'nighttime', 'startled', 'startlingawful', 'disgusting', 'disturbing', 'eerie',
+        'frightening', 'hideous', 'dead', 'haunted', 'rude', 'low', 'creepy', 'deceased', 'defiant', 'foul', 'sinful',
+        'bereftoflife', 'horrid', 'divine', 'black', 'cold', 'up-to-no-good', 'holy', 'phantasmal', 'direful', 'creepy',
+        'haunted', 'insane', 'bat shit crazy',
+    }
+)
 
 
 class Boo(BaseCog):
@@ -46,12 +72,14 @@ class Boo(BaseCog):
 
         original_nick = user.nick or user.display_name
 
-        new_nick = random.choice(prefixes) + ' ' + original_nick
+        new_nick = random.choice(prefixes) + " " + original_nick
         while len(new_nick) >= 32:
-            parts = original_nick.split(' ')
+            parts = original_nick.split(" ")
             to_remove = random.choice(parts)
             parts.remove(to_remove)
-            new_nick = random.choice(prefixes) + ' ' + ' '.join(parts)
+            new_nick = random.choice(prefixes) + " " + " ".join(parts)
+
+        new_nick = new_nick.title()
 
         try:
             await user.edit(nick=new_nick)
