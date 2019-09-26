@@ -86,7 +86,7 @@ class Boo(BaseCog):
             user = ctx.message.author
 
         new_nick = random.choice(prefixes) + ' ' + user.nick
-        while len(new_nick > 32):
+        while len(new_nick) >= 32:
             parts = user.nick.split(' ')
             to_remove = random.choice(parts)
             parts.remove(to_remove)
