@@ -87,9 +87,9 @@ class Boo(BaseCog):
 
         original_nick = user.nick or user.display_name
 
-        new_nick = random.choice(prefixes) + ' ' + user.nick
+        new_nick = random.choice(prefixes) + ' ' + original_nick
         while len(new_nick) >= 32:
-            parts = user.nick.split(' ')
+            parts = original_nick.split(' ')
             to_remove = random.choice(parts)
             parts.remove(to_remove)
             new_nick = random.choice(prefixes) + ' ' + ' '.join(parts)
