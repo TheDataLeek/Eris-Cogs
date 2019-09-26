@@ -86,7 +86,7 @@ class Boo(BaseCog):
             user = ctx.message.author
 
         new_nick = random.choice(prefixes) + ' ' + user.nick
-        if len(new_nick) > 32:
+        while len(new_nick > 32):
             parts = user.nick.split(' ')
             to_remove = random.choice(parts)
             parts.remove(to_remove)
@@ -94,5 +94,6 @@ class Boo(BaseCog):
 
         try:
             await user.edit(nick=new_nick)
-        except:
+        except Exception as e:
+            print(e)
             await ctx.send(new_nick)
