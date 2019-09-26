@@ -87,7 +87,10 @@ class Boo(BaseCog):
 
         new_nick = random.choice(prefixes) + ' ' + user.nick
         if len(new_nick) > 32:
-            new_nick = random.choice(prefixes) + user.nick.split(' ')[:-1]
+            parts = user.nick.split(' ')
+            to_remove = random.choice(parts)
+            parts.remove(to_remove)
+            new_nick = random.choice(prefixes) + ' '.join(parts)
 
         try:
             await user.edit(nick=new_nick)
