@@ -1,5 +1,5 @@
 import discord
-from redbot.core import commands
+from redbot.core import commands, checks
 import random
 import re
 
@@ -65,14 +65,12 @@ class Boo(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def boo(self, ctx, user: discord.Member = None):
-        if user is None:  # or user.id == '142431859148718080':
-            user = ctx.message.author
+    def prefix_boo(self, nick):
+        return random.choice(prefixes) + ' ' + nick
 
-        original_nick = user.nick or user.display_name
+    def booify(self, original_nick):
+        new_nick = self.prefix_boo(original_nick)
 
-        new_nick = random.choice(prefixes) + " " + original_nick
         while len(new_nick) >= 32:
             parts = original_nick.split(" ")
             to_remove = random.choice(parts[:-1])   # never remove the base name
@@ -80,9 +78,33 @@ class Boo(BaseCog):
             new_nick = random.choice(prefixes) + " " + " ".join(parts)
 
         new_nick = new_nick.title()
+        return new_nick
+
+    @commands.command()
+    async def boo(self, ctx, user: discord.Member = None):
+        if user is None:  # or user.id == '142431859148718080':
+            user = ctx.message.author
+
+        original_nick = user.nick or user.display_name
+
+        new_nick = self.booify(original_nick)
 
         try:
             await user.edit(nick=new_nick)
         except Exception as e:
             print(e)
-            await ctx.send(new_nick)
+            await ctx.send(user.mention + ' -> ' + new_nick)
+
+    @commands.command()
+    @checks.is_owner()
+    async def boo_all(self, ctx):
+        for user in ctx.guild.members:
+            original_nick = user.nick or user.display_name
+
+            new_nick = self.booify(original_nick)
+
+            try:
+                await user.edit(nick=new_nick)
+            except Exception as e:
+                print(e)
+                await ctx.send(user.mention + ' -> ' + new_nick)
