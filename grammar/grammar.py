@@ -44,7 +44,7 @@ class Grammar(BaseCog):
 
             message_channel = message.channel.name.lower()
 
-            if (
+            if (message_channel != 'bot-chat') or (
                 # DO NOT RESPOND TO SELF MESSAGES
                 (bot.user.id == message.author.id or message.content.startswith('.')) or
                 (message.channel.name is None) or
