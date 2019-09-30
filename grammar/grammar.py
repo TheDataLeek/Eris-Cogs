@@ -65,14 +65,18 @@ class Grammar(BaseCog):
             if len(mispelled) == 0:
                 return
 
+            message_changed = False
             for word in mispelled:
                 correction = self.spell.correction(word)
 
-                new_message = [w if w != word else correction for w in new_message]
+                if correction != word:
+                    new_message = [w if w != word else correction for w in new_message]
+                    message_changed = True
 
             new_message = ' '.join(new_message)
 
-            await ctx.send('I think you meant to say, "{}"'.format(new_message))
+            if message_changed:
+                await ctx.send('I think you meant to say, "{}"'.format(new_message))
 
             return
 
