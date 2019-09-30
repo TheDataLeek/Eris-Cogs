@@ -11,10 +11,7 @@ import sqlite3
 import pathlib
 import csv
 
-import language_check as lc
-
-
-tool = lc.LanguageTool('en-US')
+from spellchecker import SpellChecker
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -22,6 +19,7 @@ BaseCog = getattr(commands, "Cog", object)
 class Grammar(BaseCog):
     def __init__(self, bot):
         self.bot = bot
+        self.spell = SpellChecker()
 
         async def grammar_module(message):
             if message.guild is None or int(message.guild.id) != 142435106257240064:
@@ -60,11 +58,10 @@ class Grammar(BaseCog):
                 ):
                 return
 
-            ctx = await bot.get_context(message)
+            # ctx = await bot.get_context(message)
 
-            matches = tool.check(clean_message)
-
-            await ctx.send(lc.correct(clean_message, matches))
+            print(self.spell.unknown(message_split))
+            # await ctx.send(lc.correct(clean_message, matches))
 
             return
 
