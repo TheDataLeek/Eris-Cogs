@@ -62,10 +62,14 @@ class Grammar(BaseCog):
 
             new_message = message.content
             mispelled = self.spell.unknown(new_message)
+
+            if len(mispelled) == 0:
+                return
+
             for word in mispelled:
                 correction = self.spell.correction(word)
 
-                new_message.replace(word, correction)
+                new_message = new_message.replace(word, correction)
 
             await ctx.send(new_message)
 
