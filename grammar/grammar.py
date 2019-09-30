@@ -23,9 +23,6 @@ class Grammar(BaseCog):
         self.spell.distance = 1
 
         self.wordfile = pathlib.Path().home() / 'wordlist.txt'
-        if not self.wordfile.exists():
-            self.wordfile.open(mode='w')
-
         self.spell.word_frequency.load_text_file(str(self.wordfile))
 
         @commands.command()
@@ -37,6 +34,8 @@ class Grammar(BaseCog):
             with self.wordfile.open(mode='a') as fobj:
                 for word in words:
                     fobj.write(' ' + word)
+
+            await ctx.send("Added {}".format(', '.join(words)))
 
         async def grammar_module(message):
             if message.guild is None or int(message.guild.id) != 142435106257240064:
