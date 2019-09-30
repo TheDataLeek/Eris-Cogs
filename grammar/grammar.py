@@ -20,6 +20,23 @@ class Grammar(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         self.spell = SpellChecker()
+        self.spell.distance = 1
+
+        self.wordfile = pathlib.Path().home() / 'wordlist.txt'
+        if not self.wordfile.exists():
+            self.wordfile.open(mode='w')
+
+        self.spell.word_frequency.load_text_file(str(self.wordfile))
+
+        @commands.command()
+        async def addword(self, ctx):
+            words = ctx.message.content.split(' ')[1:]
+
+            self.spell.word_frequency.load_words(words)
+
+            with self.wordfile.open(mode='a') as fobj:
+                for word in words:
+                    fobj.write(' ' + word)
 
         async def grammar_module(message):
             if message.guild is None or int(message.guild.id) != 142435106257240064:
@@ -61,7 +78,7 @@ class Grammar(BaseCog):
 
             new_message = re.sub('\'[A-Za-z]+|[^A-Za-z ]', '', message.content.lower()).split(' ')
 
-            new_message = [w for w in new_message if w not in ['', 'snek', 'pingu']]
+            new_message = [w for w in new_message if w != '']
 
             if len(new_message) == 0:
                 return
