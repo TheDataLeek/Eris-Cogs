@@ -71,11 +71,9 @@ class Boo(BaseCog):
     def booify(self, original_nick):
         new_nick = self.prefix_boo(original_nick)
 
-        while len(new_nick) >= 32:
-            parts = original_nick.split(" ")
-            to_remove = random.choice(parts[:-1])   # never remove the base name
-            parts.remove(to_remove)
-            new_nick = random.choice(prefixes) + " " + " ".join(parts)
+        if len(new_nick) >= 32 or len(new_nick.split(' ')) > 3:
+            base_nick = new_nick.split(' ')[-1]
+            new_nick = self.prefix_boo(base_nick)
 
         new_nick = new_nick.title()
         return new_nick
