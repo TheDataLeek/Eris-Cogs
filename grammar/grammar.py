@@ -60,7 +60,7 @@ class Grammar(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            new_message = message.content
+            new_message = message.content.split(' ')
             print(new_message)
             mispelled = self.spell.unknown(new_message)
 
@@ -72,8 +72,9 @@ class Grammar(BaseCog):
             for word in mispelled:
                 correction = self.spell.correction(word)
 
-                new_message = new_message.replace(word, correction)
+                new_message = [w if w != word else correction for w in new_message]
 
+            new_message = ' '.join(new_message)
             print(new_message)
 
             await ctx.send(new_message)
