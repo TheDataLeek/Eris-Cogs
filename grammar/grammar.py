@@ -61,10 +61,7 @@ class Grammar(BaseCog):
             ctx = await bot.get_context(message)
 
             new_message = message.content.split(' ')
-            print(new_message)
             mispelled = self.spell.unknown(new_message)
-
-            print(mispelled)
 
             if len(mispelled) == 0:
                 return
@@ -75,9 +72,8 @@ class Grammar(BaseCog):
                 new_message = [w if w != word else correction for w in new_message]
 
             new_message = ' '.join(new_message)
-            print(new_message)
 
-            await ctx.send(new_message)
+            await ctx.send('I think you meant to say, "{}"'.format(new_message))
 
             return
 
