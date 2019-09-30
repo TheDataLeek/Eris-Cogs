@@ -61,7 +61,10 @@ class Grammar(BaseCog):
             ctx = await bot.get_context(message)
 
             new_message = message.content
+            print(new_message)
             mispelled = self.spell.unknown(new_message)
+
+            print(mispelled)
 
             if len(mispelled) == 0:
                 return
@@ -70,6 +73,8 @@ class Grammar(BaseCog):
                 correction = self.spell.correction(word)
 
                 new_message = new_message.replace(word, correction)
+
+            print(new_message)
 
             await ctx.send(new_message)
 
