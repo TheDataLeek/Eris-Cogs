@@ -58,9 +58,9 @@ class Grammar(BaseCog):
                 ):
                 return
 
-            # ctx = await bot.get_context(message)
+            ctx = await bot.get_context(message)
 
-            new_message = message
+            new_message = message.content
             mispelled = self.spell.unknown(new_message)
             for word in mispelled:
                 correction = self.spell.correction(word)
