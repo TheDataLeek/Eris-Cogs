@@ -52,7 +52,6 @@ class Grammar(BaseCog):
                     lambda acc, n: acc or (n == message_channel),
                     blacklist,
                     False)) or
-                ('@' in clean_message) or
                 ('thank' in clean_message) or
                 ('http' in clean_message)
                 ):
