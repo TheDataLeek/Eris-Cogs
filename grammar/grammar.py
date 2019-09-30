@@ -25,18 +25,6 @@ class Grammar(BaseCog):
         self.wordfile = pathlib.Path().home() / 'wordlist.txt'
         self.spell.word_frequency.load_text_file(str(self.wordfile))
 
-        @commands.command()
-        async def addword(self, ctx):
-            words = ctx.message.content.split(' ')[1:]
-
-            self.spell.word_frequency.load_words(words)
-
-            with self.wordfile.open(mode='a') as fobj:
-                for word in words:
-                    fobj.write(' ' + word)
-
-            await ctx.send("Added {}".format(', '.join(words)))
-
         async def grammar_module(message):
             if message.guild is None or int(message.guild.id) != 142435106257240064:
                 return
@@ -103,4 +91,18 @@ class Grammar(BaseCog):
             return
 
         self.bot.add_listener(grammar_module, 'on_message')
+
+    @commands.command()
+    async def addword(self, ctx):
+        """ Adds word to spellchecker """
+        words = ctx.message.content.split(' ')[1:]
+
+        self.spell.word_frequency.load_words(words)
+
+        with self.wordfile.open(mode='a') as fobj:
+            for word in words:
+                fobj.write(' ' + word)
+
+        await ctx.send("Added {}".format(', '.join(words)))
+
 
