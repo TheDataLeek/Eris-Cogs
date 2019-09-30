@@ -61,6 +61,8 @@ class Grammar(BaseCog):
 
             new_message = re.sub('[a-z]\'[a-z]+|[^A-Za-z ]', '', clean_message.replace("'s", '')).split(' ')
 
+            print(new_message)
+
             if len(new_message) == 0:
                 return
 
