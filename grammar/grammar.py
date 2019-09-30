@@ -59,8 +59,7 @@ class Grammar(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            print(message.content)
-            new_message = re.sub('[a-z]\'[a-z]+|[^A-Za-z ]', '', clean_message.replace("'s", '')).split(' ')
+            new_message = re.sub('[A-Za-z]\'[A-Za-z]+|[^A-Za-z ]', '', message.content).split(' ')
 
             new_message = [w for w in new_message if w != '']
 
