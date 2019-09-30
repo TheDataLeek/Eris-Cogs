@@ -60,8 +60,14 @@ class Grammar(BaseCog):
 
             # ctx = await bot.get_context(message)
 
-            print(self.spell.unknown(message_split))
-            # await ctx.send(lc.correct(clean_message, matches))
+            new_message = message
+            mispelled = self.spell.unknown(new_message)
+            for word in mispelled:
+                correction = self.spell.correction(word)
+
+                new_message.replace(word, correction)
+
+            await ctx.send(new_message)
 
             return
 
