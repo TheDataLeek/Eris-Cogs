@@ -59,7 +59,7 @@ class Grammar(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            new_message = re.sub('[^A-Za-z]', '', message.content.replace("'s", '')).split(' ')
+            new_message = re.sub('[^A-Za-z ]', '', message.content.replace("'s", '')).split(' ')
             mispelled = self.spell.unknown(new_message)
 
             if len(mispelled) == 0:
