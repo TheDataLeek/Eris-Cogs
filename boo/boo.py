@@ -71,7 +71,7 @@ class Boo(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
-    def prefix_nick(self, nick, wordlist=halloween_prefixes):
+    def prefix_nick(self, nick, wordlist):
         return random.choice(wordlist) + ' ' + nick
 
     async def update_username(self, ctx, wordlist):
@@ -79,11 +79,11 @@ class Boo(BaseCog):
 
         original_nick = user.nick or user.display_name
 
-        new_nick = self.prefix_nick(original_nick, wordlist=wordlist)
+        new_nick = self.prefix_nick(original_nick, wordlist)
 
         if len(new_nick) >= 32 or len(new_nick.split(' ')) > 3:
             base_nick = new_nick.split(' ')[-1]
-            new_nick = self.prefix_nick(base_nick)
+            new_nick = self.prefix_nick(base_nick, wordlist)
 
         new_nick = new_nick.title()
 
