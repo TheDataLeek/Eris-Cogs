@@ -74,7 +74,7 @@ class Boo(BaseCog):
     def prefix_nick(self, nick, wordlist=halloween_prefixes):
         return random.choice(wordlist) + ' ' + nick
 
-    def update_username(self, ctx, wordlist):
+    async def update_username(self, ctx, wordlist):
         user = ctx.message.author
 
         original_nick = user.nick or user.display_name
@@ -95,11 +95,11 @@ class Boo(BaseCog):
 
     @commands.command()
     async def boo(self, ctx):
-        self.update_username(ctx, wordlist=halloween_prefixes)
+        await self.update_username(ctx, wordlist=halloween_prefixes)
 
     @commands.command()
     async def turkey(self, ctx):
-        self.update_username(ctx, wordlist=friendsgiving_prefixes)
+        await self.update_username(ctx, wordlist=friendsgiving_prefixes)
 
     # @commands.command()
     # @checks.is_owner()
