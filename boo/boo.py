@@ -5,7 +5,7 @@ import re
 
 BaseCog = getattr(commands, "Cog", object)
 
-prefixes = list(
+halloween_prefixes = list(
     {
         "afraid", "apparition", "bat", "bloodcurdling", "bloody", "bones", "broomstick", "cackle", "cadaver", "carved",
         "casket", "cauldron", "cemetery", "cobweb", "coffin", "corpse", "creepy", "decapitated", "decomposing", "eerie",
@@ -60,32 +60,32 @@ prefixes = list(
     }
 )
 
+friendsgiving_prefixes = list(
+    {
+        'alien', 'revisionist-history'
+    }
+)
+
 
 class Boo(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
-    def prefix_boo(self, nick):
-        return random.choice(prefixes) + ' ' + nick
+    def prefix_nick(self, nick, wordlist=halloween_prefixes):
+        return random.choice(wordlist) + ' ' + nick
 
-    def booify(self, original_nick):
-        new_nick = self.prefix_boo(original_nick)
-
-        if len(new_nick) >= 32 or len(new_nick.split(' ')) > 3:
-            base_nick = new_nick.split(' ')[-1]
-            new_nick = self.prefix_boo(base_nick)
-
-        new_nick = new_nick.title()
-        return new_nick
-
-    @commands.command()
-    async def boo(self, ctx, user: discord.Member = None):
-        if user is None:  # or user.id == '142431859148718080':
-            user = ctx.message.author
+    def update_username(self, ctx, wordlist):
+        user = ctx.message.author
 
         original_nick = user.nick or user.display_name
 
-        new_nick = self.booify(original_nick)
+        new_nick = self.prefix_nick(original_nick, wordlist=wordlist)
+
+        if len(new_nick) >= 32 or len(new_nick.split(' ')) > 3:
+            base_nick = new_nick.split(' ')[-1]
+            new_nick = self.prefix_nick(base_nick)
+
+        new_nick = new_nick.title()
 
         try:
             await user.edit(nick=new_nick)
@@ -94,15 +94,23 @@ class Boo(BaseCog):
             await ctx.send(user.mention + ' -> ' + new_nick)
 
     @commands.command()
-    @checks.is_owner()
-    async def boo_all(self, ctx):
-        for user in ctx.guild.members:
-            original_nick = user.nick or user.display_name
+    async def boo(self, ctx):
+        self.update_username(ctx, wordlist=halloween_prefixes)
 
-            new_nick = self.booify(original_nick)
+    @commands.command()
+    async def turkey(self, ctx):
+        self.update_username(ctx, wordlist=friendsgiving_prefixes)
 
-            try:
-                await user.edit(nick=new_nick)
-            except Exception as e:
-                print(e)
-                await ctx.send(user.mention + ' -> ' + new_nick)
+    # @commands.command()
+    # @checks.is_owner()
+    # async def boo_all(self, ctx):
+    #     for user in ctx.guild.members:
+    #         original_nick = user.nick or user.display_name
+    #
+    #         new_nick = self.booify(original_nick)
+    #
+    #         try:
+    #             await user.edit(nick=new_nick)
+    #         except Exception as e:
+    #             print(e)
+    #             await ctx.send(user.mention + ' -> ' + new_nick)
