@@ -27,6 +27,18 @@ names = [
     'robot',
     'flesh creature',
     'meat suit',
+    'individual',
+    'member of the collective',
+    'unspeakable horror',
+    'slut',
+    'creature',
+    'wonder boy',
+    'wonder girl',
+    'cat',
+    'dolphin',
+    'batman',
+    'dragon',
+    'abomination',
 ]
 
 goodwords = [
@@ -36,7 +48,12 @@ goodwords = [
     'most excellent',
     'average',
     'solidly ok',
-    'surpassed all expectations'
+    'surpassed all expectations',
+    'a+',
+    'pleasantly suprising',
+    'happy',
+    'rockstar',
+    'ninja'
 ]
 
 badwords = [
@@ -257,7 +274,7 @@ def generate_handlers(bot, gb_instance):
             # Just call the poor sod a bad bot
             # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
             #     await bot.delete_message(reaction.message)
-            if (reaction.count >= 8) and (
+            if (reaction.count >= 7) and (
                 reaction.message.id not in gb_instance.noticed
             ):
                 phrase = '{} IS A {} {}'.format(reaction.message.author.mention, random.choice(badwords).upper(), random.choice(names).upper())
@@ -272,7 +289,7 @@ def generate_handlers(bot, gb_instance):
                 rating = (0, 1)
             else:
                 rating = (1, 0)
-            if (reaction.count >= 5) and (
+            if (reaction.count >= 7) and (
                 reaction.message.id not in gb_instance.noticed
             ):
                 phrase = '{} IS A {} {}'.format(reaction.message.author.mention, random.choice(goodwords).upper(), random.choice(names).upper())
