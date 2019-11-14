@@ -154,8 +154,9 @@ class GoodBot(BaseCog):
         results = [
             "{}  -> {} - {} = {} ({}% positive)".format(*row)
             for row in results]
-        scores = "\n".join(results)
-        await ctx.send("```\nScores\n===========\n{}```".format(scores))
+        await ctx.send("Scores:")
+        for i in range(0, len(results), 20):
+            await ctx.send("```{}```".format('\n'.join(results[i:i+20])))
         con.close()
 
     @commands.command()
