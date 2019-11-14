@@ -150,7 +150,7 @@ class GoodBot(BaseCog):
             except Exception as e:
                 print(e)
                 pass
-        results.sort(key=lambda tup: -tup[-1])
+        results.sort(key=lambda tup: -tup[-2])
         results = [
             "{}  -> {} - {} = {} ({:0.02f}% positive)".format(*row)
             for row in results]
