@@ -23,36 +23,37 @@ class Sarcasm(BaseCog):
                 return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
-            message_split = clean_message.split(' ')
+            message_split = clean_message.split(" ")
 
             # BLACKLIST CHANNELS
             blacklist = [
-                'news',
-                'rpg',
-                'events',
-                'recommends',
-                'politisophy',
-                'eyebleach',
-                'weeb-lyfe',
-                'out-of-context',
-                'jokes',
-                'anime-club',
+                "news",
+                "rpg",
+                "events",
+                "recommends",
+                "politisophy",
+                "eyebleach",
+                "weeb-lyfe",
+                "out-of-context",
+                "jokes",
+                "anime-club",
             ]
 
             message_channel = message.channel.name.lower()
 
             if (
                 # DO NOT RESPOND TO SELF MESSAGES
-                (bot.user.id == message.author.id or message.content.startswith('.')) or
-                (message.channel.name is None) or
-                (reduce(
-                    lambda acc, n: acc or (n == message_channel),
-                    blacklist,
-                    False)) or
-                ('@' in clean_message) or
-                ('thank' in clean_message) or
-                ('http' in clean_message)
-                ):
+                (bot.user.id == message.author.id or message.content.startswith("."))
+                or (message.channel.name is None)
+                or (
+                    reduce(
+                        lambda acc, n: acc or (n == message_channel), blacklist, False
+                    )
+                )
+                or ("@" in clean_message)
+                or ("thank" in clean_message)
+                or ("http" in clean_message)
+            ):
                 return
 
             ctx = await bot.get_context(message)
@@ -61,11 +62,12 @@ class Sarcasm(BaseCog):
             if random.random() <= 0.02:
                 await ctx.send(add_sarcasm(clean_message))
                 if random.random() <= 0.1:
-                    with open('./data/sarcasm/img.png', 'rb') as fobj:
+                    with open("./data/sarcasm/img.png", "rb") as fobj:
                         await ctx.send(file=discord.File(fobj))
                 return
 
-        self.bot.add_listener(sarcasm_module, 'on_message')
+        self.bot.add_listener(sarcasm_module, "on_message")
+
 
 def add_sarcasm(message):
-    return ''.join(c if random.random() <= 0.5 else c.upper() for c in message)
+    return "".join(c if random.random() <= 0.5 else c.upper() for c in message)

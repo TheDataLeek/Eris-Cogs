@@ -11,12 +11,12 @@ import csv
 
 from redbot.core import checks, Config, commands
 
-__author__ = 'Eris'
+__author__ = "Eris"
 
-BaseCog = getattr(commands, 'Cog', object)
+BaseCog = getattr(commands, "Cog", object)
 
 
-WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
+WHOFILE = os.path.join(str(pathlib.Path.home()), "whois.db")
 
 dragonart = """
 ```
@@ -52,276 +52,274 @@ dragonart = """
 """
 
 dickwords = [
-    'dick',
-    'chode',
-    'schlong',
-    'unit',
-    'member',
-    'johnson',
-    'my little friend',
-    'pocket weasel',
-    'sausage',
-    'man meat'
+    "dick",
+    "chode",
+    "schlong",
+    "unit",
+    "member",
+    "johnson",
+    "my little friend",
+    "pocket weasel",
+    "sausage",
+    "man meat",
 ]
 
 dickwords += [
-    'adolph',
-    'albino Cave Dweller',
-    'baby-arm',
-    'baby-maker',
-    'baloney pony',
-    'beaver basher',
-    'beef whistle',
-    'bell on a pole',
-    'bishop',
-    'bob Dole',
-    'boomstick',
-    'braciole',
-    'bratwurst',
-    'burrito',
-    'candle',
-    'choad',
-    'chopper',
-    'chub',
-    'chubby',
-    'cock',
-    'cranny axe',
-    'cum gun',
-    'custard launcher',
-    'dagger',
-    'deep-V diver',
-    'dick',
-    'dickie',
-    'ding dong',
-    'mcdork',
-    'dink',
-    'dipstick',
-    'disco stick',
-    'dog head',
-    'dong',
-    'donger',
-    'dork',
-    'dragon',
-    'drum stick',
-    'dude piston',
-    'easy Rider',
-    'eggroll',
-    'excalibur',
-    'fang',
-    'ferret',
-    'fire hose',
-    'flesh flute',
-    'flesh tower',
-    'froto',
-    'fuck rod',
-    'fudge sickle',
-    'fun stick',
-    'gigi',
-    'groin',
-    'heat-seeking moisture missile',
-    'hog',
-    'jackhammer',
-    'jimmy',
-    'john',
-    'john Thomas',
-    'johnson',
-    'joystick',
-    'junk',
-    'kickstand',
-    'king sebastian',
-    'knob',
-    'krull the warrior king',
-    'lap rocket',
-    'leaky hose',
-    'lingam',
-    'little Bob',
-    'little Elvis',
-    'lizard',
-    'longfellow',
-    'love muscle',
-    'love rod',
-    'love stick',
-    'luigi',
-    'manhood',
-    'mayo shooting hotdog gun',
-    'meat constrictor',
-    'meat injection',
-    'meat popsicle',
-    'meat stick',
-    'meat thermometer',
-    'member',
-    'meter long king kong dong',
-    'microphone',
-    'middle stump',
-    'moisture and heat seeking venomous throbbing python of love',
-    'mr. Knish',
-    'mushroom head',
-    'mutton',
-    'netherrod',
-    'old boy',
-    'old fellow',
-    'old man',
-    'one-eyed monster',
-    'one-eyed snake',
-    'one-eyed trouser-snake',
-    'one-eyed wonder weasel',
-    'one-eyed yogurt slinger',
-    'pecker',
-    'pedro',
-    'peepee',
-    'percy',
-    'peter',
-    'pied Piper',
-    'pig skin bus',
-    'pink oboe',
-    'piss weasle',
-    'piston',
-    'plug',
-    'pnor',
-    'poinswatter',
-    'popeye',
-    'pork sword',
-    'prick',
-    'private eye',
-    'private part',
-    'purple-headed yogurt flinger',
-    'purple-helmeted warrior of love',
-    'quiver bone',
-    'ramburglar',
-    'rod',
-    'rod of pleasure',
-    'roundhead',
-    'sausage',
-    'schlong',
-    'dongadoodle',
-    'schmeckel',
-    'schmuck, shmuck',
-    'schnitzel',
-    'schwanz',
-    'schwartz',
-    'sebastianic sword',
-    'shaft',
-    'short arm',
-    'single barrelled pump action bollock yogurt shotgun',
-    'skin flute',
-    'soldier',
-    'spawn hammer',
-    'steamin’ semen truck',
-    'stick shift',
-    'surfboard',
-    'tallywhacker',
-    'tan Bannana',
-    'tassle',
-    'third leg',
-    'thumper',
-    'thunderbird',
-    'thundersword',
-    'tinker',
-    'todger',
-    'tonk',
-    'tool',
-    'trouser snake',
-    'tubesteak',
-    'twig',
-    'twig & berries',
-    'twinkie',
-    'vein',
-    'wand',
-    'wang',
-    'wang doodle',
-    'wanger',
-    'wee wee',
-    'whoopie stick',
-    'wick',
-    'wiener',
-    'wiener Schnitzel',
-    'willy',
-    'wing dang doodle',
-    'winkie',
-    'yingyang',
-    'yogurt gun'
+    "adolph",
+    "albino Cave Dweller",
+    "baby-arm",
+    "baby-maker",
+    "baloney pony",
+    "beaver basher",
+    "beef whistle",
+    "bell on a pole",
+    "bishop",
+    "bob Dole",
+    "boomstick",
+    "braciole",
+    "bratwurst",
+    "burrito",
+    "candle",
+    "choad",
+    "chopper",
+    "chub",
+    "chubby",
+    "cock",
+    "cranny axe",
+    "cum gun",
+    "custard launcher",
+    "dagger",
+    "deep-V diver",
+    "dick",
+    "dickie",
+    "ding dong",
+    "mcdork",
+    "dink",
+    "dipstick",
+    "disco stick",
+    "dog head",
+    "dong",
+    "donger",
+    "dork",
+    "dragon",
+    "drum stick",
+    "dude piston",
+    "easy Rider",
+    "eggroll",
+    "excalibur",
+    "fang",
+    "ferret",
+    "fire hose",
+    "flesh flute",
+    "flesh tower",
+    "froto",
+    "fuck rod",
+    "fudge sickle",
+    "fun stick",
+    "gigi",
+    "groin",
+    "heat-seeking moisture missile",
+    "hog",
+    "jackhammer",
+    "jimmy",
+    "john",
+    "john Thomas",
+    "johnson",
+    "joystick",
+    "junk",
+    "kickstand",
+    "king sebastian",
+    "knob",
+    "krull the warrior king",
+    "lap rocket",
+    "leaky hose",
+    "lingam",
+    "little Bob",
+    "little Elvis",
+    "lizard",
+    "longfellow",
+    "love muscle",
+    "love rod",
+    "love stick",
+    "luigi",
+    "manhood",
+    "mayo shooting hotdog gun",
+    "meat constrictor",
+    "meat injection",
+    "meat popsicle",
+    "meat stick",
+    "meat thermometer",
+    "member",
+    "meter long king kong dong",
+    "microphone",
+    "middle stump",
+    "moisture and heat seeking venomous throbbing python of love",
+    "mr. Knish",
+    "mushroom head",
+    "mutton",
+    "netherrod",
+    "old boy",
+    "old fellow",
+    "old man",
+    "one-eyed monster",
+    "one-eyed snake",
+    "one-eyed trouser-snake",
+    "one-eyed wonder weasel",
+    "one-eyed yogurt slinger",
+    "pecker",
+    "pedro",
+    "peepee",
+    "percy",
+    "peter",
+    "pied Piper",
+    "pig skin bus",
+    "pink oboe",
+    "piss weasle",
+    "piston",
+    "plug",
+    "pnor",
+    "poinswatter",
+    "popeye",
+    "pork sword",
+    "prick",
+    "private eye",
+    "private part",
+    "purple-headed yogurt flinger",
+    "purple-helmeted warrior of love",
+    "quiver bone",
+    "ramburglar",
+    "rod",
+    "rod of pleasure",
+    "roundhead",
+    "sausage",
+    "schlong",
+    "dongadoodle",
+    "schmeckel",
+    "schmuck, shmuck",
+    "schnitzel",
+    "schwanz",
+    "schwartz",
+    "sebastianic sword",
+    "shaft",
+    "short arm",
+    "single barrelled pump action bollock yogurt shotgun",
+    "skin flute",
+    "soldier",
+    "spawn hammer",
+    "steamin’ semen truck",
+    "stick shift",
+    "surfboard",
+    "tallywhacker",
+    "tan Bannana",
+    "tassle",
+    "third leg",
+    "thumper",
+    "thunderbird",
+    "thundersword",
+    "tinker",
+    "todger",
+    "tonk",
+    "tool",
+    "trouser snake",
+    "tubesteak",
+    "twig",
+    "twig & berries",
+    "twinkie",
+    "vein",
+    "wand",
+    "wang",
+    "wang doodle",
+    "wanger",
+    "wee wee",
+    "whoopie stick",
+    "wick",
+    "wiener",
+    "wiener Schnitzel",
+    "willy",
+    "wing dang doodle",
+    "winkie",
+    "yingyang",
+    "yogurt gun",
 ]
 
 vag_words = [
-    'vag',
-    'vajayjay',
-    'box',
-    'nether regions',
-    'lady business',
-    'lady v',
-    'hoo-haw',
-    'cha-cha',
-    'lady bits',
-    'crotch',
-    'muff',
-    'kitty',
-    'cooch',
-    'cooter',
-    'snatch',
-    'snapper',
-    'beaver',
-    'cookie',
-    'cupcake',
-    'coin purse',
-    'lady flower',
-    'honey pot',
-    'poon',
-    'punani',
-    'twat',
-    'gash',
-    'banana basket',
-    'flower pot',
-    'fine china',
-    'juice box',
-    'pink panther',
-    'hot pocket',
-    'bikini bizkit',
-    'penis fly trap',
-    'vertical smile',
-    'dew flaps',
-    'flaming lips',
-    'puff pillow',
-    'notorious v.a.g.',
-    'furburger',
-    'bearded clam',
-    'sausage wallet',
-    'panty hamster',
-    'meat curtains',
-    'penis garage',
-    'ink taco',
-    'axe wound',
-    'penis snuggie',
-    'pussy',
-    'cunt'
+    "vag",
+    "vajayjay",
+    "box",
+    "nether regions",
+    "lady business",
+    "lady v",
+    "hoo-haw",
+    "cha-cha",
+    "lady bits",
+    "crotch",
+    "muff",
+    "kitty",
+    "cooch",
+    "cooter",
+    "snatch",
+    "snapper",
+    "beaver",
+    "cookie",
+    "cupcake",
+    "coin purse",
+    "lady flower",
+    "honey pot",
+    "poon",
+    "punani",
+    "twat",
+    "gash",
+    "banana basket",
+    "flower pot",
+    "fine china",
+    "juice box",
+    "pink panther",
+    "hot pocket",
+    "bikini bizkit",
+    "penis fly trap",
+    "vertical smile",
+    "dew flaps",
+    "flaming lips",
+    "puff pillow",
+    "notorious v.a.g.",
+    "furburger",
+    "bearded clam",
+    "sausage wallet",
+    "panty hamster",
+    "meat curtains",
+    "penis garage",
+    "ink taco",
+    "axe wound",
+    "penis snuggie",
+    "pussy",
+    "cunt",
 ]
 
 dickwords = list(set(dickwords))
 
 yandere = [
-    'I *see* you...',
-    'Have you forgotten about me?',
-    'I missed you last night.',
-    'Where have you been?',
+    "I *see* you...",
+    "Have you forgotten about me?",
+    "I missed you last night.",
+    "Where have you been?",
     "Don't try to run from me.",
-    'I can always find you.',
-    'Are you feeling ok?',
-    'Hiding only delays the inevitable.',
-    'Did you think that would work?',
+    "I can always find you.",
+    "Are you feeling ok?",
+    "Hiding only delays the inevitable.",
+    "Did you think that would work?",
     "I'm *always* watching",
     "Do you think I've forgotten about what you did?",
-    'Hush. Only dreams now.',
-    'Are you still there?',
-    'Why are you like this',
-    "What do you think you're doing?"
-    "I love you, in my own crazy, crazy way....",
+    "Hush. Only dreams now.",
+    "Are you still there?",
+    "Why are you like this",
+    "What do you think you're doing?" "I love you, in my own crazy, crazy way....",
     "Remember I will always love you, as I claw your fucking throat away. It will end no other way.",
     "Okay, okay... OKAY, okay!",
     "You need to stop it now...",
     "Say that you want me every day",
     "Say that you want me in every way",
     "Say that you need me",
-    "Got me trippin' super psycho love"
-    "Aim, pull the trigger",
+    "Got me trippin' super psycho love" "Aim, pull the trigger",
     "Feel the pain getting bigger",
     "Go insane from the bitter feeling",
     "If you would sit oh so close to me, that would be nice like it's supposed to be, if you don't, I'll slit your "
@@ -418,7 +416,7 @@ yandere = [
     "I'm crazy?! What's crazy is that this world refuses to let me be with you!!!",
     "I command, that you'll love me and let me protect you!",
     "Despair of tomorrow! Despair of the unknown!  Despair of my love {}!",
-    "I imagine many things most of these \"things\" has something to do with you. Touch you, love you, kiss you, hug "
+    'I imagine many things most of these "things" has something to do with you. Touch you, love you, kiss you, hug '
     "you, smell you, squeeze you, break you, crush you, own you, until your soul, every bloody bit of your soul, is "
     "mine.",
     "Catching your heart with my left heart, I smile while you shout and scream, why do you react like this? Didn't "
@@ -449,29 +447,25 @@ yandere = [
     "Didn't you tell me you'd do anything for me {}?  The scissors are stained now.  But at least, finally, your "
     "heart will be mine.",
     "Twinkle twinkle little star, You're my {}, oh yes you are!  Soon you'll want to marry me, or I'll hang you "
-    "from the highest tree. Twinkle twinkle sweetie pie :heart:"
+    "from the highest tree. Twinkle twinkle sweetie pie :heart:",
 ]
 
 # MM Edit: Loads puns.csv and arranges it appropriately
 # Potential issue: filepath may not be correct
 # Credit for most puns: https://onelinefun.com/puns/
-with open('./data/events/puns.csv', newline='') as csvfile:
+with open("./data/events/puns.csv", newline="") as csvfile:
     # Puns.csv is arranged into two columns titled 'word' and 'response'
-    punreader = csv.reader(csvfile, delimiter='|')
+    punreader = csv.reader(csvfile, delimiter="|")
     # Make those columns two separate lists
     triggers = {}
     for row in punreader:
         triggers[row[0]] = row[1]
 
+
 def get_realname(userid: str):
     con = sqlite3.connect(WHOFILE)
     c = con.cursor()
-    c.execute(
-        'SELECT name '
-        'FROM usernames '
-        'WHERE userid=?',
-        (userid,)
-    )
+    c.execute("SELECT name " "FROM usernames " "WHERE userid=?", (userid,))
     name = c.fetchall()
     con.close()
     if len(name) == 0:
@@ -486,9 +480,9 @@ class Spoop(BaseCog):
 
     @commands.command()
     @checks.is_owner()
-    async def spoop(self, ctx, user: discord.Member=None):
+    async def spoop(self, ctx, user: discord.Member = None):
         if user is None:
-            await ctx.message.author.send('Stop being such a fuckup')
+            await ctx.message.author.send("Stop being such a fuckup")
             await ctx.message.delete()
             return
 
@@ -499,8 +493,7 @@ class Spoop(BaseCog):
             formatname = user.mention
         else:
             formatname = realname
-        new_message = ' '.join(x.format(formatname)
-                               for x in new_message.split(' '))
+        new_message = " ".join(x.format(formatname) for x in new_message.split(" "))
         await user.send(new_message)
         await ctx.message.delete()
 
@@ -511,43 +504,45 @@ async def spoop(self, message, realname):
     else:
         formatname = realname
     new_message = random.choice(yandere)
-    new_message = ' '.join(x.format(formatname)
-                           for x in new_message.split(' '))
+    new_message = " ".join(x.format(formatname) for x in new_message.split(" "))
 
     await message.author.send(new_message)
+
 
 async def message_events(message):
     if int(message.guild.id) != 142435106257240064:
         return
     clean_message = message.clean_content.lower()
     # MM: Added so list instead of string
-    message_split = clean_message.split(' ')
+    message_split = clean_message.split(" ")
 
-    regex = r'\b[Zz]\s*[eE]\s*[bB]([uU]|\b)'
+    regex = r"\b[Zz]\s*[eE]\s*[bB]([uU]|\b)"
     if re.search(regex, clean_message) is not None:
         await message.delete()
         return
 
-    regex = r'http|www'
+    regex = r"http|www"
     if re.search(regex, clean_message) is not None:
         return
 
     # DO NOT RESPOND TO SELF MESSAGES
-    if '195663495189102593' == str(message.author.id) or message.content.startswith('.'):
+    if "195663495189102593" == str(message.author.id) or message.content.startswith(
+        "."
+    ):
         return
 
     # BLACKLIST CHANNELS
     blacklist = [
-        'news',
-        'rpg',
-        'events',
-        'recommends',
-        'politisophy',
-        'eyebleach',
-        'weeb-lyfe',
-        'out-of-context',
-        'jokes',
-        'anime-club',
+        "news",
+        "rpg",
+        "events",
+        "recommends",
+        "politisophy",
+        "eyebleach",
+        "weeb-lyfe",
+        "out-of-context",
+        "jokes",
+        "anime-club",
     ]
 
     realname = get_realname(message.author.id)
@@ -561,43 +556,42 @@ async def message_events(message):
         return
 
     message_channel = message.channel.name.lower()
-    if reduce(
-            lambda acc, n: acc or (n == message_channel),
-            blacklist,
-            False):
+    if reduce(lambda acc, n: acc or (n == message_channel), blacklist, False):
         return
 
-    if '゜-゜' in message.content:
-        await message.channel.send('(╯°□°）╯︵ ┻━┻')
+    if "゜-゜" in message.content:
+        await message.channel.send("(╯°□°）╯︵ ┻━┻")
         return
 
     # love
-    if 'love' in clean_message and random.random() <= 0.1:
-        await message.channel.send('*WHAT IS LOVE?*')
+    if "love" in clean_message and random.random() <= 0.1:
+        await message.channel.send("*WHAT IS LOVE?*")
         time.sleep(2)
-        await message.channel.send('*baby don\'t hurt me*')
+        await message.channel.send("*baby don't hurt me*")
         time.sleep(2)
-        await message.channel.send('*don\'t hurt me*')
+        await message.channel.send("*don't hurt me*")
         time.sleep(2)
-        await message.channel.send('*no more*')
+        await message.channel.send("*no more*")
         return
 
     # first let's have a tiny chance of snek actually responding with ooc content
     if random.random() <= 0.01:
-        with open('./data/events/ooc/ooc.txt', 'r') as fobj:
+        with open("./data/events/ooc/ooc.txt", "r") as fobj:
             quotes = fobj.readlines()
         await message.channel.send(random.choice(quotes))
         return
 
     # now lets check for contents
-    if 'praise' in clean_message or 'pray' in clean_message:
-        root_dir = './data/events/pray'
-        files_to_choose = [os.path.join(root_dir, f)
-                           for f in os.listdir(root_dir)
-                           if os.path.isfile(os.path.join(root_dir, f))]
-        with open(random.choice(files_to_choose), 'rb') as fobj:
+    if "praise" in clean_message or "pray" in clean_message:
+        root_dir = "./data/events/pray"
+        files_to_choose = [
+            os.path.join(root_dir, f)
+            for f in os.listdir(root_dir)
+            if os.path.isfile(os.path.join(root_dir, f))
+        ]
+        with open(random.choice(files_to_choose), "rb") as fobj:
             new_msg = await message.send(file=discord.File(fobj))
-        await new_msg.add_reaction('🙏')
+        await new_msg.add_reaction("🙏")
         return
 
     # only do the others half the time cause fuck it it's tooo much
@@ -609,23 +603,21 @@ async def message_events(message):
 
     if random.random() <= 0.25:
         for word in message_split:
-            if 'men' in word:
-                bits = word.split('men')
+            if "men" in word:
+                bits = word.split("men")
                 await message.channel.send(
-                    'Not just the {} but the {} and {} too!'.format(
-                        word,
-                        'women'.join(bits),
-                        'children'.join(bits),
+                    "Not just the {} but the {} and {} too!".format(
+                        word, "women".join(bits), "children".join(bits)
                     )
                 )
                 return
 
     if random.random() <= 0.001:
-        with open('./data/events/e7sgd020ew501.png', 'rb') as fobj:
+        with open("./data/events/e7sgd020ew501.png", "rb") as fobj:
             new_msg = await message.channel.send(file=discord.File(fobj))
         return
 
-    elif 'thank' in clean_message:
+    elif "thank" in clean_message:
         new_message = "you're welcome"
         if random.random() < 0.5:
             if realname is None:
@@ -635,12 +627,12 @@ async def message_events(message):
             new_message += " {}".format(formatname)
         await message.channel.send(new_message)
 
-    elif 'snek' in clean_message:
-        msg = ':snake: ~ !! I :heart: you {}!!! ~ :snake:'
+    elif "snek" in clean_message:
+        msg = ":snake: ~ !! I :heart: you {}!!! ~ :snake:"
         if realname is not None and random.random() <= 0.5:
             msg = msg.format(realname)
         else:
-            msg = msg.format('senpai')
+            msg = msg.format("senpai")
         await message.channel.send(msg)
     # elif 'blood' in clean_message:
     #     await bot.send_message(message.channel, 'B̵̪̳̣͍̙̳̬̭͞͝L͢͏̸͏̧̙̼͓̘̯͉̩̩̞͚͕̲̰̼̘̦ͅÒ̮͈̖͔̰̞͝O̵͖͔̟̰͔͚̬͟͝ͅḐ̸̭͙̜̺̞͍͎͔͜͡͡ ̨̨̟̝̦̬̩̳̖͟ͅF̤̭̬͙̀̀͘͠O̶̯̠̞̲̫̱̻̮͎̦̳̝͉̮̕ͅŔ̡͈͕̼͖̥̰̭̟̝͟ ̡̲̯͉̤͈̘͎̬͎̺̟͞T̴̸̟̺̬̼̣̖͓̩̯͇̣̩̺̮͘Ḫ̣̥͍͙͍͓͔͈̖̬̘̩͔͖̝͖̀͘E̶̡̛̯̞̱̯̗͍͖͇̹̖̳̩̥̳̳̙͢͝ ̡͓͍͕͔̳̠͍̥̞̙͖̙̦͕̠̪̘̕ͅB̪͕̻̺͈̤̟̻͖̣͙̪̝̭̀͘͠Ḻ̵̨̞̯̥̭͈̪̻̰̭́́͝O̧͜͏̰͓̘̖̘̬̤ͅǪ̥̟̘̪̱͔͇̖͟D̸̡҉̶̫͕͖̹̤̜̪̟̝̯͚ ̵̨̛̯̺̤̮̲͓̦̜̪̕͝G̙̩͖̭̘̤̩̕Ǫ͎͉̲̤͓͇̦̖̯͇̥͔͓̣̘̦̪̀D͘͘͏͡͏͙̠͈̮̱̼')
@@ -651,16 +643,18 @@ async def message_events(message):
 
     # elif 'dragon' in clean_message:
     #     await bot.send_message(message.channel, dragonart)
-    elif 'penis' in clean_message:
-        root_dir = './data/events/penis'
-        files_to_choose = [os.path.join(root_dir, f)
-                           for f in os.listdir(root_dir)
-                           if os.path.isfile(os.path.join(root_dir, f))]
-        with open(random.choice(files_to_choose), 'rb') as fobj:
+    elif "penis" in clean_message:
+        root_dir = "./data/events/penis"
+        files_to_choose = [
+            os.path.join(root_dir, f)
+            for f in os.listdir(root_dir)
+            if os.path.isfile(os.path.join(root_dir, f))
+        ]
+        with open(random.choice(files_to_choose), "rb") as fobj:
             new_msg = await message.channel.send(file=discord.File(fobj))
-        await new_msg.add_reaction('🌈')
-        await new_msg.add_reaction('🍆')
-        await new_msg.add_reaction('💦')
+        await new_msg.add_reaction("🌈")
+        await new_msg.add_reaction("🍆")
+        await new_msg.add_reaction("💦")
     # elif reduce(
     #         lambda acc, n: acc or (n in clean_message),
     #         dickwords,
@@ -677,4 +671,3 @@ async def message_events(message):
     #     await bot.add_reaction(message, '😞')
     elif len(trigger) != 0:
         await message.channel.send(triggers[list(trigger)[0]])
-

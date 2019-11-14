@@ -14,7 +14,7 @@ import random
 BaseCog = getattr(commands, "Cog", object)
 
 
-RATINGSFILE = os.path.join(str(pathlib.Path.home()), 'bots.db')
+RATINGSFILE = os.path.join(str(pathlib.Path.home()), "bots.db")
 
 
 def user_exists(userid, cursor=None):
@@ -24,7 +24,7 @@ def user_exists(userid, cursor=None):
     else:
         c = cursor
 
-    c.execute('SELECT * FROM ratings WHERE userid=?', (userid,))
+    c.execute("SELECT * FROM ratings WHERE userid=?", (userid,))
 
     results = c.fetchall()
 
@@ -46,7 +46,7 @@ def get_user_rating(userid, cursor=None):
     else:
         c = cursor
 
-    c.execute('SELECT good, bad FROM ratings WHERE userid=?', (userid,))
+    c.execute("SELECT good, bad FROM ratings WHERE userid=?", (userid,))
 
     results = c.fetchall()
 
@@ -56,15 +56,15 @@ def get_user_rating(userid, cursor=None):
         rating = (results[0][0], results[0][1])
     else:
         # Add if doesn't exist, hopefully prevent crashes
-        c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
-                  (userid, 0, 0))
+        c.execute(
+            "INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)", (userid, 0, 0)
+        )
         con.commit()
 
     if cursor is None:
         con.close()
 
     return rating
-
 
 
 class GoodBot(BaseCog):
@@ -74,12 +74,12 @@ class GoodBot(BaseCog):
         con = sq.connect(RATINGSFILE)
         with con:
             con.execute(
-                'CREATE TABLE IF NOT EXISTS ratings('
-                    'id INT PRIMARY KEY,'
-                    'userid TEXT UNIQUE,'
-                    'good INT,'
-                    'bad INT'
-                ')'
+                "CREATE TABLE IF NOT EXISTS ratings("
+                "id INT PRIMARY KEY,"
+                "userid TEXT UNIQUE,"
+                "good INT,"
+                "bad INT"
+                ")"
             )
             con.commit()
 
@@ -87,7 +87,7 @@ class GoodBot(BaseCog):
         self.noticed = set()
 
     @commands.command()
-    async def rating(self, ctx, user: discord.Member=None):
+    async def rating(self, ctx, user: discord.Member = None):
         """
         Displays a user rating in the form <score> (<updoots>/<downdoots>/<totaldoots>)
         """
@@ -95,21 +95,18 @@ class GoodBot(BaseCog):
             user = ctx.author
 
         if not user_exists(user.id):
-            await ctx.send('{} hasn\'t been rated'.format(user.mention))
+            await ctx.send("{} hasn't been rated".format(user.mention))
             return
 
         good, bad = get_user_rating(user.id)
 
-        await ctx.send('User {} has a score of {}'.format(
-                            user.mention,
-                            good - bad
-            ))
+        await ctx.send("User {} has a score of {}".format(user.mention, good - bad))
 
     @commands.command()
     async def goodbots(self, ctx):
         con = sq.connect(RATINGSFILE)
         c = con.cursor()
-        c.execute('SELECT userid, good, bad from ratings ORDER BY (good - bad) DESC')
+        c.execute("SELECT userid, good, bad from ratings ORDER BY (good - bad) DESC")
         db_results = c.fetchall()
         results = []
         for userid, good, bad in db_results:
@@ -121,31 +118,30 @@ class GoodBot(BaseCog):
                 print(e)
                 pass
         results.sort(key=lambda tup: -tup[1])
-        results = ['  '.join([str(_) for _ in row]) for row in results]
-        scores = '\n'.join(results)
-        await ctx.send('```\nScores\n===========\n{}```'.format(scores))
+        results = ["  ".join([str(_) for _ in row]) for row in results]
+        scores = "\n".join(results)
+        await ctx.send("```\nScores\n===========\n{}```".format(scores))
         con.close()
 
     @commands.command()
     async def see_previous(self, ctx):
-        if ctx.message.author.id != '142431859148718080':
+        if ctx.message.author.id != "142431859148718080":
             return
         resolved_previous = {
             self.bot.get_guild(server_id).name: {
-                self.bot.get_channel(channel_id).name:
-                    self.bot.get_guild(server_id).get_member(user_id).name
-                for channel_id, user_id
-                in channels.items()
+                self.bot.get_channel(channel_id)
+                .name: self.bot.get_guild(server_id)
+                .get_member(user_id)
+                .name
+                for channel_id, user_id in channels.items()
             }
-            for server_id, channels
-            in self.previous_author.items()
+            for server_id, channels in self.previous_author.items()
         }
         pretty_version = pp.pformat(resolved_previous)
-        await ctx.send('```{}```'.format(pretty_version))
+        await ctx.send("```{}```".format(pretty_version))
 
 
 def generate_handlers(bot, gb_instance):
-
     async def goodbot(message, reaction=None, action=None):
         # Prevent snek from voting on herself or counting
         # if bot.user.id == message.author.id:
@@ -160,9 +156,9 @@ def generate_handlers(bot, gb_instance):
         channel = message.channel.id
 
         rating = None
-        if 'good bot' in clean_message:
+        if "good bot" in clean_message:
             rating = (1, 0)
-        elif 'bad bot' in clean_message:
+        elif "bad bot" in clean_message:
             rating = (0, 1)
         else:
             prev_author = message.author.id
@@ -170,27 +166,31 @@ def generate_handlers(bot, gb_instance):
                 gb_instance.previous_author[server] = dict()
             gb_instance.previous_author[server][channel] = prev_author
 
-        if ((rating is not None) and
-            (gb_instance.previous_author[server].get(channel) is not None) and
-            (gb_instance.previous_author[server][channel] != message.author.id)):
+        if (
+            (rating is not None)
+            and (gb_instance.previous_author[server].get(channel) is not None)
+            and (gb_instance.previous_author[server][channel] != message.author.id)
+        ):
             await rate_user(gb_instance.previous_author[server][channel], rating)
 
     async def rate_user(userid, rating):
         con = sq.connect(RATINGSFILE)
         c = con.cursor()
         if not user_exists(userid):
-            c.execute('INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)',
-                      (userid, *rating))
+            c.execute(
+                "INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)",
+                (userid, *rating),
+            )
             con.commit()
         else:
             oldgood, oldbad = get_user_rating(userid, cursor=c)
-            good, bad = (oldgood + rating[0],
-                         oldbad + rating[1])
+            good, bad = (oldgood + rating[0], oldbad + rating[1])
             # MM: You've had your fun
             # if ((userid == '142431859148718080') and ((good - bad) <= 0)):
             #     bad = good - 3
-            c.execute('UPDATE ratings SET good=?, bad=? WHERE userid=?',
-                      (good, bad, userid))
+            c.execute(
+                "UPDATE ratings SET good=?, bad=? WHERE userid=?", (good, bad, userid)
+            )
             con.commit()
         con.close()
 
@@ -202,12 +202,12 @@ def generate_handlers(bot, gb_instance):
         server = reaction.message.guild.id
         channel = reaction.message.channel.id
 
-        rating = None   # (+, -)
+        rating = None  # (+, -)
         # MM: you've had your fun
         # Upvote SpatulaFish
         # if reaction.emoji in ['👎', '👍'] and reaction.message.author.id == '142431859148718080':
         #     rating = (1, 0)
-        if reaction.emoji == '👎':
+        if reaction.emoji == "👎":
             # MM proposal:
             # Element of randomness: Self downvotes could result in updoot
             if user.id == reaction.message.author.id:
@@ -221,23 +221,27 @@ def generate_handlers(bot, gb_instance):
             # Just call the poor sod a bad bot
             # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
             #     await bot.delete_message(reaction.message)
-            if ((reaction.count >= 8) and (reaction.message.id not in gb_instance.noticed)):
+            if (reaction.count >= 8) and (
+                reaction.message.id not in gb_instance.noticed
+            ):
                 await bot.send_filtered(
                     reaction.message.channel,
-                    content='{} IS A BAD BOT'.format(reaction.message.author.mention)
+                    content="{} IS A BAD BOT".format(reaction.message.author.mention),
                 )
                 gb_instance.noticed.add(reaction.message.id)
-        elif reaction.emoji == '👍':
+        elif reaction.emoji == "👍":
             # Downvote for self votes
             if user.id == reaction.message.author.id:
                 rating = (0, 1)
             else:
                 rating = (1, 0)
-            if ((reaction.count >= 8) and (reaction.message.id not in gb_instance.noticed)):
+            if (reaction.count >= 8) and (
+                reaction.message.id not in gb_instance.noticed
+            ):
                 await bot.send_filtered(
                     reaction.message.channel,
-                   content='{} IS A GOOD BOT'.format(reaction.message.author.mention)
-               )
+                    content="{} IS A GOOD BOT".format(reaction.message.author.mention),
+                )
                 gb_instance.noticed.add(reaction.message.id)
 
         if rating is not None:
@@ -255,14 +259,13 @@ def generate_handlers(bot, gb_instance):
         # do nothing for remove, already punished once for self votes
         if user.id == reaction.message.author.id:
             return
-        elif reaction.emoji == '👎':
+        elif reaction.emoji == "👎":
             rating = (1, 0)
-        elif reaction.emoji == '👍':
+        elif reaction.emoji == "👍":
             rating = (0, 1)
         else:
             return
 
         await rate_user(reaction.message.author.id, rating)
-
 
     return goodbot, parse_reaction_add, parse_reaction_remove

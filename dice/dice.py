@@ -5,7 +5,8 @@ import re
 
 BaseCog = getattr(commands, "Cog", object)
 
-dice_format = '([0-9]+)d([0-9]+)(v[0-9])?'
+dice_format = "([0-9]+)d([0-9]+)(v[0-9])?"
+
 
 class Dice(BaseCog):
     def __init__(self, bot):
@@ -17,7 +18,7 @@ class Dice(BaseCog):
         match = re.match(dice_format, roll)
 
         if match is None or match.group(1) is None or match.group(2) is None:
-            await ctx.send('Please use the correct format, ex: 4d6v1')
+            await ctx.send("Please use the correct format, ex: 4d6v1")
             return
 
         numdice = int(match.group(1))
@@ -27,7 +28,6 @@ class Dice(BaseCog):
         rolls.sort(key=lambda x: -x)
 
         if match.group(3) is not None:
-            rolls = rolls[:-int(match.group(3)[1:])]
+            rolls = rolls[: -int(match.group(3)[1:])]
 
-        await ctx.send('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
-
+        await ctx.send("Rolling {}... {} = {}".format(roll, sum(rolls), str(rolls)))

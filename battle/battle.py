@@ -18,7 +18,7 @@ from pony.orm import Optional, Required, db_session
 
 import pathlib
 
-BaseCog = getattr(commands, 'Cog', object)
+BaseCog = getattr(commands, "Cog", object)
 
 # we're gonna keep track of last point given in memory
 ONE_HOUR = 60 * 60
@@ -28,16 +28,16 @@ FARM_LIST = {}
 MAX_FARM = 5
 
 the_chosen = [
-    '195663495189102593', # snek
-    '142431859148718080', # eris
-    '223869486736867328' # relm
+    "195663495189102593",  # snek
+    "142431859148718080",  # eris
+    "223869486736867328",  # relm
 ]
 
 """
 Let's start by defining our database
 """
 
-db_file = pathlib.Path().home() / 'battle.db'
+db_file = pathlib.Path().home() / "battle.db"
 db = orm.Database()
 
 breaks = [
@@ -63,6 +63,7 @@ breaks = [
     355_000,
 ]
 
+
 class User(db.Entity):
     userID = Required(str)
     points = Required(int, default=0)
@@ -80,22 +81,28 @@ class User(db.Entity):
     player_class = Optional(str)
 
     @property
-    def st_mod(self): return int((self.strength - 10) / 2)
+    def st_mod(self):
+        return int((self.strength - 10) / 2)
 
     @property
-    def ws_mod(self): return int((self.wisdom - 10) / 2)
+    def ws_mod(self):
+        return int((self.wisdom - 10) / 2)
 
     @property
-    def dx_mod(self): return int((self.dexterity - 10) / 2)
+    def dx_mod(self):
+        return int((self.dexterity - 10) / 2)
 
     @property
-    def cr_mod(self): return int((self.charisma - 10) / 2)
+    def cr_mod(self):
+        return int((self.charisma - 10) / 2)
 
     @property
-    def in_mod(self): return int((self.intelligence - 10) / 2)
+    def in_mod(self):
+        return int((self.intelligence - 10) / 2)
 
     @property
-    def cn_mod(self): return int((self.constitution - 10) / 2)
+    def cn_mod(self):
+        return int((self.constitution - 10) / 2)
 
     def generate_stat(self):
         rolls = sum(list(sorted(list(random.randint(1, 6) for _ in range(4))))[1:])
@@ -139,7 +146,7 @@ class User(db.Entity):
 
     def go_down_a_level(self):
         self.hp -= max(3, random.randint(1, 6)) + self.cn_mod
-        if self.hp <=0: #Shouldn't happen but eh. Dice fall as they may.
+        if self.hp <= 0:  # Shouldn't happen but eh. Dice fall as they may.
             self.hp = max(3, random.randint(1, 6)) + self.cn_mod
         self.current_hp = self.hp
 
@@ -171,7 +178,7 @@ class User(db.Entity):
         self.current_hp = self.hp
 
 
-db.bind(provider='sqlite', filename=str(db_file), create_db=True)
+db.bind(provider="sqlite", filename=str(db_file), create_db=True)
 db.generate_mapping(create_tables=True)
 
 
@@ -214,7 +221,7 @@ class Battle(BaseCog):
         async def count_message(message, reaction=None, action=None):
             # Prevent snek from voting on herself or counting
             clean_message = message.clean_content.lower()
-            if not clean_message.startswith('.') and random.random() <= 0.1:
+            if not clean_message.startswith(".") and random.random() <= 0.1:
                 heal_user(message.author)
 
             if bot.user.id == message.author.id:
@@ -224,17 +231,19 @@ class Battle(BaseCog):
             if message.guild is None:
                 return
 
-            server          = message.guild.id
-            channel         = message.channel.id
-            userID          = message.author.id
+            server = message.guild.id
+            channel = message.channel.id
+            userID = message.author.id
             message_channel = message.channel.name.lower()
 
             # don't do the #battle channel
-            if 'battle' in message_channel:
+            if "battle" in message_channel:
                 return
 
             add_points = False
-            if (userID not in POINT_TIMINGS) or (time.time() - POINT_TIMINGS[userID] > 60):
+            if (userID not in POINT_TIMINGS) or (
+                time.time() - POINT_TIMINGS[userID] > 60
+            ):
                 POINT_TIMINGS[userID] = time.time()
                 add_points = True
 
@@ -254,18 +263,18 @@ class Battle(BaseCog):
             if reaction.message.guild is None:
                 return
 
-            server          = reaction.message.guild.id
-            channel         = reaction.message.channel.id
-            userID          = reaction.message.author.id
+            server = reaction.message.guild.id
+            channel = reaction.message.channel.id
+            userID = reaction.message.author.id
             message_channel = reaction.message.channel.name.lower()
 
             with db_session:
                 user = get_user(userID)
 
-                if reaction.emoji == '👎':
-                    if user.points >=3:
+                if reaction.emoji == "👎":
+                    if user.points >= 3:
                         user.update_points(-3)
-                elif reaction.emoji == '👍':
+                elif reaction.emoji == "👍":
                     user.update_points(3)
 
         # We need to count each message
@@ -278,27 +287,26 @@ class Battle(BaseCog):
             if reaction.message.guild is None:
                 return
 
-            server          = reaction.message.guild.id
-            channel         = reaction.message.channel.id
-            userID          = reaction.message.author.id
+            server = reaction.message.guild.id
+            channel = reaction.message.channel.id
+            userID = reaction.message.author.id
             message_channel = reaction.message.channel.name.lower()
 
             with db_session:
                 user = get_user(userID)
 
-                if reaction.emoji == '👎':
+                if reaction.emoji == "👎":
                     user.update_points(3)
-                elif reaction.emoji == '👍':
-                    if user.points >=3:
+                elif reaction.emoji == "👍":
+                    if user.points >= 3:
                         user.update_points(-3)
 
-        bot.add_listener(count_message, 'on_message')
-        bot.add_listener(count_reaction_add, 'on_reaction_add')
-        bot.add_listener(count_reaction_remove, 'on_reaction_remove')
-
+        bot.add_listener(count_message, "on_message")
+        bot.add_listener(count_reaction_add, "on_reaction_add")
+        bot.add_listener(count_reaction_remove, "on_reaction_remove")
 
     @commands.command()
-    async def status(self, ctx, user: discord.Member=None):
+    async def status(self, ctx, user: discord.Member = None):
         """
         List status of user
         """
@@ -308,41 +316,45 @@ class Battle(BaseCog):
 
             db_user = get_user(user.id)
 
-            message = '\n'.join([
-            'User {} has {} experience and is level {} with {}/{} hitpoints',
-            'Armor Class: {}',
-            'Strength: {} ({})',
-            'Intelligence: {} ({})',
-            'Dexterity: {} ({})',
-            'Wisdom: {} ({})',
-            'Charisma: {} ({})',
-            'Constitution: {} ({})',
-            ])
+            message = "\n".join(
+                [
+                    "User {} has {} experience and is level {} with {}/{} hitpoints",
+                    "Armor Class: {}",
+                    "Strength: {} ({})",
+                    "Intelligence: {} ({})",
+                    "Dexterity: {} ({})",
+                    "Wisdom: {} ({})",
+                    "Charisma: {} ({})",
+                    "Constitution: {} ({})",
+                ]
+            )
 
-            await ctx.send(message.format(
-                                user.mention,
-                                db_user.points,
-                                db_user.level,
-                                db_user.current_hp,
-                                db_user.hp,
-                                db_user.armor_class,
-                                db_user.strength,
-                                db_user.st_mod,
-                                db_user.intelligence,
-                                db_user.in_mod,
-                                db_user.dexterity,
-                                db_user.dx_mod,
-                                db_user.wisdom,
-                                db_user.ws_mod,
-                                db_user.charisma,
-                                db_user.cr_mod,
-                                db_user.constitution,
-                                db_user.cn_mod,
-                ))
+            await ctx.send(
+                message.format(
+                    user.mention,
+                    db_user.points,
+                    db_user.level,
+                    db_user.current_hp,
+                    db_user.hp,
+                    db_user.armor_class,
+                    db_user.strength,
+                    db_user.st_mod,
+                    db_user.intelligence,
+                    db_user.in_mod,
+                    db_user.dexterity,
+                    db_user.dx_mod,
+                    db_user.wisdom,
+                    db_user.ws_mod,
+                    db_user.charisma,
+                    db_user.cr_mod,
+                    db_user.constitution,
+                    db_user.cn_mod,
+                )
+            )
 
     @commands.command()
     @checks.is_owner()
-    async def reload_user(self, ctx, user: discord.Member=None):
+    async def reload_user(self, ctx, user: discord.Member = None):
         """
         reloads user stats
         """
@@ -353,7 +365,7 @@ class Battle(BaseCog):
 
     @commands.command()
     @checks.is_owner()
-    async def heal_user(self, ctx, user: discord.Member=None):
+    async def heal_user(self, ctx, user: discord.Member = None):
         """
         reloads user stats
         """
@@ -362,17 +374,16 @@ class Battle(BaseCog):
 
     @commands.command()
     @checks.is_owner()
-    async def full_heal_user(self, ctx, user: discord.Member=None):
+    async def full_heal_user(self, ctx, user: discord.Member = None):
         """
         reloads user stats
         """
         user = ctx.message.author if user is None else user
         full_heal_user(user)
 
-
     @commands.command()
     @checks.is_owner()
-    async def elevate(self, ctx, user: discord.Member=None):
+    async def elevate(self, ctx, user: discord.Member = None):
         """
         reloads user stats
         """
@@ -384,7 +395,9 @@ class Battle(BaseCog):
 
     @commands.command()
     @checks.is_owner()
-    async def set_attribute(self, ctx, user: discord.Member=None, attribute=None, new_value=None):
+    async def set_attribute(
+        self, ctx, user: discord.Member = None, attribute=None, new_value=None
+    ):
         """
         Sets a chosen attribute
 
@@ -401,14 +414,14 @@ class Battle(BaseCog):
             target = get_user(user.id)
 
             attributes = [
-                'hp',
-                'points',
-                'strength',
-                'wisdom',
-                'dexterity',
-                'charisma',
-                'intelligence',
-                'constitution',
+                "hp",
+                "points",
+                "strength",
+                "wisdom",
+                "dexterity",
+                "charisma",
+                "intelligence",
+                "constitution",
             ]
 
             if attribute not in attributes:
@@ -418,31 +431,30 @@ class Battle(BaseCog):
             try:
                 int(new_value)
             except ValueError:
-                await ctx.send('Please enter an integer')
+                await ctx.send("Please enter an integer")
                 return
 
-            if attribute == 'hp':
+            if attribute == "hp":
                 target.hp = int(new_value)
-            elif attribute == 'points':
+            elif attribute == "points":
                 target.points = int(new_value)
-            elif attribute == 'strength':
+            elif attribute == "strength":
                 target.strength = int(new_value)
-            elif attribute == 'wisdom':
+            elif attribute == "wisdom":
                 target.wisdom = int(new_value)
-            elif attribute == 'dexterity':
+            elif attribute == "dexterity":
                 target.dexterity = int(new_value)
-            elif attribute == 'charisma':
+            elif attribute == "charisma":
                 target.charisma = int(new_value)
-            elif attribute == 'intelligence':
+            elif attribute == "intelligence":
                 target.intelligence = int(new_value)
-            elif attribute == 'constitution':
+            elif attribute == "constitution":
                 target.constitution = int(new_value)
 
             orm.commit()
 
-
     @commands.command()
-    async def protect(self, ctx, user: discord.Member=None):
+    async def protect(self, ctx, user: discord.Member = None):
         """
         reloads user stats
         """
@@ -452,9 +464,8 @@ class Battle(BaseCog):
 
         PROTECTIONS[user.id] = ctime
 
-
     @commands.command()
-    async def attack(self, ctx, user: discord.Member=None):
+    async def attack(self, ctx, user: discord.Member = None):
         """
         Battles another user!
 
@@ -466,7 +477,9 @@ class Battle(BaseCog):
         punish_author = False
         if protected is not None:
             if time.time() - protected <= ONE_HOUR:
-                await ctx.send(f'{ctx.message.author.mention} is protected and cannot attack!')
+                await ctx.send(
+                    f"{ctx.message.author.mention} is protected and cannot attack!"
+                )
                 return
             else:
                 del PROTECTIONS[ctx.message.author.id]
@@ -474,7 +487,7 @@ class Battle(BaseCog):
 
         if target_protected is not None:
             if time.time() - target_protected <= ONE_HOUR:
-                await ctx.send(f'{user.mention} is protected!')
+                await ctx.send(f"{user.mention} is protected!")
                 return
             else:
                 del PROTECTIONS[user.id]
@@ -482,32 +495,42 @@ class Battle(BaseCog):
         farmed = FARM_LIST.get(user.id)
         if farmed is not None:
             if farmed == MAX_FARM:
-                await ctx.send(f'{user.mention} has been killed too many times since they last attacked.'
-                                   f'They are now under farm protection')
+                await ctx.send(
+                    f"{user.mention} has been killed too many times since they last attacked."
+                    f"They are now under farm protection"
+                )
             elif farmed > MAX_FARM:
-                await ctx.send(f'Stop Farming {user.mention}! You get an asshole punishment!')
+                await ctx.send(
+                    f"Stop Farming {user.mention}! You get an asshole punishment!"
+                )
                 punish_author = True
         with db_session:
             author = get_user(ctx.message.author.id)
 
             if user is None:
                 author.current_hp -= author.attack_roll
-                await ctx.send(f'{ctx.message.author.mention} hurt itself in its confusion!'
-                               f' Current HP = {author.current_hp}')
+                await ctx.send(
+                    f"{ctx.message.author.mention} hurt itself in its confusion!"
+                    f" Current HP = {author.current_hp}"
+                )
                 return
             if punish_author:
                 author.current_hp -= author.attack_roll
-                await ctx.send(f'{ctx.message.author.mention} is a jerk'
-                               f' Current HP = {author.current_hp}')
+                await ctx.send(
+                    f"{ctx.message.author.mention} is a jerk"
+                    f" Current HP = {author.current_hp}"
+                )
                 return
 
             if author.current_hp <= 0:
-                await ctx.send(f'{ctx.message.author.mention} is unconscious and cannot attack!')
+                await ctx.send(
+                    f"{ctx.message.author.mention} is unconscious and cannot attack!"
+                )
                 return
 
             target = get_user(user.id)
             if author.attack_roll >= target.armor_class:
-                #Once a user attacks successfully they are no longer under farm protection.
+                # Once a user attacks successfully they are no longer under farm protection.
                 farm_check = FARM_LIST.get(ctx.message.author.id)
                 if farm_check is not None:
                     del FARM_LIST[ctx.message.author.id]
@@ -519,24 +542,32 @@ class Battle(BaseCog):
                     else:
                         FARM_LIST[user.id] += 1
                     new_xp = random.randint(1, 3) * target.level
-                    level_diff=author.update_points(new_xp)
-                    await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
-                                   f' {user.mention} is unconscious!')
+                    level_diff = author.update_points(new_xp)
+                    await ctx.send(
+                        f"{ctx.message.author.mention} attacks {user.mention} for {roll}!"
+                        f" {user.mention} is unconscious!"
+                    )
 
-                    await ctx.send(f'{ctx.message.author.mention} gains {new_xp} XP')
+                    await ctx.send(f"{ctx.message.author.mention} gains {new_xp} XP")
                     if level_diff:
-                        await ctx.send(f'{ctx.message.author.mention} has leveled up and is now {author.level}')
+                        await ctx.send(
+                            f"{ctx.message.author.mention} has leveled up and is now {author.level}"
+                        )
                 else:
-                    await ctx.send(f'{ctx.message.author.mention} attacks {user.mention} for {roll}!'
-                                   f' Current HP = {target.current_hp}')
+                    await ctx.send(
+                        f"{ctx.message.author.mention} attacks {user.mention} for {roll}!"
+                        f" Current HP = {target.current_hp}"
+                    )
 
                 if str(user.id) in the_chosen:
                     roll = random.randint(1, 20)
                     author.current_hp -= roll
-                    await ctx.send(f'{user.mention} is one of the chosen!'
-                            f'{ctx.message.author.mention} is smited for {roll}')
+                    await ctx.send(
+                        f"{user.mention} is one of the chosen!"
+                        f"{ctx.message.author.mention} is smited for {roll}"
+                    )
 
                 return
             else:
-                await ctx.send('The attack misses!')
+                await ctx.send("The attack misses!")
                 return

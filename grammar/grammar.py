@@ -22,7 +22,7 @@ class Grammar(BaseCog):
         self.spell = SpellChecker()
         self.spell.distance = 1
 
-        self.wordfile = pathlib.Path().home() / 'wordlist.txt'
+        self.wordfile = pathlib.Path().home() / "wordlist.txt"
         self.spell.word_frequency.load_text_file(str(self.wordfile))
 
         async def grammar_module(message):
@@ -30,42 +30,45 @@ class Grammar(BaseCog):
                 return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
-            message_split = clean_message.split(' ')
+            message_split = clean_message.split(" ")
 
             # BLACKLIST CHANNELS
             blacklist = [
-                'news',
-                'rpg',
-                'events',
-                'recommends',
-                'politisophy',
-                'eyebleach',
-                'weeb-lyfe',
-                'out-of-context',
-                'jokes',
-                'anime-club',
+                "news",
+                "rpg",
+                "events",
+                "recommends",
+                "politisophy",
+                "eyebleach",
+                "weeb-lyfe",
+                "out-of-context",
+                "jokes",
+                "anime-club",
             ]
 
             message_channel = message.channel.name.lower()
 
             if (
                 # DO NOT RESPOND TO SELF MESSAGES
-                (bot.user.id == message.author.id or message.content.startswith('.')) or
-                (message.channel.name is None) or
-                (reduce(
-                    lambda acc, n: acc or (n == message_channel),
-                    blacklist,
-                    False)) or
-                ('thank' in clean_message) or
-                ('http' in clean_message)
-                ):
+                (bot.user.id == message.author.id or message.content.startswith("."))
+                or (message.channel.name is None)
+                or (
+                    reduce(
+                        lambda acc, n: acc or (n == message_channel), blacklist, False
+                    )
+                )
+                or ("thank" in clean_message)
+                or ("http" in clean_message)
+            ):
                 return
 
             ctx = await bot.get_context(message)
 
-            new_message = re.sub('n?\'[A-Za-z]+|[^A-Za-z ]', '', message.content.lower()).split(' ')
+            new_message = re.sub(
+                "n?'[A-Za-z]+|[^A-Za-z ]", "", message.content.lower()
+            ).split(" ")
 
-            new_message = [w for w in new_message if w != '']
+            new_message = [w for w in new_message if w != ""]
 
             if len(new_message) == 0:
                 return
@@ -83,26 +86,24 @@ class Grammar(BaseCog):
                     new_message = [w if w != word else correction for w in new_message]
                     message_changed = True
 
-            new_message = ' '.join(new_message)
+            new_message = " ".join(new_message)
 
             if message_changed:
                 await ctx.send('I think you meant to say, "{}"'.format(new_message))
 
             return
 
-        self.bot.add_listener(grammar_module, 'on_message')
+        self.bot.add_listener(grammar_module, "on_message")
 
     @commands.command()
     async def addword(self, ctx):
         """ Adds word to spellchecker """
-        words = ctx.message.content.split(' ')[1:]
+        words = ctx.message.content.split(" ")[1:]
 
         self.spell.word_frequency.load_words(words)
 
-        with self.wordfile.open(mode='a') as fobj:
+        with self.wordfile.open(mode="a") as fobj:
             for word in words:
-                fobj.write(' ' + word)
+                fobj.write(" " + word)
 
-        await ctx.send("Added {}".format(', '.join(words)))
-
-
+        await ctx.send("Added {}".format(", ".join(words)))

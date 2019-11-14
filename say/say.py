@@ -6,6 +6,7 @@ BaseCog = getattr(commands, "Cog", object)
 
 GENERAL = 142435106257240064
 
+
 class Say(BaseCog):
     def __init__(self, bot):
         self.bot = bot
