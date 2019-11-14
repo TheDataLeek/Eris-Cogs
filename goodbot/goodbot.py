@@ -146,13 +146,13 @@ class GoodBot(BaseCog):
             try:
                 user = ctx.guild.get_member(int(userid))
                 if user is not None:
-                    results.append((user.nick, good, bad, good - bad))
+                    results.append((user.nick, good, bad, good - bad, (good - bad) / (good + bad)))
             except Exception as e:
                 print(e)
                 pass
         results.sort(key=lambda tup: -tup[-1])
         results = [
-            "{}  -> {} - {} = {}".format(*row)
+            "{}  -> {} - {} = {} ({}% positive)".format(*row)
             for row in results]
         scores = "\n".join(results)
         await ctx.send("```\nScores\n===========\n{}```".format(scores))
