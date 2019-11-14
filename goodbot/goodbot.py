@@ -17,6 +17,39 @@ BaseCog = getattr(commands, "Cog", object)
 RATINGSFILE = os.path.join(str(pathlib.Path.home()), "bots.db")
 
 
+names = [
+    'bot',
+    'human',
+    'person',
+    'thing',
+    'boy',
+    'girl',
+    'robot',
+    'flesh creature',
+    'meat suit',
+]
+
+goodwords = [
+    'good',
+    'awesome',
+    'excellent',
+    'most excellent',
+    'average',
+    'solidly ok',
+    'surpassed all expectations'
+]
+
+badwords = [
+    'bad',
+    'mediocre',
+    'below average',
+    'subpar',
+    'awful',
+    'horrifying',
+    'naughty'
+]
+
+
 def user_exists(userid, cursor=None):
     if cursor is None:
         con = sq.connect(RATINGSFILE)
@@ -113,12 +146,14 @@ class GoodBot(BaseCog):
             try:
                 user = ctx.guild.get_member(int(userid))
                 if user is not None:
-                    results.append((user.nick, good - bad))
+                    results.append((user.nick, good, bad, good - bad))
             except Exception as e:
                 print(e)
                 pass
-        results.sort(key=lambda tup: -tup[1])
-        results = ["  ".join([str(_) for _ in row]) for row in results]
+        results.sort(key=lambda tup: -tup[-1])
+        results = [
+            "{}  -> {} - {} = {}".format(*row)
+            for row in results]
         scores = "\n".join(results)
         await ctx.send("```\nScores\n===========\n{}```".format(scores))
         con.close()
@@ -224,9 +259,10 @@ def generate_handlers(bot, gb_instance):
             if (reaction.count >= 8) and (
                 reaction.message.id not in gb_instance.noticed
             ):
+                phrase = '{} IS A {} {}'.format(reaction.message.author.mention, random.choice(badwords).upper(), random.choice(names).upper())
                 await bot.send_filtered(
                     reaction.message.channel,
-                    content="{} IS A BAD BOT".format(reaction.message.author.mention),
+                    content=phrase,
                 )
                 gb_instance.noticed.add(reaction.message.id)
         elif reaction.emoji == "👍":
@@ -235,12 +271,13 @@ def generate_handlers(bot, gb_instance):
                 rating = (0, 1)
             else:
                 rating = (1, 0)
-            if (reaction.count >= 8) and (
+            if (reaction.count >= 5) and (
                 reaction.message.id not in gb_instance.noticed
             ):
+                phrase = '{} IS A {} {}'.format(reaction.message.author.mention, random.choice(goodwords).upper(), random.choice(names).upper())
                 await bot.send_filtered(
                     reaction.message.channel,
-                    content="{} IS A GOOD BOT".format(reaction.message.author.mention),
+                    content=phrase,
                 )
                 gb_instance.noticed.add(reaction.message.id)
 
