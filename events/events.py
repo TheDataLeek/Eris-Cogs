@@ -559,7 +559,7 @@ async def message_events(message):
     if reduce(lambda acc, n: acc or (n == message_channel), blacklist, False):
         return
 
-    if "゜-゜" in message.content:
+    if "゜-゜" in message.content or "°□°" in message.content:
         await message.channel.send("(╯°□°）╯︵ ┻━┻")
         return
 
