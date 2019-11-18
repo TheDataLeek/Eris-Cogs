@@ -535,6 +535,7 @@ async def message_events(message):
     blacklist = [
         "news",
         "rpg",
+        "the-tavern",
         "events",
         "recommends",
         "politisophy",
