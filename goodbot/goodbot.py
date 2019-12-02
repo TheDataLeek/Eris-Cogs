@@ -39,6 +39,17 @@ names = [
     'batman',
     'dragon',
     'abomination',
+    'squid',
+    'doggo',
+    'kitter',
+    'hoarder',
+    'harlot',
+    'cupcake',
+    'noodle',
+    'computer',
+    'tentacle from the abyss',
+    'worshiper of the sun',
+    'acolyte of Sal-Shaggoth',
 ]
 
 goodwords = [
@@ -50,10 +61,11 @@ goodwords = [
     'solidly ok',
     'surpassed all expectations',
     'a+',
-    'pleasantly suprising',
+    'pleasantly surprising',
     'happy',
     'rockstar',
-    'ninja'
+    'ninja',
+    'perfect',
 ]
 
 badwords = [
@@ -63,7 +75,12 @@ badwords = [
     'subpar',
     'awful',
     'horrifying',
-    'naughty'
+    'naughty',
+    'evil',
+    'macabre',
+    'disappointing',
+    'depressing',
+    'failing',
 ]
 
 
