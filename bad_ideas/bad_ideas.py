@@ -23,5 +23,5 @@ class BigName(BaseCog):
             return
 
     @commands.command()
-    async def big_name(self, ctx, user: discord.Member, new_nick: str = ''):
+    async def big_name(self, ctx, user: discord.Member, *, new_nick: str = ''):
         await self.update_username(ctx, user, new_nick.strip())
