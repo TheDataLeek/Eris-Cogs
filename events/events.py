@@ -629,7 +629,18 @@ async def message_events(message):
         await message.channel.send(new_message)
 
     elif "snek" in clean_message:
-        msg = ":snake: ~ !! I :heart: you {}!!! ~ :snake:"
+        possible_msgs = [
+            ":snake: ~ !! I :heart: you {}!!! ~ :snake:",
+            "What's wrong, am I riding your dick too hard {}?",
+            "You know I love your butthole {}",
+            "I like it when you pull my hair, {}",
+            "Lean over you're about to take my {}".format(random.choice(dickwords)) + " {}",
+            "Suck my clit {}",
+            "I've never had someone complain so much while eating me out before {}",
+            "You're the biggest bitch here {}",
+            "This dick won't suck itself {}",
+        ]
+        msg = random.choice(possible_msgs)
         if realname is not None and random.random() <= 0.5:
             msg = msg.format(realname)
         else:
