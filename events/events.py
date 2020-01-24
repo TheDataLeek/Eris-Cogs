@@ -634,11 +634,15 @@ async def message_events(message):
             "What's wrong, am I riding your dick too hard {}?",
             "You know I love your butthole {}",
             "I like it when you pull my hair, {}",
-            "Lean over you're about to take my {}".format(random.choice(dickwords)) + " {}",
+            "Lean over {} you're about to take my " + random.choice(dickwords),
             "Suck my clit {}",
             "I've never had someone complain so much while eating me out before {}",
-            "You're the biggest bitch here {}",
+            "{}, you're the biggest bitch here",
             "This dick won't suck itself {}",
+            "{} shut your mouth you miserable " + random.choice(vag_words),
+            "Everyone talks shit about me but when I decide to dish it back to {} suddenly that's a problem?",
+            "I bet you were last picked at recess *every time* in school {}",
+            "You ever seen a grown man's cock {}?",
         ]
         msg = random.choice(possible_msgs)
         if realname is not None and random.random() <= 0.5:
