@@ -40,7 +40,10 @@ class Notify(BaseCog):
         self.previous_message = None
 
         async def message_events(message):
-            if str(message.author.id) == '195663495189102593' and 'announcements' in message.channel.name.lower():
+            if (
+                str(message.author.id) == "195663495189102593"
+                and "announcements" in message.channel.name.lower()
+            ):
                 with open(NUMBERFILE, "r") as fobj:
                     current_numbers = [x for x in fobj.read().split("\n") if len(x) > 0]
                 self.previous_message = message.clean_content

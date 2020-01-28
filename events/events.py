@@ -646,6 +646,7 @@ async def message_events(message):
             "You ever been to a Turkish prison {}?",
             "I hope you burn your toast {}.",
             "{}, I'd call you a cunt, but you lack the warmth and depth.",
+            "{}, do you have limbo competitions with how low your bar is set?",
         ]
         msg = random.choice(possible_msgs)
         if realname is not None and random.random() <= 0.9:

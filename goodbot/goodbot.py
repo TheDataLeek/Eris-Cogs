@@ -18,69 +18,69 @@ RATINGSFILE = os.path.join(str(pathlib.Path.home()), "bots.db")
 
 
 names = [
-    'bot',
-    'human',
-    'person',
-    'thing',
-    'boy',
-    'girl',
-    'robot',
-    'flesh creature',
-    'meat suit',
-    'individual',
-    'member of the collective',
-    'unspeakable horror',
-    'slut',
-    'creature',
-    'wonder boy',
-    'wonder girl',
-    'cat',
-    'dolphin',
-    'batman',
-    'dragon',
-    'abomination',
-    'squid',
-    'doggo',
-    'kitter',
-    'hoarder',
-    'harlot',
-    'cupcake',
-    'noodle',
-    'computer',
-    'tentacle from the abyss',
-    'worshiper of the sun',
-    'acolyte of Sal-Shaggoth',
+    "bot",
+    "human",
+    "person",
+    "thing",
+    "boy",
+    "girl",
+    "robot",
+    "flesh creature",
+    "meat suit",
+    "individual",
+    "member of the collective",
+    "unspeakable horror",
+    "slut",
+    "creature",
+    "wonder boy",
+    "wonder girl",
+    "cat",
+    "dolphin",
+    "batman",
+    "dragon",
+    "abomination",
+    "squid",
+    "doggo",
+    "kitter",
+    "hoarder",
+    "harlot",
+    "cupcake",
+    "noodle",
+    "computer",
+    "tentacle from the abyss",
+    "worshiper of the sun",
+    "acolyte of Sal-Shaggoth",
 ]
 
 goodwords = [
-    'good',
-    'awesome',
-    'excellent',
-    'most excellent',
-    'average',
-    'solidly ok',
-    'surpassed all expectations',
-    'a+',
-    'pleasantly surprising',
-    'happy',
-    'rockstar',
-    'ninja',
-    'perfect',
+    "good",
+    "awesome",
+    "excellent",
+    "most excellent",
+    "average",
+    "solidly ok",
+    "surpassed all expectations",
+    "a+",
+    "pleasantly surprising",
+    "happy",
+    "rockstar",
+    "ninja",
+    "perfect",
 ]
 
 badwords = [
-    'bad',
-    'mediocre',
-    'below average',
-    'subpar',
-    'awful',
-    'horrifying',
-    'naughty',
-    'evil',
-    'macabre',
-    'disappointing',
-    'depressing',
-    'failing',
+    "bad",
+    "mediocre",
+    "below average",
+    "subpar",
+    "awful",
+    "horrifying",
+    "naughty",
+    "evil",
+    "macabre",
+    "disappointing",
+    "depressing",
+    "failing",
 ]
 
 
@@ -180,17 +180,25 @@ class GoodBot(BaseCog):
             try:
                 user = ctx.guild.get_member(int(userid))
                 if user is not None:
-                    results.append((user.nick, good, bad, good - bad, 100 * (good - bad) / (good + bad)))
+                    results.append(
+                        (
+                            user.nick,
+                            good,
+                            bad,
+                            good - bad,
+                            100 * (good - bad) / (good + bad),
+                        )
+                    )
             except Exception as e:
                 print(e)
                 pass
         results.sort(key=lambda tup: -tup[-2])
         results = [
-            "{}  -> {} - {} = {} ({:0.02f}% positive)".format(*row)
-            for row in results]
+            "{}  -> {} - {} = {} ({:0.02f}% positive)".format(*row) for row in results
+        ]
         await ctx.send("Scores:")
         for i in range(0, len(results), 20):
-            await ctx.send("```{}```".format('\n'.join(results[i:i+20])))
+            await ctx.send("```{}```".format("\n".join(results[i : i + 20])))
         con.close()
 
     @commands.command()
@@ -294,11 +302,12 @@ def generate_handlers(bot, gb_instance):
             if (reaction.count >= 7) and (
                 reaction.message.id not in gb_instance.noticed
             ):
-                phrase = '{} IS A {} {}'.format(reaction.message.author.mention, random.choice(badwords).upper(), random.choice(names).upper())
-                await bot.send_filtered(
-                    reaction.message.channel,
-                    content=phrase,
+                phrase = "{} IS A {} {}".format(
+                    reaction.message.author.mention,
+                    random.choice(badwords).upper(),
+                    random.choice(names).upper(),
                 )
+                await bot.send_filtered(reaction.message.channel, content=phrase)
                 gb_instance.noticed.add(reaction.message.id)
         elif reaction.emoji == "👍":
             # Downvote for self votes
@@ -309,11 +318,12 @@ def generate_handlers(bot, gb_instance):
             if (reaction.count >= 7) and (
                 reaction.message.id not in gb_instance.noticed
             ):
-                phrase = '{} IS A {} {}'.format(reaction.message.author.mention, random.choice(goodwords).upper(), random.choice(names).upper())
-                await bot.send_filtered(
-                    reaction.message.channel,
-                    content=phrase,
+                phrase = "{} IS A {} {}".format(
+                    reaction.message.author.mention,
+                    random.choice(goodwords).upper(),
+                    random.choice(names).upper(),
                 )
+                await bot.send_filtered(reaction.message.channel, content=phrase)
                 gb_instance.noticed.add(reaction.message.id)
 
         if rating is not None:
