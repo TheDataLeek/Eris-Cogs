@@ -643,9 +643,12 @@ async def message_events(message):
             "Everyone talks shit about me but when I decide to dish it back to {} suddenly that's a problem?",
             "I bet you were last picked at recess *every time* in school {}",
             "You ever seen a grown man's cock {}?",
+            "You ever been to a Turkish prison {}?",
+            "I hope you burn your toast {}.",
+            "{}, I'd call you a cunt, but you lack the warmth and depth.",
         ]
         msg = random.choice(possible_msgs)
-        if realname is not None and random.random() <= 0.5:
+        if realname is not None and random.random() <= 0.9:
             msg = msg.format(realname)
         else:
             msg = msg.format("senpai")
