@@ -1,3 +1,4 @@
+import pathlib
 import discord
 from redbot.core import commands
 from functools import reduce
@@ -48,6 +49,8 @@ class Alot(BaseCog):
                 return
 
             ctx = await bot.get_context(message)
+
+            print(pathlib.Path().resolve())
 
             with open("./data/alot.png", "rb") as fobj:
                 await ctx.send(file=discord.File(fobj))
