@@ -685,5 +685,5 @@ async def message_events(message):
     #         vag_words,
     #         False):
     #     await bot.add_reaction(message, '😞')
-    elif len(trigger) != 0:
+    elif random.random() <= 0.1 and len(trigger) != 0:
         await message.channel.send(triggers[list(trigger)[0]])
