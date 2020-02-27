@@ -24,8 +24,6 @@ class OutOfContext(BaseCog):
 
                 self.quote_hash[word].append(quote)
 
-        print(self.quote_hash['cactus'])
-
         async def out_of_context_handler(message):
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
