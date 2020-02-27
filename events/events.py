@@ -575,13 +575,6 @@ async def message_events(message):
         await message.channel.send("*no more*")
         return
 
-    # first let's have a tiny chance of snek actually responding with ooc content
-    if random.random() <= 0.01:
-        with open("./data/events/ooc/ooc.txt", "r") as fobj:
-            quotes = fobj.readlines()
-        await message.channel.send(random.choice(quotes))
-        return
-
     # now lets check for contents
     if "praise" in clean_message or "pray" in clean_message:
         root_dir = "./data/events/pray"
@@ -605,18 +598,21 @@ async def message_events(message):
     if random.random() <= 0.25:
         for word in message_split:
             if "men" in word:
-                bits = word.split("men")
-                await message.channel.send(
-                    "Not just the {} but the {} and {} too!".format(
-                        word, "women".join(bits), "children".join(bits)
+                if word == 'women':
+                    await message.channel.send('Not just the women but the men and children too!')
+                else:
+                    bits = word.split("men")
+                    await message.channel.send(
+                        "Not just the {} but the {} and {} too!".format(
+                            word, "women".join(bits), "children".join(bits)
+                        )
                     )
-                )
                 return
 
-    if random.random() <= 0.001:
-        with open("./data/events/e7sgd020ew501.png", "rb") as fobj:
-            new_msg = await message.channel.send(file=discord.File(fobj))
-        return
+    # if random.random() <= 0.001:
+    #     with open("./data/events/e7sgd020ew501.png", "rb") as fobj:
+    #         new_msg = await message.channel.send(file=discord.File(fobj))
+    #     return
 
     elif "thank" in clean_message:
         new_message = "you're welcome"
