@@ -78,7 +78,7 @@ class OutOfContext(BaseCog):
 
             random.shuffle(split_message)
 
-            if random.random() <= 0.1:    # works but inefficient
+            if random.random() <= 0.01:
                 for word in split_message:
                     if word in self.quote_hash:
                         await message.channel.send(random.choice(self.quote_hash[word]))
