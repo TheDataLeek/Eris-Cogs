@@ -8,12 +8,14 @@ from functools import reduce
 BaseCog = getattr(commands, "Cog", object)
 
 
+quotes = pathlib.Path("./data/events/ooc/ooc.txt").read_text().split('\n')
+
+
 class OutOfContext(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
         async def out_of_context_handler(message):
-            print('here')
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
             message_split = clean_message.split(" ")
@@ -61,11 +63,18 @@ class OutOfContext(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            if random.random() <= 0.01:
-                with open("./data/events/ooc/ooc.txt", "r") as fobj:
-                    quotes = fobj.readlines()
-                await message.channel.send(random.choice(quotes))
-                return
+            split_message = clean_message.split(' ')
+
+            random.shuffle(quotes)
+
+            if random.random() <= 0.1:
+                for quote in quotes:
+                    for word in split_message:
+                        if word in quote.lower():
+                            await message.channel.send(quote)
+                            break
+                else:
+                    await message.channel.send(random.choice(quotes))
 
             return
 
