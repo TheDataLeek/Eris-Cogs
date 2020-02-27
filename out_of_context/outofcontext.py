@@ -8,7 +8,7 @@ from functools import reduce
 BaseCog = getattr(commands, "Cog", object)
 
 
-quotes = pathlib.Path("./data/events/ooc/ooc.txt").read_text().split('\n')
+quotes = [_ for _ in pathlib.Path("./data/events/ooc/ooc.txt").read_text().split('\n') if len(_) != 0]
 
 
 class OutOfContext(BaseCog):
@@ -17,14 +17,12 @@ class OutOfContext(BaseCog):
 
         self.quote_hash = dict()
         for quote in quotes:
-            for word in quote.lower().split():
-                if len(word) <= 3:
-                    continue
-
+            quote_words = [_ for _ in quote.lower().split() if len(_) > 3]
+            for word in quote_words:
                 if word not in self.quote_hash:
                     self.quote_hash[word] = []
 
-                self.quote_hash[word].append(quotes)
+                self.quote_hash[word].append(quote)
 
         print(self.quote_hash['cactus'])
 
