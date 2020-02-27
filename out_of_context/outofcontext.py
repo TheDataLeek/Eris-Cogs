@@ -15,6 +15,17 @@ class OutOfContext(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
+        self.quote_hash = dict()
+        for quote in quotes:
+            for word in quote.lower().split():
+                if len(word) <= 3:
+                    continue
+
+                if word not in self.quote_hash:
+                    self.quote_hash[word] = []
+
+                self.quote_hash[word].append(quotes)
+
         async def out_of_context_handler(message):
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
@@ -65,14 +76,12 @@ class OutOfContext(BaseCog):
 
             split_message = clean_message.split(' ')
 
-            random.shuffle(quotes)
+            random.shuffle(split_message)
 
-            if random.random() <= 0.1:
-                for quote in quotes:
-                    for word in split_message:
-                        if word in quote.lower():
-                            await message.channel.send(quote)
-                            break
+            if random.random() <= 0.1:    # works but inefficient
+                for word in split_message:
+                    if word in self.quote_hash:
+                        await message.channel.send(random.choice(self.quote_hash[word]))
                 else:
                     await message.channel.send(random.choice(quotes))
 
