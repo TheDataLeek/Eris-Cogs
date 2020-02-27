@@ -82,6 +82,7 @@ class OutOfContext(BaseCog):
                 for word in split_message:
                     if word in self.quote_hash:
                         await message.channel.send(random.choice(self.quote_hash[word]))
+                        break
                 else:
                     await message.channel.send(random.choice(quotes))
 
