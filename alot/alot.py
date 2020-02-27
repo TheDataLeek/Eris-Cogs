@@ -52,7 +52,7 @@ class Alot(BaseCog):
 
             print(pathlib.Path().resolve())
 
-            with open("./data/alot.png", "rb") as fobj:
+            with open("./data/alot/alot.png", "rb") as fobj:
                 await ctx.send(file=discord.File(fobj))
             return
 
