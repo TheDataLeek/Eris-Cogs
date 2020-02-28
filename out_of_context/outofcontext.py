@@ -87,8 +87,7 @@ class OutOfContext(BaseCog):
                     reply = random.choice(self.quote_hash[word])
                     break
 
-            with ctx.typing():
-                sleep(2)
+            async with ctx.typing():
                 await message.channel.send(reply)
 
         self.bot.add_listener(out_of_context_handler, "on_message")
