@@ -1,3 +1,4 @@
+from time import sleep
 import discord
 from redbot.core import commands
 from random import choice as randchoice
@@ -34,17 +35,19 @@ class Insult(BaseCog):
                 )
                 await ctx.send(user.mention + msg)
             else:
-                if random.random() <= 0.8:
-                    msg = " {}".format(randchoice(self.insults))
-                    await ctx.send(user.mention + msg)
-                else:
-                    url = "http://www.dickless.org/api/insult.xml"
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get(url) as resp:
-                            raw_insult = await resp.text()
-                            root = ET.fromstring(raw_insult)
-                            insult = root[1].text
-                            await ctx.send("{} {}".format(user.mention, insult))
+                async with ctx.typing():
+                    sleep(1)
+                    if random.random() <= 0.8:
+                        msg = " {}".format(randchoice(self.insults))
+                        await ctx.send(user.mention + msg)
+                    else:
+                        url = "http://www.dickless.org/api/insult.xml"
+                        async with aiohttp.ClientSession() as session:
+                            async with session.get(url) as resp:
+                                raw_insult = await resp.text()
+                                root = ET.fromstring(raw_insult)
+                                insult = root[1].text
+                                await ctx.send("{} {}".format(user.mention, insult))
 
 
 # Insults are listed here for ease. Separate data file /could/ be added, but it makes installation simpler
