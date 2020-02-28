@@ -88,6 +88,7 @@ class OutOfContext(BaseCog):
                     break
 
             async with ctx.typing():
+                sleep(0.5)
                 await message.channel.send(reply)
 
         self.bot.add_listener(out_of_context_handler, "on_message")
