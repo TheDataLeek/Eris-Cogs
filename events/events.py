@@ -659,6 +659,11 @@ class Events(BaseCog):
                     "I hope you burn your toast {}.",
                     "{}, I'd call you a cunt, but you lack the warmth and depth.",
                     "{}, do you have limbo competitions with how low your bar is set?",
+                    "I want to like you {}, but you make it so *fucking* hard.",
+                    "{}, man, I hope your parents never had to see you grow up.",
+                    "Jesus, if I could truly feel hate, you'd be at the top of that list for me {}",
+                    "{} could you just... leave?",
+                    "{} I didn't think that cocksleeve you call a mouth could say anything intelligent. Turns out I was right.",
                 ]
                 async with ctx.typing():
                     sleep(1)
