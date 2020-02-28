@@ -77,8 +77,8 @@ class OutOfContext(BaseCog):
 
             random.shuffle(split_message)
 
-            # if random.random() <= 0.98:   # 2% chance of activation
-            if random.random() <= 0.1:  # 2% chance of activation
+            if random.random() <= 0.98:   # 2% chance of activation
+            # if random.random() <= 0.1:  # 2% chance of activation
                     return
 
             reply = random.choice(quotes)
@@ -88,7 +88,7 @@ class OutOfContext(BaseCog):
                     break
 
             async with ctx.typing():
-                sleep(0.5)
+                sleep(1)
                 await message.channel.send(reply)
 
         self.bot.add_listener(out_of_context_handler, "on_message")
