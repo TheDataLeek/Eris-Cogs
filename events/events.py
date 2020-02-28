@@ -567,7 +567,7 @@ class Events(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            with ctx.typing():
+            async with ctx.typing():
                 sleep(1)
 
                 if "゜-゜" in message.content or "°□°" in message.content:
