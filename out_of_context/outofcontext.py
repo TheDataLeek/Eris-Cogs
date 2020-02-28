@@ -76,14 +76,18 @@ class OutOfContext(BaseCog):
 
             random.shuffle(split_message)
 
-            if random.random() <= 0.02:
-                for word in split_message:
-                    if word in self.quote_hash:
-                        await message.channel.send(random.choice(self.quote_hash[word]))
-                        break
-                else:
-                    await message.channel.send(random.choice(quotes))
+            # if random.random() <= 0.98:   # 2% chance of activation
+            if random.random() <= 0.1:  # 2% chance of activation
+                    return
 
-            return
+            reply = random.choice(quotes)
+            for word in split_message:
+                if word in self.quote_hash:
+                    reply = random.choice(self.quote_hash[word])
+                    break
+
+            with ctx.typing():
+                sleep(2)
+                await message.channel.send(reply)
 
         self.bot.add_listener(out_of_context_handler, "on_message")
