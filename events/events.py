@@ -567,15 +567,17 @@ class Events(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            async with ctx.typing():
-                sleep(1)
 
-                if "゜-゜" in message.content or "°□°" in message.content:
+            if "゜-゜" in message.content or "°□°" in message.content:
+                async with ctx.typing():
+                    sleep(1)
                     await message.channel.send("(╯°□°）╯︵ ┻━┻")
-                    return
+                return
 
-                # love
-                if "love" in clean_message and random.random() <= 0.1:
+            # love
+            if "love" in clean_message and random.random() <= 0.1:
+                async with ctx.typing():
+                    sleep(1)
                     await message.channel.send("*WHAT IS LOVE?*")
                     time.sleep(2)
                     await message.channel.send("*baby don't hurt me*")
@@ -583,29 +585,31 @@ class Events(BaseCog):
                     await message.channel.send("*don't hurt me*")
                     time.sleep(2)
                     await message.channel.send("*no more*")
-                    return
+                return
 
-                # now lets check for contents
-                if "praise" in clean_message or "pray" in clean_message:
-                    root_dir = "./data/events/pray"
-                    files_to_choose = [
-                        os.path.join(root_dir, f)
-                        for f in os.listdir(root_dir)
-                        if os.path.isfile(os.path.join(root_dir, f))
-                    ]
-                    with open(random.choice(files_to_choose), "rb") as fobj:
-                        new_msg = await message.send(file=discord.File(fobj))
-                    await new_msg.add_reaction("🙏")
-                    return
+            # now lets check for contents
+            if "praise" in clean_message or "pray" in clean_message:
+                root_dir = "./data/events/pray"
+                files_to_choose = [
+                    os.path.join(root_dir, f)
+                    for f in os.listdir(root_dir)
+                    if os.path.isfile(os.path.join(root_dir, f))
+                ]
+                with open(random.choice(files_to_choose), "rb") as fobj:
+                    new_msg = await message.send(file=discord.File(fobj))
+                await new_msg.add_reaction("🙏")
+                return
 
-                # only do the others half the time cause fuck it it's tooo much
-                if random.random() <= 0.5:
-                    return
+            # only do the others half the time cause fuck it it's tooo much
+            if random.random() <= 0.5:
+                return
 
-                # NEW (MM): check for punny words and respond
-                trigger = set(triggers.keys()).intersection(message_split)
+            # NEW (MM): check for punny words and respond
+            trigger = set(triggers.keys()).intersection(message_split)
 
-                if random.random() <= 0.25:
+            if random.random() <= 0.25:
+                async with ctx.typing():
+                    sleep(1)
                     for word in message_split:
                         if "men" in word:
                             if word == 'women':
@@ -619,12 +623,14 @@ class Events(BaseCog):
                                 )
                             return
 
-                # if random.random() <= 0.001:
-                #     with open("./data/events/e7sgd020ew501.png", "rb") as fobj:
-                #         new_msg = await message.channel.send(file=discord.File(fobj))
-                #     return
+            # if random.random() <= 0.001:
+            #     with open("./data/events/e7sgd020ew501.png", "rb") as fobj:
+            #         new_msg = await message.channel.send(file=discord.File(fobj))
+            #     return
 
-                elif "thank" in clean_message:
+            elif "thank" in clean_message:
+                async with ctx.typing():
+                    sleep(1)
                     new_message = "you're welcome"
                     if random.random() < 0.5:
                         if realname is None:
@@ -634,68 +640,72 @@ class Events(BaseCog):
                         new_message += " {}".format(formatname)
                     await message.channel.send(new_message)
 
-                elif "snek" in clean_message:
-                    possible_msgs = [
-                        ":snake: ~ !! I :heart: you {}!!! ~ :snake:",
-                        "What's wrong, am I riding your dick too hard {}?",
-                        "You know I love your butthole {}",
-                        "I like it when you pull my hair, {}",
-                        "Lean over {} you're about to take my " + random.choice(dickwords),
-                        "Suck my clit {}",
-                        "I've never had someone complain so much while eating me out before {}",
-                        "{}, you're the biggest bitch here",
-                        "This dick won't suck itself {}",
-                        "{} shut your mouth you miserable " + random.choice(vag_words),
-                        "Everyone talks shit about me but when I decide to dish it back to {} suddenly that's a problem?",
-                        "I bet you were last picked at recess *every time* in school {}",
-                        "You ever seen a grown man's cock {}?",
-                        "You ever been to a Turkish prison {}?",
-                        "I hope you burn your toast {}.",
-                        "{}, I'd call you a cunt, but you lack the warmth and depth.",
-                        "{}, do you have limbo competitions with how low your bar is set?",
-                    ]
+            elif "snek" in clean_message:
+                possible_msgs = [
+                    ":snake: ~ !! I :heart: you {}!!! ~ :snake:",
+                    "What's wrong, am I riding your dick too hard {}?",
+                    "You know I love your butthole {}",
+                    "I like it when you pull my hair, {}",
+                    "Lean over {} you're about to take my " + random.choice(dickwords),
+                    "Suck my clit {}",
+                    "I've never had someone complain so much while eating me out before {}",
+                    "{}, you're the biggest bitch here",
+                    "This dick won't suck itself {}",
+                    "{} shut your mouth you miserable " + random.choice(vag_words),
+                    "Everyone talks shit about me but when I decide to dish it back to {} suddenly that's a problem?",
+                    "I bet you were last picked at recess *every time* in school {}",
+                    "You ever seen a grown man's cock {}?",
+                    "You ever been to a Turkish prison {}?",
+                    "I hope you burn your toast {}.",
+                    "{}, I'd call you a cunt, but you lack the warmth and depth.",
+                    "{}, do you have limbo competitions with how low your bar is set?",
+                ]
+                async with ctx.typing():
+                    sleep(1)
                     msg = random.choice(possible_msgs)
                     if realname is not None and random.random() <= 0.9:
                         msg = msg.format(realname)
                     else:
                         msg = msg.format("senpai")
                     await message.channel.send(msg)
-                # elif 'blood' in clean_message:
-                #     await bot.send_message(message.channel, 'B̵̪̳̣͍̙̳̬̭͞͝L͢͏̸͏̧̙̼͓̘̯͉̩̩̞͚͕̲̰̼̘̦ͅÒ̮͈̖͔̰̞͝O̵͖͔̟̰͔͚̬͟͝ͅḐ̸̭͙̜̺̞͍͎͔͜͡͡ ̨̨̟̝̦̬̩̳̖͟ͅF̤̭̬͙̀̀͘͠O̶̯̠̞̲̫̱̻̮͎̦̳̝͉̮̕ͅŔ̡͈͕̼͖̥̰̭̟̝͟ ̡̲̯͉̤͈̘͎̬͎̺̟͞T̴̸̟̺̬̼̣̖͓̩̯͇̣̩̺̮͘Ḫ̣̥͍͙͍͓͔͈̖̬̘̩͔͖̝͖̀͘E̶̡̛̯̞̱̯̗͍͖͇̹̖̳̩̥̳̳̙͢͝ ̡͓͍͕͔̳̠͍̥̞̙͖̙̦͕̠̪̘̕ͅB̪͕̻̺͈̤̟̻͖̣͙̪̝̭̀͘͠Ḻ̵̨̞̯̥̭͈̪̻̰̭́́͝O̧͜͏̰͓̘̖̘̬̤ͅǪ̥̟̘̪̱͔͇̖͟D̸̡҉̶̫͕͖̹̤̜̪̟̝̯͚ ̵̨̛̯̺̤̮̲͓̦̜̪̕͝G̙̩͖̭̘̤̩̕Ǫ͎͉̲̤͓͇̦̖̯͇̥͔͓̣̘̦̪̀D͘͘͏͡͏͙̠͈̮̱̼')
-                # elif 'skull' in clean_message:
-                #     await bot.send_message(message.channel, 'S̡̟͉̻͔̩͕͙̳͜͟͜K҉̵͏̳͕͉͈̟͙̰͖͍̦͙̱̙̥̤̞̱U͏̥̲͉̞͉̭͟͟ͅL̵̶̯̼̪͉̮̰͙͍͟͜Ḻ̶̗̬̬͉̗̖̮̰̹̺̬̺͢͢͡ͅͅŚ̶̢͎̳̯͚̠̞͉̦̙̥̟̲̺̗̮̱͚̬͡͠ ̶̡̧̲̟͖̤͓̮̮͕̭͍̟͔͓͚̺̣̱͙͍͜͜F̶̡̢̨̯͖͎̻̝̱͚̣̦̭̞̣̰̳̣̩O̴̴̷̠̜̥̭̳̩̤͎̦̲͈͝ͅŔ̡̨̼̝̩̣͙̬̱̫͉̭͈̗̙͢͡ ͠͏̗̙͎̫̟̜̻̹̹̘̬̖ͅT̴͉̙̥̲̠͎̭͇͚̟͝͡Ḩ̺͕̦̭̪̼̼̮̰͍̲͍̯̗͇͘͘͝͝E̡̻̮̘̭͎̥̺̘͉̟̪̮̮͜͢͡ ̡̰͙̮͙͈̠͍̞̠̀͠Ṣ̷̡̡̛̜̞̣͙͇̭̣̳͕̖̺̱̳̭͖͞ͅͅK̵҉̨͇̭̯͍̱̞̦͎̥̼͢U̡̧̯̗̙͇͈̣̪̲͜L̸̢͖͇̲̤̼͕͡L̻̻͖̭̪͖͙̫͎̜̲̬̕͜͞͡ͅ ̷̸̨̛̩͉̺̩͔̯͖̠̳͖̞̠̩͖̠ͅT̶̷̤̩͉̝̗̲͕̩̪̮̝̜̰̻̗̪̀ͅH̵̴̷̯̮͎̖͙̦̙͇̣̩̣̭̝́͝ͅR̨̧͍̮̪̜̯̖̹̜̹͈̗̕͡͠O҉̶͚͎̻͉̮̞͉̳ͅN̷̛̩̤̟̣͕͍͎̻̜͓̖̭͖̠͎̲̺͝ͅĘ̸̸͍̪̼̜͎̫̘̳͓̥')
-                # elif 'god' in clean_message:
-                #     await bot.send_message(message.channel, 'P̸̨̛͖̦̮̘̯͙̭͍̣̠͕͜Ŕ̵̷̨̗̱͖̦̰͈͍̩̯̼͍̟̙͓̱̤͘ͅA̸̴̡͇̠͈͍̲͘͘ͅĮ̨͈͙̣̘̼́̕S̴̥̯̱̜̟͙̘̘͉̟̮̱̙̘̻͖͟͠͞E̢̨̘̮͕̺̖̰̹͢͝ ̷̴̡̛̗͈͓̻͔̭̫̝̦͎͙̳͙͓̠̞̪͔̱B̵̸̻̼̯̲̻͢͝E̱̘͇͔͙̯̥͉̪̱̤̪̩͍͉̲̟̖̗͜͢͢͜ ̨̡͕̮̤͉̙̦̱͚̬̖͈͢͞ͅÙ̳̫̙̰̙͓͘͘N̞̳͉̬͈̦̭̱̕̕͜T̶̳̝̼̗̝͡O̡̡͔̬͍͚͔̲̳͞ ̵̰͔̙̦̩͕͖̝N̡̡̬̗̣͔̗͔͖̳͚̠͙̤̙̼̘̞I̛̛̬̥̝̘̖̣̩G̵̕͝҉̖̮̩̼͓̯͙̳̀Ģ̵̹͇̙͔̼̼͎̞̤̬̜̭̣͙͕̳̻͘͡ͅǪ̴͕͈̮̮̩͔͎̼̫̝̼̹Ţ̸̧͚̬̣̪͉̲̪̖̹̻̪͚͉̟͚̥̹̀̕H̷͘҉̩͔̩̦̳̪̼̬͙̰̙͕̼͈ͅ ̸̯̤̠̙͓͇̣͙͓̗̙̜̞̯͜͞ͅŢ҉̵̯̥̩͖̬̺̻̮̘̼͔͍̞͈̼̲̪͜͟H̨͟҉̨̟̠̫̠̬̦̪̞͎͍͇̮͔ͅĘ̥̫͉̫͖̱͈̖̦̳̥͙̱͙̱͡ ̷̢̭̠͔̖̱W̟̩̪͍̘̩̦͟͟͞Ǫ̡͔̮̜̝̩̗̱̙͇̣̤̰̲̭̝̳̘̩́̀́ͅR̸̳̰̪̝͉̲̙̖̯̠̞̞̗͘͢M̴̨̭̦̗͖͎̬̳̖̲͢͡ ̨̛̙̰͕̦̠͚̠̖̘̲̱͜͡G̼̬̞̜̭͔̯̪̠̯̲̟̙̻̜̀͘͜O̡̖̰͕͙̯͖̙͍͙̲͈̘͓̥̱͢͢͠D̵̞̤̗͕̪͘͟͝͡ͅ')
+            # elif 'blood' in clean_message:
+            #     await bot.send_message(message.channel, 'B̵̪̳̣͍̙̳̬̭͞͝L͢͏̸͏̧̙̼͓̘̯͉̩̩̞͚͕̲̰̼̘̦ͅÒ̮͈̖͔̰̞͝O̵͖͔̟̰͔͚̬͟͝ͅḐ̸̭͙̜̺̞͍͎͔͜͡͡ ̨̨̟̝̦̬̩̳̖͟ͅF̤̭̬͙̀̀͘͠O̶̯̠̞̲̫̱̻̮͎̦̳̝͉̮̕ͅŔ̡͈͕̼͖̥̰̭̟̝͟ ̡̲̯͉̤͈̘͎̬͎̺̟͞T̴̸̟̺̬̼̣̖͓̩̯͇̣̩̺̮͘Ḫ̣̥͍͙͍͓͔͈̖̬̘̩͔͖̝͖̀͘E̶̡̛̯̞̱̯̗͍͖͇̹̖̳̩̥̳̳̙͢͝ ̡͓͍͕͔̳̠͍̥̞̙͖̙̦͕̠̪̘̕ͅB̪͕̻̺͈̤̟̻͖̣͙̪̝̭̀͘͠Ḻ̵̨̞̯̥̭͈̪̻̰̭́́͝O̧͜͏̰͓̘̖̘̬̤ͅǪ̥̟̘̪̱͔͇̖͟D̸̡҉̶̫͕͖̹̤̜̪̟̝̯͚ ̵̨̛̯̺̤̮̲͓̦̜̪̕͝G̙̩͖̭̘̤̩̕Ǫ͎͉̲̤͓͇̦̖̯͇̥͔͓̣̘̦̪̀D͘͘͏͡͏͙̠͈̮̱̼')
+            # elif 'skull' in clean_message:
+            #     await bot.send_message(message.channel, 'S̡̟͉̻͔̩͕͙̳͜͟͜K҉̵͏̳͕͉͈̟͙̰͖͍̦͙̱̙̥̤̞̱U͏̥̲͉̞͉̭͟͟ͅL̵̶̯̼̪͉̮̰͙͍͟͜Ḻ̶̗̬̬͉̗̖̮̰̹̺̬̺͢͢͡ͅͅŚ̶̢͎̳̯͚̠̞͉̦̙̥̟̲̺̗̮̱͚̬͡͠ ̶̡̧̲̟͖̤͓̮̮͕̭͍̟͔͓͚̺̣̱͙͍͜͜F̶̡̢̨̯͖͎̻̝̱͚̣̦̭̞̣̰̳̣̩O̴̴̷̠̜̥̭̳̩̤͎̦̲͈͝ͅŔ̡̨̼̝̩̣͙̬̱̫͉̭͈̗̙͢͡ ͠͏̗̙͎̫̟̜̻̹̹̘̬̖ͅT̴͉̙̥̲̠͎̭͇͚̟͝͡Ḩ̺͕̦̭̪̼̼̮̰͍̲͍̯̗͇͘͘͝͝E̡̻̮̘̭͎̥̺̘͉̟̪̮̮͜͢͡ ̡̰͙̮͙͈̠͍̞̠̀͠Ṣ̷̡̡̛̜̞̣͙͇̭̣̳͕̖̺̱̳̭͖͞ͅͅK̵҉̨͇̭̯͍̱̞̦͎̥̼͢U̡̧̯̗̙͇͈̣̪̲͜L̸̢͖͇̲̤̼͕͡L̻̻͖̭̪͖͙̫͎̜̲̬̕͜͞͡ͅ ̷̸̨̛̩͉̺̩͔̯͖̠̳͖̞̠̩͖̠ͅT̶̷̤̩͉̝̗̲͕̩̪̮̝̜̰̻̗̪̀ͅH̵̴̷̯̮͎̖͙̦̙͇̣̩̣̭̝́͝ͅR̨̧͍̮̪̜̯̖̹̜̹͈̗̕͡͠O҉̶͚͎̻͉̮̞͉̳ͅN̷̛̩̤̟̣͕͍͎̻̜͓̖̭͖̠͎̲̺͝ͅĘ̸̸͍̪̼̜͎̫̘̳͓̥')
+            # elif 'god' in clean_message:
+            #     await bot.send_message(message.channel, 'P̸̨̛͖̦̮̘̯͙̭͍̣̠͕͜Ŕ̵̷̨̗̱͖̦̰͈͍̩̯̼͍̟̙͓̱̤͘ͅA̸̴̡͇̠͈͍̲͘͘ͅĮ̨͈͙̣̘̼́̕S̴̥̯̱̜̟͙̘̘͉̟̮̱̙̘̻͖͟͠͞E̢̨̘̮͕̺̖̰̹͢͝ ̷̴̡̛̗͈͓̻͔̭̫̝̦͎͙̳͙͓̠̞̪͔̱B̵̸̻̼̯̲̻͢͝E̱̘͇͔͙̯̥͉̪̱̤̪̩͍͉̲̟̖̗͜͢͢͜ ̨̡͕̮̤͉̙̦̱͚̬̖͈͢͞ͅÙ̳̫̙̰̙͓͘͘N̞̳͉̬͈̦̭̱̕̕͜T̶̳̝̼̗̝͡O̡̡͔̬͍͚͔̲̳͞ ̵̰͔̙̦̩͕͖̝N̡̡̬̗̣͔̗͔͖̳͚̠͙̤̙̼̘̞I̛̛̬̥̝̘̖̣̩G̵̕͝҉̖̮̩̼͓̯͙̳̀Ģ̵̹͇̙͔̼̼͎̞̤̬̜̭̣͙͕̳̻͘͡ͅǪ̴͕͈̮̮̩͔͎̼̫̝̼̹Ţ̸̧͚̬̣̪͉̲̪̖̹̻̪͚͉̟͚̥̹̀̕H̷͘҉̩͔̩̦̳̪̼̬͙̰̙͕̼͈ͅ ̸̯̤̠̙͓͇̣͙͓̗̙̜̞̯͜͞ͅŢ҉̵̯̥̩͖̬̺̻̮̘̼͔͍̞͈̼̲̪͜͟H̨͟҉̨̟̠̫̠̬̦̪̞͎͍͇̮͔ͅĘ̥̫͉̫͖̱͈̖̦̳̥͙̱͙̱͡ ̷̢̭̠͔̖̱W̟̩̪͍̘̩̦͟͟͞Ǫ̡͔̮̜̝̩̗̱̙͇̣̤̰̲̭̝̳̘̩́̀́ͅR̸̳̰̪̝͉̲̙̖̯̠̞̞̗͘͢M̴̨̭̦̗͖͎̬̳̖̲͢͡ ̨̛̙̰͕̦̠͚̠̖̘̲̱͜͡G̼̬̞̜̭͔̯̪̠̯̲̟̙̻̜̀͘͜O̡̖̰͕͙̯͖̙͍͙̲͈̘͓̥̱͢͢͠D̵̞̤̗͕̪͘͟͝͡ͅ')
 
-                # elif 'dragon' in clean_message:
-                #     await bot.send_message(message.channel, dragonart)
-                elif "penis" in clean_message:
-                    root_dir = "./data/events/penis"
-                    files_to_choose = [
-                        os.path.join(root_dir, f)
-                        for f in os.listdir(root_dir)
-                        if os.path.isfile(os.path.join(root_dir, f))
-                    ]
-                    with open(random.choice(files_to_choose), "rb") as fobj:
-                        new_msg = await message.channel.send(file=discord.File(fobj))
-                    await new_msg.add_reaction("🌈")
-                    await new_msg.add_reaction("🍆")
-                    await new_msg.add_reaction("💦")
-                # elif reduce(
-                #         lambda acc, n: acc or (n in clean_message),
-                #         dickwords,
-                #         False):
-                #     await message.add_reaction('🇵')
-                #     await message.add_reaction('🇪')
-                #     await message.add_reaction('🇳')
-                #     await message.add_reaction('🇮')
-                #     await message.add_reaction('🇸')
-                # elif reduce(
-                #         lambda acc, n: acc or (n in clean_message),
-                #         vag_words,
-                #         False):
-                #     await bot.add_reaction(message, '😞')
-                elif random.random() <= 0.1 and len(trigger) != 0:
+            # elif 'dragon' in clean_message:
+            #     await bot.send_message(message.channel, dragonart)
+            elif "penis" in clean_message:
+                root_dir = "./data/events/penis"
+                files_to_choose = [
+                    os.path.join(root_dir, f)
+                    for f in os.listdir(root_dir)
+                    if os.path.isfile(os.path.join(root_dir, f))
+                ]
+                with open(random.choice(files_to_choose), "rb") as fobj:
+                    new_msg = await message.channel.send(file=discord.File(fobj))
+                await new_msg.add_reaction("🌈")
+                await new_msg.add_reaction("🍆")
+                await new_msg.add_reaction("💦")
+            # elif reduce(
+            #         lambda acc, n: acc or (n in clean_message),
+            #         dickwords,
+            #         False):
+            #     await message.add_reaction('🇵')
+            #     await message.add_reaction('🇪')
+            #     await message.add_reaction('🇳')
+            #     await message.add_reaction('🇮')
+            #     await message.add_reaction('🇸')
+            # elif reduce(
+            #         lambda acc, n: acc or (n in clean_message),
+            #         vag_words,
+            #         False):
+            #     await bot.add_reaction(message, '😞')
+            elif random.random() <= 0.1 and len(trigger) != 0:
+                async with ctx.typing():
+                    sleep(1)
                     await message.channel.send(triggers[list(trigger)[0]])
 
         self.bot.add_listener(message_events, "on_message")
