@@ -46,7 +46,15 @@ class WhoIs(BaseCog):
         characters = 0
         msg = ""
         for (mention, name) in results:
+<<<<<<< HEAD
             if mention != "None":
+=======
+<<<<<<< HEAD
+            if mention != "None":
+=======
+            if mention != "NONE":
+>>>>>>> c5d57f748ff5d58ffde31615907aef7034f3a224
+>>>>>>> 3dca143b88381d38a099c0e5df20e197e52fc859
                 to_append = "{} is {}\n".format(mention, name)
                 characters += len(to_append)
                 if characters >= CHAR_LIMIT:
