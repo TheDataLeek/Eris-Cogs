@@ -42,21 +42,20 @@ class WhoIs(BaseCog):
             (ctx.guild.get_member(int(userid)), name) for userid, name in results
         ]
 
-        CHAR_LIMIT = 2000
-        characters = 0
+        max_character = 2000
+        msg_size = 0
         msg = ""
         for (mention, name) in results:
-            if mention != "None":
+            if mention is not "None":
                 to_append = "{} is {}\n".format(mention, name)
                 characters += len(to_append)
                 if characters >= CHAR_LIMIT:
                     await ctx.send(msg)
-                    msg = ""
-                    msg += to_append
+                    msg = to_append
                     characters = len(to_append)
                 else:
                     msg += to_append
-        if msg != "":
+        if msg is not "":
             await ctx.send(msg)
         con.close()
 
