@@ -550,6 +550,9 @@ class Events(BaseCog):
                 "jokes",
                 "anime-club",
             ]
+            message_channel = message.channel.name.lower()
+            if reduce(lambda acc, n: acc or (n == message_channel), blacklist, False):
+                return
 
             realname = get_realname(message.author.id)
 
@@ -570,10 +573,6 @@ class Events(BaseCog):
                 return
 
             if message.guild is None:
-                return
-
-            message_channel = message.channel.name.lower()
-            if reduce(lambda acc, n: acc or (n == message_channel), blacklist, False):
                 return
 
             if "゜-゜" in message.content or "°□°" in message.content:
