@@ -648,7 +648,12 @@ class Events(BaseCog):
                         new_message += " {}".format(formatname)
                     await message.channel.send(new_message)
 
-            elif "snek" in clean_message:
+            elif (
+                    ("snek" in clean_message)
+                    or ('nudl' in clean_message)
+                    or ('noodle' in clean_message)
+                    or ('snake' in clean_message)
+            ):
                 possible_msgs = [
                     ":snake: ~ !! I :heart: you {}!!! ~ :snake:",
                     "What's wrong, am I riding your dick too hard {}?",
