@@ -557,8 +557,10 @@ class Events(BaseCog):
 
             # mustaches
             if random.random() <= 0.5:
-                await message.add_reaction("<:must:694968267491639346>")
-                await message.add_reaction("<:ache:694968267491639346>")
+                emojis = {e.name: e for e in message.guild.emojis}
+                await message.add_reaction(emojis['must'])
+                time.sleep(0.1)
+                await message.add_reaction(emojis['ache'])
 
             # IF DM's
             if random.random() < 0.05:
