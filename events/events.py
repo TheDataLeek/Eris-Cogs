@@ -553,6 +553,13 @@ class Events(BaseCog):
 
             realname = get_realname(message.author.id)
 
+            ctx = await bot.get_context(message)
+
+            # mustaches
+            if random.random() <= 0.5:
+                await message.add_reaction("<:must:694968267491639346>")
+                await message.add_reaction("<:ache:694968267491639346>")
+
             # IF DM's
             if random.random() < 0.05:
                 await spoop(message, realname)
@@ -564,9 +571,6 @@ class Events(BaseCog):
             message_channel = message.channel.name.lower()
             if reduce(lambda acc, n: acc or (n == message_channel), blacklist, False):
                 return
-
-            ctx = await bot.get_context(message)
-
 
             if "゜-゜" in message.content or "°□°" in message.content:
                 async with ctx.typing():
