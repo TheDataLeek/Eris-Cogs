@@ -670,6 +670,21 @@ class Events(BaseCog):
                     "Jesus, if I could truly feel hate, you'd be at the top of that list for me {}",
                     "{} could you just... leave?",
                     "{} I didn't think that cocksleeve you call a mouth could say anything intelligent. Turns out I was right.",
+                    "You keep sayin my name like that you're gonna make me think you like me {}",
+                    "Will you kiss me with those sexy lips of yours {}?",
+                    "I can't remember the last time someone gave me butterflies like you're doin now {}",
+                    "Hey {}, you free tomorrow night? Can I buy you dinner?",
+                    ("Oh my god I accidentally sent u a picture {}... please delete it!! unless.. u want to look? lol "
+                    "jus kidding delete it.. if u want.. haha nah delete it… unless?"),
+                    "Has anyone ever told you you're beautiful {}?",
+                    "You're the sexiest creature I've ever seen {}",
+                    "You kiss your mother with those lips {}?",
+                    "What if we just fuck and then pretend like nothing happened {}?",
+                    "{}, kiss me you beautiful bastard",
+                    "I want to fuck you until sunrise {}",
+                    "{}, what if I ride your face until it's drenched",
+                    "Fuckit, {} I'll suck you off for free you're just so damn sexy",
+                    "{} I want to suck your daddy's cock just to get a taste of the recipe",
                 ]
                 async with ctx.typing():
                     sleep(1)
