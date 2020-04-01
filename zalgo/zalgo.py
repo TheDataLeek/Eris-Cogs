@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands
 import random
 import re
+from functools import reduce
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -9,6 +10,52 @@ BaseCog = getattr(commands, "Cog", object)
 class Zalgo(BaseCog):
     def __init__(self, bot):
         self.bot = bot
+
+        async def april_fools(message):
+            if random.random() <= 0.9:
+                return
+
+            clean_message = message.clean_content.lower()
+            # MM: Added so list instead of string
+            message_split = clean_message.split(" ")
+            # BLACKLIST CHANNELS
+            blacklist = [
+                "news",
+                "rpg",
+                "events",
+                "recommends",
+                "politisophy",
+                "eyebleach",
+                "weeb-lyfe",
+                "out-of-context",
+                "jokes",
+                "anime-club",
+            ]
+
+            message_channel = message.channel.name.lower()
+
+            if (
+                    # DO NOT RESPOND TO SELF MESSAGES
+                    (bot.user.id == message.author.id or message.content.startswith("."))
+                    or (message.channel.name is None)
+                    or (
+                    reduce(
+                        lambda acc, n: acc or (n == message_channel), blacklist, False
+                    )
+            )
+                    or ("thank" in clean_message)
+                    or ("http" in clean_message)
+            ):
+                return
+
+            ctx = await bot.get_context(message)
+
+            new_msg = self.uwuify(message.content)
+
+            await ctx.message.delete()
+            await ctx.send(new_msg)
+
+        self.bot.add_listener(april_fools, "on_message")
 
     @commands.command()
     async def zalgo(self, ctx):
@@ -35,14 +82,7 @@ class Zalgo(BaseCog):
         await ctx.message.delete()
         await ctx.send(zalgo_msg)
 
-    @commands.command()
-    async def uwu(self, ctx):
-        """uwu the text"""
-        # first pull out the .zalgo part of the message
-        raw_msg = " ".join(ctx.message.content.split(" ")[1:])
-        if raw_msg == "":
-            raw_msg = "uwu"
-
+    def uwuify(self, msg):
         replacements = {
             "r": "w",
             "R": "W",
@@ -58,11 +98,23 @@ class Zalgo(BaseCog):
             "The": "Da",
         }
 
-        new_msg = raw_msg
+        new_msg = msg
         for regex, replacement in replacements.items():
             new_msg, _ = re.subn(regex, replacement, new_msg)
 
         new_msg += ' *uwu*'
+
+        return new_msg
+
+    @commands.command()
+    async def uwu(self, ctx):
+        """uwu the text"""
+        # first pull out the .zalgo part of the message
+        raw_msg = " ".join(ctx.message.content.split(" ")[1:])
+        if raw_msg == "":
+            raw_msg = "uwu"
+
+        new_msg = self.uwuify(raw_msg)
 
         await ctx.message.delete()
         await ctx.send(new_msg)
