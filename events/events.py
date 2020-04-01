@@ -651,7 +651,7 @@ class Events(BaseCog):
             elif (
                     ("snek" in clean_message)
                     or ('nudl' in clean_message)
-                    or ('noodle' in clean_message)
+                    or ('noodl' in clean_message)
                     or ('snake' in clean_message)
             ):
                 possible_msgs = [
