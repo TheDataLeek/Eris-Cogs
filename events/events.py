@@ -559,13 +559,14 @@ class Events(BaseCog):
             ctx = await bot.get_context(message)
 
             # mustaches
-            if random.random() <= 0.5:
+            if random.random() <= 0.95:
                 emojis = {e.name: e for e in message.guild.emojis}
                 await message.add_reaction(emojis['must'])
                 time.sleep(0.1)
                 await message.add_reaction(emojis['ache'])
-            elif random.random() <= 0.2:
+            elif random.random() <= 0.1:
                 await message.channel.send("https://media.discordapp.net/attachments/188030840377311232/694979897495388250/videotogif_2020.04.01_12.41.13.gif")
+                return
 
             # IF DM's
             if random.random() < 0.05:
