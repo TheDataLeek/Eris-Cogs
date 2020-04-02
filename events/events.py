@@ -564,7 +564,7 @@ class Events(BaseCog):
                 await message.add_reaction(emojis['must'])
                 time.sleep(0.1)
                 await message.add_reaction(emojis['ache'])
-            elif random.random() <= 0.1:
+            elif random.random() <= 0.01:
                 await message.channel.send("https://media.discordapp.net/attachments/188030840377311232/694979897495388250/videotogif_2020.04.01_12.41.13.gif")
                 return
 
