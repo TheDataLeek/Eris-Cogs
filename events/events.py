@@ -559,7 +559,7 @@ class Events(BaseCog):
             ctx = await bot.get_context(message)
 
             # mustaches
-            if random.random() <= 0.025:
+            if random.random() <= 0.01:
                 emojis = {e.name: e for e in message.guild.emojis}
                 await message.add_reaction(emojis['must'])
                 time.sleep(0.1)

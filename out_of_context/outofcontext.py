@@ -77,9 +77,8 @@ class OutOfContext(BaseCog):
 
             random.shuffle(split_message)
 
-            if random.random() <= 0.98:   # 2% chance of activation
-            # if random.random() <= 0.1:  # 2% chance of activation
-                    return
+            if random.random() <= 0.99:   # 1% chance of activation
+                return
 
             reply = random.choice(quotes)
             for word in split_message:
