@@ -12,7 +12,7 @@ class Zalgo(BaseCog):
         self.bot = bot
 
         async def april_fools(message):
-            if random.random() <= 0.999:
+            if random.random() <= 0.999 and int(message.guild.id) != 142435106257240064:
                 return
 
             clean_message = message.clean_content.lower()
