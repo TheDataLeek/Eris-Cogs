@@ -480,7 +480,7 @@ class Spoop(BaseCog):
         self.bot = bot
 
     @commands.command()
-    @checks.is_owner()
+    @checks.mod()
     async def spoop(self, ctx, user: discord.Member = None):
         if user is None:
             await ctx.message.author.send("Stop being such a fuckup")
