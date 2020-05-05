@@ -44,7 +44,7 @@ class Clone(BaseCog):
             async with sesh.get(avatar) as resp:
                 data = await resp.read()
 
-        await ctx.send(file=discord.File(data))
-        await me.edit(nick=new_nick, avatar=data)
+                await ctx.send(file=discord.File(data))
+                await me.edit(nick=new_nick, avatar=data)
 
         await ctx.send("Done")
