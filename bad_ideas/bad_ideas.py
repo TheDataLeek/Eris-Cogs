@@ -44,7 +44,7 @@ class Clone(BaseCog):
         await user.avatar_url_as(format='png', static_format='png').save(avatar)
         me = ctx.message.guild.me
 
-        await ctx.send(file=discord.File(avatar))
+        await ctx.send(file=discord.File(avatar, filename='profile.png'))
         await me.edit(nick=new_nick, avatar=avatar)
         await ctx.send("Done")
 
