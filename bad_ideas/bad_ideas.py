@@ -38,6 +38,6 @@ class Clone(BaseCog):
         avatar = user.avatar_url
         me = ctx.message.guild.me
 
-        await self.bot.change_nickname(me, new_nick)
+        await me.edit(nick=new_nick)
 
         await ctx.send(avatar)
