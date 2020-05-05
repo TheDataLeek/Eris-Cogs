@@ -43,7 +43,7 @@ class Clone(BaseCog):
         #     return
         me = ctx.message.guild.me
 
-        await me.edit(nick=new_nick, avatar=avatar.read())
+        await me.edit(nick=new_nick, avatar=await avatar.read())
         await ctx.send("Done")
 
         return
