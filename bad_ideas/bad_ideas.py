@@ -35,7 +35,7 @@ class Clone(BaseCog):
     @checks.is_owner()
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
-        avatar = user.avatar
+        avatar = user.avatar_url
 
         await ctx.send(new_nick)
         await ctx.send(avatar)
