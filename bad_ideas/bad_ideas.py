@@ -40,7 +40,8 @@ class Clone(BaseCog):
         # if not avatar.endswith('.png') or not avatar.endswith('jpg'):
         #     ctx.send("Currently only .png and .jpg are supported")
         #     return
-        avatar = io.BytesIO(await user.avatar_url.read())
+        avatar = io.BytesIO()
+        print(await user.avatar_url.save(avatar))
         me = ctx.message.guild.me
 
         await ctx.send(file=discord.File(avatar))
