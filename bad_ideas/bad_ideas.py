@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands, checks
 import random
 import re
+import aiohttp
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -38,6 +39,8 @@ class Clone(BaseCog):
         avatar = user.avatar_url
         me = ctx.message.guild.me
 
-        await me.edit(nick=new_nick)
+        async with aiohttp.ClientSession() as sesh:
+            async with sesh.get(avatar) as resp:
+                data = resp.read()
 
-        await ctx.send(avatar)
+        await me.edit(nick=new_nick, avatar=data)
