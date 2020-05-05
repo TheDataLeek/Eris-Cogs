@@ -46,7 +46,7 @@ class Clone(BaseCog):
 
         # await ctx.send(file=discord.File(avatar, filename='profile.png'))
         await me.edit(nick=new_nick)
-        await self.bot.edit(avatar=avatar)
+        await discord.Client().user.edit(avatar=avatar)
         await ctx.send("Done")
 
         return
