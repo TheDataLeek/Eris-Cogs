@@ -26,6 +26,8 @@ class OutOfContext(BaseCog):
                 self.quote_hash[word].append(quote)
 
         async def out_of_context_handler(message):
+            if message.guild is None:
+                return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
             message_split = clean_message.split(" ")

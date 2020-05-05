@@ -40,6 +40,8 @@ class Notify(BaseCog):
         self.previous_message = None
 
         async def message_events(message):
+            if message.guild is None:
+                return
             if (
                 str(message.author.id) == "195663495189102593"
                 and "announcements" in message.channel.name.lower()
