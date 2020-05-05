@@ -37,6 +37,8 @@ class Clone(BaseCog):
     @checks.is_owner()
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
+        my_role = [r for r in user.guild.roles if 'snek' == r.lower()][0]
+        my_role.color = user.color
         # if not avatar.endswith('.png') or not avatar.endswith('jpg'):
         #     ctx.send("Currently only .png and .jpg are supported")
         #     return
