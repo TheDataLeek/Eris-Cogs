@@ -46,15 +46,5 @@ class Clone(BaseCog):
 
         # await ctx.send(file=discord.File(avatar, filename='profile.png'))
         await me.edit(nick=new_nick)
-        await discord.Client.user.edit(avatar=avatar)
+        await self.bot.user.edit(avatar=avatar)
         await ctx.send("Done")
-
-        return
-
-        await ctx.send("Fetching " + avatar)
-
-        async with aiohttp.ClientSession() as sesh:
-            async with sesh.get(avatar) as resp:
-                data = await resp.read()
-
-                await ctx.send(file=discord.File(data))
