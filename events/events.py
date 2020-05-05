@@ -656,7 +656,7 @@ class Events(BaseCog):
                     or ('noodl' in clean_message)
                     or ('snake' in clean_message)
                     or ('tyler' in clean_message)
-                    or ('tyty' in clean_message)
+                    or ('ty' in clean_message)
             ):
                 possible_msgs = [
                     ":snake: ~ !! I :heart: you {}!!! ~ :snake:",
