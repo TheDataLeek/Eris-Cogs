@@ -606,8 +606,8 @@ class Events(BaseCog):
                     if os.path.isfile(os.path.join(root_dir, f))
                 ]
                 with open(random.choice(files_to_choose), "rb") as fobj:
-                    new_msg = await message.send(file=discord.File(fobj))
-                await new_msg.add_reaction("🙏")
+                    new_msg = await message.channel.send(file=discord.File(fobj))
+                # await new_msg.add_reaction("🙏")
                 return
 
             # only do the others half the time cause fuck it it's tooo much

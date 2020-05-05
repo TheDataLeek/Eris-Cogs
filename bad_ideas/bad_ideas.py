@@ -50,3 +50,13 @@ class Clone(BaseCog):
         await self.bot.user.edit(avatar=avatar)
         await my_role.edit(color=user.color)
         await ctx.send("Done")
+
+
+class FRENSHIP(BaseCog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    @checks.is_owner()
+    async def fren_all(self, ctx):
+        await ctx.channel.send('ehhh maybe we\'ll do this')
