@@ -3,6 +3,7 @@ from redbot.core import commands, checks
 import random
 import re
 import aiohttp
+import io
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -43,8 +44,8 @@ class Clone(BaseCog):
             async with sesh.get(avatar) as resp:
                 data = await resp.read()
 
-        print(data)
+        fake_obj = io.BytesIO(data)
 
-        await me.edit(nick=new_nick, avatar=data)
+        await me.edit(nick=new_nick, avatar=fake_obj)
 
         await ctx.send("Done")
