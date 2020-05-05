@@ -41,8 +41,6 @@ class Clone(BaseCog):
 
         async with aiohttp.ClientSession() as sesh:
             async with sesh.get(avatar) as resp:
-                data = resp.read()
-
-        print(data)
+                data = await resp.read()
 
         await me.edit(nick=new_nick, avatar=data)
