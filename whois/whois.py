@@ -89,10 +89,9 @@ class WhoIs(BaseCog):
         cursor.execute("SELECT nick FROM usernicks WHERE userid=?", (user.id,))
         nicks = cursor.fetchall()
 
-        message = ("User: {}\n" "Realname: {}\n" "Known Aliases: {}").format(
+        message = ("User: {}\n" "Realname: {}\n").format(
             user.name,
             "No Name Known!" if len(names) == 0 else ", ".join(x[0] for x in names),
-            str(list(x[0] for x in nicks)),
         )
 
         con.close()
