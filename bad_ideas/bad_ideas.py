@@ -38,14 +38,11 @@ class Clone(BaseCog):
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
         my_role = [r for r in user.guild.roles if 'snek' == r.name.lower()][0]
-        my_role.color = user.color
-        # if not avatar.endswith('.png') or not avatar.endswith('jpg'):
-        #     ctx.send("Currently only .png and .jpg are supported")
-        #     return
         avatar = await user.avatar_url_as(format='png', static_format='png').read()
         me = ctx.message.guild.me
 
         # await ctx.send(file=discord.File(avatar, filename='profile.png'))
         await me.edit(nick=new_nick)
         await self.bot.user.edit(avatar=avatar)
+        await my_role.edit(color=user.color)
         await ctx.send("Done")
