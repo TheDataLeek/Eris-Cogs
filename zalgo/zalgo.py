@@ -35,16 +35,16 @@ class Zalgo(BaseCog):
             message_channel = message.channel.name.lower()
 
             if (
-                    # DO NOT RESPOND TO SELF MESSAGES
-                    (bot.user.id == message.author.id or message.content.startswith("."))
-                    or (message.channel.name is None)
-                    or (
+                # DO NOT RESPOND TO SELF MESSAGES
+                (bot.user.id == message.author.id or message.content.startswith("."))
+                or (message.channel.name is None)
+                or (
                     reduce(
                         lambda acc, n: acc or (n == message_channel), blacklist, False
                     )
-            )
-                    or ("thank" in clean_message)
-                    or ("http" in clean_message)
+                )
+                or ("thank" in clean_message)
+                or ("http" in clean_message)
             ):
                 return
 
@@ -102,7 +102,7 @@ class Zalgo(BaseCog):
         for regex, replacement in replacements.items():
             new_msg, _ = re.subn(regex, replacement, new_msg)
 
-        new_msg += ' *uwu*'
+        new_msg += " *uwu*"
 
         return new_msg
 

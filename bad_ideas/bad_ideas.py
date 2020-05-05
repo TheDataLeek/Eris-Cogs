@@ -37,12 +37,12 @@ class Clone(BaseCog):
     @checks.mod()
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
-        my_role = [r for r in user.guild.roles if 'snek color' == r.name.lower()]
+        my_role = [r for r in user.guild.roles if "snek color" == r.name.lower()]
         if len(my_role) != 1:
             await ctx.send("Error finding role, aborting!")
             return
         my_role = my_role[0]
-        avatar = await user.avatar_url_as(format='png', static_format='png').read()
+        avatar = await user.avatar_url_as(format="png", static_format="png").read()
         me = ctx.message.guild.me
 
         # await ctx.send(file=discord.File(avatar, filename='profile.png'))
@@ -59,4 +59,4 @@ class FRENSHIP(BaseCog):
     @commands.command()
     @checks.is_owner()
     async def fren_all(self, ctx):
-        await ctx.channel.send('ehhh maybe we\'ll do this')
+        await ctx.channel.send("ehhh maybe we'll do this")

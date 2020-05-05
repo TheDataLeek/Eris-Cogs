@@ -531,9 +531,9 @@ class Events(BaseCog):
                 return
 
             # DO NOT RESPOND TO SELF MESSAGES
-            if "195663495189102593" == str(message.author.id) or message.content.startswith(
-                "."
-            ):
+            if "195663495189102593" == str(
+                message.author.id
+            ) or message.content.startswith("."):
                 return
 
             # BLACKLIST CHANNELS
@@ -557,21 +557,29 @@ class Events(BaseCog):
             realname = get_realname(message.author.id)
 
             ctx = await bot.get_context(message)
-            
-            if 'sudo' in clean_message:
-                await message.channel.send("{} is not in the sudoers file.  This incident will be reported.".format(realname))
+
+            if "sudo" in clean_message:
+                await message.channel.send(
+                    "{} is not in the sudoers file. This incident will be reported.".format(
+                        realname
+                    )
+                )
                 return
 
             # mustaches
             if random.random() <= 0.01:
                 emojis = {e.name: e for e in message.guild.emojis}
-                await message.add_reaction(emojis['must'])
+                await message.add_reaction(emojis["must"])
                 time.sleep(0.1)
-                await message.add_reaction(emojis['ache'])
+                await message.add_reaction(emojis["ache"])
                 return
 
-            if ('beard' in clean_message or 'mustach' in clean_message) and random.random() <= 0.1:
-                await message.channel.send("https://media.discordapp.net/attachments/188030840377311232/694979897495388250/videotogif_2020.04.01_12.41.13.gif")
+            if (
+                "beard" in clean_message or "mustach" in clean_message
+            ) and random.random() <= 0.1:
+                await message.channel.send(
+                    "https://media.discordapp.net/attachments/188030840377311232/694979897495388250/videotogif_2020.04.01_12.41.13.gif"
+                )
                 return
 
             # IF DM's
@@ -626,8 +634,10 @@ class Events(BaseCog):
                     sleep(1)
                     for word in message_split:
                         if "men" in word:
-                            if word == 'women':
-                                await message.channel.send('Not just the women but the men and children too!')
+                            if word == "women":
+                                await message.channel.send(
+                                    "Not just the women but the men and children too!"
+                                )
                             else:
                                 bits = word.split("men")
                                 await message.channel.send(
@@ -655,10 +665,10 @@ class Events(BaseCog):
                     await message.channel.send(new_message)
 
             elif (
-                    ("snek" in clean_message)
-                    or ('nudl' in clean_message)
-                    or ('noodl' in clean_message)
-                    or ('snake' in clean_message)
+                ("snek" in clean_message)
+                or ("nudl" in clean_message)
+                or ("noodl" in clean_message)
+                or ("snake" in clean_message)
             ):
                 possible_msgs = [
                     ":snake: ~ !! I :heart: you {}!!! ~ :snake:",
@@ -687,8 +697,10 @@ class Events(BaseCog):
                     "Will you kiss me with those sexy lips of yours {}?",
                     "I can't remember the last time someone gave me butterflies like you're doin now {}",
                     "Hey {}, you free tomorrow night? Can I buy you dinner?",
-                    ("Oh my god I accidentally sent u a picture {}... please delete it!! unless.. u want to look? lol "
-                    "jus kidding delete it.. if u want.. haha nah delete it… unless?"),
+                    (
+                        "Oh my god I accidentally sent u a picture {}... please delete it!! unless.. u want to look? lol "
+                        "jus kidding delete it.. if u want.. haha nah delete it… unless?"
+                    ),
                     "Has anyone ever told you you're beautiful {}?",
                     "You're the sexiest creature I've ever seen {}",
                     "You kiss your mother with those lips {}?",

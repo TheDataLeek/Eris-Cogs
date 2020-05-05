@@ -9,7 +9,11 @@ from functools import reduce
 BaseCog = getattr(commands, "Cog", object)
 
 
-quotes = [_ for _ in pathlib.Path("./data/events/ooc/ooc.txt").read_text().split('\n') if len(_) != 0]
+quotes = [
+    _
+    for _ in pathlib.Path("./data/events/ooc/ooc.txt").read_text().split("\n")
+    if len(_) != 0
+]
 
 
 class OutOfContext(BaseCog):
@@ -54,9 +58,9 @@ class OutOfContext(BaseCog):
                 return
 
             # DO NOT RESPOND TO SELF MESSAGES
-            if "195663495189102593" == str(message.author.id) or message.content.startswith(
-                    "."
-            ):
+            if "195663495189102593" == str(
+                message.author.id
+            ) or message.content.startswith("."):
                 return
 
             if (
@@ -75,11 +79,11 @@ class OutOfContext(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            split_message = clean_message.split(' ')
+            split_message = clean_message.split(" ")
 
             random.shuffle(split_message)
 
-            if random.random() <= 0.99:   # 1% chance of activation
+            if random.random() <= 0.99:  # 1% chance of activation
                 return
 
             reply = random.choice(quotes)
