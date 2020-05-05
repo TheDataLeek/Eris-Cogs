@@ -43,4 +43,6 @@ class Clone(BaseCog):
             async with sesh.get(avatar) as resp:
                 data = resp.read()
 
+        print(data)
+
         await me.edit(nick=new_nick, avatar=data)
