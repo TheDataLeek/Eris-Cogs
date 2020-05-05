@@ -557,6 +557,10 @@ class Events(BaseCog):
             realname = get_realname(message.author.id)
 
             ctx = await bot.get_context(message)
+            
+            if 'sudo' in clean_message:
+                await message.channel.send("{} is not in the sudoers file.  This incident will be reported.".format(realname))
+                return
 
             # mustaches
             if random.random() <= 0.01:
