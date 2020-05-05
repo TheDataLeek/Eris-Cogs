@@ -499,7 +499,7 @@ class Spoop(BaseCog):
         await ctx.message.delete()
 
 
-async def spoop(self, message, realname):
+async def spoop(message, realname):
     if realname is None:
         formatname = message.author.mention
     else:
