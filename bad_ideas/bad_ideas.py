@@ -43,6 +43,12 @@ class Clone(BaseCog):
         #     return
         me = ctx.message.guild.me
 
+        try:
+            await ctx.send(file=discord.File(await user.avatar_url.read()))
+            await ctx.send('worked')
+        except:
+            pass
+        await ctx.send(file=discord.File(await user.avatar.read()))
         await me.edit(nick=new_nick, avatar=await avatar.read())
         await ctx.send("Done")
 
