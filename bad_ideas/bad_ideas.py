@@ -37,11 +37,16 @@ class Clone(BaseCog):
     @checks.is_owner()
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
-        avatar = str(user.avatar_url.split('?')[0])
-        if not avatar.endswith('.png') or not avatar.endswith('jpg'):
-            ctx.send("Currently only .png and .jpg are supported")
-            return
+        avatar = user.avatar_url
+        # if not avatar.endswith('.png') or not avatar.endswith('jpg'):
+        #     ctx.send("Currently only .png and .jpg are supported")
+        #     return
         me = ctx.message.guild.me
+
+        await me.edit(nick=new_nick, avatar=avatar.read())
+        await ctx.send("Done")
+
+        return
 
         await ctx.send("Fetching " + avatar)
 
@@ -50,6 +55,3 @@ class Clone(BaseCog):
                 data = await resp.read()
 
                 await ctx.send(file=discord.File(data))
-                await me.edit(nick=new_nick, avatar=data)
-
-        await ctx.send("Done")
