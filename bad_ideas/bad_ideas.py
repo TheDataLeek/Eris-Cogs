@@ -41,7 +41,7 @@ class Clone(BaseCog):
         #     ctx.send("Currently only .png and .jpg are supported")
         #     return
         avatar = io.BytesIO()
-        print(await user.avatar_url.save(avatar))
+        await user.avatar_url_as(format='png', static_format='png').save(avatar)
         me = ctx.message.guild.me
 
         await ctx.send(file=discord.File(avatar))
