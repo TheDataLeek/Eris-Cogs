@@ -36,7 +36,7 @@ class Clone(BaseCog):
     @checks.is_owner()
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
-        avatar = user.avatar_url
+        avatar = str(user.avatar_url)
         me = ctx.message.guild.me
 
         async with aiohttp.ClientSession() as sesh:
