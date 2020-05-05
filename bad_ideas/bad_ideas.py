@@ -37,19 +37,14 @@ class Clone(BaseCog):
     @checks.is_owner()
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
-        avatar = user.avatar_url
         # if not avatar.endswith('.png') or not avatar.endswith('jpg'):
         #     ctx.send("Currently only .png and .jpg are supported")
         #     return
+        avatar = await user.avatar_url.read()
         me = ctx.message.guild.me
 
-        try:
-            await ctx.send(file=discord.File(await user.avatar_url.read()))
-            await ctx.send('worked')
-        except:
-            pass
-        await ctx.send(file=discord.File(await user.avatar.read()))
-        await me.edit(nick=new_nick, avatar=await avatar.read())
+        await ctx.send(file=discord.File(avatar))
+        await me.edit(nick=new_nick, avatar=avatar)
         await ctx.send("Done")
 
         return
