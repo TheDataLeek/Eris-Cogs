@@ -25,3 +25,17 @@ class BigName(BaseCog):
     @commands.command()
     async def big_name(self, ctx, user: discord.Member, *, new_nick: str = ""):
         await self.update_username(ctx, user, new_nick.strip())
+
+
+class Clone(BaseCog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    @checks.is_owner()
+    async def clone(self, ctx, user: discord.Member):
+        new_nick = user.display_name
+        avatar = user.avatar
+
+        await ctx.send(new_nick)
+        await ctx.send(avatar)
