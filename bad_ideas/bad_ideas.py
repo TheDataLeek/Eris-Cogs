@@ -37,7 +37,10 @@ class Clone(BaseCog):
     @checks.is_owner()
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
-        avatar = str(user.avatar_url)
+        avatar = str(user.avatar_url.split('?')[0])
+        if not avatar.endswith('.png') or not avatar.endswith('jpg'):
+            ctx.send("Currently only .png and .jpg are supported")
+            return
         me = ctx.message.guild.me
 
         await ctx.send("Fetching " + avatar)
