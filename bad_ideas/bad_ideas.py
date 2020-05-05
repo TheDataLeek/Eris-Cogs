@@ -36,7 +36,7 @@ class Clone(BaseCog):
     async def clone(self, ctx, user: discord.Member):
         new_nick = user.display_name
         avatar = user.avatar_url
-        me = ctx.message.server.me
+        me = ctx.message.guild.me
 
         await self.bot.change_nickname(me, new_nick)
 
