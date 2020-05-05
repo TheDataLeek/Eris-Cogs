@@ -40,6 +40,8 @@ class Clone(BaseCog):
         avatar = str(user.avatar_url)
         me = ctx.message.guild.me
 
+        await ctx.send("Fetching " + avatar)
+
         async with aiohttp.ClientSession() as sesh:
             async with sesh.get(avatar) as resp:
                 data = await resp.read()
