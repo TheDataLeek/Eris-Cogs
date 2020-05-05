@@ -571,7 +571,7 @@ class Events(BaseCog):
                 return
 
             # IF DM's
-            if random.random() < 0.05:
+            if random.random() < 0.01:
                 await spoop(message, realname)
                 return
 
