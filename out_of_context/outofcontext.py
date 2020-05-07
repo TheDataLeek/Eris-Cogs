@@ -111,11 +111,11 @@ class OutOfContext(BaseCog):
     def get_quote(self, channel_id, most_recent=True):
         reply = random.choice(quotes)
         if channel_id not in self.message_log:
-            return reply   # just random if no logs
+            return reply  # just random if no logs
 
-        split_msgs = [s.split(' ') for s in self.message_log[channel_id]]
+        split_msgs = [s.split(" ") for s in self.message_log[channel_id]]
         if most_recent:
-            split_message = split_msgs[-1]   # just grab the last
+            split_message = split_msgs[-1]  # just grab the last
         else:
             split_message = reduce(lambda a, b: a + b, split_msgs)
         random.shuffle(split_message)

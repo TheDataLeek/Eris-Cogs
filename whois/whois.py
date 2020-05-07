@@ -100,7 +100,7 @@ class WhoIs(BaseCog):
 
     @commands.command(pass_context=True)
     async def theyare(self, ctx, user: discord.Member = None, *, realname: str = ""):
-        if user is None or realname == '':
+        if user is None or realname == "":
             await ctx.send("Please specify a <user> and a <realname>")
             return
 

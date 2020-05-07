@@ -566,7 +566,7 @@ class Events(BaseCog):
                 )
                 return
 
-            if re.search('((f[uck]{1,3}) ([you]{1,3}))', clean_message):
+            if re.search("((f[uck]{1,3}) ([you]{1,3}))", clean_message):
                 await message.channel.send("No fuck you")
                 return
 
