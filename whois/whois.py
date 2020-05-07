@@ -132,6 +132,6 @@ class WhoIs(BaseCog):
         if user is None:
             user = ctx.message.author
         avatar = io.BytesIO(await user.avatar_url_as(format="png", static_format="png").read())
-        await ctx.send(file=discord.File(avatar), filename='{}.png'.format(user.nick))
+        await ctx.send(file=discord.File(avatar))
 
 
