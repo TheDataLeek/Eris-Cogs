@@ -2,6 +2,7 @@ import os
 import discord
 from redbot.core import commands
 import sqlite3 as sq
+import io
 
 import pathlib
 
@@ -127,8 +128,10 @@ class WhoIs(BaseCog):
         await ctx.send("User Registered")
 
     @commands.command()
-    async def avatar(self, ctx, user: discord.Member):
-        avatar = await user.avatar_url_as(format="png", static_format="png").read()
+    async def avatar(self, ctx, user: discord.Member = None):
+        if user is None:
+            user = ctx.message.author
+        avatar = io.BytesIO(await user.avatar_url_as(format="png", static_format="png").read())
         await ctx.send(file=discord.File(avatar), filename='{}.png'.format(user.nick))
 
 
