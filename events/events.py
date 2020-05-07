@@ -566,6 +566,10 @@ class Events(BaseCog):
                 )
                 return
 
+            if re.search('f[uck]{,3} ?[you]{,3}', clean_message):
+                await message.channel.send("No fuck you")
+                return
+
             # mustaches
             if random.random() <= 0.01:
                 emojis = {e.name: e for e in message.guild.emojis}
