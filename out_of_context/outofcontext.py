@@ -102,7 +102,7 @@ class OutOfContext(BaseCog):
         self.bot.add_listener(out_of_context_handler, "on_message")
 
     @commands.command()
-    async def what_do_you_think(self, ctx):
+    async def penny(self, ctx):
         reply = self.get_quote(ctx.channel.id, most_recent=False)
         async with ctx.typing():
             sleep(1)
