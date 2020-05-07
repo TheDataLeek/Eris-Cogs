@@ -85,7 +85,7 @@ class OutOfContext(BaseCog):
                 self.message_log[chan_id] = [clean_message]
             else:
                 self.message_log[chan_id].append(clean_message)
-                if len(self.message_log[chan_id] > 5):
+                if len(self.message_log[chan_id]) > 5:
                     self.message_log[chan_id].pop(0)
 
             ctx = await bot.get_context(message)
