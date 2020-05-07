@@ -125,3 +125,10 @@ class WhoIs(BaseCog):
         con.close()
 
         await ctx.send("User Registered")
+
+    @commands.command()
+    def avatar(self, ctx, user: discord.Member):
+        avatar = await user.avatar_url_as(format="png", static_format="png").read()
+        await ctx.send(file=discord.File(avatar), filename='{}.png'.format(user.nick))
+
+
