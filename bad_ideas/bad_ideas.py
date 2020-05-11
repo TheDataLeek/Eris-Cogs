@@ -77,6 +77,10 @@ class Weave(BaseCog):
         e1_id = e1[1:-1].split(':')[-1]
         e2_id = e2[1:-1].split(':')[-1]
 
+        print(all_emoji)
+        print(e1_id)
+        print(all_emoji.get(e1_id))
+
         if e1_id not in all_emoji or e2_id not in all_emoji:
             await ctx.send("Emoji not from this server!")
             return
