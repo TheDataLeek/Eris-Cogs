@@ -67,7 +67,7 @@ class Weave(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def weave(self, ctx, e1, e2, width: int=2, length: int=4):
+    async def weave(self, ctx, e1, e2, width: int=5, length: int=3):
         # <a:name:id>
         guilds = await self.bot.fetch_guilds(limit=150).flatten()
         all_emoji = dict()
@@ -94,11 +94,17 @@ class Weave(BaseCog):
         e1 = all_emoji[e1_id]
         e2 = all_emoji[e2_id]
 
-        lines = []
+        lines = ''
         pair = [e1, e2]
+        index = 0
+        line_index = 0
         for _ in range(length):
-            lines.append(width * ("{}{}".format(*pair)))
-            pair = pair[::-1]
+            line = ''
+            for _ in range(width):
+                line += pair[(line_index + index) % 2]
+                index += 1
+            line_index += 1
+            lines += line
         msg = '\n'.join(lines)
 
         await ctx.send(msg)
