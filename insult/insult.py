@@ -22,7 +22,7 @@ class Insult(BaseCog):
     async def insult(self, ctx, user: discord.Member = None):
         """Insult the user"""
         msg = " "
-        if user == None:  # or user.id == '142431859148718080':
+        if user is None:  # or user.id == '142431859148718080':
             await ctx.send(ctx.message.author.mention + msg + randchoice(self.insults))
         else:
             if user.id == self.bot.user.id:
@@ -37,16 +37,14 @@ class Insult(BaseCog):
             else:
                 async with ctx.typing():
                     sleep(1)
-                    if random.random() <= 0.8:
+                    if random.random() <= 0.5:
                         msg = " {}".format(randchoice(self.insults))
                         await ctx.send(user.mention + msg)
                     else:
-                        url = "http://www.dickless.org/api/insult.xml"
+                        url = "https://evilinsult.com/generate_insult.php?lang=en&type=text"
                         async with aiohttp.ClientSession() as session:
                             async with session.get(url) as resp:
-                                raw_insult = await resp.text()
-                                root = ET.fromstring(raw_insult)
-                                insult = root[1].text
+                                insult = await resp.text()
                                 await ctx.send("{} {}".format(user.mention, insult))
 
 

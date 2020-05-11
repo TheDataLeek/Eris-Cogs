@@ -21,11 +21,11 @@ BaseCog = getattr(commands, "Cog", object)
 WHOFILE = os.path.join(str(pathlib.Path.home()), "whois.db")
 
 DICKFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "dickwords.txt"))
-dickwords = list(set(DICKFILE.read_text().split('\n')))
+dickwords = list(set(DICKFILE.read_text().split("\n")))
 VAFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "vawords.txt"))
-vag_words = list(set(VAFILE.read_text().split('\n')))
+vag_words = list(set(VAFILE.read_text().split("\n")))
 YANDEREFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "yandere.txt"))
-yandere = list(set(YANDEREFILE.read_text().split('\n')))
+yandere = list(set(YANDEREFILE.read_text().split("\n")))
 
 dragonart = """
 ```
@@ -380,8 +380,8 @@ class Events(BaseCog):
 
 def convert_realname(realname: str):
     if len(realname) > 32:
-        realname = realname.split(' ')[0]
-        realname = ''.join(c for c in realname if c.lower() in string.ascii_lowercase)
+        realname = realname.split(" ")[0]
+        realname = "".join(c for c in realname if c.lower() in string.ascii_lowercase)
         return realname
     else:
         return realname
