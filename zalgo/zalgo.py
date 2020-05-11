@@ -12,7 +12,8 @@ class Zalgo(BaseCog):
         self.bot = bot
 
         async def april_fools(message):
-            if random.random() <= 0.999 or int(message.guild.id) != 142435106257240064:
+            # Prevent acting on DM's
+            if random.random() <= 0.999 or (message.guild is None) or message.guild.name.lower() != 'cortex':
                 return
 
             clean_message = message.clean_content.lower()

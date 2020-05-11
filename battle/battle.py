@@ -219,16 +219,16 @@ class Battle(BaseCog):
 
         # We need to count each message
         async def count_message(message, reaction=None, action=None):
+            # Prevent acting on DM's
+            if message.guild is None or message.guild.name.lower() != 'cortex':
+                return
+
             # Prevent snek from voting on herself or counting
             clean_message = message.clean_content.lower()
             if not clean_message.startswith(".") and random.random() <= 0.1:
                 heal_user(message.author)
 
             if bot.user.id == message.author.id:
-                return
-
-            # Prevent acting on DM's
-            if message.guild is None:
                 return
 
             server = message.guild.id

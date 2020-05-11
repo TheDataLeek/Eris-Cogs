@@ -124,8 +124,8 @@ class Events(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
-        async def message_events(message):
-            if message.guild is None or int(message.guild.id) != 142435106257240064:
+        async def message_events(message: discord.message):
+            if message.guild is None or message.guild.name.lower() != 'cortex':
                 return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string

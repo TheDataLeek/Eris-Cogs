@@ -32,7 +32,8 @@ class OutOfContext(BaseCog):
                 self.quote_hash[word].append(quote)
 
         async def out_of_context_handler(message):
-            if message.guild is None:
+            # Prevent acting on DM's
+            if message.guild is None or message.guild.name.lower() != 'cortex':
                 return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
