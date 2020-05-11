@@ -100,6 +100,6 @@ class Weave(BaseCog):
 
         try:
             await ctx.send(msg)
-        except discord.error.HTTPException:
+        except:
             await ctx.send("Message too long!")
 
