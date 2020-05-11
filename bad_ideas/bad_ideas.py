@@ -76,15 +76,12 @@ class Weave(BaseCog):
             for e in actual_guild.emojis:
                 all_emoji[e.id] = e
 
-        e1_id = int(e1[1:-1].split(':')[-1])
-        e2_id = int(e2[1:-1].split(':')[-1])
-
-        if e1_id not in all_emoji or e2_id not in all_emoji:
-            await ctx.send("Emoji not from any server I'm in!")
+        e1 = self.check_emoji(ctx, e1, all_emoji)
+        if e1 is None:
             return
-
-        e1 = all_emoji[e1_id]
-        e2 = all_emoji[e2_id]
+        e2 = self.check_emoji(ctx, e1, all_emoji)
+        if e2 is None:
+            return
 
         lines = []
         pair = [e1, e2]
@@ -100,6 +97,17 @@ class Weave(BaseCog):
 
         try:
             await ctx.send(msg)
+            await ctx.message.delete()
         except:
             await ctx.send("Message too long!")
 
+    async def check_emoji(self, ctx, emoji, all_emoji):
+        if ':' in emoji:
+            emoji_id = int(emoji[1:-1].split(':')[-1])
+            if emoji_id not in all_emoji:
+                await ctx.send("Emoji not from any server I'm in!")
+                return None
+            else:
+                return all_emoji[emoji_id]
+        else:
+            return emoji
