@@ -94,7 +94,7 @@ class Weave(BaseCog):
         e1 = all_emoji[e1_id]
         e2 = all_emoji[e2_id]
 
-        lines = ''
+        lines = []
         pair = [e1, e2]
         index = 0
         line_index = 0
@@ -104,7 +104,7 @@ class Weave(BaseCog):
                 line += str(pair[(line_index + index) % 2])
                 index += 1
             line_index += 1
-            lines += line
+            lines.append(line)
         msg = '\n'.join(lines)
 
         await ctx.send(msg)
