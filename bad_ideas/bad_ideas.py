@@ -69,14 +69,18 @@ class Weave(BaseCog):
     @commands.command()
     async def weave(self, ctx, e1, e2, width: int=5, length: int=3):
         # <a:name:id>
+        print('==')
         guilds = await self.bot.fetch_guilds(limit=150).flatten()
         all_emoji = dict()
         for guild in guilds:
             actual_guild = await self.bot.fetch_guild(guild.id)
+            print(actual_guild.name)
             for e in actual_guild.emojis:
                 if e.name.lower() == 'wigglecat':
                     print(e)
                 all_emoji[e.id] = e
+
+        print('~~~')
 
         e1_id = int(e1[1:-1].split(':')[-1])
         e2_id = int(e2[1:-1].split(':')[-1])
