@@ -74,12 +74,13 @@ class Weave(BaseCog):
         for guild in guilds:
             actual_guild = await self.bot.fetch_guild(guild.id)
             for e in actual_guild.emojis:
+                if e.name.lower() == 'wigglecat':
+                    print(e)
                 all_emoji[e.id] = e
 
         e1_id = int(e1[1:-1].split(':')[-1])
         e2_id = int(e2[1:-1].split(':')[-1])
 
-        print(all_emoji)
         print(e1)
         print(e1_id)
         print(e2)
