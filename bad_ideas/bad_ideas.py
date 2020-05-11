@@ -60,3 +60,16 @@ class FRENSHIP(BaseCog):
     @checks.is_owner()
     async def fren_all(self, ctx):
         await ctx.channel.send("ehhh maybe we'll do this")
+
+
+class Weave(BaseCog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def weave(self, ctx, width: int, length: int, e1: discord.emoji, e2: discord.emoji):
+        await ctx.channel.send(width)
+        await ctx.channel.send(length)
+        await ctx.channel.send(e1)
+        await ctx.channel.send(e2)
+
