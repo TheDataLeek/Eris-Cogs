@@ -5,6 +5,7 @@ import re
 import discord
 import random
 from functools import reduce
+import string
 
 import sqlite3
 import pathlib
@@ -554,7 +555,7 @@ class Events(BaseCog):
             if reduce(lambda acc, n: acc or (n == message_channel), blacklist, False):
                 return
 
-            realname = get_realname(message.author.id)
+            realname = convert_realname(get_realname(message.author.id))
 
             ctx = await bot.get_context(message)
 
@@ -719,8 +720,6 @@ class Events(BaseCog):
                 async with ctx.typing():
                     sleep(1)
                     msg = random.choice(possible_msgs)
-                    if len(realname) > 30:
-                        realname = realname.split(' ')[0]
                     if realname is not None:
                         msg = msg.format(realname)
                     else:
@@ -768,3 +767,12 @@ class Events(BaseCog):
                     await message.channel.send(triggers[list(trigger)[0]])
 
         self.bot.add_listener(message_events, "on_message")
+
+
+def convert_realname(realname: str):
+    if len(realname) > 32:
+        realname = realname.split(' ')[0]
+        realname = ''.join(c for c in realname if c.lower() in string.ascii_lowercase)
+        return realname
+    else:
+        return realname
