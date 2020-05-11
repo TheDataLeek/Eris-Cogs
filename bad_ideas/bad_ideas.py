@@ -76,8 +76,8 @@ class Weave(BaseCog):
             for e in actual_guild.emojis:
                 all_emoji[e.id] = e
 
-        e1_id = e1[1:-1].split(':')[-1]
-        e2_id = e2[1:-1].split(':')[-1]
+        e1_id = int(e1[1:-1].split(':')[-1])
+        e2_id = int(e2[1:-1].split(':')[-1])
 
         print(all_emoji)
         print(e1_id)
