@@ -76,10 +76,10 @@ class Weave(BaseCog):
             for e in actual_guild.emojis:
                 all_emoji[e.id] = e
 
-        e1 = self.check_emoji(ctx, e1, all_emoji)
+        e1 = await self.check_emoji(ctx, e1, all_emoji)
         if e1 is None:
             return
-        e2 = self.check_emoji(ctx, e1, all_emoji)
+        e2 = await self.check_emoji(ctx, e1, all_emoji)
         if e2 is None:
             return
 
