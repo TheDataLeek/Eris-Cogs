@@ -76,10 +76,6 @@ class Weave(BaseCog):
             await ctx.send("Emoji not from this server!")
             return
 
-        if width * 2 * length > 2000:
-            await ctx.send("Message too long!")
-            return
-
         lines = []
         pair = [e1, e2]
         for _ in range(length):
@@ -87,5 +83,8 @@ class Weave(BaseCog):
             pair = pair[::-1]
         msg = '\n'.join(lines)
 
-        await ctx.send(msg)
+        try:
+            await ctx.send(msg)
+        except discord.errors.HTTPException:
+            await ctx.send("Message too long!")
 
