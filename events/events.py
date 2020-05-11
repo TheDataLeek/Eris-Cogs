@@ -20,11 +20,11 @@ BaseCog = getattr(commands, "Cog", object)
 
 WHOFILE = os.path.join(str(pathlib.Path.home()), "whois.db")
 
-DICKFILE = os.path.join(str(pathlib.Path.home()), "dickwords.txt")
+DICKFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "dickwords.txt"))
 dickwords = list(set(DICKFILE.read_text().split('\n')))
-VAFILE = os.path.join(str(pathlib.Path.home()), "vawords.txt")
+VAFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "vawords.txt"))
 vag_words = list(set(VAFILE.read_text().split('\n')))
-YANDEREFILE = os.path.join(str(pathlib.Path.home()), "yandere.txt")
+YANDEREFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "yandere.txt"))
 yandere = list(set(YANDEREFILE.read_text().split('\n')))
 
 dragonart = """
