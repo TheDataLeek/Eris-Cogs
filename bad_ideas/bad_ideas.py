@@ -67,8 +67,9 @@ class Weave(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def weave(self, ctx, width: int, length: int, e1: discord.Emoji, e2: discord.Emoji):
-        await ctx.send(e1)
+    async def weave(self, ctx, width: int, length: int, e1, e2):
+        # <:name:id>
+        print(e1)
         all_emoji = dict()
         async for guild in self.bot.fetch_guilds():
             for e in guild.emojis:
