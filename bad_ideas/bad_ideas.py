@@ -67,16 +67,13 @@ class Weave(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def weave(self, ctx, width: int, length: int, e1, e2):
+    async def weave(self, ctx, width: int, length: int, e1: discord.Emoji, e2: discord.Emoji):
         all_emoji = dict()
         async for guild in self.bot.fetch_guilds():
             for e in guild.emojis:
-                all_emoji[e.name] = e
+                all_emoji[e.id] = e
 
-        e1_name = e1.split(':')[1]
-        e2_name = e2.split(':')[1]
-
-        if e1_name not in all_emoji or e2_name not in all_emoji:
+        if e1.id not in all_emoji or e2.id not in all_emoji:
             await ctx.send("Emoji not from this server!")
             return
 
