@@ -96,14 +96,13 @@ class Weave(BaseCog):
 
         lines = []
         pair = [e1, e2]
-        index = 0
-        line_index = 0
         for _ in range(length):
             line = ''
+            index = 0
             for _ in range(width):
-                line += str(pair[(line_index + index) % 2])
+                line += str(pair[index % 2])
                 index += 1
-            line_index += 1
+            pair = pair[::-1]
             lines.append(line)
         msg = '\n'.join(lines)
 
