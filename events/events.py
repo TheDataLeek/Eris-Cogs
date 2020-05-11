@@ -714,6 +714,7 @@ class Events(BaseCog):
                     "{}, what if I ride your face until it's drenched",
                     "Fuckit, {} I'll suck you off for free you're just so damn sexy",
                     "{} I want to suck your daddy's cock just to get a taste of the recipe",
+                    "{} do you know how many bones the human body has? It's 206. We start with 369 when we're babies but they fuse. Wouldn't you want to go back? Have as many bones as a baby? What if i could help you",
                 ]
                 async with ctx.typing():
                     sleep(1)

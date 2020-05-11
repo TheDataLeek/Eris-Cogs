@@ -132,5 +132,3 @@ class WhoIs(BaseCog):
         if user is None:
             user = ctx.message.author
         await ctx.send(user.avatar_url)
-
-
