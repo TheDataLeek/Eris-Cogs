@@ -379,6 +379,9 @@ class Events(BaseCog):
 
 
 def convert_realname(realname: str):
+    if realname is None:
+        return realname
+
     if len(realname) > 32:
         realname = realname.split(" ")[0]
         realname = "".join(c for c in realname if c.lower() in string.ascii_lowercase)
