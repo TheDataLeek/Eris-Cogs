@@ -67,7 +67,7 @@ class Weave(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def weave(self, ctx, width: int, length: int, e1: discord.Emoji, e2: discord.Emoji):
+    async def weave(self, ctx, width: int, length: int, e1, e2):
         await ctx.channel.send(width)
         await ctx.channel.send(length)
         await ctx.channel.send(e1)
