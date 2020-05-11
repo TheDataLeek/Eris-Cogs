@@ -65,15 +65,23 @@ class FRENSHIP(BaseCog):
 class Weave(BaseCog):
     def __init__(self, bot):
         self.bot = bot
+        all_emoji = dict()
+        async for guild in self.bot.fetch_guilds():
+            for e in guild.emojis:
+                all_emoji[e.name] = e
+        self.all_emoji = all_emoji
 
     @commands.command()
     async def weave(self, ctx, width: int, length: int, e1, e2):
-        all_emoji = {e.name: e for e in ctx.guild.emojis}
         e1_name = e1.split(':')[1]
         e2_name = e2.split(':')[1]
 
-        if e1_name not in all_emoji or e2_name not in all_emoji:
+        if e1_name not in self.all_emoji or e2_name not in self.all_emoji:
             await ctx.send("Emoji not from this server!")
+            return
+
+        if width * length > 25:
+            await ctx.send("Message too long!")
             return
 
         lines = []
@@ -83,8 +91,5 @@ class Weave(BaseCog):
             pair = pair[::-1]
         msg = '\n'.join(lines)
 
-        try:
-            await ctx.send(msg)
-        except discord.errors.HTTPException:
-            await ctx.send("Message too long!")
+        await ctx.send(msg)
 
