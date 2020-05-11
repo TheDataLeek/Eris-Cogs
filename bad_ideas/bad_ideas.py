@@ -66,7 +66,7 @@ class Weave(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         all_emoji = dict()
-        async for guild in self.bot.fetch_guilds():
+        for guild in self.bot.fetch_guilds():
             for e in guild.emojis:
                 all_emoji[e.name] = e
         self.all_emoji = all_emoji
