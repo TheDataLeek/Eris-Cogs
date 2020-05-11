@@ -71,7 +71,7 @@ class Weave(BaseCog):
         # <a:name:id>
         guilds = await self.bot.fetch_guilds(limit=150).flatten()
         all_emoji = dict()
-        async for guild in guilds:
+        for guild in guilds:
             actual_guild = await self.bot.fetch_guild(guild.id)
             for e in actual_guild.emojis:
                 all_emoji[e.id] = e
