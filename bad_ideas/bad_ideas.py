@@ -73,7 +73,8 @@ class Weave(BaseCog):
         print(guilds)
         all_emoji = dict()
         for guild in guilds:
-            print(guild.emojis)
+            actual_guild = await self.bot.fetch_guild(guild.id)
+            print(actual_guild.emojis)
             for e in guild.emojis:
                 all_emoji[e.id] = e
 
