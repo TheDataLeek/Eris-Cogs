@@ -79,7 +79,7 @@ class Weave(BaseCog):
         e1 = await self.check_emoji(ctx, e1, all_emoji)
         if e1 is None:
             return
-        e2 = await self.check_emoji(ctx, e1, all_emoji)
+        e2 = await self.check_emoji(ctx, e2, all_emoji)
         if e2 is None:
             return
 
