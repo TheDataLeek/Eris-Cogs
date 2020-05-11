@@ -101,7 +101,7 @@ class Weave(BaseCog):
         for _ in range(length):
             line = ''
             for _ in range(width):
-                line += pair[(line_index + index) % 2]
+                line += str(pair[(line_index + index) % 2])
                 index += 1
             line_index += 1
             lines += line
