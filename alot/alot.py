@@ -1,6 +1,7 @@
 import pathlib
+import io
 import discord
-from redbot.core import commands
+from redbot.core import commands, data_manager
 from functools import reduce
 
 BaseCog = getattr(commands, "Cog", object)
@@ -9,10 +10,12 @@ BaseCog = getattr(commands, "Cog", object)
 class Alot(BaseCog):
     def __init__(self, bot):
         self.bot = bot
+        data_dir = data_manager.bundled_data_path(self)
+        self.alot = io.BytesIO((data_dir / 'ALOT.png').read_bytes())
 
         async def alot_of_patience(message):
             # Prevent acting on DM's
-            if message.guild is None or message.guild.name.lower() != "cortex":
+            if message.guild is None: # or message.guild.name.lower() != "cortex":
                 return
 
             clean_message = message.clean_content.lower()
@@ -54,10 +57,6 @@ class Alot(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            print(pathlib.Path().resolve())
-
-            with open("./data/alot/alot.png", "rb") as fobj:
-                await ctx.send(file=discord.File(fobj))
-            return
+            await ctx.send(file=discord.File(self.alot, filename='alot.png'))
 
         self.bot.add_listener(alot_of_patience, "on_message")
