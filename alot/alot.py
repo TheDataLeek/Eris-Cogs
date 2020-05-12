@@ -100,6 +100,7 @@ class Alot(BaseCog):
                 channel = channel.name.lower()
             else:
                 await ctx.send("Please provide a channel!")
+                return
         else:
             channel = channel.lower()
 
@@ -116,7 +117,7 @@ class Alot(BaseCog):
 
     @alot.command()
     @checks.mod()
-    async def blacklist(self, ctx, channel):
+    async def blacklist(self, ctx, channel=None):
         if channel is None:
             channel = ctx.channel.name.lower()
         elif not isinstance(channel, str):
@@ -124,6 +125,7 @@ class Alot(BaseCog):
                 channel = channel.name.lower()
             else:
                 await ctx.send("Please provide a channel!")
+                return
         else:
             channel = channel.lower()
 
