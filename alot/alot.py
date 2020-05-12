@@ -18,7 +18,7 @@ class Alot(BaseCog):
         }
         default_guild = {
             'channel_whitelist': ['general', 'bot-chat'],
-            'channel_blacklist': ['news'],
+            'channel_blacklist': ['announcements', 'news'],
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
@@ -28,13 +28,17 @@ class Alot(BaseCog):
 
         self.bot.add_listener(self.alot_of_patience, "on_message")
 
-    @commands.command()
+    @commands.group()
+    async def alot(self, ctx):
+        pass
+
+    @alot.command()
     @checks.is_owner()
     async def add_server(self, ctx, server_name):
         async with self.config.guild_list() as guild_list:
             guild_list.append(server_name)
 
-    @commands.command()
+    @alot.command()
     @checks.is_owner()
     async def remove_server(self, ctx, server_name):
         async with self.config.guild_list() as guild_list:
@@ -43,53 +47,54 @@ class Alot(BaseCog):
             except ValueError:
                 await ctx.send('Server was not in list!')
 
-    @commands.command()
+    @alot.command()
     @checks.mod()
-    async def whitelist_channel(self, channel):
-        pass
+    async def whitelist_channel(self, ctx, channel_name):
+        async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
+            whitelist.append(channel_name)
+
+        async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
+            try:
+                blacklist.remove(channel_name)
+            except ValueError:
+                pass
+
+    @alot.command()
+    @checks.mod()
+    async def blacklist_channel(self, ctx, channel_name):
+        async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
+            blacklist.append(channel_name)
+
+        async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
+            try:
+                whitelist.remove(channel_name)
+            except ValueError:
+                pass
 
     async def alot_of_patience(self, message):
         server_list = await self.config.guild_list()
         if message.guild is None or message.guild.name.lower() not in server_list:
             return
 
-        clean_message = message.clean_content.lower()
-        # MM: Added so list instead of string
-        message_split = clean_message.split(" ")
+        ctx = await self.bot.get_context(message)
 
-        # BLACKLIST CHANNELS
-        blacklist = [
-            "news",
-            "rpg",
-            "events",
-            "recommends",
-            "politisophy",
-            "eyebleach",
-            "weeb-lyfe",
-            "out-of-context",
-            "jokes",
-            "anime-club",
-        ]
+        clean_message = message.clean_content.lower()
 
         message_channel = message.channel.name.lower()
+        whitelisted_channels = await self.config.guild(ctx.guild).channel_whitelist()
+        blacklisted_channels = await self.config.guild(ctx.guild).channel_blacklist()
+        if (message_channel not in whitelisted_channels) or (message_channel in blacklisted_channels):
+            return
 
         if "alot" not in clean_message:
             return
 
         if (
                 # DO NOT RESPOND TO SELF MESSAGES
-                (self.bot.user.id == message.author.id or message.content.startswith("."))
-                or (message.channel.name is None)
-                or (
-                reduce(
-                    lambda acc, n: acc or (n == message_channel), blacklist, False
-                )
-        )
-                or ("thank" in clean_message)
+                (self.bot.user.id == message.author.id)
+                or message.content.startswith(".")
                 or ("http" in clean_message)
         ):
             return
-
-        ctx = await self.bot.get_context(message)
 
         await ctx.send(file=discord.File(io.BytesIO(self.alot), filename='alot.png'))
