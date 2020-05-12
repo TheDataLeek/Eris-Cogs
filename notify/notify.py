@@ -41,7 +41,7 @@ class Notify(BaseCog):
 
         async def message_events(message):
             # Prevent acting on DM's
-            if message.guild is None or message.guild.name.lower() != 'cortex':
+            if message.guild is None or message.guild.name.lower() != "cortex":
                 return
             if (
                 str(message.author.id) == "195663495189102593"

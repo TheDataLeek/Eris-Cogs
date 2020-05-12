@@ -7,6 +7,7 @@ import aiohttp
 import html
 import random
 
+
 BaseCog = getattr(commands, "Cog", object)
 
 
@@ -16,14 +17,14 @@ class Insult(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         data_dir = data_manager.bundled_data_path(self)
-        insults = (data_dir / 'insults.txt').read_text().split('\n')
+        insults = (data_dir / "insults.txt").read_text().split("\n")
         self.insults = insults
 
     @commands.command()
     async def insult(self, ctx, user: discord.Member = None):
         """Insult the user"""
         msg = " "
-        if user is None:  # or user.id == '142431859148718080':
+        if user is None:
             await ctx.send(ctx.message.author.mention + msg + randchoice(self.insults))
         else:
             if user.id == self.bot.user.id:
@@ -47,5 +48,3 @@ class Insult(BaseCog):
                             async with session.get(url) as resp:
                                 insult = await resp.text()
                                 await ctx.send("{} {}".format(user.mention, insult))
-
-

@@ -12,7 +12,7 @@ class Alot(BaseCog):
 
         async def alot_of_patience(message):
             # Prevent acting on DM's
-            if message.guild is None or message.guild.name.lower() != 'cortex':
+            if message.guild is None or message.guild.name.lower() != "cortex":
                 return
 
             clean_message = message.clean_content.lower()

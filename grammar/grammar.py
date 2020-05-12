@@ -26,7 +26,7 @@ class Grammar(BaseCog):
         self.spell.word_frequency.load_text_file(str(self.wordfile))
 
         async def grammar_module(message):
-            if message.guild is None or message.guild.name.lower() != 'cortex':
+            if message.guild is None or message.guild.name.lower() != "cortex":
                 return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string

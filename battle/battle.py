@@ -220,7 +220,7 @@ class Battle(BaseCog):
         # We need to count each message
         async def count_message(message, reaction=None, action=None):
             # Prevent acting on DM's
-            if message.guild is None or message.guild.name.lower() != 'cortex':
+            if message.guild is None or message.guild.name.lower() != "cortex":
                 return
 
             # Prevent snek from voting on herself or counting

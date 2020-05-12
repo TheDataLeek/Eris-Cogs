@@ -125,7 +125,7 @@ class Events(BaseCog):
         self.bot = bot
 
         async def message_events(message: discord.message):
-            if message.guild is None or message.guild.name.lower() != 'cortex':
+            if message.guild is None or message.guild.name.lower() != "cortex":
                 return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string

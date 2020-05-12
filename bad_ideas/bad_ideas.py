@@ -67,7 +67,7 @@ class Weave(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def weave(self, ctx, e1, e2, width: int=5, length: int=3):
+    async def weave(self, ctx, e1, e2, width: int = 5, length: int = 3):
         # <a:name:id>
         guilds = await self.bot.fetch_guilds(limit=150).flatten()
         all_emoji = dict()
@@ -86,14 +86,14 @@ class Weave(BaseCog):
         lines = []
         pair = [e1, e2]
         for _ in range(length):
-            line = ''
+            line = ""
             index = 0
             for _ in range(width):
                 line += str(pair[index % 2])
                 index += 1
             pair = pair[::-1]
             lines.append(line)
-        msg = '\n'.join(lines)
+        msg = "\n".join(lines)
 
         try:
             await ctx.send(msg)
@@ -102,8 +102,8 @@ class Weave(BaseCog):
             await ctx.send("Message too long!")
 
     async def check_emoji(self, ctx, emoji, all_emoji):
-        if ':' in emoji:
-            emoji_id = int(emoji[1:-1].split(':')[-1])
+        if ":" in emoji:
+            emoji_id = int(emoji[1:-1].split(":")[-1])
             if emoji_id not in all_emoji:
                 await ctx.send("Emoji not from any server I'm in!")
                 return None

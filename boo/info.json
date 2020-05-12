@@ -1,5 +1,7 @@
 {
     "author" : ["Eris"],
     "description" : "Usage: [p]boo <User>",
-    "name" : "Spookify someone's name"
+    "name" : "Spookify someone's name",
+    "short": "Adds prefix to names",
+    "requirements": ""
 }
