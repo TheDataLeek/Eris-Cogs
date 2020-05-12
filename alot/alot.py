@@ -46,7 +46,11 @@ class Alot(BaseCog):
     @alot.command()
     @checks.is_owner()
     async def lists(self, ctx):
-        async with self.config.guild(ctx.guild).whitelist() as whitelist, self.config.guild(ctx.guild).blacklist() as blacklist:
+        async with self.config.guild(
+            ctx.guild
+        ).channel_whitelist() as whitelist, self.config.guild(
+            ctx.guild
+        ).channel_blacklist() as blacklist:
             if len(whitelist) == 0:
                 await ctx.send("Whitelist empty!")
             else:
@@ -131,7 +135,7 @@ class Alot(BaseCog):
             return
 
         prefixes = await self.bot.get_valid_prefixes(guild=ctx.guild)
-        if message[0] in prefixes:
+        if clean_message[0] in prefixes:
             return
 
         if (
