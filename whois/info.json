@@ -1,5 +1,5 @@
 {
-    "author" : "SpatulaFish",
+    "author" : ["Eris"],
     "description" : "Who is for server members",
     "name" : "whois"
 }
