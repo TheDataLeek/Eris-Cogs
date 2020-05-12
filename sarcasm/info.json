@@ -1,5 +1,5 @@
 {
-    "author" : "Eris",
+    "author" : ["Eris"],
     "description" : "Sarcasm Module",
     "name" : "Sarcasm"
 }

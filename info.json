@@ -1,6 +1,6 @@
 {
     "name": "FishCogs",
-    "author": "Eris",
+    "author": ["Eris"],
     "short": "Eris' cogs for Red-DiscordBot",
     "description": "foobar",
     "install_msg": "Foobar"

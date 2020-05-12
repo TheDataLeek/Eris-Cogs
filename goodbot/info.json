@@ -1,5 +1,5 @@
 {
-    "author" : "Eris",
+    "author" : ["Eris"],
     "description" : "Good Bot Bad Bot",
     "name" : "goodbot"
 }

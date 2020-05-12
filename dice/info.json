@@ -1,5 +1,5 @@
 {
-    "author" : "Eris",
+    "author" : ["Eris"],
     "description" : "Usage: [p]dice #d#(v#)?",
     "name" : "Roll Dice"
 }
