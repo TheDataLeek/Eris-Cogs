@@ -92,27 +92,51 @@ class Alot(BaseCog):
 
     @alot.command()
     @checks.mod()
-    async def whitelist_channel(self, ctx, channel_name):
+    async def whitelist(self, ctx, channel=None):
+        if channel is None:
+            channel = ctx.channel.name.lower()
+        elif not isinstance(channel, str):
+            if isinstance(channel, discord.TextChannel):
+                channel = channel.name.lower()
+            else:
+                await ctx.send("Please provide a channel!")
+        else:
+            channel = channel.lower()
+
         async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
-            whitelist.append(channel_name)
+            whitelist.append(channel)
 
         async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
             try:
-                blacklist.remove(channel_name)
+                blacklist.remove(channel)
             except ValueError:
                 pass
+
+        await ctx.send("Done")
 
     @alot.command()
     @checks.mod()
-    async def blacklist_channel(self, ctx, channel_name):
+    async def blacklist(self, ctx, channel):
+        if channel is None:
+            channel = ctx.channel.name.lower()
+        elif not isinstance(channel, str):
+            if isinstance(channel, discord.TextChannel):
+                channel = channel.name.lower()
+            else:
+                await ctx.send("Please provide a channel!")
+        else:
+            channel = channel.lower()
+
         async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
-            blacklist.append(channel_name)
+            blacklist.append(channel)
 
         async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
             try:
-                whitelist.remove(channel_name)
+                whitelist.remove(channel)
             except ValueError:
                 pass
+
+        await ctx.send("Done")
 
     async def alot_of_patience(self, message: discord.Message):
         server_list = await self.config.guild_list()
