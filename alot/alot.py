@@ -11,7 +11,7 @@ class Alot(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         data_dir = data_manager.bundled_data_path(self)
-        self.alot = io.BytesIO((data_dir / 'ALOT.png').read_bytes())
+        self.alot = (data_dir / 'ALOT.png').read_bytes()
 
         async def alot_of_patience(message):
             print(message)
@@ -58,6 +58,6 @@ class Alot(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            await ctx.send(file=discord.File(self.alot, filename='alot.png'))
+            await ctx.send(file=discord.File(io.BytesIO(self.alot), filename='alot.png'))
 
         self.bot.add_listener(alot_of_patience, "on_message")
