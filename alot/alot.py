@@ -1,8 +1,8 @@
-import pathlib
 import io
 import discord
 from redbot.core import commands, data_manager
 from functools import reduce
+
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -14,6 +14,7 @@ class Alot(BaseCog):
         self.alot = io.BytesIO((data_dir / 'ALOT.png').read_bytes())
 
         async def alot_of_patience(message):
+            print(message)
             # Prevent acting on DM's
             if message.guild is None: # or message.guild.name.lower() != "cortex":
                 return
