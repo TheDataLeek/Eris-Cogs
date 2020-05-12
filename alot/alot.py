@@ -38,7 +38,24 @@ class Alot(BaseCog):
     @checks.is_owner()
     async def servers(self, ctx):
         async with self.config.guild_list() as guild_list:
-            await ctx.send(", ".join(guild_list))
+            if len(guild_list) == 0:
+                await ctx.send("No servers have been registered!")
+            else:
+                await ctx.send("Servers: " + ", ".join(guild_list))
+
+    @alot.command()
+    @checks.is_owner()
+    async def lists(self, ctx):
+        async with self.config.guild(ctx.guild).whitelist() as whitelist, self.config.guild(ctx.guild).blacklist() as blacklist:
+            if len(whitelist) == 0:
+                await ctx.send("Whitelist empty!")
+            else:
+                await ctx.send("Whitelist: " + ", ".join(whitelist))
+
+            if len(blacklist) == 0:
+                await ctx.send("Blacklist empty!")
+            else:
+                await ctx.send("Blacklist: " + ", ".join(blacklist))
 
     @alot.command()
     @checks.is_owner()
