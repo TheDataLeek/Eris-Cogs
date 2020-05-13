@@ -132,3 +132,7 @@ class WhoIs(BaseCog):
         if user is None:
             user = ctx.message.author
         await ctx.send(user.avatar_url)
+
+    @commands.command()
+    async def emoji(self, ctx, emoji: discord.Emoji):
+        await ctx.send(emoji.url)
