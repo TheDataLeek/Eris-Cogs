@@ -11,8 +11,11 @@ class Alot(BaseCog):
     def __init__(self, bot_instance: bot):
         self.bot = bot_instance
 
-        self.config = Config.get_conf(
-            self, identifier=928487392010, force_registration=True, cog_name="alot"
+        self.event_config = Config.get_conf(
+            self,
+            identifier=22222939019,
+            force_registration=True,
+            cog_name="event_config",
         )
 
         default_global = {
@@ -22,24 +25,16 @@ class Alot(BaseCog):
             "channel_whitelist": ["general", "bot-chat"],
             "channel_blacklist": ["announcements", "news"],
         }
-        self.config.register_global(**default_global)
-        self.config.register_guild(**default_guild)
+        self.event_config.register_global(**default_global)
+        self.event_config.register_guild(**default_guild)
 
         data_dir = data_manager.bundled_data_path(self)
         self.alot = (data_dir / "ALOT.png").read_bytes()
 
         self.bot.add_listener(self.alot_of_patience, "on_message")
 
-        async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
-            try:
-                whitelist.remove(channel)
-            except ValueError:
-                pass
-
-        await ctx.send("Done")
-
     async def alot_of_patience(self, message: discord.Message):
-        server_list = await self.config.guild_list()
+        server_list = await self.event_config.guild_list()
         if message.guild is None or message.guild.name.lower() not in server_list:
             return
 
@@ -48,8 +43,8 @@ class Alot(BaseCog):
         clean_message = message.clean_content.lower()
 
         message_channel = message.channel.name.lower()
-        whitelisted_channels = await self.config.guild(ctx.guild).channel_whitelist()
-        blacklisted_channels = await self.config.guild(ctx.guild).channel_blacklist()
+        whitelisted_channels = await self.event_config.guild(ctx.guild).channel_whitelist()
+        blacklisted_channels = await self.event_config.guild(ctx.guild).channel_blacklist()
         if (message_channel not in whitelisted_channels) or (
             message_channel in blacklisted_channels
         ):

@@ -87,24 +87,12 @@ class EventConfig(BaseCog):
     @econf.command()
     @checks.mod()
     async def whitelist(self, ctx, channel: Union[str, discord.TextChannel]=None):
-        self.black_or_white_list(ctx, 'whitelist', channel)
+        await self.black_or_white_list(ctx, 'whitelist', channel)
 
     @econf.command()
     @checks.mod()
-    async def blacklist(self, ctx, channel=None):
-        if channel is None:
-            channel = ctx.channel.name.lower()
-        elif not isinstance(channel, str):
-            if isinstance(channel, discord.TextChannel):
-                channel = channel.name.lower()
-            else:
-                await ctx.send("Please provide a channel!")
-                return
-        else:
-            channel = channel.lower()
-
-        async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
-            blacklist.append(channel)
+    async def blacklist(self, ctx, channel: Union[str, discord.TextChannel]=None):
+        await self.black_or_white_list(ctx, 'blacklist', channel)
 
     async def black_or_white_list(self, ctx, which, channel):
         if channel is None:
@@ -118,13 +106,23 @@ class EventConfig(BaseCog):
         else:
             channel = channel.lower()
 
-        async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
-            whitelist.append(channel)
+        if which == 'whitelist':
+            async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
+                whitelist.append(channel)
 
-        async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
-            try:
-                blacklist.remove(channel)
-            except ValueError:
-                pass
+            async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
+                try:
+                    blacklist.remove(channel)
+                except ValueError:
+                    pass
+        else:
+            async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
+                blacklist.append(channel)
+
+            async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
+                try:
+                    whitelist.remove(channel)
+                except ValueError:
+                    pass
 
         await ctx.send("Done")
