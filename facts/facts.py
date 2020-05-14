@@ -24,13 +24,19 @@ class Fact(BaseCog):
 
     @commands.group()
     async def fact(self, ctx):
-        """gimme a fact"""
+        """
+        todo -> specify subcommands
+        """
+        pass
+
+    @fact.command()
+    async def random(self, ctx):
         await ctx.send(randchoice(randchoice([self.bearfacts, self.snekfacts])))
 
-    @commands.command()
+    @fact.command()
     async def snek(self, ctx):
         await ctx.send(randchoice(self.snekfacts))
 
-    @commands.command()
+    @fact.command()
     async def bear(self, ctx):
         await ctx.send(randchoice(self.bearfacts))
