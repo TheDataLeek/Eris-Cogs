@@ -12,10 +12,7 @@ class Alot(BaseCog):
         self.bot = bot_instance
 
         self.event_config = Config.get_conf(
-            self,
-            identifier=22222939019,
-            force_registration=True,
-            cog_name="event_config",
+            self, identifier=22222939019, cog_name="event_config",
         )
 
         data_dir = data_manager.bundled_data_path(self)
@@ -23,14 +20,12 @@ class Alot(BaseCog):
 
         self.bot.add_listener(self.alot_event_handler, "on_message")
 
-    async def alot_event_handler(self, message: discord.Message):
+    async def allowed(self, message: discord.Message):
         turned_on = await self.event_config.eris_events_enabled()
         if message.guild is None or not turned_on:
-            return
+            return False
 
         ctx = await self.bot.get_context(message)
-
-        clean_message = message.clean_content.lower()
 
         message_channel = message.channel.name.lower()
         whitelisted_channels = await self.event_config.guild(
@@ -42,20 +37,23 @@ class Alot(BaseCog):
         if (message_channel not in whitelisted_channels) or (
             message_channel in blacklisted_channels
         ):
-            return
-
-        if "alot" not in clean_message:
-            return
+            return False
 
         prefixes = await self.bot.get_valid_prefixes(guild=ctx.guild)
-        if clean_message[0] in prefixes:
+        if len(message) > 0 and message.content[0] in prefixes:
+            return False
+
+        if self.bot.user.id == message.author.id:
+            return False
+
+        if "http" in message.content:
+            return False
+
+        return True
+
+    async def alot_event_handler(self, message: discord.Message):
+        if not await self.allowed(message) and "alot" not in message.clean_content.lower():
             return
 
-        if (
-            # DO NOT RESPOND TO SELF MESSAGES
-            (self.bot.user.id == message.author.id)
-            or ("http" in clean_message)
-        ):
-            return
-
+        ctx = await self.bot.get_context(message)
         await ctx.send(file=discord.File(io.BytesIO(self.alot), filename="alot.png"))
