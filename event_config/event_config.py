@@ -35,6 +35,11 @@ class EventConfig(BaseCog):
     @econf.command()
     @checks.mod()
     async def show(self, ctx):
+        """
+        Shows current status for global toggle and guild-specific white/blacklists.
+        Permissions: >=Mod
+        Usage: [p]econf show
+        """
         events_status = await self.config.eris_events_enabled()
         async with self.config.guild(
             ctx.guild
@@ -59,6 +64,11 @@ class EventConfig(BaseCog):
     @econf.command()
     @checks.is_owner()
     async def toggle(self, ctx):
+        """
+        Toggles all event handlers on or off.
+        Permissions: Owner
+        Usage: [p]econf toggle
+        """
         new_status = not (await self.config.eris_events_enabled())
         await self.config.eris_events_enabled.set(new_status)
         await ctx.send(f"Done, we are now {'ON' if new_status else 'OFF'}")
@@ -66,6 +76,11 @@ class EventConfig(BaseCog):
     @econf.command()
     @checks.mod()
     async def reset(self, ctx):
+        """
+        Resets guild white/blacklists to original settings.
+        Permissions: >=Mod
+        Usage: [p]econf reset
+        """
         await self.config.guild(ctx.guild).channel_whitelist.set(["general"])
         await self.config.guild(ctx.guild).channel_blacklist.set([])
         await ctx.send("Done")
@@ -73,17 +88,29 @@ class EventConfig(BaseCog):
     @econf.command()
     @checks.mod()
     async def whitelist(self, ctx, channel: Union[str, discord.TextChannel] = None):
+        """
+        Adds a channel to the whitelist
+        Permissions: >=Mod
+        Usage: [p]econf whitelist <None|channel name|channel tag>
+        """
         await self.black_or_white_list(ctx, "whitelist", channel)
 
     @econf.command()
     @checks.mod()
     async def blacklist(self, ctx, channel: Union[str, discord.TextChannel] = None):
+        """
+        Adds a channel to the blacklist
+        Permissions: >=Mod
+        Usage: [p]econf blacklist <None|channel name|channel tag>
+        """
         await self.black_or_white_list(ctx, "blacklist", channel)
 
     async def black_or_white_list(
         self, ctx, which: str, channel: Union[str, discord.TextChannel]
     ):
-        # todo -> check channel actually exists.....
+        """
+        goes through and actually handles the channel resolution + assertion + list management
+        """
         if channel is None:
             channel = ctx.channel.name.lower()
         elif not isinstance(channel, str):
@@ -160,6 +187,6 @@ class EventConfig(BaseCog):
 
     async def log_last_message(self, ctx, message: discord.Message):
         """ 
-        prevents duplicate interactions
+        prevents duplicate interactions by logging last message
         """
         await self.config.guild(ctx.guild).last_message_interacted_with_id.set(message.id)

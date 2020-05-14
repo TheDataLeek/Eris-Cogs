@@ -5,6 +5,7 @@ Welcome to my cogs, currently these are the only finished[1] v3 cogs:
 * insult
 * dice
 * nick_prefix
+* event_config
 
 ---
 
