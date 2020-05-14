@@ -43,8 +43,12 @@ class Alot(BaseCog):
         clean_message = message.clean_content.lower()
 
         message_channel = message.channel.name.lower()
-        whitelisted_channels = await self.event_config.guild(ctx.guild).channel_whitelist()
-        blacklisted_channels = await self.event_config.guild(ctx.guild).channel_blacklist()
+        whitelisted_channels = await self.event_config.guild(
+            ctx.guild
+        ).channel_whitelist()
+        blacklisted_channels = await self.event_config.guild(
+            ctx.guild
+        ).channel_blacklist()
         if (message_channel not in whitelisted_channels) or (
             message_channel in blacklisted_channels
         ):

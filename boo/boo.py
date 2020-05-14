@@ -1,22 +1,27 @@
-from redbot.core import commands, data_manager
+# stdlib
 import random
+import pathlib
+from typing import List
+
+# 3rd party
+from redbot.core import commands, data_manager, bot
 
 BaseCog = getattr(commands, "Cog", object)
 
 
 class Boo(BaseCog):
-    def __init__(self, bot):
-        self.bot = bot
-        data_dir = data_manager.bundled_data_path(self)
-        self.halloween_prefixes = (
+    def __init__(self, bot_instance: bot):
+        self.bot = bot_instance
+        data_dir: pathlib.Path = data_manager.bundled_data_path(self)
+        self.halloween_prefixes: List[str] = (
             (data_dir / "halloween_prefixes.txt").read_text().split("\n")
         )
-        self.thanksgiving_prefixes = (
+        self.thanksgiving_prefixes: List[str] = (
             (data_dir / "thanksgiving_prefixes.txt").read_text().split("\n")
         )
 
-    def prefix_nick(self, nick, wordlist):
-        return random.choice(wordlist) + " " + nick
+    def prefix_nick(self, nick: str, wordlist: List[str]):
+        return f"{random.choice(wordlist)} {nick}"
 
     async def update_username(self, ctx, wordlist):
         user = ctx.message.author
@@ -39,8 +44,18 @@ class Boo(BaseCog):
 
     @commands.command()
     async def boo(self, ctx):
+        """
+        Adds a Halloween themed prefix to the user's nickname
+        Usage: [p]boo
+        Example: .boo
+        """
         await self.update_username(ctx, wordlist=self.halloween_prefixes)
 
     @commands.command()
     async def turkey(self, ctx):
+        """
+        Adds a Thanksgiving themed prefix to the user's nickname
+        Usage: [p]turkey
+        Example: .turkey
+        """
         await self.update_username(ctx, wordlist=self.thanksgiving_prefixes)

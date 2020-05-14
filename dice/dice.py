@@ -4,7 +4,6 @@ import re
 
 # third party
 from redbot.core import commands, bot
-import discord
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -36,6 +35,6 @@ class Dice(BaseCog):
         if match.group(3) is not None:
             rolls = rolls[: -int(match.group(3)[1:])]
 
-        formatted_rolls = ' + '.join(str(r) for r in rolls)
+        formatted_rolls = " + ".join(str(r) for r in rolls)
 
         await ctx.send(f"Rolling {roll}... {sum(rolls)} ({formatted_rolls})")

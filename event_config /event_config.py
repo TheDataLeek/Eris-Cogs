@@ -85,13 +85,13 @@ class EventConfig(BaseCog):
 
     @econf.command()
     @checks.mod()
-    async def whitelist(self, ctx, channel: Union[str, discord.TextChannel]=None):
-        await self.black_or_white_list(ctx, 'whitelist', channel)
+    async def whitelist(self, ctx, channel: Union[str, discord.TextChannel] = None):
+        await self.black_or_white_list(ctx, "whitelist", channel)
 
     @econf.command()
     @checks.mod()
-    async def blacklist(self, ctx, channel: Union[str, discord.TextChannel]=None):
-        await self.black_or_white_list(ctx, 'blacklist', channel)
+    async def blacklist(self, ctx, channel: Union[str, discord.TextChannel] = None):
+        await self.black_or_white_list(ctx, "blacklist", channel)
 
     async def black_or_white_list(self, ctx, which, channel):
         if channel is None:
@@ -105,7 +105,7 @@ class EventConfig(BaseCog):
         else:
             channel = channel.lower()
 
-        if which == 'whitelist':
+        if which == "whitelist":
             async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
                 whitelist.append(channel)
 
