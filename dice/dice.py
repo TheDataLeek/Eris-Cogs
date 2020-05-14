@@ -36,4 +36,6 @@ class Dice(BaseCog):
         if match.group(3) is not None:
             rolls = rolls[: -int(match.group(3)[1:])]
 
-        await ctx.send(f"Rolling {roll}... {sum(rolls)} ({' + '.join(rolls)})")
+        formatted_rolls = ' + '.join(str(r) for r in rolls)
+
+        await ctx.send(f"Rolling {roll}... {sum(rolls)} ({formatted_rolls})")
