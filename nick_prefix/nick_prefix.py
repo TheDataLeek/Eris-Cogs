@@ -11,10 +11,6 @@ BaseCog = getattr(commands, "Cog", object)
 
 
 class NickPrefix(BaseCog):
-    """
-    Theme nicknames!
-    Available commands are .boo and .turkey
-    """
     def __init__(self, bot_instance: bot):
         self.bot = bot_instance
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
@@ -52,7 +48,6 @@ class NickPrefix(BaseCog):
         """
         Adds a Halloween themed prefix to the user's nickname
         Usage: [p]boo
-        Example: .boo
         """
         await self.update_username(ctx, wordlist=self.halloween_prefixes)
 
@@ -61,6 +56,5 @@ class NickPrefix(BaseCog):
         """
         Adds a Thanksgiving themed prefix to the user's nickname
         Usage: [p]turkey
-        Example: .turkey
         """
         await self.update_username(ctx, wordlist=self.thanksgiving_prefixes)

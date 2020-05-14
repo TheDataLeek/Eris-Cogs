@@ -18,7 +18,7 @@ class Dice(BaseCog):
         """
         Rolls arbitrary dice!
         Usage: [p]dice '([0-9]+)d([0-9]+)(v[0-9])?'
-        Example: .dice 4d6v1
+        Example: [p]dice 4d6v1
         """
         match = self.dice_regex.match(roll)
 

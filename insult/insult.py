@@ -26,7 +26,7 @@ class Insult(BaseCog):
         """
         Insult the user.
         Usage: [p]insult <Member>
-        Example: .insult @Eris#0001
+        Example: [p]insult @Eris#0001
         """
         msg = " "
         if user is None:
