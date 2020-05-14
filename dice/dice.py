@@ -11,7 +11,11 @@ BaseCog = getattr(commands, "Cog", object)
 class Dice(BaseCog):
     def __init__(self, bot_instance: bot):
         self.bot = bot_instance
-        self.dice_regex = re.compile("([0-9]+)d([0-9]+)(v[0-9])?", flags=re.IGNORECASE)
+        num = "[0-9]+"  # matches 1 12 1238 will not match 'asdf'
+        how_many = f"({num})"
+        what_type = f"d({num})"
+        optional_drop = f"(v{num})?"
+        self.dice_regex = re.compile(f"{how_many}{what_type}{optional_drop}", flags=re.IGNORECASE)
 
     @commands.command()
     async def dice(self, ctx, roll: str):
