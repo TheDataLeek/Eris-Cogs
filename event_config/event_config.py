@@ -23,6 +23,7 @@ class EventConfig(BaseCog):
         default_guild = {
             "channel_whitelist": ["general"],
             "channel_blacklist": [],
+            "last_message_interacted_with_id": None,
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
@@ -95,11 +96,8 @@ class EventConfig(BaseCog):
             channel = channel.lower()
 
         # check that the channel exists
-        # todo fix that this actually fucking works you piece of shit fuck you with a shovel
         found = False
-        print(channel)
         for guild_channel in ctx.guild.channels:
-            print(guild_channel.name.lower())
             if guild_channel.name.lower() == channel:
                 found = True
 
@@ -126,3 +124,42 @@ class EventConfig(BaseCog):
                     pass
 
         await ctx.send("Done")
+
+    async def allowed(self, ctx, message: discord.Message):
+        turned_on = await self.config.eris_events_enabled()
+        if message.guild is None or not turned_on:
+            return False
+
+        message_channel = message.channel.name.lower()
+        whitelisted_channels = await self.config.guild(
+            ctx.guild
+        ).channel_whitelist()
+        blacklisted_channels = await self.config.guild(
+            ctx.guild
+        ).channel_blacklist()
+        if (message_channel not in whitelisted_channels) or (
+                message_channel in blacklisted_channels
+        ):
+            return False
+
+        prefixes = await self.bot.get_valid_prefixes(guild=ctx.guild)
+        if len(message.content) > 0 and message.content[0] in prefixes:
+            return False
+
+        if self.bot.user.id == message.author.id:
+            return False
+
+        if "http" in message.content:
+            return False
+
+        last_message_interacted_with = await self.config.guild(ctx.guild).last_message_interacted_with_id()
+        if last_message_interacted_with is not None and last_message_interacted_with == message.id:
+            return False
+
+        return True
+
+    async def log_last_message(self, ctx, message: discord.Message):
+        """ 
+        prevents duplicate interactions
+        """
+        await self.config.guild(ctx.guild).last_message_interacted_with_id.set(message.id)
