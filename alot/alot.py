@@ -40,7 +40,7 @@ class Alot(BaseCog):
             return False
 
         prefixes = await self.bot.get_valid_prefixes(guild=ctx.guild)
-        if len(message) > 0 and message.content[0] in prefixes:
+        if len(message.content) > 0 and message.content[0] in prefixes:
             return False
 
         if self.bot.user.id == message.author.id:
@@ -52,7 +52,9 @@ class Alot(BaseCog):
         return True
 
     async def alot_event_handler(self, message: discord.Message):
-        if not await self.allowed(message) and "alot" not in message.clean_content.lower():
+        allowed: bool = await self.allowed(message)
+        keyword_in_message: bool = "alot" in message.clean_content.lower()
+        if not allowed or not keyword_in_message:
             return
 
         ctx = await self.bot.get_context(message)

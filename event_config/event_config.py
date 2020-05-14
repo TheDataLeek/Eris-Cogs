@@ -96,13 +96,12 @@ class EventConfig(BaseCog):
 
         # check that the channel exists
         # todo fix that this actually fucking works you piece of shit fuck you with a shovel
-        guilds = await self.bot.fetch_guilds(limit=150).flatten()
         found = False
-        for guild in guilds:
-            actual_guild = await self.bot.fetch_guild(guild.id)
-            for guild_channel in actual_guild.channels:
-                if guild_channel.name.lower() == channel:
-                    found = True
+        print(channel)
+        for guild_channel in ctx.guild.channels:
+            print(guild_channel.name.lower())
+            if guild_channel.name.lower() == channel:
+                found = True
 
         if not found:
             await ctx.send("Channel not found!")
