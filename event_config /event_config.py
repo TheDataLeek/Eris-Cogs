@@ -1,5 +1,5 @@
 import discord
-from redbot.core import commands, Config, checks
+from redbot.core import commands, Config, checks, bot
 from typing import Union
 
 
@@ -7,7 +7,7 @@ BaseCog = getattr(commands, "Cog", object)
 
 
 class EventConfig(BaseCog):
-    def __init__(self, bot_instance):
+    def __init__(self, bot_instance: bot):
         self.bot = bot_instance
 
         self.config = Config.get_conf(
