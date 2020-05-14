@@ -6,10 +6,15 @@ from typing import List
 # 3rd party
 from redbot.core import commands, data_manager, bot
 
+
 BaseCog = getattr(commands, "Cog", object)
 
 
-class Boo(BaseCog):
+class NickPrefix(BaseCog):
+    """
+    Theme nicknames!
+    Available commands are .boo and .turkey
+    """
     def __init__(self, bot_instance: bot):
         self.bot = bot_instance
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
