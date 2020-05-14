@@ -24,7 +24,7 @@ class Dice(BaseCog):
         match = self.dice_regex.match(roll)
 
         if match is None or match.group(1) is None or match.group(2) is None:
-            await self.bot.send_help_for(ctx, self)
+            await self.bot.send_help_for(ctx, self.dice)
             return
 
         numdice = int(match.group(1))
