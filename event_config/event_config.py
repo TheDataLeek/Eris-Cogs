@@ -95,6 +95,7 @@ class EventConfig(BaseCog):
             channel = channel.lower()
 
         # check that the channel exists
+        # todo fix that this actually fucking works you piece of shit fuck you with a shovel
         guilds = await self.bot.fetch_guilds(limit=150).flatten()
         found = False
         for guild in guilds:
