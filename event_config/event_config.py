@@ -18,7 +18,7 @@ class EventConfig(BaseCog):
         )
 
         default_global = {
-            "eris_events": True,
+            "eris_events_enabled": True,
         }
         default_guild = {
             "channel_whitelist": ["general"],
@@ -34,7 +34,7 @@ class EventConfig(BaseCog):
     @econf.command()
     @checks.mod()
     async def show(self, ctx):
-        async with self.config.eris_events() as events_status, self.config.guild(
+        async with self.config.eris_events_enabled() as events_status, self.config.guild(
             ctx.guild
         ).channel_whitelist() as whitelist, self.config.guild(
             ctx.guild
@@ -57,8 +57,8 @@ class EventConfig(BaseCog):
     @econf.command()
     @checks.is_owner()
     async def toggle(self, ctx):
-        new_status = not (await self.config.eris_events())
-        await self.config.eris_events.set(new_status)
+        new_status = not (await self.config.eris_events_enabled())
+        await self.config.eris_events_enabled.set(new_status)
         await ctx.send(f"Done, we are now {'ON' if new_status else 'OFF'}")
 
     @econf.command()
@@ -92,6 +92,19 @@ class EventConfig(BaseCog):
                 return
         else:
             channel = channel.lower()
+
+        # check that the channel exists
+        guilds = await self.bot.fetch_guilds(limit=150).flatten()
+        found = False
+        for guild in guilds:
+            actual_guild = await self.bot.fetch_guild(guild.id)
+            for guild_channel in actual_guild.channels:
+                if guild_channel.name.lower() == channel:
+                    found = True
+
+        if not found:
+            await ctx.send("Channel not found!")
+            return
 
         async with self.config.guild(
             ctx.guild

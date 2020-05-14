@@ -18,24 +18,14 @@ class Alot(BaseCog):
             cog_name="event_config",
         )
 
-        default_global = {
-            "guild_list": [],
-        }
-        default_guild = {
-            "channel_whitelist": ["general", "bot-chat"],
-            "channel_blacklist": ["announcements", "news"],
-        }
-        self.event_config.register_global(**default_global)
-        self.event_config.register_guild(**default_guild)
-
         data_dir = data_manager.bundled_data_path(self)
         self.alot = (data_dir / "ALOT.png").read_bytes()
 
-        self.bot.add_listener(self.alot_of_patience, "on_message")
+        self.bot.add_listener(self.alot_event_handler, "on_message")
 
-    async def alot_of_patience(self, message: discord.Message):
-        server_list = await self.event_config.guild_list()
-        if message.guild is None or message.guild.name.lower() not in server_list:
+    async def alot_event_handler(self, message: discord.Message):
+        turned_on = await self.event_config.eris_events_enabled()
+        if message.guild is None or not turned_on:
             return
 
         ctx = await self.bot.get_context(message)
