@@ -9,6 +9,10 @@ from functools import reduce
 BaseCog = getattr(commands, "Cog", object)
 
 
+# todo -> archive specified channel in db
+# db format
+# | message_id | contents |
+# todo -> export
 quotes = [
     _
     for _ in pathlib.Path("./data/events/ooc/ooc.txt").read_text().split("\n")
