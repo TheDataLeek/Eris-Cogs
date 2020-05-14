@@ -1,6 +1,6 @@
 {
     "author" : ["Eris"],
-    "description" : "Usage: [p]boo <User>",
-    "name" : "Spookify someone's name",
-    "short": "Adds prefix to names"
+    "description" : "Theme your nickname, some include NSFW language and themes.",
+    "name" : "boo",
+    "short": "Adds themed prefix to names"
 }
