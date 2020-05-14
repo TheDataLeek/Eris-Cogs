@@ -48,12 +48,12 @@ class EventConfig(BaseCog):
             if len(whitelist) == 0:
                 await ctx.send("Whitelist empty!")
             else:
-                await ctx.send("Whitelist: " + ", ".join(whitelist))
+                await ctx.send(f"Whitelist: {', '.join(whitelist)}")
 
             if len(blacklist) == 0:
                 await ctx.send("Blacklist empty!")
             else:
-                await ctx.send("Blacklist: " + ", ".join(blacklist))
+                await ctx.send(f"Blacklist: {', '.join(blacklist)}")
 
     @econf.command()
     @checks.is_owner()
