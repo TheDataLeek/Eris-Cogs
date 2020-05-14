@@ -1,6 +1,5 @@
-import io
 import discord
-from redbot.core import commands, data_manager, Config, checks, bot
+from redbot.core import commands, Config, checks
 from typing import Union
 
 

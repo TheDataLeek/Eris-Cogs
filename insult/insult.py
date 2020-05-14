@@ -1,11 +1,12 @@
+# stdlib
 from time import sleep
-import discord
-from redbot.core import commands, data_manager
 from random import choice as randchoice
 import random
+
+# third party
+import discord
+from redbot.core import commands, data_manager
 import aiohttp
-import html
-import random
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -22,7 +23,11 @@ class Insult(BaseCog):
 
     @commands.command()
     async def insult(self, ctx, user: discord.Member = None):
-        """Insult the user"""
+        """
+        Insult the user.
+        Usage: [p]insult <Member>
+        Example: .insult @Eris#0001
+        """
         msg = " "
         if user is None:
             await ctx.send(ctx.message.author.mention + msg + randchoice(self.insults))

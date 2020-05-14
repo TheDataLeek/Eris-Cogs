@@ -1,21 +1,19 @@
-import discord
 from redbot.core import commands
 import random
 import re
 
 BaseCog = getattr(commands, "Cog", object)
 
-dice_format = "([0-9]+)d([0-9]+)(v[0-9])?"
-
 
 class Dice(BaseCog):
     def __init__(self, bot):
         self.bot = bot
+        self.dice_format = "([0-9]+)d([0-9]+)(v[0-9])?"
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command()
     async def dice(self, ctx, roll: str):
         """ Roll dice in the format '([0-9]+)d([0-9]+)(v[0-9])?' """
-        match = re.match(dice_format, roll)
+        match = re.match(self.dice_format, roll)
 
         if match is None or match.group(1) is None or match.group(2) is None:
             await ctx.send("Please use the correct format, ex: 4d6v1")

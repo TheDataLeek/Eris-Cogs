@@ -1,6 +1,6 @@
 {
   "author" : ["Eris"],
-  "description" : "Automatically posts an alot whenever a user calls them by name",
+  "description" : "Automatically posts an alot whenever a user says 'alot of things' instead of 'a lot of things'",
   "name" : "ALOT",
   "short": "Posts an alot"
 }
