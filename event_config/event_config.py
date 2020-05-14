@@ -34,7 +34,8 @@ class EventConfig(BaseCog):
     @econf.command()
     @checks.mod()
     async def show(self, ctx):
-        async with self.config.eris_events_enabled() as events_status, self.config.guild(
+        events_status = await self.config.eris_events_enabled()
+        async with self.config.guild(
             ctx.guild
         ).channel_whitelist() as whitelist, self.config.guild(
             ctx.guild
