@@ -15,7 +15,9 @@ class Dice(BaseCog):
         how_many = f"({num})"
         what_type = f"d({num})"
         optional_drop = f"(v{num})?"
-        self.dice_regex = re.compile(f"{how_many}{what_type}{optional_drop}", flags=re.IGNORECASE)
+        self.dice_regex = re.compile(
+            f"{how_many}{what_type}{optional_drop}", flags=re.IGNORECASE
+        )
 
     @commands.command()
     async def dice(self, ctx, roll: str):

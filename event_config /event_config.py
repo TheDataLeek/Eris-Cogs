@@ -18,11 +18,11 @@ class EventConfig(BaseCog):
         )
 
         default_global = {
-            "guild_list": [],
+            "eris_events": True,
         }
         default_guild = {
-            "channel_whitelist": ["general", "bot-chat"],
-            "channel_blacklist": ["announcements", "news"],
+            "channel_whitelist": ["general"],
+            "channel_blacklist": [],
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
@@ -32,17 +32,17 @@ class EventConfig(BaseCog):
         pass
 
     @econf.command()
-    @checks.is_owner()
+    @checks.mod()
     async def show(self, ctx):
-        async with self.config.guild_list() as guild_list, self.config.guild(
+        async with self.config.eris_events() as events_status, self.config.guild(
             ctx.guild
         ).channel_whitelist() as whitelist, self.config.guild(
             ctx.guild
         ).channel_blacklist() as blacklist:
-            if len(guild_list) == 0:
-                await ctx.send("No servers have been registered!")
+            if events_status:
+                await ctx.send("Events are currently ON")
             else:
-                await ctx.send("Servers: " + ", ".join(guild_list))
+                await ctx.send("Events are currently OFF")
 
             if len(whitelist) == 0:
                 await ctx.send("Whitelist empty!")
@@ -56,32 +56,17 @@ class EventConfig(BaseCog):
 
     @econf.command()
     @checks.is_owner()
-    async def add_server(self, ctx, *, server_name: str = ""):
-        if server_name == "" and ctx.guild is not None:
-            server_name = ctx.guild.name.lower()
-        elif server_name == "" and ctx.guild is None:
-            await ctx.send("Please provide a valid server name")
-            return
-
-        async with self.config.guild_list() as guild_list:
-            guild_list.append(server_name)
-            await ctx.send("Done")
+    async def toggle(self, ctx):
+        new_status = not (await self.config.eris_events())
+        await self.config.eris_events.set(new_status)
+        await ctx.send(f"Done, we are now {'ON' if new_status else 'OFF'}")
 
     @econf.command()
-    @checks.is_owner()
-    async def remove_server(self, ctx, *, server_name: str = ""):
-        if server_name == "" and ctx.guild is not None:
-            server_name = ctx.guild.name.lower()
-        elif server_name == "" and ctx.guild is None:
-            await ctx.send("Please provide a valid server name")
-            return
-
-        async with self.config.guild_list() as guild_list:
-            try:
-                guild_list.remove(server_name)
-                await ctx.send("Done")
-            except ValueError:
-                await ctx.send("Server was not in list!")
+    @checks.mod()
+    async def reset(self, ctx):
+        await self.config.guild(ctx.guild).channel_whitelist.set(["general"])
+        await self.config.guild(ctx.guild).channel_blacklist.set([])
+        await ctx.send("Done")
 
     @econf.command()
     @checks.mod()
@@ -93,7 +78,10 @@ class EventConfig(BaseCog):
     async def blacklist(self, ctx, channel: Union[str, discord.TextChannel] = None):
         await self.black_or_white_list(ctx, "blacklist", channel)
 
-    async def black_or_white_list(self, ctx, which, channel):
+    async def black_or_white_list(
+        self, ctx, which: str, channel: Union[str, discord.TextChannel]
+    ):
+        # todo -> check channel actually exists.....
         if channel is None:
             channel = ctx.channel.name.lower()
         elif not isinstance(channel, str):
@@ -105,20 +93,19 @@ class EventConfig(BaseCog):
         else:
             channel = channel.lower()
 
-        if which == "whitelist":
-            async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
+        async with self.config.guild(
+            ctx.guild
+        ).channel_whitelist() as whitelist, self.config.guild(
+            ctx.guild
+        ).channel_blacklist() as blacklist:
+            if which == "whitelist":
                 whitelist.append(channel)
-
-            async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
                 try:
                     blacklist.remove(channel)
                 except ValueError:
                     pass
-        else:
-            async with self.config.guild(ctx.guild).channel_blacklist() as blacklist:
+            else:
                 blacklist.append(channel)
-
-            async with self.config.guild(ctx.guild).channel_whitelist() as whitelist:
                 try:
                     whitelist.remove(channel)
                 except ValueError:
