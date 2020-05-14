@@ -1,11 +1,16 @@
 # Eris Cogs
 
-Welcome to my cogs, currently these are the only finished v3 cogs:
+Welcome to my cogs, currently these are the only finished[1] v3 cogs:
 
 * insult
 * dice
-* boo
+* nick_prefix
 
+---
+
+1. By "finished" I mean docstrings and all
+
+---
 
 ## Alot
 
@@ -18,10 +23,6 @@ Lets users rename any other user (except server owner), weave emoji, and clones 
 ## Battle
 
 An rpg-inspired battle system where users can fight and gain XP from talking
-
-## Boo
-
-Add fun prefixes to nicknames
 
 ## Dice
 
@@ -50,6 +51,10 @@ Spellchecker
 ## Insult
 
 Insults users
+
+## Nick Prefix
+
+Add fun prefixes to nicknames
 
 ## Notify
 

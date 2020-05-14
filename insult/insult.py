@@ -13,8 +13,6 @@ BaseCog = getattr(commands, "Cog", object)
 
 
 class Insult(BaseCog):
-    """Insult Cog"""
-
     def __init__(self, bot):
         self.bot = bot
         data_dir = data_manager.bundled_data_path(self)
