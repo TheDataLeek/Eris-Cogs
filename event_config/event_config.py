@@ -201,7 +201,7 @@ class EventConfig(BaseCog):
         """
         await self.config.guild(ctx.guild).last_message_interacted_with_id.set(str(message.id))
 
-    @contextlib.contextmanager
+    @contextlib.asynccontextmanager
     async def channel_lock(self, ctx: commands.context):
         while True:
             is_locked = await self.config.channel(ctx.channel).is_locked()
@@ -213,6 +213,6 @@ class EventConfig(BaseCog):
 
         try:
             await self.config.channel(ctx.channel).is_locked.set(True)
-            yield True
+            yield self.config.channel(ctx.channel).is_locked()
         finally:
             await self.config.channel(ctx.channel).is_locked.set(False)
