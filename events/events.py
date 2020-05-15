@@ -8,7 +8,7 @@ from functools import reduce
 import pathlib
 import csv
 
-from redbot.core import checks, Config, commands
+from redbot.core import commands, data_manager, Config, checks, bot
 
 __author__ = "Eris"
 
@@ -54,16 +54,6 @@ dragonart = """
 """
 
 
-# MM Edit: Loads puns.csv and arranges it appropriately
-# Potential issue: filepath may not be correct
-# Credit for most puns: https://onelinefun.com/puns/
-with open("./data/events/puns.csv", newline="") as csvfile:
-    # Puns.csv is arranged into two columns titled 'word' and 'response'
-    punreader = csv.reader(csvfile, delimiter="|")
-    # Make those columns two separate lists
-    triggers = {}
-    for row in punreader:
-        triggers[row[0]] = row[1]
 
 
 class Events(BaseCog):
@@ -74,6 +64,18 @@ class Events(BaseCog):
         self.event_config = self.bot.get_cog('EventConfig')
         if self.event_config is None:
             raise FileNotFoundError('Need to install event_config')
+
+        data_dir = data_manager.bundled_data_path(self)
+        # MM Edit: Loads puns.csv and arranges it appropriately
+        # Potential issue: filepath may not be correct
+        # Credit for most puns: https://onelinefun.com/puns/
+        with open(data_dir / 'puns.csv', newline="") as csvfile:
+            # Puns.csv is arranged into two columns titled 'word' and 'response'
+            punreader = csv.reader(csvfile, delimiter="|")
+            # Make those columns two separate lists
+            triggers = {}
+            for row in punreader:
+                triggers[row[0]] = row[1]
 
         self.bot.add_listener(self.message_events, "on_message")
 
