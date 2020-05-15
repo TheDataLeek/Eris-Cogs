@@ -80,7 +80,6 @@ class WhoIs(BaseCog):
         message: discord.Message = ctx.message
         file_to_import = None
         for attachment in message.attachments:
-            print(attachment.filename)
             if attachment.filename == 'whois.json':
                 file_to_import = attachment
                 break
@@ -99,6 +98,8 @@ class WhoIs(BaseCog):
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             for userid, name in new_whois_data.items():
                 whois_dict[userid] = name
+
+        await ctx.send("Done")
 
     @commands.command()
     @checks.is_owner()
