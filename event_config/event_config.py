@@ -1,7 +1,7 @@
 import contextlib
 import time
 import discord
-from redbot.core import commands, Config, checks, bot
+from redbot.core import commands, Config, checks, bot, utils
 from typing import Union
 
 
@@ -203,13 +203,12 @@ class EventConfig(BaseCog):
 
     @contextlib.asynccontextmanager
     async def channel_lock(self, whoami, ctx: commands.context):
-        for _ in range(5):
+        async for _ in utils.AsyncIter(range(5), delay=0.5):
             is_locked = await self.config.channel(ctx.channel).is_locked()
             if not is_locked:
                 break
 
             print(f"{whoami}: {ctx.channel.id} is locked!")
-            time.sleep(0.5)
 
         print(f"{whoami} entering context block")
         try:
