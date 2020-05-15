@@ -152,6 +152,7 @@ class EventConfig(BaseCog):
 
         await ctx.send("Done")
 
+    # todo -> Mutex (ughhhhhhhhhhhH)
     async def allowed(self, ctx, message: discord.Message):
         turned_on = await self.config.eris_events_enabled()
         if message.guild is None or not turned_on:
@@ -180,8 +181,6 @@ class EventConfig(BaseCog):
             return False
 
         last_message_interacted_with = await self.config.guild(ctx.guild).last_message_interacted_with_id()
-        print(last_message_interacted_with)
-        print(message.id)
         if last_message_interacted_with is not None and last_message_interacted_with == str(message.id):
             return False
 
