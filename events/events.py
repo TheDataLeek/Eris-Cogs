@@ -5,9 +5,6 @@ import re
 import discord
 import random
 from functools import reduce
-import string
-
-import sqlite3
 import pathlib
 import csv
 
@@ -17,8 +14,6 @@ __author__ = "Eris"
 
 BaseCog = getattr(commands, "Cog", object)
 
-
-WHOFILE = os.path.join(str(pathlib.Path.home()), "whois.db")
 
 DICKFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "dickwords.txt"))
 dickwords = list(set(DICKFILE.read_text().split("\n")))
@@ -73,56 +68,11 @@ with open("./data/events/puns.csv", newline="") as csvfile:
         triggers[row[0]] = row[1]
 
 
-def get_realname(userid: str):
-    con = sqlite3.connect(WHOFILE)
-    c = con.cursor()
-    c.execute("SELECT name " "FROM usernames " "WHERE userid=?", (userid,))
-    name = c.fetchall()
-    con.close()
-    if len(name) == 0:
-        return None
-    else:
-        return name[0][0]
-
-
-class Spoop(BaseCog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @commands.command()
-    @checks.mod()
-    async def spoop(self, ctx, user: discord.Member = None):
-        if user is None:
-            await ctx.message.author.send("Stop being such a fuckup")
-            await ctx.message.delete()
-            return
-
-        realname = get_realname(user.id)
-
-        new_message = random.choice(yandere)
-        if realname is None:
-            formatname = user.mention
-        else:
-            formatname = realname
-        new_message = " ".join(x.format(formatname) for x in new_message.split(" "))
-        await user.send(new_message)
-        await ctx.message.delete()
-
-
-async def spoop(message, realname):
-    if realname is None:
-        formatname = message.author.mention
-    else:
-        formatname = realname
-    new_message = random.choice(yandere)
-    new_message = " ".join(x.format(formatname) for x in new_message.split(" "))
-
-    await message.author.send(new_message)
-
 
 class Events(BaseCog):
     def __init__(self, bot):
         self.bot = bot
+        self.whois = self.bot.get_cog("WhoIs")
 
         async def message_events(message: discord.message):
             if message.guild is None or message.guild.name.lower() != "cortex":
@@ -164,9 +114,13 @@ class Events(BaseCog):
             if reduce(lambda acc, n: acc or (n == message_channel), blacklist, False):
                 return
 
-            realname = convert_realname(get_realname(message.author.id))
-
             ctx = await bot.get_context(message)
+
+            author: discord.Member = message.author
+            realname = author.mention
+            if self.whois is not None:
+                realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(author.id)))
+
 
             # mustaches
             if random.random() <= 0.01:
@@ -182,11 +136,6 @@ class Events(BaseCog):
                 await message.channel.send(
                     "https://media.discordapp.net/attachments/188030840377311232/694979897495388250/videotogif_2020.04.01_12.41.13.gif"
                 )
-                return
-
-            # IF DM's
-            if random.random() < 0.01:
-                await spoop(message, realname)
                 return
 
             if message.guild is None:
@@ -364,15 +313,3 @@ class Events(BaseCog):
                     await message.channel.send(triggers[list(trigger)[0]])
 
         self.bot.add_listener(message_events, "on_message")
-
-
-def convert_realname(realname: str):
-    if realname is None:
-        return realname
-
-    if len(realname) > 32:
-        realname = realname.split(" ")[0]
-        realname = "".join(c for c in realname if c.lower() in string.ascii_lowercase)
-        return realname
-    else:
-        return realname
