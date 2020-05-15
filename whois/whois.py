@@ -44,13 +44,18 @@ class WhoIs(BaseCog):
 
     @commands.command()
     async def theyare(self, ctx, user: discord.Member, *name: str):
+        print(user.id)
+        print(name)
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             whois_dict[user.id] = name
 
         await ctx.send("Done")
 
     @commands.command()
-    async def whois(self, ctx, user: discord.Member):
+    async def whois(self, ctx, user: discord.Member=None):
+        if user is None:
+            user = ctx.message.author
+        print(user.id)
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             realname = whois_dict.get(user.id, 'User not registered!')
 
