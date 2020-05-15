@@ -72,7 +72,7 @@ class WhoIs(BaseCog):
             for userid, name in whois_dict.items():
                 member: discord.Member = ctx.guild.get_member(int(userid))
                 if member is not None:
-                    await ctx.send(f"{member.nick} is {name}")
+                    await ctx.send(f"{member.display_name} is {name}")
 
     @commands.command()
     @checks.is_owner()
