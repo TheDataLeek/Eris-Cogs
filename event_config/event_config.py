@@ -188,8 +188,8 @@ class EventConfig(BaseCog):
             return False
 
         last_message_interacted_with = await self.config.guild(ctx.guild).last_message_interacted_with_id()
-        print(f"{last_message_interacted_with=}")
-        print(f"{message.id=}")
+        # print(f"{last_message_interacted_with=}")
+        # print(f"{message.id=}")
         if last_message_interacted_with is not None and last_message_interacted_with == str(message.id):
             return False
 
