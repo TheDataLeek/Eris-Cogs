@@ -39,11 +39,10 @@ class NickPrefix(BaseCog):
 
         try:
             await user.edit(nick=new_nick)
+            await ctx.send("Done")
         except Exception as e:
             print(e)
             await ctx.send(user.mention + " -> " + new_nick)
-
-        await ctx.send("Done")
 
     @commands.command()
     async def boo(self, ctx):
