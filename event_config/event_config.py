@@ -153,11 +153,16 @@ class EventConfig(BaseCog):
         await ctx.send("Done")
 
     async def allowed(self, ctx, message: discord.Message):
+        print(message.author)
+        print(message.author.display_name)
+        print(message.author.bot)
+
         turned_on = await self.config.eris_events_enabled()
         if message.guild is None or not turned_on:
             return False
 
         message_channel = message.channel.name.lower()
+        print(message_channel)
         whitelisted_channels = await self.config.guild(
             ctx.guild
         ).channel_whitelist()
@@ -167,15 +172,16 @@ class EventConfig(BaseCog):
         if (message_channel not in whitelisted_channels) or (
                 message_channel in blacklisted_channels
         ):
+            print(whitelisted_channels)
+            print(blacklisted_channels)
             return False
 
         prefixes = await self.bot.get_valid_prefixes(guild=ctx.guild)
+        print(prefixes)
+        print(message.content)
         if len(message.content) > 0 and message.content[0] in prefixes:
             return False
 
-        print(message.author)
-        print(message.author.display_name)
-        print(message.author.bot)
         if message.author.bot:
             return False
 
