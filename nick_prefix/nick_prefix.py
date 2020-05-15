@@ -43,6 +43,8 @@ class NickPrefix(BaseCog):
             print(e)
             await ctx.send(user.mention + " -> " + new_nick)
 
+        await ctx.send("Done")
+
     @commands.command()
     async def boo(self, ctx):
         """
