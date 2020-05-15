@@ -45,7 +45,7 @@ class WhoIs(BaseCog):
 
         await ctx.send(realname)
 
-    def get_realname(self, ctx, userid: str):
+    async def get_realname(self, ctx, userid: str):
         """
         Separate func here for others to use
         """
