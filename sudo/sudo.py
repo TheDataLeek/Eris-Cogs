@@ -26,7 +26,7 @@ class Sudo(BaseCog):
         if not allowed or not keyword_in_message:
             return
 
-        author: discord.Member = message.autho
+        author: discord.Member = message.author
         realname = author.mention
         if self.whois is not None:
             realname = self.whois.convert_realname(self.whois.get_realname(str(author.id)))
