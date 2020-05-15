@@ -1,35 +1,37 @@
-import re
 import discord
 from redbot.core import commands, data_manager, Config, checks, bot
 
 
 BaseCog = getattr(commands, "Cog", object)
 
-RETYPE = type(re.compile('a'))
 
-
-class NoFuckYou(BaseCog):
+class Sudo(BaseCog):
     def __init__(self, bot_instance: bot):
         self.bot = bot_instance
+
+        self.whois = self.bot.get_cog("WhoIs")
 
         self.event_config = self.bot.get_cog('EventConfig')
         if self.event_config is None:
             raise FileNotFoundError('Need to install event_config')
 
-        self.fuck_you_regex: RETYPE = re.compile("((f[uck]{1,3}) ([you]{1,3}))", flags=re.IGNORECASE)
+        self.bot.add_listener(self.no_sudo, "on_message")
 
-        self.bot.add_listener(self.no_fuck_you, "on_message")
-
-    async def no_fuck_you(self, message: discord.Message):
+    async def no_sudo(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
         allowed: bool = await self.event_config.allowed(ctx, message)
-        keyword_in_message: bool = bool(self.fuck_you_regex.search(message.clean_content))
+        keyword_in_message: bool = 'sudo' in message.clean_content
 
         if not allowed or not keyword_in_message:
             return
 
-        await ctx.send("No fuck you")
+        author: discord.Member = message.autho
+        realname = author.mention
+        if self.whois is not None:
+            realname = self.whois.convert_realname(self.whois.get_realname(str(author.id)))
+
+        await message.channel.send("{} is not in the sudoers file. This incident will be reported.".format(realname))
 
         self.event_config.log_last_message(ctx, message)
 

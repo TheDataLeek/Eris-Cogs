@@ -1,3 +1,5 @@
+import string
+import sqlite3
 import os
 import discord
 from redbot.core import commands
@@ -137,3 +139,25 @@ class WhoIs(BaseCog):
     async def emoji(self, ctx, *args: discord.Emoji):
         for emoji in args:
             await ctx.send(emoji.url)
+
+    def get_realname(self, userid: str):
+        con = sqlite3.connect(WHOFILE)
+        c = con.cursor()
+        c.execute("SELECT name " "FROM usernames " "WHERE userid=?", (userid,))
+        name = c.fetchall()
+        con.close()
+        if len(name) == 0:
+            return None
+        else:
+            return name[0][0]
+
+    def convert_realname(self, realname: str):
+        if realname is None:
+            return realname
+
+        if len(realname) > 32:
+            realname = realname.split(" ")[0]
+            realname = "".join(c for c in realname if c.lower() in string.ascii_lowercase)
+            return realname
+        else:
+            return realname
