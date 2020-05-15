@@ -34,6 +34,8 @@ class EventConfig(BaseCog):
         self.config.register_guild(**default_guild)
         self.config.register_channel(**default_channel)
 
+        await self.config.clear_all_channels()
+
     @commands.group()
     async def econf(self, ctx):
         pass
