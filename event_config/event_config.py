@@ -213,6 +213,6 @@ class EventConfig(BaseCog):
 
         try:
             await self.config.channel(ctx.channel).is_locked.set(True)
-            yield self.config.channel(ctx.channel).is_locked()
+            yield True
         finally:
             await self.config.channel(ctx.channel).is_locked.set(False)
