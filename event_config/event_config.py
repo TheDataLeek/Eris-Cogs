@@ -27,10 +27,12 @@ class EventConfig(BaseCog):
             "channel_blacklist": [],
             "last_message_interacted_with_id": None,
         }
+        default_channel = {
+            'is_locked': False
+        }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
-
-        self.channel_locks = {}
+        self.config.register_channel(**default_channel)
 
     @commands.group()
     async def econf(self, ctx):
@@ -200,15 +202,17 @@ class EventConfig(BaseCog):
         await self.config.guild(ctx.guild).last_message_interacted_with_id.set(str(message.id))
 
     @contextlib.contextmanager
-    def channel_lock(self, channel_id: Union[int, str]):
-        channel_id = str(channel_id)
+    async def channel_lock(self, ctx: commands.context):
+        while True:
+            is_locked = await self.config.channel(ctx.channel).is_locked()
+            if not is_locked:
+                break
 
-        while self.channel_locks.get(channel_id, False):
-            print(f"{channel_id} is locked!")
-            time.sleep(0.1)
+            print(f"{ctx.channel.id} is locked!")
+            time.sleep(0.5)
 
         try:
-            self.channel_locks[channel_id] = True
+            await self.config.channel(ctx.channel).is_locked.set(True)
             yield True
         finally:
-            self.channel_locks[channel_id] = False
+            await self.config.channel(ctx.channel).is_locked.set(False)
