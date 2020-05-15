@@ -173,6 +173,9 @@ class EventConfig(BaseCog):
         if len(message.content) > 0 and message.content[0] in prefixes:
             return False
 
+        print(message.author)
+        print(message.author.display_name)
+        print(message.author.bot)
         if message.author.bot:
             return False
 
