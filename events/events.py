@@ -73,9 +73,9 @@ class Events(BaseCog):
             # Puns.csv is arranged into two columns titled 'word' and 'response'
             punreader = csv.reader(csvfile, delimiter="|")
             # Make those columns two separate lists
-            triggers = {}
+            self.triggers = {}
             for row in punreader:
-                triggers[row[0]] = row[1]
+                self.triggers[row[0]] = row[1]
 
         self.bot.add_listener(self.message_events, "on_message")
 
@@ -151,7 +151,7 @@ class Events(BaseCog):
                 return
 
             # NEW (MM): check for punny words and respond
-            trigger = set(triggers.keys()).intersection(message.clean_content.split(' '))
+            trigger = set(self.triggers.keys()).intersection(message.clean_content.split(' '))
 
             if random.random() <= 0.25:
                 async with ctx.typing():
@@ -285,6 +285,6 @@ class Events(BaseCog):
             elif random.random() <= 0.1 and len(trigger) != 0:
                 async with ctx.typing():
                     sleep(1)
-                    await message.channel.send(triggers[list(trigger)[0]])
+                    await message.channel.send(self.triggers[list(trigger)[0]])
 
             await self.event_config.log_last_message(ctx, message)
