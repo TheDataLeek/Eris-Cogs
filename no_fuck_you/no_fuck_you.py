@@ -23,7 +23,7 @@ class NoFuckYou(BaseCog):
     async def no_fuck_you(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.channel_lock(ctx):
+        async with self.event_config.channel_lock('nofuckyou', ctx):
             allowed: bool = await self.event_config.allowed(ctx, message)
             keyword_in_message: bool = bool(self.fuck_you_regex.search(message.clean_content))
 

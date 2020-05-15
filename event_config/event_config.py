@@ -208,12 +208,12 @@ class EventConfig(BaseCog):
             if not is_locked:
                 break
 
-            print(f"{whoami}: {ctx.channel.id} is locked!")
+            # print(f"{whoami}: {ctx.channel.id} is locked!")
 
-        print(f"{whoami} entering context block")
+        # print(f"{whoami} entering context block")
         try:
             await self.config.channel(ctx.channel).is_locked.set(True)
             yield True
         finally:
-            print(f"{whoami} exiting context block")
+            # print(f"{whoami} exiting context block")
             await self.config.channel(ctx.channel).is_locked.set(False)
