@@ -141,22 +141,23 @@ class EventConfig(BaseCog):
         ).channel_whitelist() as whitelist, self.config.guild(
             ctx.guild
         ).channel_blacklist() as blacklist:
+            try:
+                whitelist.remove(channel)
+            except ValueError:
+                pass
+
+            try:
+                blacklist.remove(channel)
+            except ValueError:
+                pass
+
             if which == "whitelist":
                 whitelist.append(channel)
-                try:
-                    blacklist.remove(channel)
-                except ValueError:
-                    pass
             else:
                 blacklist.append(channel)
-                try:
-                    whitelist.remove(channel)
-                except ValueError:
-                    pass
 
         await ctx.send("Done")
 
-    # todo -> Mutex (ughhhhhhhhhhhH)
     async def allowed(self, ctx, message: discord.Message):
         turned_on = await self.config.eris_events_enabled()
         if message.guild is None or not turned_on:
@@ -204,6 +205,7 @@ class EventConfig(BaseCog):
 
         is_locked = self.channel_locks.get(channel_id, False)
         while is_locked:
+            print(f"{channel_id} is locked!")
             time.sleep(0.1)
 
         try:
