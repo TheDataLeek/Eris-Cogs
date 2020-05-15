@@ -1,5 +1,5 @@
 import discord
-from redbot.core import commands, data_manager, Config, checks, bot
+from redbot.core import commands, bot
 
 
 BaseCog = getattr(commands, "Cog", object)
