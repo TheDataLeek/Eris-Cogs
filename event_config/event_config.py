@@ -180,7 +180,7 @@ class EventConfig(BaseCog):
             return False
 
         last_message_interacted_with = await self.config.guild(ctx.guild).last_message_interacted_with_id()
-        if last_message_interacted_with is not None and last_message_interacted_with == message.id:
+        if last_message_interacted_with is not None and last_message_interacted_with == str(message.id):
             return False
 
         return True
@@ -189,4 +189,4 @@ class EventConfig(BaseCog):
         """ 
         prevents duplicate interactions by logging last message
         """
-        await self.config.guild(ctx.guild).last_message_interacted_with_id.set(message.id)
+        await self.config.guild(ctx.guild).last_message_interacted_with_id.set(str(message.id))
