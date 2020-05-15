@@ -134,5 +134,6 @@ class WhoIs(BaseCog):
         await ctx.send(user.avatar_url)
 
     @commands.command()
-    async def emoji(self, ctx, emoji: discord.Emoji):
-        await ctx.send(emoji.url)
+    async def emoji(self, ctx, *args: discord.Emoji):
+        for emoji in args:
+            await ctx.send(emoji.url)
