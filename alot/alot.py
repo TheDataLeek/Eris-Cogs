@@ -22,12 +22,13 @@ class Alot(BaseCog):
     async def alot_event_handler(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        allowed: bool = await self.event_config.allowed(ctx, message)
-        keyword_in_message: bool = "alot" in message.clean_content.lower()
-        if not allowed or not keyword_in_message:
-            return
+        async with self.event_config.channel_lock(ctx):
+            allowed: bool = await self.event_config.allowed(ctx, message)
+            keyword_in_message: bool = "alot" in message.clean_content.lower()
+            if not allowed or not keyword_in_message:
+                return
 
-        await ctx.send(file=discord.File(io.BytesIO(self.alot), filename="alot.png"))
+            await ctx.send(file=discord.File(io.BytesIO(self.alot), filename="alot.png"))
 
-        await self.event_config.log_last_message(ctx, message)
+            await self.event_config.log_last_message(ctx, message)
 

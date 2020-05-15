@@ -202,18 +202,13 @@ class EventConfig(BaseCog):
         await self.config.guild(ctx.guild).last_message_interacted_with_id.set(str(message.id))
 
     @contextlib.asynccontextmanager
-    async def channel_lock(self, whoami, ctx: commands.context):
+    async def channel_lock(self, ctx: commands.context, whoami=None):
         async for _ in utils.AsyncIter(range(5), delay=0.5):
             is_locked = await self.config.channel(ctx.channel).is_locked()
             if not is_locked:
                 break
-
-            # print(f"{whoami}: {ctx.channel.id} is locked!")
-
-        # print(f"{whoami} entering context block")
         try:
             await self.config.channel(ctx.channel).is_locked.set(True)
             yield True
         finally:
-            # print(f"{whoami} exiting context block")
             await self.config.channel(ctx.channel).is_locked.set(False)

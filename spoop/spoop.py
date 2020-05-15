@@ -22,22 +22,23 @@ class Spoop(BaseCog):
     async def randomly_spoop(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        allowed: bool = await self.event_config.allowed(ctx, message)
-        randomly_allowed: bool = random.random() <= 0.01
-        if not allowed or not randomly_allowed:
-            return
+        async with self.event_config.channel_lock(ctx):
+            allowed: bool = await self.event_config.allowed(ctx, message)
+            randomly_allowed: bool = random.random() <= 0.01
+            if not allowed or not randomly_allowed:
+                return
 
-        author: discord.Member = message.author
-        realname = author.mention
-        if self.whois is not None:
-            realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(author.id)))
+            author: discord.Member = message.author
+            realname = author.mention
+            if self.whois is not None:
+                realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(author.id)))
 
-        new_message = random.choice(self.yandere_quotes)
+            new_message = random.choice(self.yandere_quotes)
 
-        new_message = " ".join(x.format(realname) for x in new_message.split(" "))
-        await author.send(new_message)
+            new_message = " ".join(x.format(realname) for x in new_message.split(" "))
+            await author.send(new_message)
 
-        await self.event_config.log_last_message(ctx, message)
+            await self.event_config.log_last_message(ctx, message)
 
     @commands.command()
     @checks.mod()

@@ -24,20 +24,21 @@ class Sarcasm(BaseCog):
     async def add_sarcasm(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        allowed: bool = await self.event_config.allowed(ctx, message)
-        randomly_activated: bool = random.random() <= 0.02
-        if not allowed or not randomly_activated:
-            return
+        async with self.event_config.channel_lock(ctx):
+            allowed: bool = await self.event_config.allowed(ctx, message)
+            randomly_activated: bool = random.random() <= 0.02
+            if not allowed or not randomly_activated:
+                return
 
-        new_message = self.add_sarcasm_to_string(message.clean_content)
-        if new_message == message.clean_content:
-            return
+            new_message = self.add_sarcasm_to_string(message.clean_content)
+            if new_message == message.clean_content:
+                return
 
-        async with ctx.typing():
-            sleep(1)
-            await ctx.send(new_message)
-            if random.random() <= 0.1:
-                await ctx.send(file=discord.File(io.BytesIO(self.sarcastic_image), filename="sarcasm.png"))
+            async with ctx.typing():
+                sleep(1)
+                await ctx.send(new_message)
+                if random.random() <= 0.1:
+                    await ctx.send(file=discord.File(io.BytesIO(self.sarcastic_image), filename="sarcasm.png"))
 
     def add_sarcasm_to_string(self, message: str):
         return "".join(c if random.random() <= 0.5 else c.upper() for c in message)
