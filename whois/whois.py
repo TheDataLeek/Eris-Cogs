@@ -47,7 +47,7 @@ class WhoIs(BaseCog):
         print(user.id)
         print(name)
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
-            whois_dict[user.id] = name
+            whois_dict[user.id] = ' '.join(name)
 
         await ctx.send("Done")
 
@@ -57,6 +57,8 @@ class WhoIs(BaseCog):
             user = ctx.message.author
         print(user.id)
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            print(user.id in whois_dict)
+            print(whois_dict)
             realname = whois_dict.get(user.id, 'User not registered!')
 
         await ctx.send(realname)
