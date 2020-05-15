@@ -24,7 +24,7 @@ class Sarcasm(BaseCog):
     async def add_sarcasm(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.channel_lock(ctx):
+        async with self.event_config.event_lock:
             allowed: bool = await self.event_config.allowed(ctx, message)
             randomly_activated: bool = random.random() <= 0.02
             if not allowed or not randomly_activated:

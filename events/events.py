@@ -82,7 +82,7 @@ class Events(BaseCog):
     async def message_events(self, message: discord.message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.channel_lock(ctx):
+        async with self.event_config.event_lock:
             allowed: bool = await self.event_config.allowed(ctx, message)
 
             if not allowed:

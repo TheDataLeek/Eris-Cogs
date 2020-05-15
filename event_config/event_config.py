@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import time
 import discord
@@ -27,12 +28,10 @@ class EventConfig(BaseCog):
             "channel_blacklist": [],
             "last_message_interacted_with_id": None,
         }
-        default_channel = {
-            'is_locked': False
-        }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
-        self.config.register_channel(**default_channel)
+
+        self.event_lock = asyncio.Lock()
 
     @commands.group()
     async def econf(self, ctx):
@@ -200,15 +199,3 @@ class EventConfig(BaseCog):
         prevents duplicate interactions by logging last message
         """
         await self.config.guild(ctx.guild).last_message_interacted_with_id.set(str(message.id))
-
-    @contextlib.asynccontextmanager
-    async def channel_lock(self, ctx: commands.context, whoami=None):
-        async for _ in utils.AsyncIter(range(5), delay=0.5):
-            is_locked = await self.config.channel(ctx.channel).is_locked()
-            if not is_locked:
-                break
-        try:
-            await self.config.channel(ctx.channel).is_locked.set(True)
-            yield True
-        finally:
-            await self.config.channel(ctx.channel).is_locked.set(False)

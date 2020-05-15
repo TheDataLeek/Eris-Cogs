@@ -22,7 +22,7 @@ class Alot(BaseCog):
     async def alot_event_handler(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.channel_lock(ctx):
+        async with self.event_config.event_lock:
             allowed: bool = await self.event_config.allowed(ctx, message)
             keyword_in_message: bool = "alot" in message.clean_content.lower()
             if not allowed or not keyword_in_message:

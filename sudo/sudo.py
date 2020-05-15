@@ -20,7 +20,7 @@ class Sudo(BaseCog):
     async def no_sudo(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.channel_lock(ctx):
+        async with self.event_config.event_lock:
             allowed: bool = await self.event_config.allowed(ctx, message)
             keyword_in_message: bool = 'sudo' in message.clean_content
 
