@@ -22,9 +22,7 @@ class Sudo(BaseCog):
 
         with self.event_config.channel_lock(ctx.channel.id):
             allowed: bool = await self.event_config.allowed(ctx, message)
-            print(allowed)
             keyword_in_message: bool = 'sudo' in message.clean_content
-            print(keyword_in_message)
 
             if not allowed or not keyword_in_message:
                 return

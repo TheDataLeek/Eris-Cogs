@@ -203,8 +203,7 @@ class EventConfig(BaseCog):
     def channel_lock(self, channel_id: Union[int, str]):
         channel_id = str(channel_id)
 
-        is_locked = self.channel_locks.get(channel_id, False)
-        while is_locked:
+        while self.channel_locks.get(channel_id, False):
             print(f"{channel_id} is locked!")
             time.sleep(0.1)
 
