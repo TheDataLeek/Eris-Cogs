@@ -1,11 +1,12 @@
 import string
 import sqlite3
 import os
+import json
 import discord
 from redbot.core import commands, data_manager, Config, checks, bot
-import sqlite3 as sq
 import io
 import pathlib
+import sqlite3
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -16,7 +17,6 @@ class WhoIs(BaseCog):
         self.bot: bot = bot_instance
 
         data_dir = data_manager.bundled_data_path(self)
-        self.whois_file = data_dir / "whois.db"
 
         self.config = Config.get_conf(
             self,
@@ -31,23 +31,9 @@ class WhoIs(BaseCog):
         self.config.register_guild(**default_guild)
 
     @commands.command()
-    @checks.is_owner()
-    async def export_whois_db(self, ctx):
-        con = sq.connect(str(self.whois_file))
-        with con:
-            con.execute(
-                "CREATE TABLE IF NOT EXISTS usernames("
-                "userid INT PRIMARY KEY,"
-                "name TEXT"
-                ")"
-            )
-
-    @commands.command()
     async def theyare(self, ctx, user: discord.Member, *name: str):
-        print(user.id)
-        print(name)
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
-            whois_dict[user.id] = ' '.join(name)
+            whois_dict[str(user.id)] = ' '.join(name)
 
         await ctx.send("Done")
 
@@ -55,13 +41,93 @@ class WhoIs(BaseCog):
     async def whois(self, ctx, user: discord.Member=None):
         if user is None:
             user = ctx.message.author
-        print(user.id)
-        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
-            print(user.id in whois_dict)
-            print(whois_dict)
-            realname = whois_dict.get(user.id, 'User not registered!')
+        realname = self.get_realname(ctx, str(user.id)) or 'User not registered!'
 
         await ctx.send(realname)
+
+    def get_realname(self, ctx, userid: str):
+        """
+        Separate func here for others to use
+        """
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            realname = whois_dict.get(userid, None)
+        return realname
+
+    @commands.command()
+    async def iswho(self, ctx, realname: str):
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            matches = []
+            for userid, name in whois_dict:
+                if realname in name.lower():
+                    matches.append(ctx.guild.get_member(int(userid)).mention)
+
+        if len(matches) == 0:
+            await ctx.send("No users found!")
+        else:
+            await ctx.send(f"The following users match: {', '.join(matches)}")
+
+    @commands.command()
+    async def iseveryone(self, ctx):
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            for userid, name in whois_dict:
+                member: discord.Member = ctx.guild.get_member(int(userid))
+                await ctx.send(f"{member.nick} is {name}")
+
+    @commands.command()
+    @checks.is_owner()
+    async def import_whois(self, ctx):
+        message: discord.Message = ctx.message
+        file_to_import = None
+        for attachment in message.attachments:
+            if attachment.filename == 'whois.json':
+                file_to_import = attachment
+                break
+        if file_to_import is None:
+            await ctx.send("Please provide a file attached to this command.")
+            return
+
+        try:
+            new_whois_data = await file_to_import.read()
+            new_whois_data = new_whois_data.decode('utf-8')
+            new_whois_data = json.loads(new_whois_data)
+        except:
+            await ctx.send("Unable to parse input json!")
+            return
+
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            for userid, name in new_whois_data:
+                whois_dict[userid] = name
+
+    @commands.command()
+    @checks.is_owner()
+    async def export_whois(self, ctx):
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            output = json.dumps(whois_dict)
+            await ctx.send(file=discord.File(io.StringIO(output), filename="whois.json"))
+
+    def convert_realname(self, realname: str):
+        if realname is None:
+            return realname
+
+        if len(realname) > 32:
+            realname = realname.split(" ")[0]
+            realname = "".join(c for c in realname if c.lower() in string.ascii_lowercase)
+            return realname
+        else:
+            return realname
+
+    @commands.command(hidden=True)
+    @checks.is_owner()
+    async def import_from_legacy_db(self, ctx):
+        WHOFILE = os.path.join(str(pathlib.Path.home()), "whois.db")
+        with sqlite3.connect(WHOFILE) as con:
+            cursor = con.cursor()
+            cursor.execute("SELECT userid, name " "FROM usernames")
+            results = cursor.fetchall()
+
+            async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+                for userid, name in results:
+                    whois_dict[userid] = name
 
     # @commands.command()
     # async def iseveryone(self, ctx):
@@ -167,25 +233,3 @@ class WhoIs(BaseCog):
     async def emoji(self, ctx, *args: discord.Emoji):
         for emoji in args:
             await ctx.send(emoji.url)
-
-    def get_realname(self, userid: str):
-        con = sqlite3.connect(WHOFILE)
-        c = con.cursor()
-        c.execute("SELECT name " "FROM usernames " "WHERE userid=?", (userid,))
-        name = c.fetchall()
-        con.close()
-        if len(name) == 0:
-            return None
-        else:
-            return name[0][0]
-
-    def convert_realname(self, realname: str):
-        if realname is None:
-            return realname
-
-        if len(realname) > 32:
-            realname = realname.split(" ")[0]
-            realname = "".join(c for c in realname if c.lower() in string.ascii_lowercase)
-            return realname
-        else:
-            return realname
