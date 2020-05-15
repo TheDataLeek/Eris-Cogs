@@ -80,6 +80,7 @@ class WhoIs(BaseCog):
         message: discord.Message = ctx.message
         file_to_import = None
         for attachment in message.attachments:
+            print(attachment.filename)
             if attachment.filename == 'whois.json':
                 file_to_import = attachment
                 break
