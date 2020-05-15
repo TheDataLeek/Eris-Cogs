@@ -29,7 +29,7 @@ class Sudo(BaseCog):
         author: discord.Member = message.author
         realname = author.mention
         if self.whois is not None:
-            realname = self.whois.convert_realname(self.whois.get_realname(str(author.id)))
+            realname = self.whois.convert_realname(self.whois.get_realname(ctx, str(author.id)))
 
         await message.channel.send("{} is not in the sudoers file. This incident will be reported.".format(realname))
 
