@@ -173,7 +173,7 @@ class EventConfig(BaseCog):
         if len(message.content) > 0 and message.content[0] in prefixes:
             return False
 
-        if self.bot.user.id == message.author.id:
+        if message.author.bot:
             return False
 
         if "http" in message.content:
