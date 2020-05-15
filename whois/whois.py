@@ -41,9 +41,9 @@ class WhoIs(BaseCog):
     async def whois(self, ctx, user: discord.Member=None):
         if user is None:
             user = ctx.message.author
-        realname = self.get_realname(ctx, str(user.id)) or 'User not registered!'
+        realname = await self.get_realname(ctx, str(user.id))
 
-        await ctx.send(realname)
+        await ctx.send(realname or 'User not registered!')
 
     async def get_realname(self, ctx, userid: str):
         """
@@ -57,7 +57,7 @@ class WhoIs(BaseCog):
     async def iswho(self, ctx, realname: str):
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             matches = []
-            for userid, name in whois_dict:
+            for userid, name in whois_dict.items():
                 if realname in name.lower():
                     matches.append(ctx.guild.get_member(int(userid)).mention)
 
@@ -69,7 +69,7 @@ class WhoIs(BaseCog):
     @commands.command()
     async def iseveryone(self, ctx):
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
-            for userid, name in whois_dict:
+            for userid, name in whois_dict.items():
                 member: discord.Member = ctx.guild.get_member(int(userid))
                 await ctx.send(f"{member.nick} is {name}")
 
@@ -95,7 +95,7 @@ class WhoIs(BaseCog):
             return
 
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
-            for userid, name in new_whois_data:
+            for userid, name in new_whois_data.items():
                 whois_dict[userid] = name
 
     @commands.command()
@@ -128,100 +128,6 @@ class WhoIs(BaseCog):
             async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
                 for userid, name in results:
                     whois_dict[userid] = name
-
-    # @commands.command()
-    # async def iseveryone(self, ctx):
-    #     con = sq.connect(WHOFILE)
-    #     cursor = con.cursor()
-    #     cursor.execute("SELECT userid, name " "FROM usernames")
-    #     results = cursor.fetchall()
-    #     results = [
-    #         (ctx.guild.get_member(int(userid)), name) for userid, name in results
-    #     ]
-    #     for (mention, name) in results:
-    #         await ctx.send("{} is {}".format(mention, name))
-    #     con.close()
-    #
-    # @commands.command()
-    # async def iswho(self, ctx):
-    #     name = " ".join(ctx.message.clean_content.split(" ")[1:]).lower()
-    #     if name == "":
-    #         await ctx.send("Please specify a person")
-    #         return
-    #
-    #     con = sq.connect(WHOFILE)
-    #
-    #     cursor = con.cursor()
-    #
-    #     cursor.execute(
-    #         "SELECT userid " "FROM usernames " "WHERE name LIKE '%{}%'".format(name)
-    #     )
-    #     results = cursor.fetchall()
-    #     if len(results) == 0:
-    #         await ctx.send("No users found! Please try again.")
-    #         return
-    #
-    #     members = []
-    #     for (userid,) in results:
-    #         member = ctx.guild.get_member(int(userid))
-    #         members.append(member.mention)
-    #     await ctx.send("The following users match: {}".format(", ".join(members)))
-    #     con.close()
-    #
-    # @commands.command(pass_context=True, no_pm=True)
-    # async def whois_old(self, ctx, user: discord.Member = None):
-    #     """
-    #     Ask who a person is
-    #     """
-    #     if user is None:
-    #         await ctx.send("Please provide a user to specify")
-    #         return
-    #
-    #     con = sq.connect(WHOFILE)
-    #
-    #     cursor = con.cursor()
-    #     cursor.execute("SELECT name FROM usernames WHERE userid=?", (user.id,))
-    #     names = cursor.fetchall()
-    #
-    #     cursor.execute("SELECT nick FROM usernicks WHERE userid=?", (user.id,))
-    #     nicks = cursor.fetchall()
-    #
-    #     message = ("User: {}\n" "Realname: {}\n").format(
-    #         user.name,
-    #         "No Name Known!" if len(names) == 0 else ", ".join(x[0] for x in names),
-    #     )
-    #
-    #     con.close()
-    #
-    #     await ctx.send(message)
-    #
-    # @commands.command(pass_context=True)
-    # async def theyare_old(self, ctx, user: discord.Member = None, *, realname: str = ""):
-    #     if user is None or realname == "":
-    #         await ctx.send("Please specify a <user> and a <realname>")
-    #         return
-    #
-    #     con = sq.connect(WHOFILE)
-    #     cursor = con.cursor()
-    #
-    #     cursor.execute("SELECT * FROM usernames WHERE userid=?", (user.id,))
-    #     name_entry = cursor.fetchall()
-    #
-    #     if len(name_entry) != 0:
-    #         userid = name_entry[0][0]
-    #         cursor.execute(
-    #             "UPDATE usernames " "SET name=? " "WHERE userid=?", (realname, userid)
-    #         )
-    #         con.commit()
-    #     else:
-    #         cursor.execute(
-    #             "INSERT INTO usernames(" "userid, name)" "VALUES(?,?)",
-    #             (user.id, realname),
-    #         )
-    #         con.commit()
-    #     con.close()
-    #
-    #     await ctx.send("User Registered")
 
     @commands.command()
     async def avatar(self, ctx, user: discord.Member = None):
