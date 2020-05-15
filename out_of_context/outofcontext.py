@@ -1,3 +1,4 @@
+import os
 from time import sleep
 import random
 import re
@@ -13,9 +14,10 @@ BaseCog = getattr(commands, "Cog", object)
 # db format
 # | message_id | contents |
 # todo -> export
+OOCFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "ooc.txt"))
 quotes = [
     _
-    for _ in pathlib.Path("./data/events/ooc/ooc.txt").read_text().split("\n")
+    for _ in pathlib.Path(OOCFILE).read_text().split("\n")
     if len(_) != 0
 ]
 
