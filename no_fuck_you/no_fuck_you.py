@@ -31,5 +31,5 @@ class NoFuckYou(BaseCog):
 
         await ctx.send("No fuck you")
 
-        self.event_config.log_last_message(ctx, message)
+        await self.event_config.log_last_message(ctx, message)
 

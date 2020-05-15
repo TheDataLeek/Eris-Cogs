@@ -33,5 +33,5 @@ class Sudo(BaseCog):
 
         await message.channel.send("{} is not in the sudoers file. This incident will be reported.".format(realname))
 
-        self.event_config.log_last_message(ctx, message)
+        await self.event_config.log_last_message(ctx, message)
 
