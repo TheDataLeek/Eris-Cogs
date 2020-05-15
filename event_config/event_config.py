@@ -34,8 +34,6 @@ class EventConfig(BaseCog):
         self.config.register_guild(**default_guild)
         self.config.register_channel(**default_channel)
 
-        await self.config.clear_all_channels()
-
     @commands.group()
     async def econf(self, ctx):
         pass
@@ -205,7 +203,7 @@ class EventConfig(BaseCog):
 
     @contextlib.asynccontextmanager
     async def channel_lock(self, ctx: commands.context):
-        while True:
+        for _ in range(20):
             is_locked = await self.config.channel(ctx.channel).is_locked()
             if not is_locked:
                 break
