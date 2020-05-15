@@ -23,13 +23,14 @@ class NoFuckYou(BaseCog):
     async def no_fuck_you(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        allowed: bool = await self.event_config.allowed(ctx, message)
-        keyword_in_message: bool = bool(self.fuck_you_regex.search(message.clean_content))
+        with self.event_config.channel_lock(ctx.channel.id):
+            allowed: bool = await self.event_config.allowed(ctx, message)
+            keyword_in_message: bool = bool(self.fuck_you_regex.search(message.clean_content))
 
-        if not allowed or not keyword_in_message:
-            return
+            if not allowed or not keyword_in_message:
+                return
 
-        await ctx.send("No fuck you")
+            await ctx.send("No fuck you")
 
-        await self.event_config.log_last_message(ctx, message)
+            await self.event_config.log_last_message(ctx, message)
 

@@ -1,3 +1,5 @@
+import contextlib
+import time
 import discord
 from redbot.core import commands, Config, checks, bot
 from typing import Union
@@ -27,6 +29,8 @@ class EventConfig(BaseCog):
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
+
+        self.channel_locks = {}
 
     @commands.group()
     async def econf(self, ctx):
@@ -187,7 +191,21 @@ class EventConfig(BaseCog):
         return True
 
     async def log_last_message(self, ctx, message: discord.Message):
-        """ 
+        """
         prevents duplicate interactions by logging last message
         """
         await self.config.guild(ctx.guild).last_message_interacted_with_id.set(str(message.id))
+
+    @contextlib.contextmanager
+    def channel_lock(self, channel_id: Union[int, str]):
+        channel_id = str(channel_id)
+
+        is_locked = self.channel_locks.get(channel_id, False)
+        while is_locked:
+            time.sleep(0.1)
+
+        try:
+            self.channel_locks[channel_id] = True
+            yield True
+        finally:
+            self.channel_locks[channel_id] = False

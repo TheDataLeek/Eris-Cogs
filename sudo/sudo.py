@@ -20,18 +20,19 @@ class Sudo(BaseCog):
     async def no_sudo(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        allowed: bool = await self.event_config.allowed(ctx, message)
-        keyword_in_message: bool = 'sudo' in message.clean_content
+        with self.event_config.channel_lock(ctx.channel.id):
+            allowed: bool = await self.event_config.allowed(ctx, message)
+            keyword_in_message: bool = 'sudo' in message.clean_content
 
-        if not allowed or not keyword_in_message:
-            return
+            if not allowed or not keyword_in_message:
+                return
 
-        author: discord.Member = message.author
-        realname = author.mention
-        if self.whois is not None:
-            realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(author.id)))
+            author: discord.Member = message.author
+            realname = author.mention
+            if self.whois is not None:
+                realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(author.id)))
 
-        await message.channel.send("{} is not in the sudoers file. This incident will be reported.".format(realname))
+            await message.channel.send("{} is not in the sudoers file. This incident will be reported.".format(realname))
 
-        await self.event_config.log_last_message(ctx, message)
+            await self.event_config.log_last_message(ctx, message)
 
