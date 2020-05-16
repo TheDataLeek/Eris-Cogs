@@ -5,7 +5,7 @@ from redbot.core import Config, bot
 class ErisEventMixin(object):
     def __init__(self):
         self.bot: bot = None
-        self.config = Config.get_conf(identifier=22222939019, cog_name="event_config")
+        self.config = Config.get_conf(None, identifier=22222939019, cog_name="event_config")
         default_global = {
             "eris_events_enabled": True,
         }
