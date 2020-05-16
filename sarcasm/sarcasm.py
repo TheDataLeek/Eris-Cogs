@@ -4,20 +4,15 @@ import discord
 from redbot.core import commands, data_manager, Config, checks, bot
 import random
 
+from .eris_event_lib import ErisEventMixin
 
 BaseCog = getattr(commands, "Cog", object)
 
 
-class Sarcasm(BaseCog):
+class Sarcasm(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance):
+        super().__init__()
         self.bot: bot = bot_instance
-
-        self.event_config = self.bot.get_cog('EventConfig')
-        if self.event_config is None:
-            raise FileNotFoundError('Need to install event_config')
-
-        self.lock_config = Config.get_conf(None, cog_name="ErisCogLocks", identifier=12340099888700)
-        self.lock_config.register_channel(locked=None)  # This is never going to be set
 
         data_dir = data_manager.bundled_data_path(self)
         self.sarcastic_image = (data_dir / "img.png").read_bytes()
@@ -28,7 +23,7 @@ class Sarcasm(BaseCog):
         ctx = await self.bot.get_context(message)
 
         async with self.lock_config.channel(message.channel).get_lock():
-            allowed: bool = await self.event_config.allowed(ctx, message)
+            allowed: bool = await self.allowed(ctx, message)
             randomly_activated: bool = random.random() <= 0.02
             if not allowed or not randomly_activated:
                 return
@@ -42,6 +37,8 @@ class Sarcasm(BaseCog):
                 await ctx.send(new_message)
                 if random.random() <= 0.1:
                     await ctx.send(file=discord.File(io.BytesIO(self.sarcastic_image), filename="sarcasm.png"))
+
+            self.log_last_message(ctx, message)
 
     def add_sarcasm_to_string(self, message: str):
         return "".join(c if random.random() <= 0.5 else c.upper() for c in message)
