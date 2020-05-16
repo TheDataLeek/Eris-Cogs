@@ -1,5 +1,5 @@
 {
-  "author" : "Eris",
+  "author" : ["Eris"],
   "description" : "Usage: [p]big_name <User> <new name>",
   "name" : "Change someone's name - who cares about permissions"
 }

@@ -1,3 +1,4 @@
+import os
 from time import sleep
 import random
 import re
@@ -9,12 +10,23 @@ from functools import reduce
 BaseCog = getattr(commands, "Cog", object)
 
 
-quotes = [_ for _ in pathlib.Path("./data/events/ooc/ooc.txt").read_text().split('\n') if len(_) != 0]
+# todo -> archive specified channel in db
+# db format
+# | message_id | contents |
+# todo -> export
+OOCFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "ooc.txt"))
+quotes = [
+    _
+    for _ in pathlib.Path(OOCFILE).read_text().split("\n")
+    if len(_) != 0
+]
 
 
 class OutOfContext(BaseCog):
     def __init__(self, bot):
         self.bot = bot
+
+        self.message_log = {}
 
         self.quote_hash = dict()
         for quote in quotes:
@@ -26,6 +38,9 @@ class OutOfContext(BaseCog):
                 self.quote_hash[word].append(quote)
 
         async def out_of_context_handler(message):
+            # Prevent acting on DM's
+            if message.guild is None or message.guild.name.lower() != "cortex":
+                return
             clean_message = message.clean_content.lower()
             # MM: Added so list instead of string
             message_split = clean_message.split(" ")
@@ -52,9 +67,9 @@ class OutOfContext(BaseCog):
                 return
 
             # DO NOT RESPOND TO SELF MESSAGES
-            if "195663495189102593" == str(message.author.id) or message.content.startswith(
-                    "."
-            ):
+            if "195663495189102593" == str(
+                message.author.id
+            ) or message.content.startswith("."):
                 return
 
             if (
@@ -71,24 +86,51 @@ class OutOfContext(BaseCog):
             ):
                 return
 
+            # channel-specific logs for last 5 messages
+            chan_id = message.channel.id
+            if chan_id not in self.message_log:
+                self.message_log[chan_id] = [clean_message]
+            else:
+                self.message_log[chan_id].append(clean_message)
+                if len(self.message_log[chan_id]) > 5:
+                    self.message_log[chan_id].pop(0)
+
             ctx = await bot.get_context(message)
 
-            split_message = clean_message.split(' ')
+            if random.random() <= 0.99:  # 1% chance of activation
+                return
 
-            random.shuffle(split_message)
-
-            if random.random() <= 0.98:   # 2% chance of activation
-            # if random.random() <= 0.1:  # 2% chance of activation
-                    return
-
-            reply = random.choice(quotes)
-            for word in split_message:
-                if word in self.quote_hash:
-                    reply = random.choice(self.quote_hash[word])
-                    break
+            reply = self.get_quote(chan_id)
 
             async with ctx.typing():
                 sleep(1)
                 await message.channel.send(reply)
 
         self.bot.add_listener(out_of_context_handler, "on_message")
+
+    @commands.command()
+    async def penny(self, ctx):
+        reply = self.get_quote(ctx.channel.id, most_recent=False)
+        async with ctx.typing():
+            sleep(1)
+            await ctx.send(reply)
+
+    def get_quote(self, channel_id, most_recent=True):
+        reply = random.choice(quotes)
+        if channel_id not in self.message_log:
+            return reply  # just random if no logs
+
+        split_msgs = [s.split(" ") for s in self.message_log[channel_id]]
+        if most_recent:
+            split_message = split_msgs[-1]  # just grab the last
+        else:
+            split_message = reduce(lambda a, b: a + b, split_msgs)
+        random.shuffle(split_message)
+        split_message = [s for s in split_message if len(s) > 3]
+
+        for word in split_message:
+            if word in self.quote_hash:
+                reply = random.choice(self.quote_hash[word])
+                break
+
+        return reply

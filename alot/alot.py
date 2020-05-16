@@ -1,59 +1,34 @@
-import pathlib
+import io
 import discord
-from redbot.core import commands
-from functools import reduce
+from redbot.core import commands, data_manager, Config, checks, bot
+
+from .eris_event_lib import ErisEventMixin
+
 
 BaseCog = getattr(commands, "Cog", object)
 
 
-class Alot(BaseCog):
-    def __init__(self, bot):
-        self.bot = bot
+class Alot(BaseCog, ErisEventMixin):
+    def __init__(self, bot_instance: bot):
+        super().__init__()
 
-        async def alot_of_patience(message):
-            clean_message = message.clean_content.lower()
-            # MM: Added so list instead of string
-            message_split = clean_message.split(" ")
+        self.bot = bot_instance
 
-            # BLACKLIST CHANNELS
-            blacklist = [
-                "news",
-                "rpg",
-                "events",
-                "recommends",
-                "politisophy",
-                "eyebleach",
-                "weeb-lyfe",
-                "out-of-context",
-                "jokes",
-                "anime-club",
-            ]
+        data_dir = data_manager.bundled_data_path(self)
+        self.alot = (data_dir / "ALOT.png").read_bytes()
 
-            message_channel = message.channel.name.lower()
+        self.bot.add_listener(self.alot_event_handler, "on_message")
 
-            if "alot" not in clean_message:
+    async def alot_event_handler(self, message: discord.Message):
+        ctx = await self.bot.get_context(message)
+
+        async with self.lock_config.channel(message.channel).get_lock():
+            allowed: bool = await self.allowed(ctx, message)
+            keyword_in_message: bool = "alot" in message.clean_content.lower()
+            if not allowed or not keyword_in_message:
                 return
 
-            if (
-                # DO NOT RESPOND TO SELF MESSAGES
-                (bot.user.id == message.author.id or message.content.startswith("."))
-                or (message.channel.name is None)
-                or (
-                    reduce(
-                        lambda acc, n: acc or (n == message_channel), blacklist, False
-                    )
-                )
-                or ("thank" in clean_message)
-                or ("http" in clean_message)
-            ):
-                return
+            await ctx.send(file=discord.File(io.BytesIO(self.alot), filename="alot.png"))
 
-            ctx = await bot.get_context(message)
+            await self.log_last_message(ctx, message)
 
-            print(pathlib.Path().resolve())
-
-            with open("./data/alot/alot.png", "rb") as fobj:
-                await ctx.send(file=discord.File(fobj))
-            return
-
-        self.bot.add_listener(alot_of_patience, "on_message")

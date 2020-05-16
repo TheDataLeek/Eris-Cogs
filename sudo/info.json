@@ -1,0 +1,6 @@
+{
+  "author" : ["Eris"],
+  "description" : "Errors if someone tries to use sudo",
+  "name" : "sudo",
+  "short": "Warns about sudo attempts"
+}

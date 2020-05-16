@@ -1,24 +1,35 @@
-import discord
-from redbot.core import commands
+# stdlib
 import random
 import re
 
-BaseCog = getattr(commands, "Cog", object)
+# third party
+from redbot.core import commands, bot
 
-dice_format = "([0-9]+)d([0-9]+)(v[0-9])?"
+BaseCog = getattr(commands, "Cog", object)
 
 
 class Dice(BaseCog):
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot_instance: bot):
+        self.bot = bot_instance
+        num = "[0-9]+"  # matches 1 12 1238 will not match 'asdf'
+        how_many = f"({num})"
+        what_type = f"d({num})"
+        optional_drop = f"(v{num})?"
+        self.dice_regex = re.compile(
+            f"{how_many}{what_type}{optional_drop}", flags=re.IGNORECASE
+        )
 
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command()
     async def dice(self, ctx, roll: str):
-        """ Roll dice in the format '([0-9]+)d([0-9]+)(v[0-9])?' """
-        match = re.match(dice_format, roll)
+        """
+        Rolls arbitrary dice!
+        Usage: [p]dice '([0-9]+)d([0-9]+)(v[0-9])?'
+        Example: [p]dice 4d6v1
+        """
+        match = self.dice_regex.match(roll)
 
         if match is None or match.group(1) is None or match.group(2) is None:
-            await ctx.send("Please use the correct format, ex: 4d6v1")
+            await self.bot.send_help_for(ctx, self.dice)
             return
 
         numdice = int(match.group(1))
@@ -30,4 +41,6 @@ class Dice(BaseCog):
         if match.group(3) is not None:
             rolls = rolls[: -int(match.group(3)[1:])]
 
-        await ctx.send("Rolling {}... {} = {}".format(roll, sum(rolls), str(rolls)))
+        formatted_rolls = " + ".join(str(r) for r in rolls)
+
+        await ctx.send(f"Rolling {roll}... {sum(rolls)} ({formatted_rolls})")

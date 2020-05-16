@@ -1,5 +1,5 @@
 {
     "name" : "FishEvents",
-    "author" : "Eris",
+    "author" : ["Eris"],
     "description" : "A bunch of silly events"
 }

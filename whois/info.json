@@ -1,5 +1,6 @@
 {
-    "author" : "SpatulaFish",
-    "description" : "Who is for server members",
-    "name" : "whois"
+    "author" : ["Eris"],
+    "description" : "Whois for server members",
+    "name" : "whois",
+    "short" : "whois for discord"
 }

@@ -40,6 +40,9 @@ class Notify(BaseCog):
         self.previous_message = None
 
         async def message_events(message):
+            # Prevent acting on DM's
+            if message.guild is None or message.guild.name.lower() != "cortex":
+                return
             if (
                 str(message.author.id) == "195663495189102593"
                 and "announcements" in message.channel.name.lower()

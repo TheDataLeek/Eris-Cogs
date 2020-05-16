@@ -1,5 +1,6 @@
 {
-    "author" : "Eris",
-    "description" : "Usage: [p]dice #d#(v#)?",
-    "name" : "Roll Dice"
+    "author" : ["Eris"],
+    "description" : "Improved dice roller, can support arbitrary dice. Usage regex: [p]dice #d#(v#)?",
+    "name" : "Dice",
+    "short": "Improved dice roller."
 }

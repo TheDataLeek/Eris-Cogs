@@ -1,5 +1,6 @@
 {
-    "author" : "Eris",
-    "description" : "Usage: [p]fact <bear|snek>",
-    "name" : "Bear and Snek Facts"
+    "author" : ["Eris"],
+    "description" : "Provides bear or snake facts based on user input or randomly.",
+    "name" : "facts",
+    "short": "Provide random facts"
 }
