@@ -14,6 +14,9 @@ class Spoop(BaseCog):
         if self.event_config is None:
             raise FileNotFoundError('Need to install event_config')
 
+        self.lock_config = Config.get_conf(None, cog_name="ErisCogLocks", identifier=12340099888700)
+        self.lock_config.register_channel(locked=None)  # This is never going to be set
+
         data_dir = data_manager.bundled_data_path(self)
         self.yandere_quotes = (data_dir / "yandere_quotes.txt").read_text().split('\n')
 
@@ -22,7 +25,7 @@ class Spoop(BaseCog):
     async def randomly_spoop(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.event_lock:
+        async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.event_config.allowed(ctx, message)
             randomly_allowed: bool = random.random() <= 0.01
             if not allowed or not randomly_allowed:

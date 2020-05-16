@@ -16,6 +16,9 @@ class NoFuckYou(BaseCog):
         if self.event_config is None:
             raise FileNotFoundError('Need to install event_config')
 
+        self.lock_config = Config.get_conf(None, cog_name="ErisCogLocks", identifier=12340099888700)
+        self.lock_config.register_channel(locked=None)  # This is never going to be set
+
         self.fuck_you_regex: RETYPE = re.compile("((f[uck]{1,3}) ([you]{1,3}))", flags=re.IGNORECASE)
 
         self.bot.add_listener(self.no_fuck_you, "on_message")
@@ -23,7 +26,7 @@ class NoFuckYou(BaseCog):
     async def no_fuck_you(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.event_lock:
+        async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.event_config.allowed(ctx, message)
             keyword_in_message: bool = bool(self.fuck_you_regex.search(message.clean_content))
 

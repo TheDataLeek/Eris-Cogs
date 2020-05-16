@@ -65,6 +65,9 @@ class Events(BaseCog):
         if self.event_config is None:
             raise FileNotFoundError('Need to install event_config')
 
+        self.lock_config = Config.get_conf(None, cog_name="ErisCogLocks", identifier=12340099888700)
+        self.lock_config.register_channel(locked=None)  # This is never going to be set
+
         data_dir = data_manager.bundled_data_path(self)
         # MM Edit: Loads puns.csv and arranges it appropriately
         # Potential issue: filepath may not be correct
@@ -82,7 +85,7 @@ class Events(BaseCog):
     async def message_events(self, message: discord.message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.event_lock:
+        async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.event_config.allowed(ctx, message)
 
             if not allowed:
