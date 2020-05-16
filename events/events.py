@@ -66,7 +66,7 @@ class Events(BaseCog, ErisEventMixin):
         # MM Edit: Loads puns.csv and arranges it appropriately
         # Potential issue: filepath may not be correct
         # Credit for most puns: https://onelinefun.com/puns/
-        with open(data_dir / 'puns.csv', newline="") as csvfile:
+        with (data_dir / 'puns.csv').open(mode='r') as csvfile:
             # Puns.csv is arranged into two columns titled 'word' and 'response'
             punreader = csv.reader(csvfile, delimiter="|")
             # Make those columns two separate lists
