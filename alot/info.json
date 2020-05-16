@@ -1,7 +1,7 @@
 {
   "author" : ["Eris"],
   "description" : "Automatically posts an alot whenever a user says 'alot of things' instead of 'a lot of things'",
-  "name" : "ALOT",
+  "name" : "Alot",
   "short": "Posts an alot",
   "required_cogs": {
     "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
