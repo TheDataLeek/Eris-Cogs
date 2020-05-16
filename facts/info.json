@@ -1,6 +1,6 @@
 {
     "author" : ["Eris"],
     "description" : "Provides bear or snake facts based on user input or randomly.",
-    "name" : "facts",
+    "name" : "Facts",
     "short": "Provide random facts"
 }
