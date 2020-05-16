@@ -1,6 +1,6 @@
 {
   "author" : ["Eris", "Maddie"],
-  "description" : "Usage: [p]big_name <User> <new name>",
-  "name" : "Change someone's name - who cares about permissions. Beware the ensuing chaos.",
+  "description" : "Change someone's name - who cares about permissions. Usage: [p]big_name <User> <new name>",
+  "name" : "Big Name",
   "short": "Change a user's name regardless of permissions"
 }

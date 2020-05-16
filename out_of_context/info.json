@@ -1,5 +1,6 @@
 {
   "author" : ["Eris"],
-  "description" : "Don't bother",
-  "name" : "Out of Context Quotes"
+  "description" : "Archives a channel of out of context quotes. Posts quotes randomly or in response to commands. Quotes must be in quotation marks to be archived. Usage: [p]penny",
+  "name" : "Out of Context Quotes",
+  "short": "Archives a channel of out of context quotes and then posts them randomly during conversation."
 }

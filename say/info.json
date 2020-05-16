@@ -1,5 +1,5 @@
 {
     "author" : ["Eris"],
-    "description" : "foobar",
-    "name" : "no"
+    "description" : "Allowed users can command the bot to say anything in a certain channel. Usage [p]say <message>",
+    "name" : "Say"
 }
