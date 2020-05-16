@@ -10,6 +10,8 @@ import csv
 
 from redbot.core import commands, data_manager, Config, checks, bot
 
+from .eris_event_lib import ErisEventMixin
+
 __author__ = "Eris"
 
 BaseCog = getattr(commands, "Cog", object)
@@ -54,19 +56,11 @@ dragonart = """
 """
 
 
-
-
-class Events(BaseCog):
+class Events(BaseCog, ErisEventMixin):
     def __init__(self, bot):
+        super().__init__()
         self.bot = bot
         self.whois = self.bot.get_cog("WhoIs")
-
-        self.event_config = self.bot.get_cog('EventConfig')
-        if self.event_config is None:
-            raise FileNotFoundError('Need to install event_config')
-
-        self.lock_config = Config.get_conf(None, cog_name="ErisCogLocks", identifier=12340099888700)
-        self.lock_config.register_channel(locked=None)  # This is never going to be set
 
         data_dir = data_manager.bundled_data_path(self)
         # MM Edit: Loads puns.csv and arranges it appropriately
@@ -86,7 +80,7 @@ class Events(BaseCog):
         ctx = await self.bot.get_context(message)
 
         async with self.lock_config.channel(message.channel).get_lock():
-            allowed: bool = await self.event_config.allowed(ctx, message)
+            allowed: bool = await self.allowed(ctx, message)
 
             if not allowed:
                 return
@@ -102,7 +96,7 @@ class Events(BaseCog):
                 await message.add_reaction(emojis["must"])
                 time.sleep(0.1)
                 await message.add_reaction(emojis["ache"])
-                await self.event_config.log_last_message(ctx, message)
+                await self.log_last_message(ctx, message)
                 return
 
             if (
@@ -111,14 +105,14 @@ class Events(BaseCog):
                 await message.channel.send(
                     "https://media.discordapp.net/attachments/188030840377311232/694979897495388250/videotogif_2020.04.01_12.41.13.gif"
                 )
-                await self.event_config.log_last_message(ctx, message)
+                await self.log_last_message(ctx, message)
                 return
 
             if "゜-゜" in message.content or "°□°" in message.content:
                 async with ctx.typing():
                     sleep(1)
                     await message.channel.send("(╯°□°）╯︵ ┻━┻")
-                await self.event_config.log_last_message(ctx, message)
+                await self.log_last_message(ctx, message)
                 return
 
             # love
@@ -132,7 +126,7 @@ class Events(BaseCog):
                     await message.channel.send("*don't hurt me*")
                     time.sleep(2)
                     await message.channel.send("*no more*")
-                await self.event_config.log_last_message(ctx, message)
+                await self.log_last_message(ctx, message)
                 return
 
             # now lets check for contents
@@ -146,7 +140,7 @@ class Events(BaseCog):
                 with open(random.choice(files_to_choose), "rb") as fobj:
                     new_msg = await message.channel.send(file=discord.File(fobj))
                 # await new_msg.add_reaction("🙏")
-                await self.event_config.log_last_message(ctx, message)
+                await self.log_last_message(ctx, message)
                 return
 
             # only do the others half the time cause fuck it it's tooo much
@@ -172,7 +166,7 @@ class Events(BaseCog):
                                         word, "women".join(bits), "children".join(bits)
                                     )
                                 )
-                            await self.event_config.log_last_message(ctx, message)
+                            await self.log_last_message(ctx, message)
                             return
 
             # if random.random() <= 0.001:
@@ -248,7 +242,7 @@ class Events(BaseCog):
                     else:
                         msg = msg.format("senpai")
                     await message.channel.send(msg)
-                    await self.event_config.log_last_message(ctx, message)
+                    await self.log_last_message(ctx, message)
                     return
             # elif 'blood' in clean_message:
             #     await bot.send_message(message.channel, 'B̵̪̳̣͍̙̳̬̭͞͝L͢͏̸͏̧̙̼͓̘̯͉̩̩̞͚͕̲̰̼̘̦ͅÒ̮͈̖͔̰̞͝O̵͖͔̟̰͔͚̬͟͝ͅḐ̸̭͙̜̺̞͍͎͔͜͡͡ ̨̨̟̝̦̬̩̳̖͟ͅF̤̭̬͙̀̀͘͠O̶̯̠̞̲̫̱̻̮͎̦̳̝͉̮̕ͅŔ̡͈͕̼͖̥̰̭̟̝͟ ̡̲̯͉̤͈̘͎̬͎̺̟͞T̴̸̟̺̬̼̣̖͓̩̯͇̣̩̺̮͘Ḫ̣̥͍͙͍͓͔͈̖̬̘̩͔͖̝͖̀͘E̶̡̛̯̞̱̯̗͍͖͇̹̖̳̩̥̳̳̙͢͝ ̡͓͍͕͔̳̠͍̥̞̙͖̙̦͕̠̪̘̕ͅB̪͕̻̺͈̤̟̻͖̣͙̪̝̭̀͘͠Ḻ̵̨̞̯̥̭͈̪̻̰̭́́͝O̧͜͏̰͓̘̖̘̬̤ͅǪ̥̟̘̪̱͔͇̖͟D̸̡҉̶̫͕͖̹̤̜̪̟̝̯͚ ̵̨̛̯̺̤̮̲͓̦̜̪̕͝G̙̩͖̭̘̤̩̕Ǫ͎͉̲̤͓͇̦̖̯͇̥͔͓̣̘̦̪̀D͘͘͏͡͏͙̠͈̮̱̼')
@@ -290,4 +284,4 @@ class Events(BaseCog):
                     sleep(1)
                     await message.channel.send(self.triggers[list(trigger)[0]])
 
-            await self.event_config.log_last_message(ctx, message)
+            await self.log_last_message(ctx, message)

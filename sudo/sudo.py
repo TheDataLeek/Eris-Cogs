@@ -1,22 +1,17 @@
 import discord
 from redbot.core import commands, bot, Config
 
+from .eris_event_lib import ErisEventMixin
 
 BaseCog = getattr(commands, "Cog", object)
 
 
-class Sudo(BaseCog):
+class Sudo(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance: bot):
+        super().__init__()
         self.bot = bot_instance
 
         self.whois = self.bot.get_cog("WhoIs")
-
-        self.lock_config = Config.get_conf(None, cog_name="ErisCogLocks", identifier=12340099888700)
-        self.lock_config.register_channel(locked=None)  # This is never going to be set
-
-        self.event_config = self.bot.get_cog('EventConfig')
-        if self.event_config is None:
-            raise FileNotFoundError('Need to install event_config')
 
         self.bot.add_listener(self.no_sudo, "on_message")
 
@@ -24,7 +19,7 @@ class Sudo(BaseCog):
         ctx = await self.bot.get_context(message)
 
         async with self.lock_config.channel(message.channel).get_lock():
-            allowed: bool = await self.event_config.allowed(ctx, message)
+            allowed: bool = await self.allowed(ctx, message)
             keyword_in_message: bool = 'sudo' in message.clean_content
 
             if not allowed or not keyword_in_message:
@@ -37,5 +32,5 @@ class Sudo(BaseCog):
 
             await message.channel.send("{} is not in the sudoers file. This incident will be reported.".format(realname))
 
-            await self.event_config.log_last_message(ctx, message)
+            await self.log_last_message(ctx, message)
 

@@ -2,21 +2,17 @@ import random
 import discord
 from redbot.core import commands, data_manager, Config, checks, bot
 
+from .eris_event_lib import ErisEventMixin
+
 
 BaseCog = getattr(commands, "Cog", object)
 
 
-class Spoop(BaseCog):
+class Spoop(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance):
+        super().__init__()
         self.bot: bot = bot_instance
         self.whois = self.bot.get_cog("WhoIs")
-        self.event_config = self.bot.get_cog('EventConfig')
-
-        if self.event_config is None:
-            raise FileNotFoundError('Need to install event_config')
-
-        self.lock_config = Config.get_conf(None, cog_name="ErisCogLocks", identifier=12340099888700)
-        self.lock_config.register_channel(locked=None)  # This is never going to be set
 
         data_dir = data_manager.bundled_data_path(self)
         self.yandere_quotes = (data_dir / "yandere_quotes.txt").read_text().split('\n')
@@ -27,7 +23,7 @@ class Spoop(BaseCog):
         ctx = await self.bot.get_context(message)
 
         async with self.lock_config.channel(message.channel).get_lock():
-            allowed: bool = await self.event_config.allowed(ctx, message)
+            allowed: bool = await self.allowed(ctx, message)
             randomly_allowed: bool = random.random() <= 0.01
             if not allowed or not randomly_allowed:
                 return
@@ -42,7 +38,7 @@ class Spoop(BaseCog):
             new_message = " ".join(x.format(realname) for x in new_message.split(" "))
             await author.send(new_message)
 
-            await self.event_config.log_last_message(ctx, message)
+            await self.log_last_message(ctx, message)
 
     @commands.command()
     @checks.mod()
