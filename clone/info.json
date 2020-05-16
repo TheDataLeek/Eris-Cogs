@@ -1,4 +1,6 @@
 {
   "author" : ["Eris", "Maddie"],
   "description" : "Usage: [p]clone <User>",
-  "name" : "The bot takes on a specified user's name and avatar"}
+  "name" : "The bot takes on a specified user's name and avatar. Users take 1d10 confusion damage, half as much on a successful save.",
+  "short": "The bot takes on a user's name and avatar"
+}
