@@ -1,7 +1,7 @@
 {
     "author" : ["Eris"],
     "description" : "Usage: [p]insult <user>\n[p]insult. Includes NSFW insults",
-    "name" : "insult",
+    "name" : "Insult",
     "short": "Insult users",
     "requirements": ["aiohttp"]
 }

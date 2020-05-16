@@ -1,6 +1,6 @@
 {
     "author" : ["Eris"],
     "description" : "Theme your nickname, some include NSFW language and themes.",
-    "name" : "nick_prefix",
+    "name" : "Nick Prefix",
     "short": "Adds themed prefix to names"
 }

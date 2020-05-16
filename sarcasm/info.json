@@ -1,6 +1,6 @@
 {
     "author" : ["Eris"],
     "description" : "Sarcasm Module - randomly mocks users",
-    "name" : "sarcasm",
+    "name" : "Sarcasm",
     "short": "Randomly mocks users"
 }

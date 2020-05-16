@@ -1,5 +1,6 @@
 {
     "author" : ["Eris"],
     "description" : "Battle with your users",
-    "name" : "battle"
+    "short": "Battle with your users",
+    "name" : "Battle"
 }
