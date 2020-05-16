@@ -11,6 +11,7 @@ class Spoop(BaseCog):
         self.bot: bot = bot_instance
         self.whois = self.bot.get_cog("WhoIs")
         self.event_config = self.bot.get_cog('EventConfig')
+
         if self.event_config is None:
             raise FileNotFoundError('Need to install event_config')
 
