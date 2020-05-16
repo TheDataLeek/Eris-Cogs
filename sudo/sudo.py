@@ -1,5 +1,5 @@
 import discord
-from redbot.core import commands, bot
+from redbot.core import commands, bot, Config
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -11,6 +11,9 @@ class Sudo(BaseCog):
 
         self.whois = self.bot.get_cog("WhoIs")
 
+        self.lock_config = Config.get_conf(None, cog_name="ErisCogLocks", identifier=12340099888700)
+        self.lock_config.register_channel(locked=None)  # This is never going to be set
+
         self.event_config = self.bot.get_cog('EventConfig')
         if self.event_config is None:
             raise FileNotFoundError('Need to install event_config')
@@ -20,7 +23,7 @@ class Sudo(BaseCog):
     async def no_sudo(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        async with self.event_config.event_lock:
+        async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.event_config.allowed(ctx, message)
             keyword_in_message: bool = 'sudo' in message.clean_content
 
