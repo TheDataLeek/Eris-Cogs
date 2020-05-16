@@ -1,5 +1,6 @@
 {
     "name" : "FishEvents",
     "author" : ["Eris"],
-    "description" : "A bunch of silly events"
+    "description" : "A bunch of silly events",
+    "short": "Silly bot behavior not activated by explicit commands"
 }
