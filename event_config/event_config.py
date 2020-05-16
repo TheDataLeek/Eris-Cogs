@@ -31,8 +31,6 @@ class EventConfig(BaseCog):
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
 
-        self.event_lock = asyncio.Lock()
-
     @commands.group()
     async def econf(self, ctx):
         pass
