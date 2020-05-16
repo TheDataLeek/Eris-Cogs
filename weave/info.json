@@ -1,4 +1,5 @@
 {
   "author" : ["Eris", "Maddie"],
   "description" : "Usage: [p]weave <Emoji> <Emoji> <width> <height>",
-  "name" : "Create a mosaic of alternating specified emoji. Emojis may be animated or still"}
+  "name" : "Create a mosaic of alternating specified emoji. Emojis may be animated or still"
+}
