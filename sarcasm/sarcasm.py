@@ -38,7 +38,7 @@ class Sarcasm(BaseCog, ErisEventMixin):
                 if random.random() <= 0.1:
                     await ctx.send(file=discord.File(io.BytesIO(self.sarcastic_image), filename="sarcasm.png"))
 
-            self.log_last_message(ctx, message)
+            await self.log_last_message(ctx, message)
 
     def add_sarcasm_to_string(self, message: str):
         return "".join(c if random.random() <= 0.5 else c.upper() for c in message)
