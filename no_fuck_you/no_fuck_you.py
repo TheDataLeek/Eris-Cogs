@@ -15,14 +15,13 @@ class NoFuckYou(BaseCog, ErisEventMixin):
         self.bot = bot_instance
 
         self.fuck_you_regex: RETYPE = re.compile(
-            "\bf[uck]{,3} \b", flags=re.IGNORECASE
+            r"\bf[uck]{,3} \b", flags=re.IGNORECASE
         )
-
         self.bot.add_listener(self.no_fuck_you, "on_message")
 
     async def no_fuck_you(self, message: discord.Message):
         keyword_in_message: bool = bool(
-            self.fuck_you_regex.search(message.clean_content.lower())
+            self.fuck_you_regex.search(message.clean_content)
         )
         if not keyword_in_message:
             return
