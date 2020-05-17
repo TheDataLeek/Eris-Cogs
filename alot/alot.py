@@ -20,12 +20,15 @@ class Alot(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.alot_event_handler, "on_message")
 
     async def alot_event_handler(self, message: discord.Message):
+        keyword_in_message: bool = "alot" in message.clean_content.lower()
+        if not keyword_in_message:
+            return
+
         ctx = await self.bot.get_context(message)
 
         async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.allowed(ctx, message)
-            keyword_in_message: bool = "alot" in message.clean_content.lower()
-            if not allowed or not keyword_in_message:
+            if not allowed:
                 return
 
             await ctx.send(

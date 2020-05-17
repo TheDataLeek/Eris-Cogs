@@ -22,12 +22,15 @@ class Spoop(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.randomly_spoop, "on_message")
 
     async def randomly_spoop(self, message: discord.Message):
+        randomly_allowed: bool = random.random() <= 0.01
+        if not randomly_allowed:
+            return
+
         ctx = await self.bot.get_context(message)
 
         async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.allowed(ctx, message)
-            randomly_allowed: bool = random.random() <= 0.01
-            if not allowed or not randomly_allowed:
+            if not allowed:
                 return
 
             if self.whois is None and self.tried_again is False:
