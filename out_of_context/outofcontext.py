@@ -80,7 +80,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
             await ctx.send(reply)
 
     def get_quote(self, channel_id, most_recent=True):
-        reply = random.choice(quotes)
+        reply = random.choice(self.quotes)
         if channel_id not in self.message_log:
             return reply  # just random if no logs
 
