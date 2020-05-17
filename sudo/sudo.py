@@ -10,8 +10,9 @@ class Sudo(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance: bot):
         super().__init__()
         self.bot = bot_instance
-
         self.whois = self.bot.get_cog("WhoIs")
+
+        self.tried_again = False
 
         self.bot.add_listener(self.no_sudo, "on_message")
 
@@ -24,6 +25,10 @@ class Sudo(BaseCog, ErisEventMixin):
 
             if not allowed or not keyword_in_message:
                 return
+
+            if self.whois is None and self.tried_again is False:
+                self.whois = self.bot.get_cog("WhoIs")
+                self.tried_again = True
 
             author: discord.Member = message.author
             realname = author.mention
