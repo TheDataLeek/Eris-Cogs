@@ -12,6 +12,9 @@ from .eris_event_lib import ErisEventMixin
 BaseCog = getattr(commands, "Cog", object)
 
 
+RETYPE = type(re.compile('a'))
+
+
 # todo -> archive specified channel in db
 # db format
 # | message_id | contents |
@@ -29,6 +32,8 @@ class OutOfContext(BaseCog, ErisEventMixin):
         super().__init__()
 
         self.bot = bot_instance
+
+        self.message_match: RETYPE = re.compile('(?:([\"“])([^\"”]*?)(\"|”))', flags=re.IGNORECASE)   # flag not required
 
         self.message_log = {}
 
@@ -107,7 +112,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         # let's start with just the latest 500
         message: discord.Message
         async for message in channel.history(limit=500):
-            if message.content.startswith('"') and message.content.endswith('"'):
-                ooc_list.append(message.clean_content[1:-1])
+            matches = self.message_match.findall(message.content)
+            print(matches)
 
         print(ooc_list)
