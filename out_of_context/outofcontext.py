@@ -117,9 +117,9 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         # let's start with just the latest 500
         message: discord.Message
-        for i in range(10):
+        for i in range(100):
             print(i)
-            async for message in channel.history(limit=100):
+            async for message in channel.history(limit=500):
                 matches: List[tuple] = self.message_match.findall(message.content)
 
                 for match in matches:
