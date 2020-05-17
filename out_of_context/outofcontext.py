@@ -102,6 +102,10 @@ class OutOfContext(BaseCog, ErisEventMixin):
     @commands.command()
     @checks.is_owner()
     async def update_ooc(self, ctx):
+        """
+        Updates the out of context quotes from the current channel. WILL OVERWRITE ALL OTHERS!
+        Usage: [p]update_ooc
+        """
         channel: discord.TextChannel = ctx.channel
 
         ooc_list = []
