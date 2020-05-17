@@ -7,6 +7,8 @@ import discord
 from redbot.core import commands, bot, checks
 from functools import reduce
 
+from typing import List
+
 from .eris_event_lib import ErisEventMixin
 
 BaseCog = getattr(commands, "Cog", object)
@@ -112,8 +114,11 @@ class OutOfContext(BaseCog, ErisEventMixin):
         # let's start with just the latest 500
         message: discord.Message
         async for message in channel.history(limit=5):
-            print(message.content)
-            matches = self.message_match.findall(message.content)
-            print(matches)
+            matches: List[re.Match] = self.message_match.findall(message.content)
+            if len(matches) == 0:
+                continue
+
+            for match in matches:
+                ooc_list.append(match.group(2))
 
         print(ooc_list)
