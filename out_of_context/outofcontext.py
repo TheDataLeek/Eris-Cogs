@@ -39,16 +39,20 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         self.message_log = {}
 
+        self.quotes = quotes
         self.quote_hash = dict()
-        for quote in quotes:
+        self.generate_quote_hash()
+
+        self.bot.add_listener(self.out_of_context_handler, "on_message")
+
+    def generate_quote_hash(self):
+        for quote in self.quotes:
             quote_words = [_ for _ in quote.lower().split() if len(_) > 3]
             for word in quote_words:
                 if word not in self.quote_hash:
                     self.quote_hash[word] = []
 
                 self.quote_hash[word].append(quote)
-
-        self.bot.add_listener(self.out_of_context_handler, "on_message")
 
     async def out_of_context_handler(self, message):
         ctx = await self.bot.get_context(message)
@@ -113,12 +117,13 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         # let's start with just the latest 500
         message: discord.Message
-        async for message in channel.history(limit=5):
-            matches: List[re.Match] = self.message_match.findall(message.content)
-            if len(matches) == 0:
-                continue
+        for i in range(10):
+            async for message in channel.history(limit=100):
+                matches: List[tuple] = self.message_match.findall(message.content)
+                if len(matches) == 0:
+                    continue
 
-            for match in matches:
-                ooc_list.append(match.group(2))
+                for match in matches:
+                    ooc_list.append(match[1])
 
         print(ooc_list)
