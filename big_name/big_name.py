@@ -3,6 +3,7 @@ from redbot.core import commands
 
 BaseCog = getattr(commands, "Cog", object)
 
+
 class BigName(BaseCog):
     def __init__(self, bot):
         self.bot = bot

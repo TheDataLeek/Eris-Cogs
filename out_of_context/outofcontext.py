@@ -14,7 +14,7 @@ from .eris_event_lib import ErisEventMixin
 BaseCog = getattr(commands, "Cog", object)
 
 
-RETYPE = type(re.compile('a'))
+RETYPE = type(re.compile("a"))
 
 
 class OutOfContext(BaseCog, ErisEventMixin):
@@ -23,12 +23,14 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         self.bot = bot_instance
 
-        self.message_match: RETYPE = re.compile('(?:([\"“])([^\"”]*?)(\"|”))', flags=re.IGNORECASE)   # flag not required
+        self.message_match: RETYPE = re.compile(
+            '(?:(["“])([^"”]*?)("|”))', flags=re.IGNORECASE
+        )  # flag not required
 
         self.message_log = {}
 
         data_dir = data_manager.bundled_data_path(self)
-        self.quotefile = data_dir / 'ooc.txt'
+        self.quotefile = data_dir / "ooc.txt"
         self.quotes = self.quotefile.read_text().split("\n")
 
         self.quote_hash = dict()
@@ -115,7 +117,9 @@ class OutOfContext(BaseCog, ErisEventMixin):
         last_message_examined: discord.Message = None
         message_count = 0
         while True:
-            chunk = await channel.history(limit=500, before=last_message_examined).flatten()
+            chunk = await channel.history(
+                limit=500, before=last_message_examined
+            ).flatten()
             if len(chunk) == 0:
                 break
             message_count += len(chunk)
@@ -123,7 +127,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
                 matches: List[tuple] = self.message_match.findall(message.content)
                 for match in matches:
                     quote = match[1]
-                    if quote == '':
+                    if quote == "":
                         continue
                     ooc_list.append(quote)
 
@@ -131,10 +135,11 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         ooc_list = list(set(ooc_list))
 
-        self.quotefile.write_text('\n'.join(ooc_list))
+        self.quotefile.write_text("\n".join(ooc_list))
 
         self.quotes = ooc_list
         self.generate_quote_hash()
 
-        await ctx.send(f'Done. Processed {message_count} messages, found {len(ooc_list)} quotes.')
-
+        await ctx.send(
+            f"Done. Processed {message_count} messages, found {len(ooc_list)} quotes."
+        )

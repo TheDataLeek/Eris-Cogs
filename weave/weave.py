@@ -2,6 +2,7 @@ from redbot.core import commands
 
 BaseCog = getattr(commands, "Cog", object)
 
+
 class Weave(BaseCog):
     def __init__(self, bot):
         self.bot = bot

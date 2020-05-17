@@ -66,7 +66,7 @@ class Events(BaseCog, ErisEventMixin):
         # MM Edit: Loads puns.csv and arranges it appropriately
         # Potential issue: filepath may not be correct
         # Credit for most puns: https://onelinefun.com/puns/
-        with (data_dir / 'puns.csv').open(mode='r') as csvfile:
+        with (data_dir / "puns.csv").open(mode="r") as csvfile:
             # Puns.csv is arranged into two columns titled 'word' and 'response'
             punreader = csv.reader(csvfile, delimiter="|")
             # Make those columns two separate lists
@@ -88,7 +88,9 @@ class Events(BaseCog, ErisEventMixin):
             author: discord.Member = message.author
             realname = author.mention
             if self.whois is not None:
-                realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(author.id)))
+                realname = self.whois.convert_realname(
+                    await self.whois.get_realname(ctx, str(author.id))
+                )
 
             # mustaches
             if random.random() <= 0.01:
@@ -148,12 +150,14 @@ class Events(BaseCog, ErisEventMixin):
                 return
 
             # NEW (MM): check for punny words and respond
-            trigger = set(self.triggers.keys()).intersection(message.clean_content.split(' '))
+            trigger = set(self.triggers.keys()).intersection(
+                message.clean_content.split(" ")
+            )
 
             if random.random() <= 0.25:
                 async with ctx.typing():
                     sleep(1)
-                    for word in message.clean_content.split(' '):
+                    for word in message.clean_content.split(" "):
                         if "men" in word:
                             if word == "women":
                                 await message.channel.send(
