@@ -4,7 +4,7 @@ import random
 import re
 import pathlib
 import discord
-from redbot.core import commands, bot
+from redbot.core import commands, bot, checks
 from functools import reduce
 
 from .eris_event_lib import ErisEventMixin
@@ -68,6 +68,10 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
     @commands.command()
     async def penny(self, ctx):
+        """
+        Penny for your thoughts? Posts a random out-of-context quote
+        Usage: [p]penny
+        """
         reply = self.get_quote(ctx.channel.id, most_recent=False)
         async with ctx.typing():
             sleep(1)
@@ -92,3 +96,18 @@ class OutOfContext(BaseCog, ErisEventMixin):
                 break
 
         return reply
+
+    @commands.command()
+    @checks.is_owner()
+    async def update_ooc(self, ctx):
+        channel: discord.TextChannel = ctx.channel
+
+        ooc_list = []
+
+        # let's start with just the latest 500
+        message: discord.Message
+        async for message in channel.history(limit=500):
+            if message.content.startswith('"') and message.content.endswith('"'):
+                ooc_list.append(message.clean_content[1:-1])
+
+        print(ooc_list)
