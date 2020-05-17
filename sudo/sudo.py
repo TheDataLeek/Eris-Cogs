@@ -20,7 +20,7 @@ class Sudo(BaseCog, ErisEventMixin):
 
         async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.allowed(ctx, message)
-            keyword_in_message: bool = "sudo" in message.clean_content
+            keyword_in_message: bool = "sudo" in message.clean_content.lower()
 
             if not allowed or not keyword_in_message:
                 return
