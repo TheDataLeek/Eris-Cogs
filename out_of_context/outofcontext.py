@@ -4,7 +4,7 @@ import random
 import re
 import pathlib
 import discord
-from redbot.core import commands, bot, checks
+from redbot.core import commands, bot, checks, data_manager
 from functools import reduce
 
 from typing import List
@@ -17,18 +17,6 @@ BaseCog = getattr(commands, "Cog", object)
 RETYPE = type(re.compile('a'))
 
 
-# todo -> archive specified channel in db
-# db format
-# | message_id | contents |
-# todo -> export
-OOCFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "ooc.txt"))
-quotes = [
-    _
-    for _ in pathlib.Path(OOCFILE).read_text().split("\n")
-    if len(_) != 0
-]
-
-
 class OutOfContext(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance: bot):
         super().__init__()
@@ -39,7 +27,10 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         self.message_log = {}
 
-        self.quotes = quotes
+        data_dir = data_manager.bundled_data_path(self)
+        self.quotefile = data_dir / 'ooc.txt'
+        self.quotes = self.quotefile.read_text().split("\n")
+
         self.quote_hash = dict()
         self.generate_quote_hash()
 
@@ -118,11 +109,12 @@ class OutOfContext(BaseCog, ErisEventMixin):
         # let's start with just the latest 500
         message: discord.Message
         last_message_examined: discord.Message = None
-        for i in range(30):
-            print(i)
+        message_count = 0
+        while True:
             chunk = await channel.history(limit=500, before=last_message_examined).flatten()
             if len(chunk) == 0:
                 break
+            message_count += len(chunk)
             for message in chunk:
                 matches: List[tuple] = self.message_match.findall(message.content)
                 for match in matches:
@@ -135,4 +127,10 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         ooc_list = list(set(ooc_list))
 
-        print(len(ooc_list))
+        self.quotefile.write_text('\n'.join(ooc_list))
+
+        self.quotes = ooc_list
+        self.generate_quote_hash()
+
+        await ctx.send(f'Done. Processed {message_count} messages, found {len(ooc_list)} quotes.')
+
