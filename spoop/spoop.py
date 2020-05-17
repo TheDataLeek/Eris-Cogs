@@ -14,6 +14,8 @@ class Spoop(BaseCog, ErisEventMixin):
         self.bot: bot = bot_instance
         self.whois = self.bot.get_cog("WhoIs")
 
+        self.tried_again = False
+
         data_dir = data_manager.bundled_data_path(self)
         self.yandere_quotes = (data_dir / "yandere_quotes.txt").read_text().split("\n")
 
@@ -27,6 +29,10 @@ class Spoop(BaseCog, ErisEventMixin):
             randomly_allowed: bool = random.random() <= 0.01
             if not allowed or not randomly_allowed:
                 return
+
+            if self.whois is None and self.tried_again is False:
+                self.whois = self.bot.get_cog("WhoIs")
+                self.tried_again = True
 
             author: discord.Member = message.author
             realname = author.mention
