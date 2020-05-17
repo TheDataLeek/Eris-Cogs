@@ -15,7 +15,7 @@ class NoFuckYou(BaseCog, ErisEventMixin):
         self.bot = bot_instance
 
         self.fuck_you_regex: RETYPE = re.compile(
-            "((f[uck]{1,3}) ([you]{1,3}))", flags=re.IGNORECASE
+            "f[uck]{,3} \w+", flags=re.IGNORECASE
         )
 
         self.bot.add_listener(self.no_fuck_you, "on_message")
@@ -26,7 +26,7 @@ class NoFuckYou(BaseCog, ErisEventMixin):
         async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.allowed(ctx, message)
             keyword_in_message: bool = bool(
-                self.fuck_you_regex.search(message.clean_content)
+                self.fuck_you_regex.search(message.clean_content.lower())
             )
 
             if not allowed or not keyword_in_message:
