@@ -20,12 +20,15 @@ class Sarcasm(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.add_sarcasm, "on_message")
 
     async def add_sarcasm(self, message: discord.Message):
+        randomly_activated: bool = random.random() <= 0.02
+        if not randomly_activated:
+            return
+
         ctx = await self.bot.get_context(message)
 
         async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.allowed(ctx, message)
-            randomly_activated: bool = random.random() <= 0.02
-            if not allowed or not randomly_activated:
+            if not allowed:
                 return
 
             new_message = self.add_sarcasm_to_string(message.clean_content)
