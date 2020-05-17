@@ -117,12 +117,14 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         # let's start with just the latest 500
         message: discord.Message
-        last_message_examined = None
-        for i in range(100):
+        last_message_examined: discord.Message = None
+        for i in range(30):
             print(i)
-            async for message in channel.history(limit=500, before=last_message_examined):
+            chunk = await channel.history(limit=500, before=last_message_examined).flatten()
+            if len(chunk) == 0:
+                break
+            for message in chunk:
                 matches: List[tuple] = self.message_match.findall(message.content)
-
                 for match in matches:
                     quote = match[1]
                     if quote == '':
