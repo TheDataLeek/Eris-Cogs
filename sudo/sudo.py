@@ -20,7 +20,7 @@ class Sudo(BaseCog, ErisEventMixin):
 
         async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.allowed(ctx, message)
-            keyword_in_message: bool = 'sudo' in message.clean_content
+            keyword_in_message: bool = "sudo" in message.clean_content
 
             if not allowed or not keyword_in_message:
                 return
@@ -28,9 +28,14 @@ class Sudo(BaseCog, ErisEventMixin):
             author: discord.Member = message.author
             realname = author.mention
             if self.whois is not None:
-                realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(author.id)))
+                realname = self.whois.convert_realname(
+                    await self.whois.get_realname(ctx, str(author.id))
+                )
 
-            await message.channel.send("{} is not in the sudoers file. This incident will be reported.".format(realname))
+            await message.channel.send(
+                "{} is not in the sudoers file. This incident will be reported.".format(
+                    realname
+                )
+            )
 
             await self.log_last_message(ctx, message)
-

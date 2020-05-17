@@ -15,7 +15,7 @@ class Spoop(BaseCog, ErisEventMixin):
         self.whois = self.bot.get_cog("WhoIs")
 
         data_dir = data_manager.bundled_data_path(self)
-        self.yandere_quotes = (data_dir / "yandere_quotes.txt").read_text().split('\n')
+        self.yandere_quotes = (data_dir / "yandere_quotes.txt").read_text().split("\n")
 
         self.bot.add_listener(self.randomly_spoop, "on_message")
 
@@ -31,7 +31,9 @@ class Spoop(BaseCog, ErisEventMixin):
             author: discord.Member = message.author
             realname = author.mention
             if self.whois is not None:
-                realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(author.id)))
+                realname = self.whois.convert_realname(
+                    await self.whois.get_realname(ctx, str(author.id))
+                )
 
             new_message = random.choice(self.yandere_quotes)
 
@@ -50,7 +52,9 @@ class Spoop(BaseCog, ErisEventMixin):
 
         realname = user.mention
         if self.whois is not None:
-            realname = self.whois.convert_realname(await self.whois.get_realname(ctx, str(user.id)))
+            realname = self.whois.convert_realname(
+                await self.whois.get_realname(ctx, str(user.id))
+            )
 
         new_message = random.choice(self.yandere_quotes)
 

@@ -25,25 +25,23 @@ class WhoIs(BaseCog):
             cog_name="whois",
         )
 
-        default_guild = {
-            "whois_dict": {}
-        }
+        default_guild = {"whois_dict": {}}
         self.config.register_guild(**default_guild)
 
     @commands.command()
     async def theyare(self, ctx, user: discord.Member, *name: str):
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
-            whois_dict[str(user.id)] = ' '.join(name)
+            whois_dict[str(user.id)] = " ".join(name)
 
         await ctx.send("Done")
 
     @commands.command()
-    async def whois(self, ctx, user: discord.Member=None):
+    async def whois(self, ctx, user: discord.Member = None):
         if user is None:
             user = ctx.message.author
         realname = await self.get_realname(ctx, str(user.id))
 
-        await ctx.send(realname or 'User not registered!')
+        await ctx.send(realname or "User not registered!")
 
     async def get_realname(self, ctx, userid: str):
         """
@@ -80,7 +78,7 @@ class WhoIs(BaseCog):
         message: discord.Message = ctx.message
         file_to_import = None
         for attachment in message.attachments:
-            if attachment.filename == 'whois.json':
+            if attachment.filename == "whois.json":
                 file_to_import = attachment
                 break
         if file_to_import is None:
@@ -89,7 +87,7 @@ class WhoIs(BaseCog):
 
         try:
             new_whois_data = await file_to_import.read()
-            new_whois_data = new_whois_data.decode('utf-8')
+            new_whois_data = new_whois_data.decode("utf-8")
             new_whois_data = json.loads(new_whois_data)
         except:
             await ctx.send("Unable to parse input json!")
@@ -106,7 +104,9 @@ class WhoIs(BaseCog):
     async def export_whois(self, ctx):
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             output = json.dumps(whois_dict)
-            await ctx.send(file=discord.File(io.StringIO(output), filename="whois.json"))
+            await ctx.send(
+                file=discord.File(io.StringIO(output), filename="whois.json")
+            )
 
     def convert_realname(self, realname: str):
         if realname is None:
@@ -114,7 +114,9 @@ class WhoIs(BaseCog):
 
         if len(realname) > 32:
             realname = realname.split(" ")[0]
-            realname = "".join(c for c in realname if c.lower() in string.ascii_lowercase)
+            realname = "".join(
+                c for c in realname if c.lower() in string.ascii_lowercase
+            )
             return realname
         else:
             return realname

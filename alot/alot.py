@@ -28,7 +28,8 @@ class Alot(BaseCog, ErisEventMixin):
             if not allowed or not keyword_in_message:
                 return
 
-            await ctx.send(file=discord.File(io.BytesIO(self.alot), filename="alot.png"))
+            await ctx.send(
+                file=discord.File(io.BytesIO(self.alot), filename="alot.png")
+            )
 
             await self.log_last_message(ctx, message)
-

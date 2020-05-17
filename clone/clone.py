@@ -3,6 +3,7 @@ from redbot.core import commands, checks
 
 BaseCog = getattr(commands, "Cog", object)
 
+
 class Clone(BaseCog):
     def __init__(self, bot):
         self.bot = bot

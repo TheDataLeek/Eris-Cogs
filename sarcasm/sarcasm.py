@@ -36,7 +36,11 @@ class Sarcasm(BaseCog, ErisEventMixin):
                 sleep(1)
                 await ctx.send(new_message)
                 if random.random() <= 0.1:
-                    await ctx.send(file=discord.File(io.BytesIO(self.sarcastic_image), filename="sarcasm.png"))
+                    await ctx.send(
+                        file=discord.File(
+                            io.BytesIO(self.sarcastic_image), filename="sarcasm.png"
+                        )
+                    )
 
             await self.log_last_message(ctx, message)
 
