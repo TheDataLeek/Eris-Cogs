@@ -32,13 +32,14 @@ class OutOfContext(BaseCog, ErisEventMixin):
         data_dir = data_manager.bundled_data_path(self)
         self.quotefile = data_dir / "ooc.txt"
         self.quotes = self.quotefile.read_text().split("\n")
-
         self.quote_hash = dict()
         self.generate_quote_hash()
 
         self.bot.add_listener(self.out_of_context_handler, "on_message")
 
     def generate_quote_hash(self):
+        self.quotes = [s for s in self.quotes if s != '']
+        self.quote_hash = dict()
         for quote in self.quotes:
             quote_words = [_ for _ in quote.lower().split() if len(_) > 3]
             for word in quote_words:
@@ -136,7 +137,6 @@ class OutOfContext(BaseCog, ErisEventMixin):
         ooc_list = list(set(ooc_list))
 
         self.quotefile.write_text("\n".join(ooc_list))
-
         self.quotes = ooc_list
         self.generate_quote_hash()
 
