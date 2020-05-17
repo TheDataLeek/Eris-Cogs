@@ -48,6 +48,9 @@ class OutOfContext(BaseCog, ErisEventMixin):
                 self.quote_hash[word].append(quote)
 
     async def out_of_context_handler(self, message):
+        if random.random() <= 0.99:  # 1% chance of activation
+            return
+
         ctx = await self.bot.get_context(message)
 
         # channel-specific logs for last 5 messages
@@ -60,9 +63,6 @@ class OutOfContext(BaseCog, ErisEventMixin):
                 self.message_log[chan_id].pop(0)
 
         async with self.lock_config.channel(message.channel).get_lock():
-            if random.random() <= 0.99:  # 1% chance of activation
-                return
-
             reply = self.get_quote(chan_id)
             async with ctx.typing():
                 sleep(1)
