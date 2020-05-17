@@ -15,7 +15,7 @@ class NoFuckYou(BaseCog, ErisEventMixin):
         self.bot = bot_instance
 
         self.fuck_you_regex: RETYPE = re.compile(
-            "f[uck]{,3} \w+", flags=re.IGNORECASE
+            "f[uck]{,3} [^ ]+", flags=re.IGNORECASE
         )
 
         self.bot.add_listener(self.no_fuck_you, "on_message")
