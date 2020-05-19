@@ -64,6 +64,10 @@ class OutOfContext(BaseCog, ErisEventMixin):
                 self.message_log[chan_id].pop(0)
 
         async with self.lock_config.channel(message.channel).get_lock():
+            allowed: bool = await self.allowed(ctx, message)
+            if not allowed:
+                return
+
             reply = self.get_quote(chan_id)
             async with ctx.typing():
                 sleep(1)
