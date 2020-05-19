@@ -123,3 +123,17 @@ class Zalgo(BaseCog):
 
         await ctx.message.delete()
         await ctx.send(new_msg)
+
+    @commands.command()
+    async def spoilerify(self, ctx, *msg):
+        new_msg = ''
+        do_it = False
+        for c in ' '.join(msg):
+            if c != ' ' and do_it:
+                new_msg += f'||{c}||'
+            else:
+                new_msg += c
+            do_it = not do_it
+
+        await ctx.message.delete()
+        await ctx.send(new_msg)
