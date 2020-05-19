@@ -133,8 +133,7 @@ class Zalgo(BaseCog):
                 new_msg += f'||{c}||'
             else:
                 new_msg += c
-                if c != ' ':
-                    do_it = not do_it
+            do_it = not do_it
 
         await ctx.message.delete()
         await ctx.send(new_msg)
