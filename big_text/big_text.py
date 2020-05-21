@@ -16,12 +16,10 @@ class BigText(BaseCog):
 
         match_check = re.match("[A-Za-z ]", raw_msg.lower())
         if bool(match_check):
-            clean_msg = raw_msg.lower()
 
             big_msg = ""
-            for letter in clean_msg:
-                to_append = ""
-                if bool(re.match("[A-Za-z]", letter)):
+            for letter in raw_msg.lower():
+                if bool(re.match("[a-z]", letter)):
                     big_msg += (":regional_indicator_%s:" % letter)
                 elif bool(re.match("[ ]", letter)):
                     big_msg += " "
