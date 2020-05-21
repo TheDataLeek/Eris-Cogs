@@ -126,14 +126,15 @@ class Zalgo(BaseCog):
 
     @commands.command()
     async def spoilerify(self, ctx, *msg):
-        new_msg = ''
+        new_msg = []
         do_it = False
-        for c in ' '.join(msg):
-            if c != ' ' and do_it:
-                new_msg += f'||{c}||'
+        for word in msg:
+            if do_it:
+                new_msg.append(f"||{word}||")
             else:
-                new_msg += c
+                new_msg.append(word)
             do_it = not do_it
+        new_msg = ' '.join(new_msg)
 
         await ctx.message.delete()
         await ctx.send(new_msg)
