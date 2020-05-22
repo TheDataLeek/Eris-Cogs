@@ -27,7 +27,7 @@ class BigText(BaseCog):
         big_msg = ""
         for letter in raw_msg.lower():
             if letter in string.ascii_lowercase:
-                big_msg += f":regional_indicator_{letter}:" % letter
+                big_msg += f":regional_indicator_{letter}:"
             elif letter == " ":
                 big_msg += " "
             else:
