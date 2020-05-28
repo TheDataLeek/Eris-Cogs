@@ -59,12 +59,12 @@ class BigText(BaseCog):
             return False
 
     """
-    Converts a raw string message to block letter emoji with optional variants
+    Converts a raw string message to block letter emoji with optional variants and sends to channel
     """
     async def msg_to_emoji(self, ctx, raw_msg, use_variants):
         big_msg = ""
         for letter in raw_msg.lower():
-            if letter in string.ascii_lowercase or string.digits:
+            if letter in string.ascii_lowercase or letter in string.digits:
                 if use_variants and letter in self.letter_variants.keys() and random.random > self.variant_chance:
                     big_msg += self.letter_variants.get(letter)
                 else:
@@ -74,11 +74,14 @@ class BigText(BaseCog):
             else:
                 await ctx.send("Message can only have A-Z characters, numbers and spaces")
                 raise ValueError
+        if big_msg == "":
+            await ctx.send("Could not convert to big text")
+            raise ValueError
         return big_msg
 
     async def get_raw_msg(self, ctx):
         raw_msg = " ".join(ctx.message.clean_content.split(" ")[1:])
-        if raw_msg is "":
+        if raw_msg == "":
             await ctx.send("Message cannot be empty!")
             raise ValueError
         else:
