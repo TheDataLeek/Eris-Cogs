@@ -27,7 +27,8 @@ class BigText(BaseCog):
 
         if self.length_is_ok(ctx, raw_msg):
             big_msg = self.msg_to_emoji(ctx, raw_msg, True)
-            await ctx.send(big_msg)
+            if big_msg != "":
+                await ctx.send(big_msg)
 
     """
     Converts a raw string message to block letter emoji with optional variants
@@ -39,8 +40,9 @@ class BigText(BaseCog):
         loud_emoji = random.choice(self.loud_emojis)
         if self.length_is_ok(ctx, raw_msg):
             loud_msg = self.msg_to_emoji(ctx, raw_msg, True)
-            loud_msg = loud_emoji + loud_msg + loud_emoji
-            await ctx.send(loud_msg)
+            if loud_msg != "":
+                loud_msg = loud_emoji + loud_msg + loud_emoji
+                await ctx.send(loud_msg)
 
     """ 
     Limits users to short, mostly readable exclamations.
@@ -57,6 +59,9 @@ class BigText(BaseCog):
     """
     async def msg_to_emoji(self, ctx, raw_msg, use_variants):
         big_msg = ""
+        if raw_msg == "":
+            return raw_msg
+
         for letter in raw_msg.lower():
             if letter in string.ascii_lowercase or letter in string.digits:
                 if use_variants and letter in self.letter_variants.keys() and random.random > self.variant_chance:
@@ -67,16 +72,13 @@ class BigText(BaseCog):
                 big_msg += " "
             else:
                 await ctx.send("Message can only have A-Z characters, numbers and spaces")
-                raise ValueError
-        if big_msg == "":
-            await ctx.send("Could not convert to big text")
-            raise ValueError
+                return ""
         return big_msg
 
     async def get_raw_msg(self, ctx):
         raw_msg = " ".join(ctx.message.clean_content.split(" ")[1:])
         if raw_msg == "":
             await ctx.send("Message cannot be empty!")
-            raise ValueError
+            return ""
         else:
             return raw_msg
