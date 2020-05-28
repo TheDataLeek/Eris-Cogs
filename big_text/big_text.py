@@ -69,7 +69,7 @@ class BigText(BaseCog):
 
         for letter in raw_msg.lower():
             if letter in string.ascii_lowercase or letter in string.digits:
-                if use_variants and letter in self.letter_variants.keys() and random.random > self.variant_chance:
+                if use_variants and letter in self.letter_variants.keys() and random.random() > self.variant_chance:
                     big_msg += self.letter_variants.get(letter)
                 else:
                     big_msg += f":regional_indicator_{letter}:"
