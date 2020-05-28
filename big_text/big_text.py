@@ -74,6 +74,7 @@ class BigText(BaseCog):
             else:
                 await ctx.send("Message can only have A-Z characters, numbers and spaces")
                 raise ValueError
+        return big_msg
 
     async def get_raw_msg(self, ctx):
         raw_msg = " ".join(ctx.message.clean_content.split(" ")[1:])
