@@ -23,12 +23,14 @@ class BigText(BaseCog):
 
     @commands.command()
     async def big_text(self, ctx):
-        raw_msg = self.get_raw_msg(ctx)
+        raw_msg = await self.get_raw_msg(ctx)
 
         if self.length_is_ok(ctx, raw_msg):
-            big_msg = self.msg_to_emoji(ctx, raw_msg, True)
+            big_msg = await self.msg_to_emoji(ctx, raw_msg, True)
             if big_msg != "":
                 await ctx.send(big_msg)
+        else:
+            await ctx.send(f"Message must be {self.max_message_length} characters or shorter!")
 
     """
     Converts a raw string message to block letter emoji with optional variants
@@ -36,23 +38,26 @@ class BigText(BaseCog):
     """
     @commands.command()
     async def loud_text(self, ctx):
-        raw_msg = self.get_raw_msg(ctx)
+        raw_msg = await self.get_raw_msg(ctx)
         loud_emoji = random.choice(self.loud_emojis)
         if self.length_is_ok(ctx, raw_msg):
-            loud_msg = self.msg_to_emoji(ctx, raw_msg, True)
+            loud_msg = await self.msg_to_emoji(ctx, raw_msg, True)
             if loud_msg != "":
                 loud_msg = loud_emoji + loud_msg + loud_emoji
                 await ctx.send(loud_msg)
+        else:
+            await ctx.send(f"Message must be {self.max_message_length} characters or shorter!")
 
     """ 
     Limits users to short, mostly readable exclamations.
     This also sets the max final message length to 440 characters unless a function adds extra decorative emojis
     (22 per emoji * 20)
     """
-    async def length_is_ok(self, ctx, raw_msg):
+    def length_is_ok(self, ctx, raw_msg):
         if len(raw_msg) >= self.max_message_length:
-            await ctx.send(f"Message must be {self.max_message_length} characters or shorter!")
             return False
+        else:
+            return True
 
     """
     Converts a raw string message to block letter emoji with optional variants and sends to channel
