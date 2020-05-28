@@ -23,14 +23,11 @@ class BigText(BaseCog):
 
     @commands.command()
     async def big_text(self, ctx):
-        try:
-            raw_msg = self.get_raw_msg(ctx)
+        raw_msg = self.get_raw_msg(ctx)
 
-            if self.length_is_ok(ctx, raw_msg):
-                big_msg = self.msg_to_emoji(ctx, raw_msg, True)
-                await ctx.send(big_msg)
-        finally:
-            return
+        if self.length_is_ok(ctx, raw_msg):
+            big_msg = self.msg_to_emoji(ctx, raw_msg, True)
+            await ctx.send(big_msg)
 
     """
     Converts a raw string message to block letter emoji with optional variants
@@ -38,15 +35,12 @@ class BigText(BaseCog):
     """
     @commands.command()
     async def loud_text(self, ctx):
-        try:
-            raw_msg = self.get_raw_msg(ctx)
-            loud_emoji = random.choice(self.loud_emojis)
-            if self.length_is_ok(ctx, raw_msg):
-                loud_msg = self.msg_to_emoji(ctx, raw_msg, True)
-                loud_msg = loud_emoji + loud_msg + loud_emoji
-                await ctx.send(loud_msg)
-        finally:
-            return
+        raw_msg = self.get_raw_msg(ctx)
+        loud_emoji = random.choice(self.loud_emojis)
+        if self.length_is_ok(ctx, raw_msg):
+            loud_msg = self.msg_to_emoji(ctx, raw_msg, True)
+            loud_msg = loud_emoji + loud_msg + loud_emoji
+            await ctx.send(loud_msg)
 
     """ 
     Limits users to short, mostly readable exclamations.
