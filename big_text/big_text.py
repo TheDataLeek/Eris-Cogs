@@ -24,7 +24,7 @@ class BigText(BaseCog):
     @commands.command()
     async def big_text(self, ctx):
         try:
-            raw_msg = get_raw_msg(ctx)
+            raw_msg = self.get_raw_msg(ctx)
 
             if self.length_is_ok(ctx, raw_msg):
                 big_msg = self.msg_to_emoji(ctx, raw_msg, True)
