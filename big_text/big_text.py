@@ -39,7 +39,7 @@ class BigText(BaseCog):
     @commands.command()
     async def loud_text(self, ctx):
         try:
-            raw_msg = get_raw_msg(ctx)
+            raw_msg = self.get_raw_msg(ctx)
             loud_emoji = random.choice(self.loud_emojis)
             if self.length_is_ok(ctx, raw_msg):
                 loud_msg = self.msg_to_emoji(ctx, raw_msg, True)
