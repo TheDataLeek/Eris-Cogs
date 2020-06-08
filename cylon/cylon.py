@@ -146,13 +146,13 @@ class Cylon(BaseCog, ErisEventMixin):
                 if message.author.bot:
                     continue
                 message_list.append({
+                    'id': message.id,
                     'author': message.author.id,
                     'content': message.clean_content,
                 })
 
             last_message_examined = message
 
-        message_list = list(set(message_list))
         filename = f"{server.name}-{channel.name}.json"
         output_file = self.data_dir / filename
         output_file.write_text(json.dumps(message_list))
