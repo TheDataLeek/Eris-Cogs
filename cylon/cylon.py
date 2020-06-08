@@ -13,7 +13,11 @@ from typing import List, Dict
 import aiohttp
 import discord
 from redbot.core import commands, bot, checks, data_manager
-import keras
+try:
+    import keras
+except ImportError:
+    print('Warning! You wont be able to train the model')
+    pass
 
 # local
 from .eris_event_lib import ErisEventMixin
