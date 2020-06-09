@@ -10,6 +10,8 @@ from time import sleep
 import json
 from typing import List, Dict, Any, Tuple
 from pprint import pprint as pp
+import gc
+import random
 
 # 3rd party
 import aiohttp
@@ -23,7 +25,7 @@ try:
     from sklearn import model_selection
     import numpy as np
     import keras
-    from keras.models import Sequential
+    from keras.models import Sequential, load_model
     from keras.layers import LSTM, Dense, Dropout, Embedding
     from keras.callbacks import EarlyStopping, ModelCheckpoint
 except ImportError as e:
@@ -54,9 +56,10 @@ ALLPAPI = 160611518264639488
 
 def main():
     args = get_args()
+    messages = load_from_json(args.data)
+    processed, word_index = preprocess(messages)
+    index_word = {v: k for k, v in word_index.items()}
     if args.train:
-        messages = load_from_json(args.data)
-        processed, word_index = preprocess(messages)
         (
             feature_train,
             feature_test,
@@ -75,8 +78,27 @@ def main():
     elif args.deploy:
         pass
     else:
+        model_dir = pathlib.Path('../../models')
+        model = (model_dir / 'model.h5')
+        if not model.exists():
+            raise FileNotFoundError
 
-        raise NotImplemented("Model not trained")
+        response = []
+        model = load_model(model)
+        start = [random.choices(list(word_index.values()), k=3)]
+        print(' '.join(index_word[s] for s in start[0]))
+
+        for i in range(10):
+            preds = model.predict(start)[0]
+            preds = preds / sum(preds)    # normalize
+            probas = np.random.multinomial(1, preds, 1)[0]
+
+            next_idx = np.argmax(probas)
+            response.append(next_idx)
+
+            start[0].append(next_idx)
+
+        print(' '.join(index_word[s] for s in response))
 
 
 ########################################################################################################################
@@ -87,9 +109,7 @@ def main():
 def load_from_json(datafile: pathlib.Path) -> List[Dict[str, Any]]:
     messages = json.loads(datafile.read_text())  # pulled from .reap below
 
-    # just use the first 10k for dev
-    messages = [m for m in messages if m["author"] == ALLPAPI]
-    messages = messages[:1000]
+    messages = messages[:100000]
 
     # remove emoji
     custom_emoji = "<a?:\w+:[0-9]+>"
@@ -122,22 +142,33 @@ def load_from_json(datafile: pathlib.Path) -> List[Dict[str, Any]]:
             current_message = m
             previous_author = m["author"]
     new_messages.append(current_message)
+
+    new_messages = [m for m in new_messages if m['author'] == ALLPAPI]
+
     return new_messages
 
 
 def preprocess(text: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict]:
-    # https://keras.io/api/preprocessing/text/
-    tokenizer = keras.preprocessing.text.Tokenizer(
-        num_words=None,  # keep all words
-        filters='"#$%&()*+-<=>@[\\]^_`{|}~\t\n',  # edited from docs to include what we care about and exclude nums
-        lower=False,  # don't convert to lowercase
-        split=" ",  # default
-    )
-    just_content = [t["content"] for t in text]
-    tokenizer.fit_on_texts(just_content)
-    sequences = tokenizer.texts_to_sequences(just_content)
+    just_content = [t["content"].lower() for t in text]
 
-    word_index = tokenizer.word_index
+    chars_to_remove = '"#$%&()*+-<=>@[\\]^_`{|}~/'
+
+    index = 1
+    word_index = {}
+    sequences = []
+    for message in just_content:
+        message = ''.join(c for c in message if c not in chars_to_remove)
+        # TODO don't eat that letter fuck
+        message = re.subn('\w,', ' , ', message)[0]
+        message = re.subn('\w\.', ' . ', message)[0]
+        message = re.subn('\w\?', ' ? ', message)[0]
+        message = re.subn('\w\!', ' ! ', message)[0]
+        words = [w for w in re.split('\s', message) if w != '']
+        for word in words:
+            if word not in word_index:
+                word_index[word] = index
+                index += 1
+        sequences.append([word_index[word] for word in words])
 
     for i, seq in enumerate(sequences):
         text[i]["sequence"] = seq
@@ -185,42 +216,51 @@ def generate_features_and_labels(text: List[Dict[str, Any]], word_index: Dict):
 
 
 def build_model(
-    feature_train, feature_test, label_train, label_test, word_index, embedding
+    feature_train, feature_test, label_train, label_test, word_index, embedding, use_twitter=False
 ):
-    # load embedding
-    glove = np.loadtxt(embedding, dtype=str, comments=None, delimiter=" ")
-    vectors = glove[:, 1:].astype(float)
-    words = glove[:, 0]
-    word_lookup = {word: vector for word, vector in zip(words, vectors)}
-    dim = vectors.shape[1]
-    embedding = np.zeros((len(word_index) + 1, dim))
-    for i, word in enumerate(word_index.keys()):
-        vector = word_lookup.get(word, None)
-        if vector is not None:
-            embedding[i + 1, :] = vector
+    num_words = len(word_index) + 1
 
-    print(f"Embedding Dimension: {embedding.shape}")
+    dim = 100
+    if use_twitter:
+        # load embedding
+        glove = np.loadtxt(embedding, dtype=str, comments=None, delimiter=" ")
+        vectors = glove[:, 1:].astype(float)
+        words = glove[:, 0]
+        word_lookup = {word: vector for word, vector in zip(words, vectors)}
+        dim = vectors.shape[1]
+        embedding = np.zeros((num_words, dim))
+        for i, word in enumerate(word_index.keys()):
+            vector = word_lookup.get(word, None)
+            if vector is not None:
+                embedding[i + 1, :] = vector
+
+        gc.enable()
+        del glove, vectors, words
+        gc.collect()
+        print(f"Embedding Dimension: {embedding.shape}")
 
     # set up model
     model = Sequential()  # Build model one layer at a time
+    weights = None
+    if use_twitter:
+        weights = [embedding]
     model.add(
         Embedding(  # maps each input word to 100-dim vector
-            input_dim=len(word_index) + 1,  # how many words can input
-            input_length=len(feature_train),  # how many trainings
+            input_dim=num_words,  # how many words can input
+            # input_length=len(feature_train),  # how many trainings
             output_dim=dim,  # output vector
-            weights=[embedding],  # pre-trained weights
-            trainable=True,  #   update embeddings
-            mask_zero=True,
+            weights=weights,
+            trainable=True,  # update embeddings
         )
     )
     model.add(LSTM(64, return_sequences=False, dropout=0.1, recurrent_dropout=0.1))
     model.add(Dense(64, activation="relu"))
     model.add(Dropout(0.5))
-    model.add(Dense(len(word_index) + 1, activation="softmax"))
+    model.add(Dense(num_words, activation="softmax"))
     model.compile(
         optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"]
     )
-    print(model.summary())
+    model.summary()
 
     # train
     callbacks = [
@@ -231,12 +271,12 @@ def build_model(
     ]
 
     history = model.fit(
-        [feature_train],
+        feature_train,
         label_train,
-        batch_size=1024,
-        epochs=5,
+        batch_size=2048,
+        epochs=50,
         callbacks=callbacks,
-        validation_data=([feature_test], label_test),
+        validation_data=(feature_test, label_test),
     )
 
 
@@ -261,7 +301,8 @@ def get_args():
     if args.data is None:
         raise FileNotFoundError("Please provide a data file!")
     args.data = pathlib.Path(args.data)
-    args.embedding_file = pathlib.Path(args.embedding_file)
+    if args.embedding_file is not None:
+        args.embedding_file = pathlib.Path(args.embedding_file)
     return args
 
 
