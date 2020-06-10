@@ -12,6 +12,7 @@ from typing import List, Dict, Any, Tuple
 from pprint import pprint as pp
 import gc
 import random
+import pickle
 
 # 3rd party
 import aiohttp
@@ -49,16 +50,18 @@ except ImportError:
 
 
 BaseCog = getattr(commands, "Cog", object)
-
-
 ALLPAPI = 160611518264639488
+TIMESTEP = 5
 
 
 def main():
     args = get_args()
     messages = load_from_json(args.data)
-    processed, word_index = preprocess(messages)
-    index_word = {v: k for k, v in word_index.items()}
+    processed, word_index, index_word = preprocess(messages)
+    # for message in processed:
+    #     print(message['content'])
+    #     print(' '.join(index_word[c] for c in message['sequence']))
+    #     print('~~~')
     if args.train:
         (
             feature_train,
@@ -77,28 +80,31 @@ def main():
         )
     elif args.deploy:
         pass
-    else:
-        model_dir = pathlib.Path('../../models')
-        model = (model_dir / 'model.h5')
-        if not model.exists():
-            raise FileNotFoundError
 
-        response = []
-        model = load_model(model)
-        start = [random.choices(list(word_index.values()), k=3)]
-        print(' '.join(index_word[s] for s in start[0]))
+    model_dir = pathlib.Path('../../models')
+    model = (model_dir / 'model.h5')
+    if not model.exists():
+        raise FileNotFoundError
 
-        for i in range(10):
-            preds = model.predict(start)[0]
-            preds = preds / sum(preds)    # normalize
-            probas = np.random.multinomial(1, preds, 1)[0]
+    response = []
+    model = load_model(model)
+    start = random.choice(processed)
+    pp(start)
+    start = np.array([start['sequence'][-TIMESTEP:]])
 
-            next_idx = np.argmax(probas)
-            response.append(next_idx)
+    for i in range(20):
+        preds = model.predict(start)[0]
+        preds = preds / sum(preds)    # normalize
+        probas = np.random.multinomial(1, preds, 1)[0]
 
-            start[0].append(next_idx)
+        next_idx = np.argmax(probas)
+        response.append(next_idx)
 
-        print(' '.join(index_word[s] for s in response))
+        start = np.array([
+            [*start[0], next_idx][-TIMESTEP:]
+        ])
+
+    print(' '.join(index_word[s] for s in response))
 
 
 ########################################################################################################################
@@ -109,7 +115,7 @@ def main():
 def load_from_json(datafile: pathlib.Path) -> List[Dict[str, Any]]:
     messages = json.loads(datafile.read_text())  # pulled from .reap below
 
-    messages = messages[:100000]
+    # messages = messages[:100000]
 
     # remove emoji
     custom_emoji = "<a?:\w+:[0-9]+>"
@@ -125,11 +131,7 @@ def load_from_json(datafile: pathlib.Path) -> List[Dict[str, Any]]:
     new_messages = []
     previous_author = None
     current_message = {}
-    message_ids = []
     for m in tqdm(messages[::-1]):  # since reap saves them in reverse-chronological
-        if m["id"] in message_ids:
-            continue
-        message_ids.append(m["id"])
         if re.match("^[\n ]*$", m["content"]):
             continue
         if m["content"].startswith("http"):
@@ -148,7 +150,7 @@ def load_from_json(datafile: pathlib.Path) -> List[Dict[str, Any]]:
     return new_messages
 
 
-def preprocess(text: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict]:
+def preprocess(text: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict, Dict]:
     just_content = [t["content"].lower() for t in text]
 
     chars_to_remove = '"#$%&()*+-<=>@[\\]^_`{|}~/'
@@ -158,29 +160,31 @@ def preprocess(text: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict]:
     sequences = []
     for message in just_content:
         message = ''.join(c for c in message if c not in chars_to_remove)
-        # TODO don't eat that letter fuck
-        message = re.subn('\w,', ' , ', message)[0]
-        message = re.subn('\w\.', ' . ', message)[0]
-        message = re.subn('\w\?', ' ? ', message)[0]
-        message = re.subn('\w\!', ' ! ', message)[0]
-        words = [w for w in re.split('\s', message) if w != '']
+        message = re.subn(r',', ' , ', message)[0]
+        message = re.subn(r'\.', ' . ', message)[0]
+        message = re.subn(r'\?', ' ? ', message)[0]
+        message = re.subn(r'\!', ' ! ', message)[0]
+        words = [w for w in re.split(r'\s', message) if w != '']
         for word in words:
             if word not in word_index:
                 word_index[word] = index
                 index += 1
         sequences.append([word_index[word] for word in words])
 
+    index_word = {v: k for k, v in word_index.items()}
+
     for i, seq in enumerate(sequences):
         text[i]["sequence"] = seq
+        text[i]["tokenized"] = ' '.join(index_word[s] for s in seq)
 
-    return text, word_index
+    return text, word_index, index_word
 
 
 def generate_features_and_labels(text: List[Dict[str, Any]], word_index: Dict):
     features = []
     labels = []
 
-    training_length = 10
+    training_length = TIMESTEP
     for message in text:
         sequence = message["sequence"]
         if len(sequence) < training_length:
@@ -247,12 +251,14 @@ def build_model(
     model.add(
         Embedding(  # maps each input word to 100-dim vector
             input_dim=num_words,  # how many words can input
-            # input_length=len(feature_train),  # how many trainings
+            input_length=TIMESTEP,  # timestep length
             output_dim=dim,  # output vector
             weights=weights,
             trainable=True,  # update embeddings
         )
     )
+    model.add(LSTM(64, return_sequences=True, dropout=0.1, recurrent_dropout=0.1))
+    model.add(LSTM(64, return_sequences=True, dropout=0.1, recurrent_dropout=0.1))
     model.add(LSTM(64, return_sequences=False, dropout=0.1, recurrent_dropout=0.1))
     model.add(Dense(64, activation="relu"))
     model.add(Dropout(0.5))
