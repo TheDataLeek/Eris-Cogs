@@ -38,7 +38,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.out_of_context_handler, "on_message")
 
     def generate_quote_hash(self):
-        self.quotes = [s for s in self.quotes if s != '']
+        self.quotes = [s for s in self.quotes if s != ""]
         self.quote_hash = dict()
         for quote in self.quotes:
             quote_words = [_ for _ in quote.lower().split() if len(_) > 3]

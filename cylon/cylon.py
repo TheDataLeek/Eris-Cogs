@@ -27,7 +27,7 @@ try:
     import numpy as np
     import keras
     from keras.models import Sequential, load_model
-    from keras.layers import LSTM, Dense, Dropout, Embedding
+    from keras.layers import LSTM, Dense, Dropout, Embedding, Bidirectional
     from keras.callbacks import EarlyStopping, ModelCheckpoint
 except ImportError as e:
     print(e)
@@ -51,17 +51,13 @@ except ImportError:
 
 BaseCog = getattr(commands, "Cog", object)
 ALLPAPI = 160611518264639488
-TIMESTEP = 5
+TIMESTEP = 10
 
 
 def main():
     args = get_args()
     messages = load_from_json(args.data)
     processed, word_index, index_word = preprocess(messages)
-    # for message in processed:
-    #     print(message['content'])
-    #     print(' '.join(index_word[c] for c in message['sequence']))
-    #     print('~~~')
     if args.train:
         (
             feature_train,
@@ -81,40 +77,55 @@ def main():
     elif args.deploy:
         pass
 
-    model_dir = pathlib.Path('../../models')
-    model = (model_dir / 'model.h5')
+    model_dir = pathlib.Path("../../models")
+    model = model_dir / "model.h5"
     if not model.exists():
         raise FileNotFoundError
     model = load_model(model)
 
     while True:
-        user_input = input('> ')
-        null_input = np.ones(TIMESTEP) * word_index['.']
+        user_input = input("> ")
+        null_input = np.ones(TIMESTEP) * word_index["."]
         seq = []
         for word in tokenize_sentence(user_input):
             if word in word_index:
                 seq.append(word_index[word])
+        if len(seq) == 0:
+            continue
         seq = seq[-TIMESTEP:]
-        null_input[-len(seq):] = seq
-        start = np.array([null_input])
+        null_input[-len(seq) :] = seq
+        start = np.array([null_input], dtype=np.float64)
 
         response = []
         for i in range(30):
-            preds = model.predict(start)[0]
-            preds = preds / sum(preds)    # normalize
+            preds = model.predict(start)[0].astype(np.float64)
+            preds = preds / sum(preds)  # normalize
             probas = np.random.multinomial(1, preds, 1)[0]
 
             next_idx = np.argmax(probas)
             response.append(next_idx)
 
-            if next_idx in [word_index['.'], word_index['!'], word_index['?']]:
+            if next_idx in [word_index["."], word_index["!"], word_index["?"]]:
                 break
 
-            start = np.array([
-                [*start[0], next_idx][-TIMESTEP:]
-            ])
+            start = np.array([[*start[0], next_idx][-TIMESTEP:]], dtype=np.float64)
 
-        print(' '.join(index_word[s] for s in response))
+        print(cleanup(" ".join(index_word[s] for s in response)))
+
+
+def cleanup(input_string: str) -> str:
+    output_string = re.subn(r" ([,\.\!\?])", r"\1", input_string)[0]
+    output_string = re.subn(r" i([ ,\.\!\?'])", r" I\1", output_string)[0]
+
+    to_upper = lambda match: match.group(1).upper()
+    output_string = re.subn(r"^(\w)", to_upper, output_string)[0]
+    to_upper = lambda match: f"{match.group(1)}{match.group(2).upper()}"
+    output_string = re.subn(r"([.\!\?] )(\w)", to_upper, output_string)[0]
+
+    if output_string[-1] not in ",.!?":
+        output_string += random.choice(",.!?")
+
+    return output_string
 
 
 ########################################################################################################################
@@ -155,7 +166,7 @@ def load_from_json(datafile: pathlib.Path) -> List[Dict[str, Any]]:
             previous_author = m["author"]
     new_messages.append(current_message)
 
-    new_messages = [m for m in new_messages if m['author'] == ALLPAPI]
+    new_messages = [m for m in new_messages if m["author"] == ALLPAPI]
 
     return new_messages
 
@@ -178,19 +189,19 @@ def preprocess(text: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict, 
 
     for i, seq in enumerate(sequences):
         text[i]["sequence"] = seq
-        text[i]["tokenized"] = ' '.join(index_word[s] for s in seq)
+        text[i]["tokenized"] = " ".join(index_word[s] for s in seq)
 
     return text, word_index, index_word
 
 
 def tokenize_sentence(message: str) -> List[str]:
     chars_to_remove = '"#$%&()*+-<=>@[\\]^_`{|}~/'
-    message = ''.join(c for c in message if c not in chars_to_remove)
-    message = re.subn(r',', ' , ', message)[0]
-    message = re.subn(r'\.', ' . ', message)[0]
-    message = re.subn(r'\?', ' ? ', message)[0]
-    message = re.subn(r'\!', ' ! ', message)[0]
-    words = [w for w in re.split(r'\s', message) if w != '']
+    message = "".join(c for c in message if c not in chars_to_remove)
+    message = re.subn(r",", " , ", message)[0]
+    message = re.subn(r"\.", " . ", message)[0]
+    message = re.subn(r"\?", " ? ", message)[0]
+    message = re.subn(r"\!", " ! ", message)[0]
+    words = [w for w in re.split(r"\s", message) if w != ""]
     return words
 
 
@@ -227,18 +238,24 @@ def generate_features_and_labels(text: List[Dict[str, Any]], word_index: Dict):
         label_train,
         label_test,
     ) = model_selection.train_test_split(
-        features, label_array, test_size=0.25, shuffle=True
+        features, label_array, test_size=0.1, shuffle=True
     )
 
     return feature_train, feature_test, label_train, label_test
 
 
 def build_model(
-    feature_train, feature_test, label_train, label_test, word_index, embedding, use_twitter=False
+    feature_train,
+    feature_test,
+    label_train,
+    label_test,
+    word_index,
+    embedding,
+    use_twitter=True,
 ):
     num_words = len(word_index) + 1
 
-    dim = 100
+    dim = 25
     if use_twitter:
         # load embedding
         glove = np.loadtxt(embedding, dtype=str, comments=None, delimiter=" ")
@@ -271,11 +288,24 @@ def build_model(
             trainable=True,  # update embeddings
         )
     )
-    model.add(LSTM(64, return_sequences=True, dropout=0.1, recurrent_dropout=0.1))
-    model.add(LSTM(64, return_sequences=True, dropout=0.1, recurrent_dropout=0.1))
-    model.add(LSTM(64, return_sequences=False, dropout=0.1, recurrent_dropout=0.1))
+    model.add(
+        Bidirectional(
+            LSTM(64, return_sequences=True, dropout=0.1, recurrent_dropout=0.1),
+            input_shape=(TIMESTEP, dim),
+        )
+    )
+    model.add(
+        Bidirectional(
+            LSTM(64, return_sequences=True, dropout=0.1, recurrent_dropout=0.1)
+        )
+    )
+    model.add(
+        Bidirectional(
+            LSTM(64, return_sequences=False, dropout=0.1, recurrent_dropout=0.1)
+        )
+    )
     model.add(Dense(64, activation="relu"))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.25))  # input is rate that things are zeroed
     model.add(Dense(num_words, activation="softmax"))
     model.compile(
         optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"]
@@ -294,7 +324,7 @@ def build_model(
         feature_train,
         label_train,
         batch_size=2048,
-        epochs=50,
+        epochs=150,
         callbacks=callbacks,
         validation_data=(feature_test, label_test),
     )
@@ -400,7 +430,7 @@ class Cylon(BaseCog, ErisEventMixin):
 app = flask.Flask(__name__)
 
 
-@app.route('/', methods=['GET'])
+@app.route("/", methods=["GET"])
 def index():
     pass
 

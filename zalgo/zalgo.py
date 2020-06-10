@@ -75,7 +75,7 @@ class Zalgo(BaseCog):
 
         # zalgo characters to fuck with
         zalgo_chrs = [chr(x) for x in range(0x0300, 0x036F + 1)]
-        zalgo_chrs += [u"\u0488", u"\u0489"]
+        zalgo_chrs += ["\u0488", "\u0489"]
 
         msg_array = list(raw_msg)
         for i in range(intensity):
@@ -134,7 +134,7 @@ class Zalgo(BaseCog):
             else:
                 new_msg.append(word)
             do_it = not do_it
-        new_msg = ' '.join(new_msg)
+        new_msg = " ".join(new_msg)
 
         await ctx.message.delete()
         await ctx.send(new_msg)
