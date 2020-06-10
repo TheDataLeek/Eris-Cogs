@@ -85,26 +85,36 @@ def main():
     model = (model_dir / 'model.h5')
     if not model.exists():
         raise FileNotFoundError
-
-    response = []
     model = load_model(model)
-    start = random.choice(processed)
-    pp(start)
-    start = np.array([start['sequence'][-TIMESTEP:]])
 
-    for i in range(20):
-        preds = model.predict(start)[0]
-        preds = preds / sum(preds)    # normalize
-        probas = np.random.multinomial(1, preds, 1)[0]
+    while True:
+        user_input = input('> ')
+        null_input = np.ones(TIMESTEP) * word_index['.']
+        seq = []
+        for word in tokenize_sentence(user_input):
+            if word in word_index:
+                seq.append(word_index[word])
+        seq = seq[-TIMESTEP:]
+        null_input[-len(seq):] = seq
+        start = np.array([null_input])
 
-        next_idx = np.argmax(probas)
-        response.append(next_idx)
+        response = []
+        for i in range(30):
+            preds = model.predict(start)[0]
+            preds = preds / sum(preds)    # normalize
+            probas = np.random.multinomial(1, preds, 1)[0]
 
-        start = np.array([
-            [*start[0], next_idx][-TIMESTEP:]
-        ])
+            next_idx = np.argmax(probas)
+            response.append(next_idx)
 
-    print(' '.join(index_word[s] for s in response))
+            if next_idx in [word_index['.'], word_index['!'], word_index['?']]:
+                break
+
+            start = np.array([
+                [*start[0], next_idx][-TIMESTEP:]
+            ])
+
+        print(' '.join(index_word[s] for s in response))
 
 
 ########################################################################################################################
@@ -153,18 +163,11 @@ def load_from_json(datafile: pathlib.Path) -> List[Dict[str, Any]]:
 def preprocess(text: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict, Dict]:
     just_content = [t["content"].lower() for t in text]
 
-    chars_to_remove = '"#$%&()*+-<=>@[\\]^_`{|}~/'
-
     index = 1
     word_index = {}
     sequences = []
     for message in just_content:
-        message = ''.join(c for c in message if c not in chars_to_remove)
-        message = re.subn(r',', ' , ', message)[0]
-        message = re.subn(r'\.', ' . ', message)[0]
-        message = re.subn(r'\?', ' ? ', message)[0]
-        message = re.subn(r'\!', ' ! ', message)[0]
-        words = [w for w in re.split(r'\s', message) if w != '']
+        words = tokenize_sentence(message)
         for word in words:
             if word not in word_index:
                 word_index[word] = index
@@ -178,6 +181,17 @@ def preprocess(text: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict, 
         text[i]["tokenized"] = ' '.join(index_word[s] for s in seq)
 
     return text, word_index, index_word
+
+
+def tokenize_sentence(message: str) -> List[str]:
+    chars_to_remove = '"#$%&()*+-<=>@[\\]^_`{|}~/'
+    message = ''.join(c for c in message if c not in chars_to_remove)
+    message = re.subn(r',', ' , ', message)[0]
+    message = re.subn(r'\.', ' . ', message)[0]
+    message = re.subn(r'\?', ' ? ', message)[0]
+    message = re.subn(r'\!', ' ! ', message)[0]
+    words = [w for w in re.split(r'\s', message) if w != '']
+    return words
 
 
 def generate_features_and_labels(text: List[Dict[str, Any]], word_index: Dict):
@@ -382,6 +396,13 @@ class Cylon(BaseCog, ErisEventMixin):
 ########################################################################################################################
 # WEB SERVER                                                                                                           #
 ########################################################################################################################
+
+app = flask.Flask(__name__)
+
+
+@app.route('/', methods=['GET'])
+def index():
+    pass
 
 
 if __name__ == "__main__":
