@@ -47,7 +47,7 @@ class MineSweeper(BaseCog):
                         if field[new_j][new_i] == '||:boom:||':
                             num_bombs += 1
 
-                field[j][i] = f"||nums[num_bombs]||"
+                field[j][i] = f"||{nums[num_bombs]}||"
 
         while True:
             xloc = random.randint(0, width - 1)
