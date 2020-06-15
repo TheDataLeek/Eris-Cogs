@@ -30,7 +30,7 @@ class MineSweeper(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def msnew(self, ctx, width: int = 9, length: int = 9, bombs: int = 10):
+    async def msnew(self, ctx, width: int = 14, length: int = 14, bombs: int = 40):
         if bombs >= width * length:
             await ctx.send("Need to have less bombs than locations!")
             return
