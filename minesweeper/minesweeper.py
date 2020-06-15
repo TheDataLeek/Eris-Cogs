@@ -47,12 +47,15 @@ class MineSweeper(BaseCog):
                         if field[new_j][new_i] == '||:boom:||':
                             num_bombs += 1
 
-                field[j][i] = f"||{nums[num_bombs]}||"
+                if num_bombs == 0:
+                    field[j][i] = f"{nums[num_bombs]}"
+                else:
+                    field[j][i] = f"||{nums[num_bombs]}||"
 
         while True:
             xloc = random.randint(0, width - 1)
             yloc = random.randint(0, length - 1)
-            if field[yloc][xloc] == '||:boom:||':
+            if not field[yloc][xloc].startswith('|') or field[yloc][xloc] == '||:boom:||':
                 continue
 
             field[yloc][xloc] = field[yloc][xloc][2:-2]
