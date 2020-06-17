@@ -53,9 +53,15 @@ class Board(object):
         self.mask = None
 
     def __str__(self):
-        output = "\n".join(
-            "".join(nums.get(cell, "||:boom:||") for cell in row) for row in self.board
-        )
+        output = [[0 for _ in range(self.width)] for _ in range(self.length)]
+        for i, j in self.generate_positions():
+            output[j][i] = nums.get(self.board[j][i], "||:boom:||")
+            if self.board[j][i] != 0 and any(
+                self.board[new_j][new_i] == 0
+                for new_i, new_j in self.generate_valid_deltas(i, j)
+            ):
+                output[j][i] = output[j][i][2:-2]
+        output = "\n".join("".join(cell for cell in row) for row in output)
         return output
 
     def show_array(self, arr=None):
@@ -71,12 +77,16 @@ class Board(object):
                 for new_i, new_j in self.generate_valid_deltas(i, j):
                     self.mask[new_j][new_i] = 1
         print(self.show_array(self.mask))
-        print('~')
+        print("~")
 
         for _ in range(50):
             # while True:
             for i, j in self.generate_positions():
-                if self.mask[j][i] == 0 or self.board[j][i] == 0 or self.mask[j][i] == 9:
+                if (
+                    self.mask[j][i] == 0
+                    or self.board[j][i] == 0
+                    or self.mask[j][i] == 9
+                ):
                     continue
 
                 nearby_bombs = list(self.find_near_bombs(i, j))
