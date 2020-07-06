@@ -17,7 +17,7 @@ class Search(BaseCog):
 
         async with aiohttp.ClientSession() as session:
             async with session.get(search) as resp:
-                data = resp.json()
+                data = await resp.json()
                 if len(data) == 0:
                     await ctx.send('No pages found!')
                     return
