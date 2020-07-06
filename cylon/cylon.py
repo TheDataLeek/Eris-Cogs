@@ -100,7 +100,7 @@ def main():
         for i in range(30):
             preds = model.predict(start)[0].astype(np.float64)
             preds = preds / sum(preds)  # normalize
-            probas = np.random.multinomial(1, preds, 1)[0]
+            probas = np.random.multinomial(1, preds, 1)[0]p
 
             next_idx = np.argmax(probas)
             response.append(next_idx)
