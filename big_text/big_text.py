@@ -13,7 +13,7 @@ class BigText(BaseCog):
     @commands.command()
     async def big_text(self, ctx):
         raw_msg = " ".join(ctx.message.clean_content.split(" ")[1:])
-        if raw_msg is "":
+        if raw_msg == "":
             await ctx.send("Message cannot be empty!")
             return
 
