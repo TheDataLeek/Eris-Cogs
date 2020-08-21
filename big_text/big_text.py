@@ -15,6 +15,7 @@ class BigText(BaseCog):
         raw_msg = " ".join(ctx.message.clean_content.split(" ")[1:])
         if raw_msg is "":
             await ctx.send("Message cannot be empty!")
+            return
 
         """ 
         Limits users to short, mostly readable exclamations.
