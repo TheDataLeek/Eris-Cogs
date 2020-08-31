@@ -18,7 +18,7 @@ class DMRole(BaseCog):
             (
                 r, fuzz.ratio(rolename, r.name)
             )
-            for r in self.bot.guild.roles
+            for r in ctx.guild.roles
         ], key=lambda tup: -tup[1])
         role: discord.Role
         role, score = scores[0]
