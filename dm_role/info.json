@@ -1,0 +1,6 @@
+{
+  "author" : ["Eris"],
+  "description" : "DM a specific role based on fuzzy role name",
+  "name" : "DM Role",
+  "short": "DM Roles"
+}
