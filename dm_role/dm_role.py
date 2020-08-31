@@ -10,7 +10,6 @@ class DMRole(BaseCog):
         self.bot = bot
 
     @commands.command()
-    @checks.mod()
     async def tell(self, ctx, rolename: str, *message: str):
         message = ' '.join(message)
 
