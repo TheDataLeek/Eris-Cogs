@@ -22,7 +22,7 @@ class Spoop(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.randomly_spoop, "on_message")
 
     async def randomly_spoop(self, message: discord.Message):
-        randomly_allowed: bool = random.random() <= 0.005
+        randomly_allowed: bool = random.random() <= 0.01
         if not randomly_allowed:
             return
 
