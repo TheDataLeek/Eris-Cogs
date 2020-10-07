@@ -92,8 +92,14 @@ class Events(BaseCog, ErisEventMixin):
                     await self.whois.get_realname(ctx, str(author.id))
                 )
 
+            # ugh 
+            if 'cum' in message.clean_content.lower() and random.random() <= 0.25:
+                await message.channel.send('*uwu* I want your cummies *uwu*')
+                return
+
+
             # mustaches
-            if random.random() <= 0.01:
+            if random.random() <= 0.001:
                 emojis = {e.name: e for e in message.guild.emojis}
                 await message.add_reaction(emojis["must"])
                 time.sleep(0.1)
@@ -103,7 +109,7 @@ class Events(BaseCog, ErisEventMixin):
 
             if (
                 "beard" in message.clean_content or "mustach" in message.clean_content
-            ) and random.random() <= 0.1:
+            ) and random.random() <= 0.2:
                 await message.channel.send(
                     "https://media.discordapp.net/attachments/188030840377311232/694979897495388250/videotogif_2020.04.01_12.41.13.gif"
                 )
