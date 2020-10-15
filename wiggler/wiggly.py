@@ -25,9 +25,13 @@ class Wiggle(BaseCog, ErisEventMixin):
             allowed: bool = await self.allowed(ctx, message)
             author: discord.Member = message.author
 
-            if str(author.id) != '405152630055108619':
+            emojis = {e.name: e for e in message.guild.emojis}
+            if str(author.id) == '405152630055108619':
+                await message.add_reaction(emojis['wiggler'])
                 return
 
-            emojis = {e.name: e for e in message.guild.emojis}
-            await message.add_reaction(emojis['wiggler'])
+            if str(author.id) == '159771760508534784':
+                await message.add_reaction(emojis['dogbless'])
+                return
+
 
