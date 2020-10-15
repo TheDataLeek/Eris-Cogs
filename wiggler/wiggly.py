@@ -3,6 +3,7 @@ import random
 import re
 
 # third party
+import discord
 from redbot.core import commands, bot
 
 from .eris_event_lib import ErisEventMixin
