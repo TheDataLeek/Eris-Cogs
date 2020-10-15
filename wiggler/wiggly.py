@@ -34,4 +34,8 @@ class Wiggle(BaseCog, ErisEventMixin):
                 await message.add_reaction(emojis['dogbless'])
                 return
 
+            if str(author.id) == '142431859148718080' and random.random() <= 0.05:
+                await message.add_reaction(emojis['caramelldansen'])
+                return
+
 
