@@ -26,7 +26,7 @@ class Wiggle(BaseCog, ErisEventMixin):
             author: discord.Member = message.author
 
             emojis = {e.name: e for e in message.guild.emojis}
-            if str(author.id) == '405152630055108619' and random.random() <= 0.2:
+            if str(author.id) == '405152630055108619' and random.random() <= 0.5:
                 await message.add_reaction(emojis['wiggler'])
                 return
 
