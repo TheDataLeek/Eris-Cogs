@@ -24,6 +24,8 @@ class Move(BaseCog):
                 x = io.BytesIO()
                 await a.save(x)
 
+                new_attachments.append(x)
+
             for a in new_attachments:
                 a.seek(0)
 
