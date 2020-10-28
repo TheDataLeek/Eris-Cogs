@@ -12,14 +12,16 @@ class Move(BaseCog):
     @commands.command()
     @checks.mod()
     @checks.is_owner()
-    async def move(self, ctx, msg_id: str, new_channel: discord.TextChannel):
-        content = ctx.message.content
-        attachments = ctx.message.attachments
+    async def move(self, ctx, msg_id: int, new_channel: discord.TextChannel):
+        message = await ctx.message.channel.fetch_message(msg_id)
 
-        new_attachments = []
-        if attachments:
-            for a in attachments:
-                x = io.BytesIO()
-                await a.save(a)
+        content = message.content
+        # attachments = message.attachments
+
+        # new_attachments = []
+        # if attachments:
+        #     for a in attachments:
+        #         x = io.BytesIO()
+        #         await a.save(a)
 
         new_channel.send(content)
