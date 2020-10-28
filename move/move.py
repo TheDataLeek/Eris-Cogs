@@ -24,4 +24,4 @@ class Move(BaseCog):
         #         x = io.BytesIO()
         #         await a.save(a)
 
-        new_channel.send(content)
+        await new_channel.send(content)
