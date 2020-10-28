@@ -1,0 +1,25 @@
+import io
+import discord
+from redbot.core import commands, Config, checks, bot, utils
+
+BaseCog = getattr(commands, "Cog", object)
+
+
+class Move(BaseCog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    @checks.mod()
+    @checks.is_owner()
+    async def move(self, ctx, msg_id: str, new_channel: discord.TextChannel):
+        content = ctx.message.content
+        attachments = ctx.message.attachments
+
+        new_attachments = []
+        if attachments:
+            for a in attachments:
+                x = io.BytesIO()
+                await a.save(a)
+
+        new_channel.send(content)
