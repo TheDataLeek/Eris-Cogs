@@ -28,7 +28,13 @@ class Move(BaseCog):
                 a.seek(0)
 
             new_attachments = [discord.File(a) for a in new_attachments]
+        print(new_attachments)
 
-        await new_channel.send(content, files=new_attachments)
+        if len(new_attachments) == 0:
+            await new_channel.send(content)
+        elif len(new_attachments) == 1:
+            await new_channel.send(content, file=new_attachments[0])
+        else:
+            await new_channel.send(content, files=new_attachments)
 
         await message.delete()
