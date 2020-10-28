@@ -24,13 +24,8 @@ class Move(BaseCog):
                 x = io.BytesIO()
                 await a.save(x)
 
-                new_attachments.append(x)
-
-            for a in new_attachments:
-                a.seek(0)
-
-            new_attachments = [discord.File(a) for a in new_attachments]
-        print(new_attachments)
+                x.seek(0)
+                new_attachments.append(discord.File(x, filename=a.filename, spoiler=a.is_spoiler()))
 
         if len(new_attachments) == 0:
             await new_channel.send(content)
