@@ -16,12 +16,14 @@ class Move(BaseCog):
         message = await ctx.message.channel.fetch_message(msg_id)
 
         content = message.content
-        # attachments = message.attachments
+        attachments = message.attachments
 
-        # new_attachments = []
-        # if attachments:
-        #     for a in attachments:
-        #         x = io.BytesIO()
-        #         await a.save(a)
+        new_attachments = []
+        if attachments:
+            for a in attachments:
+                x = io.BytesIO()
+                await a.save(a)
 
-        await new_channel.send(content)
+        await new_channel.send(content, files=new_attachments)
+
+        await message.delete()
