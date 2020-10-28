@@ -22,10 +22,10 @@ class Move(BaseCog):
         if attachments:
             for a in attachments:
                 x = io.BytesIO()
-                await a.save(a)
+                await a.save(x)
 
             for a in new_attachments:
-                s.seek(0)
+                a.seek(0)
 
             new_attachments = [discord.File(a) for a in new_attachments]
 
