@@ -1,3 +1,4 @@
+import random
 import re
 import discord
 from redbot.core import commands, data_manager, Config, checks, bot
@@ -38,6 +39,9 @@ class Steve(BaseCog, ErisEventMixin):
 
         ctx = await self.bot.get_context(message)
 
-        await ctx.send(' '.join(self.links))
+        msg = ' '.join(self.links)
+        if random.random() <= 0.1:
+            msg = ' '.join(random.sample(self.links, len(self.links)))
+        await ctx.send(msg)
 
         await self.log_last_message(ctx, message)
