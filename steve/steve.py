@@ -31,6 +31,8 @@ class Steve(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.steve, "on_message")
 
     async def steve(self, message: discord.Message):
+        if random.random() <= 0.5:
+            return
         for s in self.asking_about_steve:
             if s in message.clean_content.lower():
                 break
