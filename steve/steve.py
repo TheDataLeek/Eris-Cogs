@@ -38,11 +38,6 @@ class Steve(BaseCog, ErisEventMixin):
 
         ctx = await self.bot.get_context(message)
 
-        async with self.lock_config.channel(message.channel).get_lock():
-            allowed: bool = await self.allowed(ctx, message)
-            if not allowed:
-                return
+        await ctx.send(' '.join(self.links))
 
-            await ctx.send(' '.join(self.links))
-
-            await self.log_last_message(ctx, message)
+        await self.log_last_message(ctx, message)
