@@ -14,9 +14,11 @@ class Steve(BaseCog, ErisEventMixin):
         super().__init__()
         self.bot = bot_instance
 
-        self.steve_regex: RETYPE = re.compile(
-            r"where'?s steve", flags=re.IGNORECASE
-        )
+        self.possible_things = [
+            "where's steve",
+            'where is steve',
+            'where steve'
+        ]
         self.links = [
             "https://cdn.discordapp.com/attachments/345659033971326996/367200478993580042/Steve1.png"
             "https://cdn.discordapp.com/attachments/345659033971326996/367200480276905994/Steve2.png"
@@ -27,10 +29,10 @@ class Steve(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.steve, "on_message")
 
     async def steve(self, message: discord.Message):
-        keyword_in_message: bool = bool(
-            self.steve_regex.search(message.clean_content)
-        )
-        if not keyword_in_message:
+        for thing in self.possible_things:
+            if thing in message.clean_content.lower():
+                break
+        else:
             return
 
         ctx = await self.bot.get_context(message)
