@@ -15,14 +15,14 @@ class Steve(BaseCog, ErisEventMixin):
         self.bot = bot_instance
 
         self.steve_regex: RETYPE = re.compile(
-            r"where'?s steve", flags=re.IGNORECASE
+            r"where\s*?(s|'s|is)?\s*?stev", flags=re.IGNORECASE
         )
         self.links = [
-            "https://cdn.discordapp.com/attachments/345659033971326996/367200478993580042/Steve1.png"
-            "https://cdn.discordapp.com/attachments/345659033971326996/367200480276905994/Steve2.png"
-            "https://cdn.discordapp.com/attachments/345659033971326996/367200481589854211/Steve3.png"
-            "https://cdn.discordapp.com/attachments/345659033971326996/367200483426697216/Steve4.png"
-            "https://cdn.discordapp.com/attachments/345659033971326996/367200484290854913/Steve5.png"
+            "https://cdn.discordapp.com/attachments/345659033971326996/367200478993580042/Steve1.png",
+            "https://cdn.discordapp.com/attachments/345659033971326996/367200480276905994/Steve2.png",
+            "https://cdn.discordapp.com/attachments/345659033971326996/367200481589854211/Steve3.png",
+            "https://cdn.discordapp.com/attachments/345659033971326996/367200483426697216/Steve4.png",
+            "https://cdn.discordapp.com/attachments/345659033971326996/367200484290854913/Steve5.png",
         ]
         self.bot.add_listener(self.steve, "on_message")
 
