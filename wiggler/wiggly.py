@@ -25,17 +25,27 @@ class Wiggle(BaseCog, ErisEventMixin):
             allowed: bool = await self.allowed(ctx, message)
             author: discord.Member = message.author
 
-            emojis = {e.name: e for e in message.guild.emojis}
+            wiggler_id = '605433851707392033'
+            dogbless = '687144702394499293'
+            dansen = '702322986765516802'
+            bongo = '559949424034316288'
+
+            emojis = {e.id: e for e in self.bot.emojis}
             if str(author.id) == '405152630055108619' and random.random() <= 0.5:
-                await message.add_reaction(emojis['wiggler'])
+                await message.add_reaction(emojis[wiggler_id])
                 return
 
             if str(author.id) == '159771760508534784' and random.random() <= 0.01:
-                await message.add_reaction(emojis['dogbless'])
+                await message.add_reaction(emojis[dogbless])
                 return
 
             if str(author.id) == '142431859148718080' and random.random() <= 0.05:
-                await message.add_reaction(emojis['caramelldansen'])
+                await message.add_reaction(emojis[dansen])
+                return
+
+            # nikki
+            if str(author.id) == '287464881081548810' and random.random() <= 0.01:
+                await message.add_reaction(emojis[bongo])
                 return
 
 
