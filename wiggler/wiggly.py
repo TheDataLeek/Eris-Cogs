@@ -44,7 +44,7 @@ class Wiggle(BaseCog, ErisEventMixin):
                 return
 
             # nikki
-            if author.id == 287464881081548810 and random.random() <= 0.01:
+            if author.id == 287464881081548810 and random.random() <= 0.1:
                 await message.add_reaction(emojis[bongo])
                 return
 
