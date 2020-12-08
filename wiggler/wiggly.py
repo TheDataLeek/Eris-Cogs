@@ -31,14 +31,18 @@ class Wiggle(BaseCog, ErisEventMixin):
             bongo = 559949424034316288
 
             emojis = {e.id: e for e in self.bot.emojis}
+
+            # juff
             if author.id == 405152630055108619 and random.random() <= 0.5:
                 await message.add_reaction(emojis[wiggler_id])
                 return
 
+            # ed
             if author.id == 159771760508534784 and random.random() <= 0.01:
                 await message.add_reaction(emojis[dogbless])
                 return
 
+            # zoe
             if author.id == 142431859148718080 and random.random() <= 0.05:
                 await message.add_reaction(emojis[dansen])
                 return

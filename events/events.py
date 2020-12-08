@@ -275,15 +275,16 @@ class Events(BaseCog, ErisEventMixin):
                 await new_msg.add_reaction("🌈")
                 await new_msg.add_reaction("🍆")
                 await new_msg.add_reaction("💦")
+            elif 'wand' in message.clean_content.lower():
             # elif reduce(
             #         lambda acc, n: acc or (n in clean_message),
             #         dickwords,
             #         False):
-            #     await message.add_reaction('🇵')
-            #     await message.add_reaction('🇪')
-            #     await message.add_reaction('🇳')
-            #     await message.add_reaction('🇮')
-            #     await message.add_reaction('🇸')
+                await message.add_reaction('🇵')
+                await message.add_reaction('🇪')
+                await message.add_reaction('🇳')
+                await message.add_reaction('🇮')
+                await message.add_reaction('🇸')
             # elif reduce(
             #         lambda acc, n: acc or (n in clean_message),
             #         vag_words,
