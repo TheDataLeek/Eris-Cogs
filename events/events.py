@@ -151,6 +151,14 @@ class Events(BaseCog, ErisEventMixin):
                 await self.log_last_message(ctx, message)
                 return
 
+            if 'wand' in message.clean_content.lower():
+                await message.add_reaction('🇵')
+                await message.add_reaction('🇪')
+                await message.add_reaction('🇳')
+                await message.add_reaction('🇮')
+                await message.add_reaction('🇸')
+                return
+
             # only do the others half the time cause fuck it it's tooo much
             if random.random() <= 0.5:
                 return
@@ -275,16 +283,6 @@ class Events(BaseCog, ErisEventMixin):
                 await new_msg.add_reaction("🌈")
                 await new_msg.add_reaction("🍆")
                 await new_msg.add_reaction("💦")
-            elif 'wand' in message.clean_content.lower():
-            # elif reduce(
-            #         lambda acc, n: acc or (n in clean_message),
-            #         dickwords,
-            #         False):
-                await message.add_reaction('🇵')
-                await message.add_reaction('🇪')
-                await message.add_reaction('🇳')
-                await message.add_reaction('🇮')
-                await message.add_reaction('🇸')
             # elif reduce(
             #         lambda acc, n: acc or (n in clean_message),
             #         vag_words,
