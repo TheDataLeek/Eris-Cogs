@@ -32,6 +32,8 @@ class Wiggle(BaseCog, ErisEventMixin):
 
             emojis = {e.id: e for e in self.bot.emojis}
 
+            bulbas = [e for e in self.bot.emojis if 'bulb' in e.name]
+
             # juff
             if author.id == 405152630055108619 and random.random() <= 0.5:
                 await message.add_reaction(emojis[wiggler_id])
@@ -50,6 +52,11 @@ class Wiggle(BaseCog, ErisEventMixin):
             # nikki
             if author.id == 287464881081548810 and random.random() <= 0.1:
                 await message.add_reaction(emojis[bongo])
+                return
+
+            # bryan
+            if author.id == 179084207174189056 and random.random() <= 0.1:
+                await message.add_reaction(random.choice(bulbas))
                 return
 
 
