@@ -1,6 +1,7 @@
 # stdlib
 import random
 import re
+from pprint import pprint as pp
 
 # third party
 import discord
@@ -21,7 +22,17 @@ class Stonks(BaseCog):
 
     @commands.command()
     async def stock(self, ctx, ticker: str):
-        s = yf.Ticker(ticker)
-        await ctx.send(s.info)
+        s = yf.Ticker(ticker).info
 
+        embed = discord.Embed(
+            title=f"{s['longName']} ({ticker})",
+            type='rich',
+            description=f"{s['open']}"
+        )
+        await ctx.send(embed)
+
+
+if __name__ == '__main__':
+    pp(yf.Ticker('GME').info)
+    # print(yf.Ticker('GME').history())
 

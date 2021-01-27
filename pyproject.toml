@@ -5,11 +5,12 @@ description = ""
 authors = ["Zoe Farmer <zoe@dataleek.io>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8.2,<3.9"
 discord = "^1.0.1"
 yfinance = "^0.1.55"
 matplotlib = "^3.3.3"
 Pillow = "^8.1.0"
+Red-DiscordBot = "^3.4.5"
 
 [tool.poetry.dev-dependencies]
 
