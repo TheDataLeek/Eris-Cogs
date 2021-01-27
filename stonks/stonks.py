@@ -57,13 +57,17 @@ class Stonks(BaseCog):
             f"Short Ratio: {s['shortRatio']}",
         ]
 
-        color = hashlib.sha1(ticker.lower().encode('utf-8')).hexdigest()[-6:]
+        color = hashlib.sha1(ticker.lower().encode('utf-8')).hexdigest()
+        red = int(color[-6:-4], 16)
+        green = int(color[-4:-2], 16)
+        blue = int(color[-2:], 16)
+        convert = lambda i: i * 255 / 16
 
         embed = discord.Embed(
             title=f"{s['longName']} ({ticker})",
             type='rich',
             description='\n'.join(fields),
-            color=color,
+            color=discord.Color.from_rgb(convert(red), convert(green), convert(blue)),
         )
         img = discord.File(buf, filename=f"{ticker}.png")
         await ctx.send(embed=embed, file=img)
