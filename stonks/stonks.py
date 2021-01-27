@@ -61,7 +61,7 @@ class Stonks(BaseCog):
         red = int(color[-6:-4], 16)
         green = int(color[-4:-2], 16)
         blue = int(color[-2:], 16)
-        convert = lambda i: i * 255 / 16
+        convert = lambda i: int((i * 255) / 16)
 
         embed = discord.Embed(
             title=f"{s['longName']} ({ticker})",
