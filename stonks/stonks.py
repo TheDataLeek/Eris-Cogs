@@ -61,15 +61,12 @@ class Stonks(BaseCog):
         red = int(color[-6:-4], 16)
         green = int(color[-4:-2], 16)
         blue = int(color[-2:], 16)
-        convert = lambda i: int((i * 255) / 16)
-        print(red, green, blue)
-        print(convert(red), convert(green), convert(blue))
 
         embed = discord.Embed(
             title=f"{s['longName']} ({ticker})",
             type='rich',
             description='\n'.join(fields),
-            color=discord.Color.from_rgb(convert(red), convert(green), convert(blue)),
+            color=discord.Color.from_rgb(red, green, blue),
         )
         img = discord.File(buf, filename=f"{ticker}.png")
         await ctx.send(embed=embed, file=img)
