@@ -29,7 +29,7 @@ class Stonks(BaseCog):
             type='rich',
             description=f"{s['open']}"
         )
-        await ctx.send(embed)
+        await ctx.send(embed=embed)
 
 
 if __name__ == '__main__':
