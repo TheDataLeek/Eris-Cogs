@@ -22,9 +22,14 @@ class Stonks(BaseCog):
 
 
     @commands.command()
-    async def stock(self, ctx, ticker: str):
+    async def stock(self, ctx, ticker: str, period=None):
+        periods = [
+            '1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max'
+        ]
+        if period not in periods:
+            period = '1y'
         s = yf.Ticker(ticker)
-        history = s.history(period='max')
+        history = s.history(period=period)
         print(history.columns)
         s = s.info
 
