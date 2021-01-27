@@ -36,7 +36,6 @@ class Stonks(BaseCog):
             period = '1y'
         s = yf.Ticker(ticker)
         history = s.history(period=period)
-        print(history.columns)
         s = s.info
 
         buf = BytesIO()
