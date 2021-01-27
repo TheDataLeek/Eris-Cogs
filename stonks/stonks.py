@@ -45,14 +45,14 @@ class Stonks(BaseCog):
         await ctx.send(embed=embed, file=img)
 
 if __name__ == '__main__':
-    # pp(yf.Ticker('GME').info)
+    pp(yf.Ticker('GME').info)
 
-    # history = yf.Ticker('GME').history()
-    #
-    # fig = plt.figure()
-    # ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-    # history[['Open']].plot(ax=ax)
-    #
-    # plt.show()
-    # print(yf.Ticker('GME').history())
+    history = yf.Ticker('GME').history()
 
+    fig = plt.figure()
+    ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+    history[['Open']].plot(ax=ax)
+
+    plt.show()
+
+    print(yf.Ticker('GME').history().columns)
