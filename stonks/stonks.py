@@ -3,6 +3,7 @@ import random
 import re
 from pprint import pprint as pp
 from io import BytesIO
+import hashlib
 
 # third party
 import discord
@@ -55,10 +56,14 @@ class Stonks(BaseCog):
             f"Market Cap: {s['marketCap']:,}",
             f"Short Ratio: {s['shortRatio']}",
         ]
+
+        color = hashlib.sha1(ticker.lower().encode('utf-8')).hexdigest()[-6:]
+
         embed = discord.Embed(
             title=f"{s['longName']} ({ticker})",
             type='rich',
-            description='\n'.join(fields)
+            description='\n'.join(fields),
+            color=color,
         )
         img = discord.File(buf, filename=f"{ticker}.png")
         await ctx.send(embed=embed, file=img)
