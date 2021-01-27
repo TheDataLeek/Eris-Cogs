@@ -24,7 +24,7 @@ class Stonks(BaseCog):
     @commands.command()
     async def stock(self, ctx, ticker: str):
         s = yf.Ticker(ticker)
-        history = s.history()
+        history = s.history(period='max')
         print(history.columns)
         s = s.info
 
@@ -36,10 +36,19 @@ class Stonks(BaseCog):
         plt.savefig(buf, format='png')
         buf.seek(0)
 
+        fields = [
+            f"Open: {s['open']} {s['currency']}",
+            f"Previous Close: {s['previousClose']}",
+            f"{s['dayLow']} <= yesterday <= {s['dayHigh']}",
+            f"52wk Low: {s['fiftyTwoWeekLow']}",
+            f"52wk High: {s['fiftyTwoWeekHigh']}",
+            f"Market Cap: {s['marketCap']:,}",
+            f"Short Ratio: {s['shortRatio']}",
+        ]
         embed = discord.Embed(
             title=f"{s['longName']} ({ticker})",
             type='rich',
-            description=f"Opened at {s['open']}"
+            description='\n'.join(fields)
         )
         img = discord.File(buf, filename=f"{ticker}.png")
         await ctx.send(embed=embed, file=img)
