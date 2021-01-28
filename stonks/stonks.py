@@ -75,7 +75,8 @@ class Stonks(BaseCog):
             return
 
         buf = BytesIO()
-        mpf.plot(history, type="candle", mav=6, volume=True, style='charles', figsize=(8, 8))
+        style = mpf.make_mpf_style(base_mpf_style='charles', y_on_right=False)
+        mpf.plot(history, type="candle", mav=6, volume=True, figsize=(8, 8), tight_layout=True, style=style)
         plt.savefig(buf, format="png")
         buf.seek(0)
 
@@ -114,12 +115,7 @@ class Stonks(BaseCog):
 
 
 if __name__ == "__main__":
-    pp(yf.Ticker("GME").info)
-
     history = yf.Ticker("GME").history()
-
-    mpf.plot(history, type="candle", mav=6, volume=True, style='charles', figsize=(8, 8))
-
+    style = mpf.make_mpf_style(base_mpf_style='charles', y_on_right=False)
+    mpf.plot(history, type="candle", mav=6, volume=True, figsize=(8, 8), tight_layout=True, style=style)
     plt.show()
-
-    print(yf.Ticker("GME").history().columns)
