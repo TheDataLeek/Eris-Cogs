@@ -30,6 +30,8 @@ class Stonks(BaseCog):
         Request ticker info
 
         Periods = 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
+
+        Intervals = 1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo
         """
         ticker = ticker.upper()
         periods = [
@@ -45,7 +47,7 @@ class Stonks(BaseCog):
 
         try:
             s = yf.Ticker(ticker)
-            history = s.history(period=period)
+            history = s.history(period=period, interval=interval)
             s = s.info
         except:
             await ctx.send(f'Something went wrong trying to find {ticker}!')
