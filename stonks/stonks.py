@@ -31,14 +31,19 @@ class Stonks(BaseCog):
 
         Periods = 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
         """
+        ticker = ticker.upper()
         periods = [
             '1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max'
         ]
         if period not in periods:
             period = '1y'
-        s = yf.Ticker(ticker)
-        history = s.history(period=period)
-        s = s.info
+        try:
+            s = yf.Ticker(ticker)
+            history = s.history(period=period)
+            s = s.info
+        except:
+            await ctx.send(f'Something went wrong trying to find {ticker}!')
+            return
 
         buf = BytesIO()
         mpf.plot(history, type='candle', mav=6, volume=True)
