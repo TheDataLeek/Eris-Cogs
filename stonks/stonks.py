@@ -4,6 +4,7 @@ import re
 from pprint import pprint as pp
 from io import BytesIO
 import hashlib
+import string
 
 # third party
 import discord
@@ -65,7 +66,7 @@ class Stonks(BaseCog):
             description='\n'.join(fields),
             color=discord.Color.from_rgb(red, green, blue),
         )
-        img = discord.File(buf, filename=f"{ticker}.png")
+        img = discord.File(buf, filename=f"{''.join(c for c in ticker.lower() if c in string.ascii_lowercase)}.png")
         await ctx.send(embed=embed, file=img)
 
 if __name__ == '__main__':
