@@ -11,6 +11,7 @@ yfinance = "^0.1.55"
 matplotlib = "^3.3.3"
 Pillow = "^8.1.0"
 Red-DiscordBot = "^3.4.5"
+mplfinance = "^0.12.7-alpha.5"
 
 [tool.poetry.dev-dependencies]
 

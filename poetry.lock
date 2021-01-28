@@ -252,6 +252,18 @@ pyparsing = ">=2.0.3,<2.0.4 || >2.0.4,<2.1.2 || >2.1.2,<2.1.6 || >2.1.6"
 python-dateutil = ">=2.1"
 
 [[package]]
+name = "mplfinance"
+version = "0.12.7a5"
+description = "Utilities for the visualization, and visual analysis, of financial data"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+matplotlib = "*"
+pandas = "*"
+
+[[package]]
 name = "multidict"
 version = "4.7.6"
 description = "multidict implementation"
@@ -540,7 +552,7 @@ requests = ">=2.20"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8.2,<3.9"
-content-hash = "37e1848e1aac28f2ae86297638ba6888a74e568e58af458995882ab6b3b41ff5"
+content-hash = "7a593db09f9ac8934e9c99ee97ac09b7645ddf40301a599da5d15fd3462ca3ae"
 
 [metadata.files]
 aiohttp = [
@@ -774,6 +786,10 @@ matplotlib = [
     {file = "matplotlib-3.3.3-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:746897fbd72bd462b888c74ed35d812ca76006b04f717cd44698cdfc99aca70d"},
     {file = "matplotlib-3.3.3-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:5ed3d3342698c2b1f3651f8ea6c099b0f196d16ee00e33dc3a6fee8cb01d530a"},
     {file = "matplotlib-3.3.3.tar.gz", hash = "sha256:b1b60c6476c4cfe9e5cf8ab0d3127476fd3d5f05de0f343a452badaad0e4bdec"},
+]
+mplfinance = [
+    {file = "mplfinance-0.12.7a5-py3-none-any.whl", hash = "sha256:36804e76c0df86d66187184845debaf7bd0afe4599c1aa9a8e3f33161797e7fb"},
+    {file = "mplfinance-0.12.7a5.tar.gz", hash = "sha256:883d91fca89ea471f609695a474863c53e36b0d2367a1e536738a847f7e8a0e5"},
 ]
 multidict = [
     {file = "multidict-4.7.6-cp35-cp35m-macosx_10_14_x86_64.whl", hash = "sha256:275ca32383bc5d1894b6975bb4ca6a7ff16ab76fa622967625baeebcf8079000"},

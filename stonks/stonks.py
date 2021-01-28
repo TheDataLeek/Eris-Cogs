@@ -11,6 +11,7 @@ from redbot.core import commands, bot
 
 import yfinance as yf
 import matplotlib.pyplot as plt
+import mplfinance as mpf
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -39,10 +40,7 @@ class Stonks(BaseCog):
         s = s.info
 
         buf = BytesIO()
-
-        fig = plt.figure()
-        ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-        history[['Open']].plot(ax=ax)
+        mpf.plot(history, type='candle', mav=6, volume=True)
         plt.savefig(buf, format='png')
         buf.seek(0)
 
@@ -75,9 +73,7 @@ if __name__ == '__main__':
 
     history = yf.Ticker('GME').history()
 
-    fig = plt.figure()
-    ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-    history[['Open']].plot(ax=ax)
+    mpf.plot(history, type='candle', mav=6, volume=True)
 
     plt.show()
 
