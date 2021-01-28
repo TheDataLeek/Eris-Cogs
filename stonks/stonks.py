@@ -25,7 +25,7 @@ class Stonks(BaseCog):
 
 
     @commands.command()
-    async def stock(self, ctx, ticker: str, period=None):
+    async def stock(self, ctx, ticker: str, period=None, interval=None):
         """
         Request ticker info
 
@@ -37,6 +37,12 @@ class Stonks(BaseCog):
         ]
         if period not in periods:
             period = '1y'
+        intervals = [
+            '1m','2m','5m','15m','30m','60m','90m','1h','1d','5d','1wk','1mo','3mo'
+        ]
+        if interval not in intervals:
+            interval = '1d'
+
         try:
             s = yf.Ticker(ticker)
             history = s.history(period=period)
