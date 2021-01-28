@@ -64,7 +64,7 @@ class Stonks(BaseCog):
             f"{s.get('dayLow', '')} <= yesterday <= {s.get('dayHigh', '')}",
             f"52wk Low: {s.get('fiftyTwoWeekLow', '')}",
             f"52wk High: {s.get('fiftyTwoWeekHigh', '')}",
-            f"Market Cap: {s.get('marketCap', ''):,}",
+            f"Market Cap: {s.get('marketCap', 0):,}",
             f"Short Ratio: {s.get('shortRatio', '')}",
         ]
 
