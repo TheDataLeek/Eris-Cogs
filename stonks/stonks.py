@@ -59,13 +59,13 @@ class Stonks(BaseCog):
         buf.seek(0)
 
         fields = [
-            f"Open: {s['open']} {s['currency']}",
-            f"Previous Close: {s['previousClose']}",
-            f"{s['dayLow']} <= yesterday <= {s['dayHigh']}",
-            f"52wk Low: {s['fiftyTwoWeekLow']}",
-            f"52wk High: {s['fiftyTwoWeekHigh']}",
-            f"Market Cap: {s['marketCap']:,}",
-            f"Short Ratio: {s['shortRatio']}",
+            f"Open: {s.get('open', '')} {s.get('currency', '')}",
+            f"Previous Close: {s.get('previousClose', '')}",
+            f"{s.get('dayLow', '')} <= yesterday <= {s.get('dayHigh', '')}",
+            f"52wk Low: {s.get('fiftyTwoWeekLow', '')}",
+            f"52wk High: {s.get('fiftyTwoWeekHigh', '')}",
+            f"Market Cap: {s.get('marketCap', ''):,}",
+            f"Short Ratio: {s.get('shortRatio', '')}",
         ]
 
         color = hashlib.sha1(ticker.lower().encode('utf-8')).hexdigest()
