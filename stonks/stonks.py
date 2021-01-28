@@ -58,13 +58,19 @@ class Stonks(BaseCog):
         plt.savefig(buf, format='png')
         buf.seek(0)
 
+        marketCap = s.get('marketCap')
+        try:
+            marketCap = f"{marketCap:,}"
+        except:
+            marketCap = s.get('marketCap')
+
         fields = [
             f"Open: {s.get('open', '')} {s.get('currency', '')}",
             f"Previous Close: {s.get('previousClose', '')}",
             f"{s.get('dayLow', '')} <= yesterday <= {s.get('dayHigh', '')}",
             f"52wk Low: {s.get('fiftyTwoWeekLow', '')}",
             f"52wk High: {s.get('fiftyTwoWeekHigh', '')}",
-            f"Market Cap: {int(s.get('marketCap', 0)):,}",
+            f"Market Cap: {marketCap}",
             f"Short Ratio: {s.get('shortRatio', '')}",
         ]
 
