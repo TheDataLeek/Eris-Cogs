@@ -47,7 +47,7 @@ class Stonks(BaseCog):
             "max",
         ]
         if period not in periods:
-            period = "1y"
+            period = "6mo"
         intervals = [
             "1m",
             "2m",
@@ -75,7 +75,7 @@ class Stonks(BaseCog):
             return
 
         buf = BytesIO()
-        mpf.plot(history, type="candle", mav=6, volume=True)
+        mpf.plot(history, type="candle", mav=6, volume=True, style='charles', figsize=(8, 8))
         plt.savefig(buf, format="png")
         buf.seek(0)
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     history = yf.Ticker("GME").history()
 
-    mpf.plot(history, type="candle", mav=6, volume=True)
+    mpf.plot(history, type="candle", mav=6, volume=True, style='charles', figsize=(8, 8))
 
     plt.show()
 
