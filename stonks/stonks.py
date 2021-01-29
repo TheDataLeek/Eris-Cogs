@@ -127,6 +127,7 @@ def plot_history(history):
             'hlines': [fibline(.236), fibline(.382), fibline(.5), fibline(.618)],
             'colors': 'black',
             'linewidths': 0.5,
+            'linestyle': 'dashed',
         },
     )
 
