@@ -73,11 +73,7 @@ class Stonks(BaseCog):
             await ctx.send(f"Something went wrong trying to find {ticker}!\n```{e}```")
             return
 
-        buf = BytesIO()
-        style = mpf.make_mpf_style(base_mpf_style='charles', y_on_right=False)
-        mpf.plot(history, type="candle", mav=6, volume=True, figsize=(8, 8), tight_layout=True, style=style)
-        plt.savefig(buf, format="png")
-        buf.seek(0)
+        buf = plot_history(history)
 
         marketCap = s.get("marketCap")
         try:
@@ -113,9 +109,16 @@ class Stonks(BaseCog):
         await ctx.send(embed=embed, file=img)
 
 
-if __name__ == "__main__":
-    history = yf.Ticker("GME").history(period='3mo', interval='90m')
-    print(history)
+def plot_history(history):
+    buf = BytesIO()
     style = mpf.make_mpf_style(base_mpf_style='charles', y_on_right=False)
     mpf.plot(history, type="candle", mav=6, volume=True, figsize=(8, 8), tight_layout=True, style=style)
-    plt.show()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    return buf
+
+
+if __name__ == "__main__":
+    history = yf.Ticker("GME").history(period='1d', interval='5m')
+    print(history)
+    buf = plot_history(history)
