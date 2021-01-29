@@ -1,7 +1,4 @@
 # stdlib
-import random
-import re
-from pprint import pprint as pp
 from io import BytesIO
 import hashlib
 import string
@@ -70,8 +67,10 @@ class Stonks(BaseCog):
             s = yf.Ticker(ticker)
             history = s.history(period=period, interval=interval)
             s = s.info
-        except:
-            await ctx.send(f"Something went wrong trying to find {ticker}!")
+            if len(history) == 0:
+                raise Exception('Data not available for requested period/interval')
+        except Exception as e:
+            await ctx.send(f"Something went wrong trying to find {ticker}!\n```{e}```")
             return
 
         buf = BytesIO()
@@ -115,7 +114,8 @@ class Stonks(BaseCog):
 
 
 if __name__ == "__main__":
-    history = yf.Ticker("GME").history()
+    history = yf.Ticker("GME").history(period='3mo', interval='90m')
+    print(history)
     style = mpf.make_mpf_style(base_mpf_style='charles', y_on_right=False)
     mpf.plot(history, type="candle", mav=6, volume=True, figsize=(8, 8), tight_layout=True, style=style)
     plt.show()
