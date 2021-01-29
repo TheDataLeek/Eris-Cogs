@@ -68,7 +68,7 @@ class Stonks(BaseCog):
             history = s.history(period=period, interval=interval)
             s = s.info
             if len(history) == 0:
-                raise Exception('Data not available for requested period/interval')
+                raise Exception("Data not available for requested period/interval")
         except Exception as e:
             await ctx.send(f"Something went wrong trying to find {ticker}!\n```{e}```")
             return
@@ -110,15 +110,34 @@ class Stonks(BaseCog):
 
 
 def plot_history(history):
+    low = history.Low.min()
+    high = history.High.max()
+    fibline = lambda pct: low + ((high - low) * pct)
+
+    style = mpf.make_mpf_style(base_mpf_style="charles", y_on_right=False)
+    mpf.plot(
+        history,
+        type="candle",
+        mav=6,
+        volume=True,
+        figsize=(8, 8),
+        tight_layout=True,
+        style=style,
+        hlines={
+            'hlines': [fibline(.236), fibline(.382), fibline(.5), fibline(.618)],
+            'colors': 'black',
+            'linewidths': 0.5,
+        },
+    )
+
     buf = BytesIO()
-    style = mpf.make_mpf_style(base_mpf_style='charles', y_on_right=False)
-    mpf.plot(history, type="candle", mav=6, volume=True, figsize=(8, 8), tight_layout=True, style=style)
     plt.savefig(buf, format="png")
     buf.seek(0)
+
     return buf
 
 
 if __name__ == "__main__":
-    history = yf.Ticker("GME").history(period='1d', interval='5m')
+    history = yf.Ticker("GME").history(period="1d", interval="5m")
     print(history)
     buf = plot_history(history)
