@@ -28,24 +28,28 @@ class RoleRequest(BaseCog):
             print(guild)
             hooks = await self.config.guild(guild).hooks()
             pp(hooks)
+            message_id = str(reaction.message_id)
             if reaction.message_id not in hooks:
                 return
+            print('message in hooks, continuing')
 
-            emoji_id = reaction.emoji_id
-            if emoji_id not in hooks[reaction.message_id]:
+            emoji_id = str(reaction.emoji_id)
+            if emoji_id not in hooks[message_id]:
                 return
+            print('emoji in message hooks, continuing')
 
             role: discord.Role = None
             for guild_role in guild.roles:
-                if guild_role.name.lower() == hooks[reaction.message_id][emoji_id].lower():
+                if guild_role.name.lower() == hooks[message_id][emoji_id].lower():
                     role = guild_role
+                    print(f"found {role}")
                     break
             else:
                 return
 
             user_id = reaction.user_id
             user: discord.User = guild.fetch_member(user_id)
-
+            print(f"found {user}")
             await user.add_roles(role)
 
         async def remove_role_from_user(reaction: discord.RawReactionActionEvent):
@@ -58,6 +62,7 @@ class RoleRequest(BaseCog):
         bot.add_listener(remove_role_from_user, "on_raw_reaction_remove")
 
     @commands.command(pass_context=True)
+    @checks.mod()
     async def designate(
         self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji
     ):
@@ -80,7 +85,8 @@ class RoleRequest(BaseCog):
         await msg.add_reaction(emoji)
 
         hooks = await self.config.guild(ctx.guild).hooks()
-        emoji_id = emoji.id
+        emoji_id = str(emoji.id)
+        msg_id = str(msg_id)
         if msg_id in hooks:
             hooks[msg_id][emoji_id] = role_name
         else:
@@ -88,7 +94,8 @@ class RoleRequest(BaseCog):
         await self.config.guild(ctx.guild).hooks.set(hooks)
 
     @commands.command(pass_context=True)
-    async def clear_message(self, ctx: commands.Context, msg_id: int):
+    @checks.mod()
+    async def clear_message(self, ctx: commands.Context, msg_id: str):
         msg: discord.Message = await ctx.message.channel.fetch_message(msg_id)
         hooks = await self.config.guild(ctx.guild).hooks()
         if msg_id not in hooks:
