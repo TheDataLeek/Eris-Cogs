@@ -43,6 +43,7 @@ class RoleRequest(BaseCog):
 
             user_id = reaction.user_id
             user: discord.Member = await guild.fetch_member(user_id)
+            print(f"Adding {role} to {user} via {emoji_id}")
             await user.add_roles(role)
 
         async def remove_role_from_user(reaction: discord.RawReactionActionEvent):
