@@ -96,6 +96,6 @@ class RoleRequest(BaseCog):
         await msg.clear_reactions()
 
     @commands.command(pass_context=True)
-    @checks.is_owner
+    @checks.is_owner()
     async def clear_all_data(self, ctx):
         await self.config.guild(ctx.guild).hooks.set({})
