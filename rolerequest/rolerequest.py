@@ -45,7 +45,7 @@ class RoleRequest(BaseCog):
                 return
 
             user_id = reaction.user_id
-            user: discord.User = guild.fetch_member(user_id)
+            user: discord.Member = await guild.fetch_member(user_id)
             print(f"found {user}")
             await user.add_roles(role)
 
