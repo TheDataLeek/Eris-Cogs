@@ -29,7 +29,7 @@ class RoleRequest(BaseCog):
             hooks = await self.config.guild(guild).hooks()
             pp(hooks)
             message_id = str(reaction.message_id)
-            if reaction.message_id not in hooks:
+            if message_id not in hooks:
                 return
             print('message in hooks, continuing')
 
