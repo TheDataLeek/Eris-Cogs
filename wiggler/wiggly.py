@@ -16,7 +16,7 @@ class Wiggle(BaseCog, ErisEventMixin):
         super().__init__()
 
         self.bot = bot_instance
-        self.bot.add_listener(self.wiggle, 'on_message')
+        self.bot.add_listener(self.wiggle, "on_message")
 
     async def wiggle(self, message: discord.message):
         ctx = await self.bot.get_context(message)
@@ -32,7 +32,7 @@ class Wiggle(BaseCog, ErisEventMixin):
 
             emojis = {e.id: e for e in self.bot.emojis}
 
-            bulbas = [e for e in self.bot.emojis if 'bulb' in e.name]
+            bulbas = [e for e in self.bot.emojis if "bulb" in e.name]
 
             # juff
             if author.id == 405152630055108619 and random.random() <= 0.5:
@@ -58,5 +58,3 @@ class Wiggle(BaseCog, ErisEventMixin):
             if author.id == 179084207174189056 and random.random() <= 0.1:
                 await message.add_reaction(random.choice(bulbas))
                 return
-
-

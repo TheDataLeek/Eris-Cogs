@@ -11,19 +11,17 @@ class DMRole(BaseCog):
 
     @commands.command()
     async def tell(self, ctx, rolename: str, *message: str):
-        message = ' '.join(message)
+        message = " ".join(message)
 
-        scores = sorted([
-            (
-                r, fuzz.ratio(rolename, r.name)
-            )
-            for r in ctx.guild.roles
-        ], key=lambda tup: -tup[1])
+        scores = sorted(
+            [(r, fuzz.ratio(rolename, r.name)) for r in ctx.guild.roles],
+            key=lambda tup: -tup[1],
+        )
         role: discord.Role
         role, score = scores[0]
 
         if score < 50:
-            await ctx.send('Role not found!')
+            await ctx.send("Role not found!")
             return
 
         for member in role.members:

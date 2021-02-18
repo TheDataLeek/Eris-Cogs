@@ -124,10 +124,10 @@ def plot_history(history):
         tight_layout=True,
         style=style,
         hlines={
-            'hlines': [fibline(.236), fibline(.382), fibline(.5), fibline(.618)],
-            'colors': 'black',
-            'linewidths': 0.5,
-            'linestyle': 'dashed',
+            "hlines": [fibline(0.236), fibline(0.382), fibline(0.5), fibline(0.618)],
+            "colors": "black",
+            "linewidths": 0.5,
+            "linestyle": "dashed",
         },
     )
 

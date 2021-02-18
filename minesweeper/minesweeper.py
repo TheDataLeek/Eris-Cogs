@@ -43,7 +43,7 @@ class MineSweeper(BaseCog):
                 break
 
             if num_boards > 1000:
-                await ctx.send('Unable to find a solvable board!')
+                await ctx.send("Unable to find a solvable board!")
                 return
 
             cboard = Board()

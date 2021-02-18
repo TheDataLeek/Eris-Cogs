@@ -92,11 +92,10 @@ class Events(BaseCog, ErisEventMixin):
                     await self.whois.get_realname(ctx, str(author.id))
                 )
 
-            # ugh 
-            if 'cum' in message.clean_content.lower() and random.random() <= 0.25:
-                await message.channel.send('*uwu* I want your cummies *uwu*')
+            # ugh
+            if "cum" in message.clean_content.lower() and random.random() <= 0.25:
+                await message.channel.send("*uwu* I want your cummies *uwu*")
                 return
-
 
             # mustaches
             if random.random() <= 0.001:
@@ -151,12 +150,12 @@ class Events(BaseCog, ErisEventMixin):
                 await self.log_last_message(ctx, message)
                 return
 
-            if 'wand' in message.clean_content.lower():
-                await message.add_reaction('🇵')
-                await message.add_reaction('🇪')
-                await message.add_reaction('🇳')
-                await message.add_reaction('🇮')
-                await message.add_reaction('🇸')
+            if "wand" in message.clean_content.lower():
+                await message.add_reaction("🇵")
+                await message.add_reaction("🇪")
+                await message.add_reaction("🇳")
+                await message.add_reaction("🇮")
+                await message.add_reaction("🇸")
                 return
 
             # only do the others half the time cause fuck it it's tooo much

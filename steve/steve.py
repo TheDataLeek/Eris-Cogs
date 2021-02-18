@@ -16,10 +16,10 @@ class Steve(BaseCog, ErisEventMixin):
         self.bot = bot_instance
 
         self.asking_about_steve = [
-            'where stev',
-            'where is stev',
-            'where\'s stev',
-            'wheres stev',
+            "where stev",
+            "where is stev",
+            "where's stev",
+            "wheres stev",
         ]
         self.links = [
             "https://cdn.discordapp.com/attachments/345659033971326996/367200478993580042/Steve1.png",
@@ -41,9 +41,9 @@ class Steve(BaseCog, ErisEventMixin):
 
         ctx = await self.bot.get_context(message)
 
-        msg = ' '.join(self.links)
+        msg = " ".join(self.links)
         if random.random() <= 0.1:
-            msg = ' '.join(random.sample(self.links, len(self.links)))
+            msg = " ".join(random.sample(self.links, len(self.links)))
         await ctx.send(msg)
 
         await self.log_last_message(ctx, message)

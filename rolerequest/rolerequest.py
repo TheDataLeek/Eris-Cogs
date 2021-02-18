@@ -19,29 +19,43 @@ class RoleRequest(BaseCog):
             None, identifier=23488191910303, cog_name="rolerequest"
         )
         default_global = {}
-        default_guild = {
-            'hooks': {}
-        }
+        default_guild = {"hooks": {}}
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
 
-        async def add_role_to_user(reaction: discord.RawReactionActionEvent):
+        async def add_role_to_user(reaction: discord.RawReactionActionEvent, user: discord.Member):
             hooks = await self.config.guild(reaction.guild_id).hooks()
             if reaction.message_id not in hooks:
                 return
 
+            message = reaction.message
+            emoji_id = reaction.emoji_id
 
-        async def remove_role_from_user(reaction):
+            if emoji_id not in hooks[reaction.message_id]:
+                return
+
+            role: discord.Role = None
+            for guild_role in message.guild.roles:
+                if guild_role.name.lower() == hooks[reaction.message_id][emoji_id].lower():
+                    role = guild_role
+                    break
+            else:
+                return
+
+            await user.add_roles(role)
+
+        async def remove_role_from_user(reaction: discord.RawReactionActionEvent, user: discord.Member):
             hooks = await self.config.guild(reaction.guild_id).hooks()
             if reaction.message_id not in hooks:
                 return
-
 
         bot.add_listener(add_role_to_user, "on_reaction_add")
         bot.add_listener(remove_role_from_user, "on_reaction_remove")
 
     @commands.command(pass_context=True)
-    async def designate(self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji):
+    async def designate(
+        self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji
+    ):
         msg: discord.Message = await ctx.message.channel.fetch_message(msg_id)
 
         # make sure we have that one
@@ -64,9 +78,7 @@ class RoleRequest(BaseCog):
         if msg_id in hooks:
             hooks[msg_id][emoji.id] = role_name
         else:
-            hooks[msg_id] = {
-                emoji.id: role_name
-            }
+            hooks[msg_id] = {emoji.id: role_name}
         await self.config.guild(ctx.guild).hooks.set(hooks)
 
     @commands.command(pass_context=True)
@@ -80,3 +92,4 @@ class RoleRequest(BaseCog):
         await self.config.guild(ctx.guild).hooks.set(hooks)
 
         await msg.clear_reactions()
+
