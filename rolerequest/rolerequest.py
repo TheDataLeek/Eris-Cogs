@@ -25,11 +25,17 @@ class RoleRequest(BaseCog):
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
 
-        async def add_role_to_user(reaction):
-            pass
+        async def add_role_to_user(reaction: discord.RawReactionActionEvent):
+            hooks = await self.config.guild(reaction.guild_id).hooks()
+            if reaction.message_id not in hooks:
+                return
+
 
         async def remove_role_from_user(reaction):
-            pass
+            hooks = await self.config.guild(reaction.guild_id).hooks()
+            if reaction.message_id not in hooks:
+                return
+
 
         bot.add_listener(add_role_to_user, "on_reaction_add")
         bot.add_listener(remove_role_from_user, "on_reaction_remove")
@@ -61,6 +67,16 @@ class RoleRequest(BaseCog):
             hooks[msg_id] = {
                 emoji.id: role_name
             }
+        await self.config.guild(ctx.guild).hooks.set(hooks)
 
+    @commands.command(pass_context=True)
+    async def clear_message(self, ctx: commands.Context, msg_id: int):
+        msg: discord.Message = await ctx.message.channel.fetch_message(msg_id)
+        hooks = await self.config.guild(ctx.guild).hooks()
+        if msg_id not in hooks:
+            return
 
+        del hooks[msg_id]
+        await self.config.guild(ctx.guild).hooks.set(hooks)
 
+        await msg.clear_reactions()
