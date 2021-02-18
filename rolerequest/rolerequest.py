@@ -1,7 +1,5 @@
 # stdlib
-from time import sleep
-from random import choice as randchoice
-import random
+from pprint import pprint as pp
 
 # third party
 import discord
@@ -25,8 +23,11 @@ class RoleRequest(BaseCog):
         self.config.register_guild(**default_guild)
 
         async def add_role_to_user(reaction: discord.RawReactionActionEvent):
+            print('adding guild to user')
             guild = utils.get(self.bot.guilds, id=reaction.guild_id)
+            print(guild)
             hooks = await self.config.guild(guild).hooks()
+            pp(hooks)
             if reaction.message_id not in hooks:
                 return
 
@@ -47,7 +48,8 @@ class RoleRequest(BaseCog):
             await user.add_roles(role)
 
         async def remove_role_from_user(reaction: discord.RawReactionActionEvent):
-            hooks = await self.config.guild(reaction.guild_id).hooks()
+            guild = utils.get(self.bot.guilds, id=reaction.guild_id)
+            hooks = await self.config.guild(guild).hooks()
             if reaction.message_id not in hooks:
                 return
 
