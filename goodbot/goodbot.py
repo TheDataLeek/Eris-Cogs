@@ -307,7 +307,7 @@ def generate_handlers(bot, gb_instance):
                     random.choice(badwords).upper(),
                     random.choice(names).upper(),
                 )
-                await bot.send_filtered(reaction.message.channel, content=phrase)
+                await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
                 gb_instance.noticed.add(reaction.message.id)
         elif reaction.emoji == "👍":
             # Downvote for self votes
@@ -323,7 +323,7 @@ def generate_handlers(bot, gb_instance):
                     random.choice(goodwords).upper(),
                     random.choice(names).upper(),
                 )
-                await bot.send_filtered(reaction.message.channel, content=phrase)
+                await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
                 gb_instance.noticed.add(reaction.message.id)
 
         if rating is not None:
