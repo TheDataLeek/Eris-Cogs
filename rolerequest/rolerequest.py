@@ -5,7 +5,7 @@ import random
 
 # third party
 import discord
-from redbot.core import commands, data_manager, Config
+from redbot.core import commands, data_manager, Config, checks
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -75,10 +75,12 @@ class RoleRequest(BaseCog):
         await msg.add_reaction(emoji)
 
         hooks = await self.config.guild(ctx.guild).hooks()
+        msg_id = str(msg_id)
+        emoji_id = str(emoji.id)
         if msg_id in hooks:
-            hooks[msg_id][emoji.id] = role_name
+            hooks[msg_id][emoji_id] = role_name
         else:
-            hooks[msg_id] = {emoji.id: role_name}
+            hooks[msg_id] = {emoji_id: role_name}
         await self.config.guild(ctx.guild).hooks.set(hooks)
 
     @commands.command(pass_context=True)
@@ -93,3 +95,7 @@ class RoleRequest(BaseCog):
 
         await msg.clear_reactions()
 
+    @commands.command(pass_context=True)
+    @checks.is_owner
+    async def clear_all_data(self, ctx):
+        await self.config.guild(ctx.guild).hooks.set({})
