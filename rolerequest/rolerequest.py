@@ -23,21 +23,20 @@ class RoleRequest(BaseCog):
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
 
-        async def add_role_to_user(reaction: discord.Reaction, user: discord.Member):
-            hooks = await self.config.guild(reaction.guild.id).hooks()
-            if reaction.message.id not in hooks:
+        async def add_role_to_user(reaction: discord.RawReactionActionEvent, user: discord.Member):
+            hooks = await self.config.guild(reaction.guild_id).hooks()
+            if reaction.message_id not in hooks:
                 return
 
             message = reaction.message
-            message_id = reaction.message.id
-            emoji_id = reaction.emoji.id
+            emoji_id = reaction.emoji_id
 
-            if emoji_id not in hooks[message_id]:
+            if emoji_id not in hooks[reaction.message_id]:
                 return
 
             role: discord.Role = None
             for guild_role in message.guild.roles:
-                if guild_role.name.lower() == hooks[message_id][emoji_id].lower():
+                if guild_role.name.lower() == hooks[reaction.message_id][emoji_id].lower():
                     role = guild_role
                     break
             else:
@@ -50,8 +49,8 @@ class RoleRequest(BaseCog):
             if reaction.message_id not in hooks:
                 return
 
-        bot.add_listener(add_role_to_user, "on_reaction_add")
-        bot.add_listener(remove_role_from_user, "on_reaction_remove")
+        bot.add_listener(add_role_to_user, "on_raw_reaction_add")
+        bot.add_listener(remove_role_from_user, "on_raw_reaction_remove")
 
     @commands.command(pass_context=True)
     async def designate(
