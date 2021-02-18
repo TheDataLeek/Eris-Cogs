@@ -5,6 +5,7 @@ import random
 
 # third party
 import discord
+from discord import utils
 from redbot.core import commands, data_manager, Config, checks
 
 
@@ -24,7 +25,8 @@ class RoleRequest(BaseCog):
         self.config.register_guild(**default_guild)
 
         async def add_role_to_user(reaction: discord.RawReactionActionEvent):
-            hooks = await self.config.guild(reaction.guild_id).hooks()
+            guild = utils.get(self.bot.guilds, id=reaction.guild_id)
+            hooks = await self.config.guild(guild).hooks()
             if reaction.message_id not in hooks:
                 return
 
