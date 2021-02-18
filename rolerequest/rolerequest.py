@@ -23,17 +23,14 @@ class RoleRequest(BaseCog):
         self.config.register_guild(**default_guild)
 
         async def add_role_to_user(reaction: discord.RawReactionActionEvent):
-            print('adding role to user')
             guild: discord.Guild = utils.get(self.bot.guilds, id=reaction.guild_id)
-            print(guild)
             hooks = await self.config.guild(guild).hooks()
-            pp(hooks)
             message_id = str(reaction.message_id)
             if message_id not in hooks:
                 return
-            print('message in hooks, continuing')
 
-            emoji_id = str(reaction.emoji_id)
+            print(hooks)
+            emoji_id = str(reaction.emoji.id)
             if emoji_id not in hooks[message_id]:
                 return
             print('emoji in message hooks, continuing')
