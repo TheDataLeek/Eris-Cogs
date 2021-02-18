@@ -282,7 +282,7 @@ def generate_handlers(bot, gb_instance):
 
         context = await bot.get_context(reaction.message)
 
-        LIMIT = 1
+        LIMIT = 7
 
         rating = None  # (+, -)
         # MM: you've had your fun
