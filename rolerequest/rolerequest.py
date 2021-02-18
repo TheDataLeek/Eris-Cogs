@@ -5,7 +5,7 @@ import random
 
 # third party
 import discord
-from redbot.core import commands, data_manager
+from redbot.core import commands, data_manager, Config
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -14,6 +14,25 @@ BaseCog = getattr(commands, "Cog", object)
 class RoleRequest(BaseCog):
     def __init__(self, bot: commands.Cog):
         self.bot: commands.Cog = bot
+
+        self.config = Config.get_conf(
+            None, identifier=23488191910303, cog_name="rolerequest"
+        )
+        default_global = {}
+        default_guild = {
+            'hooks': {}
+        }
+        self.config.register_global(**default_global)
+        self.config.register_guild(**default_guild)
+
+        async def add_role_to_user(reaction):
+            pass
+
+        async def remove_role_from_user(reaction):
+            pass
+
+        bot.add_listener(add_role_to_user, "on_reaction_add")
+        bot.add_listener(remove_role_from_user, "on_reaction_remove")
 
     @commands.command(pass_context=True)
     async def designate(self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji):
@@ -34,5 +53,14 @@ class RoleRequest(BaseCog):
             return
 
         await msg.add_reaction(emoji)
-        # self.bot.add_listener()
+
+        hooks = await self.config.guild(ctx.guild).hooks()
+        if msg_id in hooks:
+            hooks[msg_id][emoji.id] = role_name
+        else:
+            hooks[msg_id] = {
+                emoji.id: role_name
+            }
+
+
 
