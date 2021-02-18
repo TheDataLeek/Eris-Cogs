@@ -29,31 +29,44 @@ class RoleRequest(BaseCog):
             if message_id not in hooks:
                 return
 
-            print(hooks)
             emoji_id = str(reaction.emoji.id)
             if emoji_id not in hooks[message_id]:
                 return
-            print('emoji in message hooks, continuing')
 
             role: discord.Role = None
             for guild_role in guild.roles:
                 if guild_role.name.lower() == hooks[message_id][emoji_id].lower():
                     role = guild_role
-                    print(f"found {role}")
                     break
             else:
                 return
 
             user_id = reaction.user_id
             user: discord.Member = await guild.fetch_member(user_id)
-            print(f"found {user}")
             await user.add_roles(role)
 
         async def remove_role_from_user(reaction: discord.RawReactionActionEvent):
-            guild = utils.get(self.bot.guilds, id=reaction.guild_id)
+            guild: discord.Guild = utils.get(self.bot.guilds, id=reaction.guild_id)
             hooks = await self.config.guild(guild).hooks()
-            if reaction.message_id not in hooks:
+            message_id = str(reaction.message_id)
+            if message_id not in hooks:
                 return
+
+            emoji_id = str(reaction.emoji.id)
+            if emoji_id not in hooks[message_id]:
+                return
+
+            role: discord.Role = None
+            for guild_role in guild.roles:
+                if guild_role.name.lower() == hooks[message_id][emoji_id].lower():
+                    role = guild_role
+                    break
+            else:
+                return
+
+            user_id = reaction.user_id
+            user: discord.Member = await guild.fetch_member(user_id)
+            await user.remove_roles(role)
 
         bot.add_listener(add_role_to_user, "on_raw_reaction_add")
         bot.add_listener(remove_role_from_user, "on_raw_reaction_remove")
