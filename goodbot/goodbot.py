@@ -280,6 +280,10 @@ def generate_handlers(bot, gb_instance):
         server = reaction.message.guild.id
         channel = reaction.message.channel.id
 
+        context = await bot.get_context(reaction.message)
+
+        LIMIT = 1
+
         rating = None  # (+, -)
         # MM: you've had your fun
         # Upvote SpatulaFish
@@ -299,7 +303,7 @@ def generate_handlers(bot, gb_instance):
             # Just call the poor sod a bad bot
             # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
             #     await bot.delete_message(reaction.message)
-            if (reaction.count >= 7) and (
+            if (reaction.count >= LIMIT) and (
                 reaction.message.id not in gb_instance.noticed
             ):
                 phrase = "{} IS A {} {}".format(
@@ -307,7 +311,8 @@ def generate_handlers(bot, gb_instance):
                     random.choice(badwords).upper(),
                     random.choice(names).upper(),
                 )
-                await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
+                await context.send(phrase, reference=reaction.message)
+                # await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
                 gb_instance.noticed.add(reaction.message.id)
         elif reaction.emoji == "👍":
             # Downvote for self votes
@@ -315,7 +320,7 @@ def generate_handlers(bot, gb_instance):
                 rating = (0, 1)
             else:
                 rating = (1, 0)
-            if (reaction.count >= 7) and (
+            if (reaction.count >= LIMIT) and (
                 reaction.message.id not in gb_instance.noticed
             ):
                 phrase = "{} IS A {} {}".format(
@@ -323,9 +328,9 @@ def generate_handlers(bot, gb_instance):
                     random.choice(goodwords).upper(),
                     random.choice(names).upper(),
                 )
-                await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
+                await context.send(phrase, reference=reaction.message)
+                # await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
                 gb_instance.noticed.add(reaction.message.id)
-
 
         if rating is not None:
             await rate_user(reaction.message.author.id, rating)
