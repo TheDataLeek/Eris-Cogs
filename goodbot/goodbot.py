@@ -326,6 +326,7 @@ def generate_handlers(bot, gb_instance):
                 await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
                 gb_instance.noticed.add(reaction.message.id)
 
+
         if rating is not None:
             await rate_user(reaction.message.author.id, rating)
 
