@@ -6,19 +6,18 @@ import random
 # third party
 import discord
 from redbot.core import commands, data_manager
-import aiohttp
 
 
 BaseCog = getattr(commands, "Cog", object)
 
 
 class RoleRequest(BaseCog):
-    def __init__(self, bot):
-        self.bot: discord.User = bot
+    def __init__(self, bot: commands.Cog):
+        self.bot: commands.Cog = bot
 
     @commands.command(pass_context=True)
     async def designate(self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji):
-        msg: discord.Message = self.bot.fetch_message(msg_id)
+        msg: discord.Message = await ctx.message.channel.fetch_message(msg_id)
 
         # make sure we have that one
         if emoji.id not in [e.id for e in self.bot.emojis]:
