@@ -23,20 +23,21 @@ class RoleRequest(BaseCog):
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
 
-        async def add_role_to_user(reaction: discord.RawReactionActionEvent, user: discord.Member):
-            hooks = await self.config.guild(reaction.guild_id).hooks()
-            if reaction.message_id not in hooks:
+        async def add_role_to_user(reaction: discord.Reaction, user: discord.Member):
+            hooks = await self.config.guild(reaction.guild.id).hooks()
+            if reaction.message.id not in hooks:
                 return
 
             message = reaction.message
-            emoji_id = reaction.emoji_id
+            message_id = reaction.message.id
+            emoji_id = reaction.emoji.id
 
-            if emoji_id not in hooks[reaction.message_id]:
+            if emoji_id not in hooks[message_id]:
                 return
 
             role: discord.Role = None
             for guild_role in message.guild.roles:
-                if guild_role.name.lower() == hooks[reaction.message_id][emoji_id].lower():
+                if guild_role.name.lower() == hooks[message_id][emoji_id].lower():
                     role = guild_role
                     break
             else:
