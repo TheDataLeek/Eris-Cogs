@@ -1,5 +1,6 @@
 import discord
 from redbot.core import commands, checks
+from typing import List
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -36,10 +37,11 @@ class Clone(BaseCog):
             await ctx.send('Invalid Color!')
             return
 
-        my_role = [r for r in ctx.message.guild.roles if "snek color" == r.name.lower()]
+        my_role: List[discord.Role] = [r for r in ctx.message.guild.roles if "snek color" == r.name.lower()]
         if len(my_role) != 1:
             await ctx.send("Error finding role, aborting!")
             return
+        my_role: discord.Role = my_role[0]
 
         red = int(color[:2], 16)
         green = int(color[2:4], 16)
