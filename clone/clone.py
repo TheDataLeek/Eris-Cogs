@@ -25,3 +25,26 @@ class Clone(BaseCog):
         await self.bot.user.edit(avatar=avatar)
         await my_role.edit(color=user.color)
         await ctx.send("Done")
+
+    @commands.command()
+    @checks.mod()
+    async def set_color(self, ctx: commands.Context, color: str):
+        if color.startswith('#'):
+            color = color[1:]
+
+        if len(color) != 6:
+            await ctx.send('Invalid Color!')
+            return
+
+        my_role = [r for r in ctx.message.guild.roles if "snek color" == r.name.lower()]
+        if len(my_role) != 1:
+            await ctx.send("Error finding role, aborting!")
+            return
+
+        red = int(color[:2], 16)
+        green = int(color[2:4], 16)
+        blue = int(color[4:], 16)
+
+        color = discord.Color.from_rgb(red, green, blue)
+
+        await my_role.edit(color=color)
