@@ -46,6 +46,7 @@ class Clone(BaseCog):
         red = int(color[:2], 16)
         green = int(color[2:4], 16)
         blue = int(color[4:], 16)
+        print(f"New rgb color is {red}, {green}, {blue}")
 
         color = discord.Color.from_rgb(red, green, blue)
 
