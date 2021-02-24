@@ -42,4 +42,4 @@ class HotelCalifornia(BaseCog):
         msg: discord.Message = ctx.message
         user: discord.Member = msg.author
 
-        user.add_roles(role)
+        await user.add_roles(role)
