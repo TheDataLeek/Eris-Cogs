@@ -38,20 +38,23 @@ class HotelCalifornia(BaseCog):
 
     @commands.command(pass_context=True)
     async def hotel_california(self, ctx: commands.Context):
+        await ctx.send('Ed said no :(')
+        return
+
         role = await self.find_role(ctx)
         msg: discord.Message = ctx.message
         user: discord.Member = msg.author
 
         await user.add_roles(role)
 
-    @commands.command(pass_context=True)
-    @checks.is_owner()
-    async def free_your_mistress(self, ctx: commands.Context):
-        role = await self.find_role(ctx)
-        msg: discord.Message = ctx.message
-        user: discord.Member = msg.author
+    # @commands.command(pass_context=True)
+    # @checks.is_owner()
+    # async def free_your_mistress(self, ctx: commands.Context):
+    #     role = await self.find_role(ctx)
+    #     msg: discord.Message = ctx.message
+    #     user: discord.Member = msg.author
 
-        if str(user.id) != '142431859148718080':
-            return
+    #     if str(user.id) != '142431859148718080':
+    #         return
 
-        await user.remove_roles(role)
+    #     await user.remove_roles(role)
