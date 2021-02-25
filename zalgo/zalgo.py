@@ -14,7 +14,7 @@ class Zalgo(BaseCog):
         async def april_fools(message):
             # Prevent acting on DM's
             if (
-                random.random() <= 0.999
+                random.random() <= 0.99
                 or (message.guild is None)
                 or message.guild.name.lower() != "cortex"
             ):
@@ -55,7 +55,8 @@ class Zalgo(BaseCog):
 
             ctx = await bot.get_context(message)
 
-            new_msg = self.uwuify(message.content)
+            new_msg = random.choice([self.uwuify, self.oobify])(message.content)
+            # new_msg = self.uwuify(message.content)
 
             await ctx.message.delete()
             await ctx.send(new_msg)
