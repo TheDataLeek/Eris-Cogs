@@ -111,6 +111,10 @@ class Zalgo(BaseCog):
 
         return new_msg
 
+    def oobify(self, msg):
+        vowels = 'aeiouy'
+        return ''.join('oob' if c in vowels else c for c in msg)
+
     @commands.command()
     async def uwu(self, ctx):
         """uwu the text"""
@@ -122,6 +126,17 @@ class Zalgo(BaseCog):
         new_msg = self.uwuify(raw_msg)
 
         await ctx.message.delete()
+        await ctx.send(new_msg)
+
+    @commands.command()
+    async def oob(self, ctx):
+        """oobs the text"""
+        # first pull out the .zalgo part of the message
+        raw_msg = " ".join(ctx.message.content.split(" ")[1:])
+        if raw_msg == "":
+            return
+
+        new_msg = self.oobify(raw_msg)
         await ctx.send(new_msg)
 
     @commands.command()
