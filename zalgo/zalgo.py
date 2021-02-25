@@ -113,7 +113,9 @@ class Zalgo(BaseCog):
 
     def oobify(self, msg):
         vowels = 'aeiouy'
-        return ''.join('oob' if c in vowels else c for c in msg)
+        first_pass = ''.join('oob' if c in vowels else c for c in msg)
+        vowels = 'AEIOUY'
+        return ''.join('OOB' if c in vowels else c for c in msg)
 
     @commands.command()
     async def uwu(self, ctx):
