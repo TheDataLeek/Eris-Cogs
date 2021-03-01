@@ -87,14 +87,28 @@ class Zalgo(BaseCog):
         return new_msg
 
     def oobify(self, msg):
-        vowels = "aeiouy"
-        first_pass = "".join(
-            "oob" if (c in vowels and random.random() < 0.5) else c for c in msg
-        )
-        vowels = "AEIOUY"
-        return "".join(
-            "OOB" if (c in vowels and random.random() < 0.5) else c for c in first_pass
-        )
+        lower_vowels = "aeiouy"
+        upper_vowels = "AEIOUY"
+
+        new_msg = []
+        for word in msg.split(' '):
+            if len(word) <= 3:
+                new_msg.append(word)
+            else:
+                new_word = []
+                for char in word:
+                    if char in lower_vowels and random.random() < 0.5:
+                        new_word.append('oob')
+                    elif char in upper_vowels and random.random() < 0.5:
+                        new_word.append('OOB')
+                    else:
+                        new_word.append(char)
+                if word[-1] == 'e':
+                    new_word[-1] = 'e'
+                new_msg.append(''.join(new_word))
+
+        new_msg = ' '.join(new_msg)
+        return new_msg
 
     @commands.command()
     async def uwu(self, ctx):
