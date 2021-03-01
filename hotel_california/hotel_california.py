@@ -38,8 +38,7 @@ class HotelCalifornia(BaseCog):
 
     @commands.command(pass_context=True)
     async def hotel_california(self, ctx: commands.Context):
-        await ctx.send('Ed said no :(')
-        return
+        await ctx.send('For Jeff <3')
 
         role = await self.find_role(ctx)
         msg: discord.Message = ctx.message
