@@ -3,6 +3,7 @@ from redbot.core import commands
 import random
 import re
 from functools import reduce
+import string
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -92,7 +93,8 @@ class Zalgo(BaseCog):
 
         new_msg = []
         for word in msg.split(' '):
-            if len(word) <= 3:
+            how_many_letters = len([c for c in word if c in string.ascii_letters])
+            if how_many_letters <= 3:
                 new_msg.append(word)
             else:
                 new_word = []
