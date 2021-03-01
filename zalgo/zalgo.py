@@ -96,16 +96,16 @@ class Zalgo(BaseCog):
             if how_many_letters <= 3:
                 new_msg.append(word)
             else:
-                word_vowels = [c for c in word if c.lower() in vowels]
-                how_many_vowels = len(word_vowels)
+                # word_vowels = [c for c in word if c.lower() in vowels]
+                vowel_indices = [i for i, c in enumerate(word) if c.lower() in vowels]
+                how_many_vowels = len(vowel_indices)
                 if how_many_vowels == 0:
                     new_msg.append(word)
                 else:
                     how_many_replacements = random.randint(1, how_many_vowels)
                     split_word = list(word)
-                    for vowel_to_swap in random.choices(vowels, k=how_many_replacements):
-                        index = word.find(vowel_to_swap)
-                        if vowel_to_swap.isupper():
+                    for index in random.sample(vowel_indices, k=how_many_replacements):
+                        if split_word[index].isupper():
                             split_word[index] = 'OOB'
                         else:
                             split_word[index] = 'oob'
