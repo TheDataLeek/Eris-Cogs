@@ -30,14 +30,16 @@ class Clone(BaseCog):
     @commands.command()
     @checks.mod()
     async def set_color(self, ctx: commands.Context, color: str):
-        if color.startswith('#'):
+        if color.startswith("#"):
             color = color[1:]
 
         if len(color) != 6:
-            await ctx.send('Invalid Color!')
+            await ctx.send("Invalid Color!")
             return
 
-        my_role: List[discord.Role] = [r for r in ctx.message.guild.roles if "snek color" == r.name.lower()]
+        my_role: List[discord.Role] = [
+            r for r in ctx.message.guild.roles if "snek color" == r.name.lower()
+        ]
         if len(my_role) != 1:
             await ctx.send("Error finding role, aborting!")
             return

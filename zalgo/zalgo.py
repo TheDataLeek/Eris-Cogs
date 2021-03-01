@@ -13,53 +13,27 @@ class Zalgo(BaseCog):
 
         async def april_fools(message):
             # Prevent acting on DM's
-            if (
+            it_isnt_april_fools = (
                 random.random() <= 0.99
                 or (message.guild is None)
-                or message.guild.name.lower() != "cortex"
-            ):
+            )
+
+            if it_isnt_april_fools:
                 return
 
-            clean_message = message.clean_content.lower()
-            # MM: Added so list instead of string
-            message_split = clean_message.split(" ")
-            # BLACKLIST CHANNELS
-            blacklist = [
-                "news",
-                "rpg",
-                "events",
-                "recommends",
-                "politisophy",
-                "eyebleach",
-                "weeb-lyfe",
-                "out-of-context",
-                "jokes",
-                "anime-club",
-            ]
+            ctx = await self.bot.get_context(message)
 
-            message_channel = message.channel.name.lower()
+            async with self.lock_config.channel(message.channel).get_lock():
+                allowed: bool = await self.allowed(ctx, message)
+                if not allowed:
+                    return
 
-            if (
-                # DO NOT RESPOND TO SELF MESSAGES
-                (bot.user.id == message.author.id or message.content.startswith("."))
-                or (message.channel.name is None)
-                or (
-                    reduce(
-                        lambda acc, n: acc or (n == message_channel), blacklist, False
-                    )
-                )
-                or ("thank" in clean_message)
-                or ("http" in clean_message)
-            ):
-                return
+                # new_msg = random.choice([self.uwuify, self.oobify])(message.content)
+                new_msg = self.uwuify(message.content)
 
-            ctx = await bot.get_context(message)
-
-            new_msg = random.choice([self.uwuify, self.oobify])(message.content)
-            # new_msg = self.uwuify(message.content)
-
-            await ctx.message.delete()
-            await ctx.send(new_msg)
+                await ctx.message.delete()
+                await ctx.send(new_msg)
+            await self.log_last_message(ctx, message)
 
         self.bot.add_listener(april_fools, "on_message")
 
@@ -113,10 +87,14 @@ class Zalgo(BaseCog):
         return new_msg
 
     def oobify(self, msg):
-        vowels = 'aeiouy'
-        first_pass = ''.join('oob' if c in vowels else c for c in msg)
-        vowels = 'AEIOUY'
-        return ''.join('OOB' if c in vowels else c for c in first_pass)
+        vowels = "aeiouy"
+        first_pass = "".join(
+            "oob" if (c in vowels and random.random() < 0.5) else c for c in msg
+        )
+        vowels = "AEIOUY"
+        return "".join(
+            "OOB" if (c in vowels and random.random() < 0.5) else c for c in first_pass
+        )
 
     @commands.command()
     async def uwu(self, ctx):

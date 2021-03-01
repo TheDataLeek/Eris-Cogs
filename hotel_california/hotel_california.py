@@ -13,8 +13,8 @@ BaseCog = getattr(commands, "Cog", object)
 class HotelCalifornia(BaseCog):
     def __init__(self, bot: commands.Cog):
         self.bot: commands.Cog = bot
-        
-        self.signifier = 'ಠ'
+
+        self.signifier = "ಠ"
 
     async def find_role(self, ctx: commands.Context):
         role: discord.Role = None
@@ -29,16 +29,14 @@ class HotelCalifornia(BaseCog):
 
     @commands.command(pass_context=True)
     @checks.mod()
-    async def punish(
-        self, ctx: commands.Context, user: discord.Member
-    ):
+    async def punish(self, ctx: commands.Context, user: discord.Member):
         role = await self.find_role(ctx)
         if not user.bot:
             await user.add_roles(role)
 
     @commands.command(pass_context=True)
     async def hotel_california(self, ctx: commands.Context):
-        await ctx.send('For Jeff <3')
+        await ctx.send("For Jeff <3")
 
         role = await self.find_role(ctx)
         msg: discord.Message = ctx.message
