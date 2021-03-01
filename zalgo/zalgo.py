@@ -102,7 +102,7 @@ class Zalgo(BaseCog):
                     new_msg.append(word)
                 else:
                     how_many_replacements = random.randint(1, how_many_vowels)
-                    split_word = word.split('')
+                    split_word = list(word)
                     for vowel_to_swap in random.choices(vowels, k=how_many_replacements):
                         index = word.find(vowel_to_swap)
                         if vowel_to_swap.isupper():
