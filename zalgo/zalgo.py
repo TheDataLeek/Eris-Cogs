@@ -88,8 +88,7 @@ class Zalgo(BaseCog):
         return new_msg
 
     def oobify(self, msg):
-        lower_vowels = "aeiouy"
-        upper_vowels = "AEIOUY"
+        vowels = "aeiouy"
 
         new_msg = []
         for word in msg.split(' '):
@@ -97,17 +96,22 @@ class Zalgo(BaseCog):
             if how_many_letters <= 3:
                 new_msg.append(word)
             else:
-                new_word = []
-                for char in word:
-                    if char in lower_vowels and random.random() < 0.5:
-                        new_word.append('oob')
-                    elif char in upper_vowels and random.random() < 0.5:
-                        new_word.append('OOB')
-                    else:
-                        new_word.append(char)
-                if word[-1] == 'e':
-                    new_word[-1] = 'e'
-                new_msg.append(''.join(new_word))
+                word_vowels = [c for c in word if c.lower() in vowels]
+                how_many_vowels = len(word_vowels)
+                if how_many_vowels == 0:
+                    new_msg.append(word)
+                else:
+                    how_many_replacements = random.randint(1, how_many_vowels)
+                    split_word = word.split('')
+                    for vowel_to_swap in random.choices(vowels, k=how_many_replacements):
+                        index = word.find(vowel_to_swap)
+                        if vowel_to_swap.isupper():
+                            split_word[index] = 'OOB'
+                        else:
+                            split_word[index] = 'oob'
+                    if word[-1] == 'e':    # overrides how-many logic
+                        split_word[-1] = 'e'
+                    new_msg.append(''.join(split_word))
 
         new_msg = ' '.join(new_msg)
         return new_msg
