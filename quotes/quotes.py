@@ -46,7 +46,10 @@ class Quotes(BaseCog):
             for u in users
         ]
         users = dict(zip(string.ascii_uppercase[:num_members], users))
-        await ctx.send(users)
+        # await ctx.send(users)  # for debug
+        prompts = self.prompts[f"prompt{int(num_members)}"]
+        prompt = random.choice(prompts)
+        await ctx.send(prompt.format(**users))
 
 
     async def get_realname(self, ctx, userid: str):
