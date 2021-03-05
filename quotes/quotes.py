@@ -45,6 +45,7 @@ class Quotes(BaseCog):
             )
             for u in users
         ]
+        random.shuffle(users)
         users = dict(zip(string.ascii_uppercase[:num_members], users))
         # await ctx.send(users)  # for debug
         # await ctx.send(num_members)
