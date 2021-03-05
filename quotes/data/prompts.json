@@ -1,5 +1,12 @@
 {
   "prompts1": [
+    "{A}: \*dials 911\*\n {A}:  hey i hate to be “that guy” but i glued myself to the ceiling again",
+    "{A}: \*kicks “G” off Graveyard sign\*\n {A}:  Let’s get this party started",
+    "{A}: Welcome to my very first vlog in which I will try different hair products!\n {A}:  \*sprays the hairspray into their mouth\*\n {A}:  Well, right off the bat I can tell you that this one is not very good",
+    "{A}: \*signs a legal document with a glitter gel pen\*",
+    "{A}, dumping out a shopping bag full of Lunchables onto the table:  Tonight, we feast.",
+    "{A}: I am very small\n {A}:  And I have no money\n {A}:  So you can imagine the kind of stress I’m under",
+    "{A}: I married my wife. I love saying ‘my wife,’ it sounds so adult.\n {A}:  ‘That’s my wife.’ It’s great, you sound like a person.",
     "{A}: You’ll have a hard time believing this because it never happens, but I made a mistake.",
     "{A}: You seem familiar, have I threatened you before?",
     "{A}: bitches b like “im baby” but have childhood trauma and neglect like wtf do u know about being baby u were forced to grow up from an early age anyways I’m bitches",
@@ -39,6 +46,28 @@
     "{A}: Just because I'm too short to reach the lowest self in the cabinet doesn't mean you shouldn't watch out for your kneecaps."
   ],
   "prompts2": [
+    "{A}: Sorry, but you're under arrest for robbery.\n {B}:  What did I steal?\n {A}, trying not to cry:  My heart.",
+    "{A}: If I run and leap at {B}, they'll catch me in their arms!\n {A}:  \*runs and leaps at {B}\*\n {B}, who is holding coffee:  \*drops the coffee to catch {A}\*",
+    "{A}, bad at flirting:  I like your name\n {B}, equally as bad:  Thanks, I got it for my birthday",
+    "{A}: Surgery is just stabbing someone to life.\n {B}:  Please never become a surgeon",
+    "{A}: Do you miss the imagination of childhood?\n {B}:  I never had one.\n {A}:  An imagination or a childhood?",
+    "{A}: Pardon the intrusion, but-\n {B}:  On this moment or just my life in general?",
+    "{A}: Rules were made to be broken!\n {B}:  Yeah, well, bodies weren't!",
+    "{A}: You will machete through this!\n {A}:  \*make it\n {A}:  do not machete your way through this\n {B}:  too late",
+    "{A}: \*sharpens knife\* We've got ways of making people talk.\n {A}:  \*cuts piece of cake\*\n {B}:  …can I have some?\n {A}:  Cake is for talkers.",
+    "{A}: Things have actually been going really well with {B}. Our friendship is in a really good place.\n {A}:  Last week I said, “Did you know the weiner dog is neither a weiner nor a dog?” Instead of saying, “Shut up, {A},” they said, “Okay.”",
+    "{A}: If you tear more holes in a net, it would end up having fewer.\n {B}:  STOP",
+    "{A}: Why do you have a diary?\n {B}:  To keep secrets from my computer.",
+    "{A}: Name one time I haven’t acted professional\n {B}:  You’re holding a juice box right now\n {A}:  It’s to stop me from spilling my juice.",
+    "{A}: You read my diary?!\n {B}:  At first, I didn’t know it was your diary. I thought it was a very sad handwritten book.",
+    "{A}: I wasn’t hurt that bad\n {A}:  {B} said all the bleeding was internal\n {A}:  Which is where it’s supposed to be",
+    "{A}: Do you like my outfit?\n {B}:  Not as much as I like what's underneath it.\n {A}, blushing:  P-{B}-\n {B}:  I need your chair. Get up.",
+    "{A}, betrayed:  You tricked me!\n {B}:  No, I merely deceived you. \"Tricked\" makes it sound like we have a playful relationship.",
+    "{A}: I like your shirt!\n {B}:  Thanks \*remembers people like bad boys\* I stole it \*remembers people also like nice guys\* from an old man I was helping walk across the street",
+    "{A}: I relate to Belle because she loves books and likes people for who they are!\n {B}:  I relate to Tinkerbell because she needs attention or she dies",
+    "{A}: Look, let’s just agree to say “I’m sorry” on the count of three\n {A}:  One, two, three\n {A}:\n{B}:\n{A}:  See, now I’m just disappointed in both of us",
+    "{A}: \*accidentally hits {B} in the face\*\n {A}:  \*trying to decide between saying “I’m fucking sorry” and “are you okay?”\n {A}:  ARE YOU FUCKING SORRY?!",
+    "{A}: Do you know when you know someone, and you see that they have another, like, life away from you and it feels weird?\n {A}:  Like when you see your teacher in the grocery store weird, or like when someone you’ve known for a long time starts wearing a cowboy hat weird?\n {A}:  The… The first thing weird\n {B}:  Oh, that’s good, ‘Cause I was thinking about getting a cowboy hat",
     "{A}: I’m going to take you out\n{B}: great, it’s a date!\n{A}: I meant that as a threat.\n{B}: See you at five!",
     "{A}: So what’s for dinner?\n{B}, staring at the food they just burnt: Regret.",
     "{A}: Is letting someone win at chess sapiosexual bottoming\n{B}: Does anyone in this godforsaken group ever think before they speak",
@@ -172,6 +201,10 @@
     "{A}: So are we flirting right now?\n{B}: I AM LITERALLY STABBING YOU\n{A}: That doesn’t answer my question"
   ],
   "prompts3": [
+    "{A}: Did {B} just tell me they loved me for the first time?\n {C}:  Yeah.\n {A}:  And did I do finger guns back?\n {C}:  Yeah, you did.",
+    "{A}, to {B}:  I dare you to—\n {C}:  {B} isn’t allowed to accept dares.\n {B}:  Apparently I have ”no regard for my personal safety”",
+    "{A}: I am at a loss for words!\n {B}, telling {C} later:  Despite being lost for words, {A} yelled at me for the next 45 minutes.",
+    "{A}: You’re a lying, cheating, piece of shit! You’re not the person I married!\n {B}:  Fine then! We’re getting a divorce! And i’m taking the kids!\n {C}, pushing the monopoly board away from them:  …maybe we should stop playing",
     "{A}: {B} and I were crossing the street, and this dude drove by and honked at us\n{C}: *Sighing* What did {B} do?\n{A}: They chased him to the next red light, then reached into his window and...\n{B}: Who wants a steering wheel?",
     "{A}: What if I press the brake and gas at the same time?\n{B}: The car takes a screenshot.\n{C}: For the last time, get the fuck out.",
     "{A}: HELP! I TOLD {I} I’D COOK DINNER TONIGHT BUT I CAN’T COOK!\n{B}, pouring milk directly into the cereal bag: And you thought I could help?",
@@ -243,6 +276,8 @@
     "{A}: Hey {B},\n{B}: Yes?\n{A}: Can a person breathe inside a washing machine while it’s on?\n{B}:\n{B}: Where’s {C}?"
   ],
   "prompts4": [
+    "{A}: You're smiling, did something good happen?\n {B}:  I can't smile just because I feel like it?\n {C}:  {D} tripped and fell in the parking lot.",
+    "{A}: time sensitive question how flirt boy\n {B}:  Throw rocks at he\n {C}:  Hot dog\n {D}:  Kill him\n {A}:  thanks guys",
     "{A}: On a scale from “damn Daniel” to “fre sha vaca do”, how are you feeling?\n{B}: In between “it’s an avocado, thanks” and “how did you defeat Captain America”, but as a solid answer I would say “I don’t need a degree to be a clothing hanger”. How about you, {C}?\n{C}: Probably “road work ahead”.\n{D}: I speak many languages, and this is none of them.",
     "{A}: Yo is {D} sleeping or dead?\n{B}: Hopefully dead, I hated their guts.\n{C}: Yeah, so did I.\n{D}: Okay first of all, fuck you-",
     "{A}: I think we're missing something.\n{B}: Teamwork?\n{C}: Cohesion?\n{D}: A general sense of what we’re doing?",
