@@ -47,7 +47,7 @@ class Quotes(BaseCog):
         ]
         users = dict(zip(string.ascii_uppercase[:num_members], users))
         # await ctx.send(users)  # for debug
-        prompts = self.prompts[f"prompt{int(num_members)}"]
+        prompts = self.prompts[f"prompts{int(num_members)}"]
         prompt = random.choice(prompts)
         await ctx.send(prompt.format(**users))
 
