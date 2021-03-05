@@ -96,7 +96,6 @@ class Zalgo(BaseCog):
             if how_many_letters <= 3:
                 new_msg.append(word)
             else:
-                # word_vowels = [c for c in word if c.lower() in vowels]
                 vowel_indices = [i for i, c in enumerate(word) if c.lower() in vowels]
                 how_many_vowels = len(vowel_indices)
                 if how_many_vowels == 0:
