@@ -29,6 +29,7 @@ class Wiggle(BaseCog, ErisEventMixin):
             dogbless = 687144702394499293
             dansen = 702322986765516802
             bongo = 559949424034316288
+            gobbin = 818899824287940658
 
             emojis = {e.id: e for e in self.bot.emojis}
 
@@ -57,4 +58,9 @@ class Wiggle(BaseCog, ErisEventMixin):
             # bryan
             if author.id == 179084207174189056 and random.random() <= 0.1:
                 await message.add_reaction(random.choice(bulbas))
+                return
+
+            # max
+            if author.id == 159773326737145856 and random.random() <= 0.2:
+                await message.add_reaction(emojis[gobbin])
                 return
