@@ -21,7 +21,7 @@ class ImDad(BaseCog, ErisEventMixin):
     async def imdad(self, message: discord.Message):
         clean_message: str = message.clean_content.lower()
         matched = self.searchpattern.search(clean_message)
-        activated: bool = matched and (random.random() < 0.5)
+        activated: bool = matched and (random.random() < 0.25)
         if not activated:
             return
 
