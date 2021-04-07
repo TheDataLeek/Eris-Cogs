@@ -13,7 +13,7 @@ class ImDad(BaseCog, ErisEventMixin):
         super().__init__()
         self.bot = bot_instance
         self.searchpattern: RETYPE = re.compile(
-            r"i'?m ([^\.\?\!,\n\r]+)", flags=re.IGNORECASE
+            r"(?<![a-z])i'?m ([^\.\?\!,\n\r]+)", flags=re.IGNORECASE
         )
 
         self.bot.add_listener(self.imdad, "on_message")
