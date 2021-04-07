@@ -51,12 +51,12 @@ class HotelCalifornia(BaseCog):
         if not user.bot:
             await user.remove_roles(role)
 
-    @commands.command(pass_context=True)
-    async def hotel_california(self, ctx: commands.Context):
-        await ctx.send("For Jeff <3")
-
-        role = await self.find_role(ctx)
-        msg: discord.Message = ctx.message
-        user: discord.Member = msg.author
-
-        await user.add_roles(role)
+    # @commands.command(pass_context=True)
+    # async def hotel_california(self, ctx: commands.Context):
+    #     await ctx.send("For Jeff <3")
+    #
+    #     role = await self.find_role(ctx)
+    #     msg: discord.Message = ctx.message
+    #     user: discord.Member = msg.author
+    #
+    #     await user.add_roles(role)
