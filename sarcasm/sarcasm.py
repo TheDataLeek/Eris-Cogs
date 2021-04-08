@@ -20,7 +20,7 @@ class Sarcasm(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.add_sarcasm, "on_message")
 
     async def add_sarcasm(self, message: discord.Message):
-        randomly_activated: bool = random.random() <= 0.02
+        randomly_activated: bool = random.random() <= 0.005
         if not randomly_activated:
             return
 
