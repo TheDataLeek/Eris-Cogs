@@ -1,4 +1,5 @@
 import os
+import io
 from time import sleep
 import random
 import re
@@ -85,6 +86,18 @@ class OutOfContext(BaseCog, ErisEventMixin):
             if 0 <= index < len(blocklist):
                 blocklist.pop(index)
         await ctx.send('Success')
+
+    @ooc.command()
+    @checks.mod()
+    async def download(self, ctx):
+        """
+        Remove item from current blocklist.
+        """
+        await ctx.send(
+            file=discord.File(
+                io.TextIO(self.quotefile.read_text()), filename="ooc.txt"
+            )
+        )
 
     def generate_quote_hash(self):
         self.quotes = [s for s in self.quotes if s != ""]
