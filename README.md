@@ -1,82 +1,252 @@
-# Eris Cogs
-
-Welcome to my cogs, currently these are the only finished[1] v3 cogs:
-
-* insult
-* dice
-* nick_prefix
-* event_config
-
----
-
-1. By "finished" I mean docstrings and all
-
----
-
+# Eris' Cogs
+Welcome to my cogs!
 ## Alot
+Short: Posts an alot
 
-Listens to `on_message` and posts an alot whenever someone says "alot of things" instead of "a lot of things".
+Description: Automatically posts an alot whenever a user says 'alot of things' instead of 'a lot of things'
 
-## Bad Ideas
-
-Lets users rename any other user (except server owner), weave emoji, and clones the bot to look like a user.
-
+Author: Eris
 ## Battle
+Short: Battle with your users
 
-An rpg-inspired battle system where users can fight and gain XP from talking
+Description: Battle with your users
 
+Usages:
+
+[p]attack <member> - Starts a battle
+
+[p]protect <member>
+
+[p]status <member> - Displays user's stats
+
+[p]set_attribute <member> <attribute> <value> - Sets a user's stat. Requires owner permissions.
+
+[p]elevate <member> - Levels up a user. Requires owner permissions.
+
+[p]full_heal_user <member> - Fully heals a user. Requires owner permissions.
+
+[p]heal_user <member> - Heals a user. Requires owner permissions.
+
+[p]reload_user <member> - Reloads a user's stats. Requires owner permissions.
+
+Author: Eris
+## Big_name
+Short: Change a user's name regardless of permissions
+
+Description: Change someone's name - who cares about permissions. Usage: [p]big_name <User> <new name>
+
+Author: Eris, Maddie
+## Big_text
+Short: Make your message big and emoji-fied
+
+Description: Usage: [p]big_text <ASCII message>
+
+Author: Maddie
+## Clone
+Short: The bot takes on a user's name and avatar
+
+Description: The bot takes on a specified user's name and avatar. Users take 1d10 confusion damage, half as much on a successful save. Usage: [p]clone <User>
+
+Author: Eris, Maddie
 ## Dice
+Short: Improved dice roller.
 
-Better dice roller
+Description: Improved dice roller, can support arbitrary dice. Usage regex: [p]dice #d#(v#)?
 
-## Event Config
+Author: Eris
+## Dm_role
+Short: DM Roles
 
-*(IN PROGRESS)* Global `on_message` configuration for these cogs
+Description: DM a specific role based on fuzzy role name
 
+Author: Eris
+## Event_config
+Short: Configure `on_message` events
+
+Description: Configure `on_message` events, specifically which servers they appear in, which channels, etc. for Eris Cogs
+
+Author: Eris
 ## Events
+Short: Silly bot behavior not activated by explicit commands
 
-Bunch of fun events to mess with people while talking
+Description: A bunch of silly events
 
+Author: Eris
 ## Facts
+Short: Provide random facts
 
-Bear or Snake facts
+Description: Provides bear or snake facts based on user input or randomly.
 
+Author: Eris
 ## Goodbot
+Short: Track which users get the most thumbs ups reacts.
 
-Keeps track of user scores based on thumbs up and thumbs down
+Description: Good Bot Bad Bot - Track which users get the most thumbs ups reacts.
 
+Author: Eris
 ## Grammar
+Short: Checks grammar of your users - load at your own risk
 
-Spellchecker
+Description: Grammar Module - insult your illiterate friends.
 
+Author: Eris
+## Hotel_california
+Short: Hotel California
+
+Description: Hotel California
+
+Author: Eris
+## Im_dad
+Short: Hi _ I'm Dad
+
+Description: Hi _ I'm Dad
+
+Author: Eris
 ## Insult
+Short: Insult users
 
-Insults users
+Description: Usage: [p]insult <user>
 
-## Nick Prefix
+[p]insult. Includes NSFW insults
 
-Add fun prefixes to nicknames
+Author: Eris
+## Minesweeper
+Short: None
 
+Description: Minesweeper
+
+Author: Eris
+## Move
+Short: Move post
+
+Description: Move post
+
+Author: Eris
+## Nick_prefix
+Short: Adds themed prefix to names
+
+Description: Theme your nickname, some include NSFW language and themes.
+
+Author: Eris
+## No_fuck_you
+Short: No fuck you
+
+Description: Replies with 'no fuck you' if someone says 'fuck you'
+
+Author: Eris
 ## Notify
+Short: None
 
-Uses twilio API to text out @everyone notifications for those that don't have discord but want to keep up with friend group.
+Description: Twilio Notifications for @everyone tags
 
-## Out of Context
+Author: Eris
+## Out_of_context
+Short: Archives a channel of out of context quotes and then posts them randomly during conversation.
 
-Randomly interjects a topical quote.
+Description: Archives a channel of out of context quotes. Posts quotes randomly or in response to commands. Quotes must be in quotation marks to be archived. Usage: [p]penny
 
+Author: Eris
+## Quotes
+Short: Incorrect Quotes by ScatterPatter
+
+Description: Usage: [p]quote <users> - all credit to https://incorrect-quotes-generator.neocities.org/
+
+Author: Eris
+## Rock_and_stone
+Short: ROCK AND STONE
+
+Description: ROCK AND STONE
+
+Author: Eris
+## Rolerequest
+Short: Emoji Request
+
+Description: Emoji role request
+
+Author: Eris
 ## Sarcasm
+Short: Randomly mocks users
 
-Mocks users randomly
+Description: Sarcasm Module - randomly mocks users
 
+Author: Eris
 ## Say
+Short: None
 
-Secret admin command to post a message to General
+Description: Allowed users can command the bot to say anything in a certain channel. Usage [p]say <message>
 
+Author: Eris
+## Search
+Short: Search functions
+
+Description: Search Functions
+
+Author: Eris
+## Spoop
+Short: Sneakily spoops users
+
+Description: Sneakily spoops a user randomly or on mod prompting. NSFW spoops!
+
+Author: Eris
+## Steve
+Short: STEVE
+
+Description: STEVE
+
+Author: Eris
+## Stonks
+Short: STONKS
+
+Description: none
+
+Author: Eris
+## Sudo
+Short: Warns about sudo attempts
+
+Description: Errors if someone tries to use sudo
+
+Author: Eris
+## Weave
+Short: Create a mosaic of alternating emoji
+
+Description: Create a mosaic of alternating specified emoji. Emojis may be animated or still. Usage: [p]weave <Emoji> <Emoji> <width> <height>
+
+Author: Eris, Maddie
 ## Whois
+Short: Whois for discord
 
-Keeps track of real names for people who don't pay as close attention
+Description: Whois for server members. Set, update, and look up names to keep track of who is who. 
 
-## Zalgo 
+Usages: 
 
-Zalgo's or Uwu's text
+[p]avatar <member> - Posts a full resolution image of a specified user's profile picture
+
+[p]emoji <emoji> - Posts a full resolution image of a specified emoji
+
+[p]whois <member> - Look up name
+
+[p]theyare <member> <name> - Set name 
+
+[p]iswho <name> - Look up a username given their whois name 
+
+[p]iseveryone - Lists all members of the server (without pinging!) and their whois names
+
+[p]import_whois - privileged users can export a whois database. File to import should be attached to the command message.
+
+[p]export_whois - Privileged users can export the whois DB to file
+
+[p]import_from_legacy_db - Imports from a whois SQL db located in the install directory of the bot
+
+Author: Eris
+## Wiggler
+Short: WIggle Jeff
+
+Description: none
+
+Author: Eris
+## Zalgo
+Short: Zalgoify and anonymize text
+
+Description: Usage: [p]zalgo <message>
+
+Author: Eris
