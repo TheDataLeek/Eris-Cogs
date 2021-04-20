@@ -31,7 +31,11 @@ class OutOfContext(BaseCog, ErisEventMixin):
             cog_name="ooc",
         )
 
-        default_guild = {"ooc_blocklist": []}
+        default_guild = {
+            "ooc_blocklist": [],
+            "quotes": [],
+            "quote_hash": [],
+        }
         self.config.register_guild(**default_guild)
 
         self.message_match: RETYPE = re.compile(
@@ -39,12 +43,6 @@ class OutOfContext(BaseCog, ErisEventMixin):
         )  # flag not required
 
         self.message_log = {}
-
-        data_dir = data_manager.bundled_data_path(self)
-        self.quotefile = data_dir / "ooc.txt"
-        self.quotes = self.quotefile.read_text().split("\n")
-        self.quote_hash = dict()
-        self.generate_quote_hash()
 
         self.bot.add_listener(self.out_of_context_handler, "on_message")
 
@@ -99,17 +97,6 @@ class OutOfContext(BaseCog, ErisEventMixin):
             )
         )
 
-    def generate_quote_hash(self):
-        self.quotes = [s for s in self.quotes if s != ""]
-        self.quote_hash = dict()
-        for quote in self.quotes:
-            quote_words = [_ for _ in quote.lower().split() if len(_) > 3]
-            for word in quote_words:
-                if word not in self.quote_hash:
-                    self.quote_hash[word] = []
-
-                self.quote_hash[word].append(quote)
-
     async def out_of_context_handler(self, message):
         if random.random() <= 0.99:  # 1% chance of activation
             return
@@ -148,7 +135,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
             sleep(1)
             await ctx.send(reply)
 
-    def get_quote(self, channel_id, most_recent=True):
+    async def get_quote(self, channel_id, most_recent=True):
         reply = random.choice(self.quotes)
         if channel_id not in self.message_log:
             return reply  # just random if no logs
@@ -210,9 +197,19 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         ooc_list = list(set(ooc_list))
 
-        self.quotefile.write_text("\n".join(ooc_list))
-        self.quotes = ooc_list
-        self.generate_quote_hash()
+        await self.config.guild(ctx.guild).quotes.set(ooc_list)
+
+        quote_hash = dict()
+        for quote in ooc_list:
+            quote_words = [_ for _ in quote.lower().split() if len(_) > 3]
+            for word in quote_words:
+                if word not in self.quote_hash:
+                    quote_hash[word] = []
+
+                quote_hash[word].append(quote)
+
+        await self.config.guild(ctx.guild).quote_hash.set(quote_hash)
+
 
         await ctx.send(
             f"Done. Processed {message_count} messages, found {len(ooc_list)} quotes."
