@@ -155,9 +155,9 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         return reply
 
-    @commands.command()
-    @checks.is_owner()
-    async def update_ooc(self, ctx):
+    @ooc.command()
+    @checks.mod()
+    async def update(self, ctx):
         """
         Updates the out of context quotes from the current channel. WILL OVERWRITE ALL OTHERS!
         Usage: [p]update_ooc
