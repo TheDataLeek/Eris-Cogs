@@ -4,7 +4,7 @@ import random
 import re
 import pathlib
 import discord
-from redbot.core import commands, bot, checks, data_manager
+from redbot.core import commands, bot, checks, data_manager, Config
 from functools import reduce
 
 from typing import List
