@@ -8,7 +8,7 @@ import discord
 from redbot.core import commands, bot, checks, data_manager, Config
 from functools import reduce
 
-from typing import List
+from typing import List, Optional
 
 from .eris_event_lib import ErisEventMixin
 
@@ -47,16 +47,16 @@ class OutOfContext(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.out_of_context_handler, "on_message")
 
     @commands.group()
-    async def ooc(self, ctx):
+    async def ooc(self, ctx: commands.Context):
         pass
 
     @ooc.command()
     @checks.mod()
-    async def block(self, ctx, *phrase):
+    async def block(self, ctx: commands.Context, *phrase):
         """
         Add phrase to blocklist
         """
-        phrase = " ".join(phrase)
+        phrase = " ".join(phrase).lower()
         async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
             blocklist.append(phrase)
         await ctx.send("Success")
@@ -76,7 +76,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
     @ooc.command()
     @checks.mod()
-    async def remove(self, ctx, index: int):
+    async def remove(self, ctx: commands.Context, index: int):
         """
         Remove item from current blocklist.
         """
@@ -87,15 +87,16 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
     @ooc.command()
     @checks.mod()
-    async def download(self, ctx):
+    async def download(self, ctx: commands.Context):
         """
         Remove item from current blocklist.
         """
-        await ctx.send(
-            file=discord.File(
-                io.StringIO(self.quotefile.read_text()), filename="ooc.txt"
+        async with self.config.guild(ctx.guild).quotes() as quotes:
+            await ctx.send(
+                file=discord.File(
+                    io.StringIO('\n'.join(quotes)), filename="ooc.txt"
+                )
             )
-        )
 
     async def out_of_context_handler(self, message):
         if random.random() <= 0.99:  # 1% chance of activation
@@ -117,7 +118,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
             if not allowed:
                 return
 
-            reply = self.get_quote(chan_id)
+            reply = self.get_quote(ctx)
             async with ctx.typing():
                 sleep(1)
                 await message.channel.send(reply)
@@ -125,18 +126,22 @@ class OutOfContext(BaseCog, ErisEventMixin):
             await self.log_last_message(ctx, message)
 
     @commands.command()
-    async def penny(self, ctx):
+    async def penny(self, ctx: commands.Context):
         """
         Penny for your thoughts? Posts a random out-of-context quote
         Usage: [p]penny
         """
-        reply = self.get_quote(ctx.channel.id, most_recent=False)
+        reply = self.get_quote(ctx, most_recent=False)
         async with ctx.typing():
             sleep(1)
             await ctx.send(reply)
 
-    async def get_quote(self, channel_id, most_recent=True):
-        reply = random.choice(self.quotes)
+    async def get_quote(self, ctx: commands.Context, most_recent: Optional[bool]=True):
+        channel_id: int = ctx.channel.id
+
+        async with self.config.guild(ctx.guild).quotes() as quotes:
+            reply = random.choice(quotes)
+
         if channel_id not in self.message_log:
             return reply  # just random if no logs
 
@@ -148,16 +153,17 @@ class OutOfContext(BaseCog, ErisEventMixin):
         random.shuffle(split_message)
         split_message = [s for s in split_message if len(s) > 3]
 
-        for word in split_message:
-            if word in self.quote_hash:
-                reply = random.choice(self.quote_hash[word])
-                break
+        async with self.config.guild(ctx.guild).quote_hash() as quote_hash:
+            for word in split_message:
+                if word in quote_hash:
+                    reply = random.choice(quote_hash[word])
+                    break
 
         return reply
 
     @ooc.command()
     @checks.mod()
-    async def update(self, ctx):
+    async def update(self, ctx: commands.Context):
         """
         Updates the out of context quotes from the current channel. WILL OVERWRITE ALL OTHERS!
         Usage: [p]update_ooc
@@ -188,7 +194,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
                         continue
 
                     for phrase in phrases_to_block:
-                        if phrase in quote:
+                        if phrase in quote.lower():
                             break
                     else:
                         ooc_list.append(quote)
