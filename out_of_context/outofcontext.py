@@ -95,7 +95,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         """
         await ctx.send(
             file=discord.File(
-                io.TextIO(self.quotefile.read_text()), filename="ooc.txt"
+                io.StringIO(self.quotefile.read_text()), filename="ooc.txt"
             )
         )
 
