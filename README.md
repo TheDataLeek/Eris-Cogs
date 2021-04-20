@@ -39,7 +39,9 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Weave](#weave) | Create a mosaic of alternating emoji |
 | [Whois](#whois) | Whois for discord |
 | [Wiggler](#wiggler) | WIggle Jeff |
-| [Zalgo](#zalgo) | Zalgoify and anonymize text |## Alot
+| [Zalgo](#zalgo) | Zalgoify and anonymize text |
+
+## Alot
 Short: Posts an alot
 
 Description: Automatically posts an alot whenever a user says 'alot of things' instead of 'a lot of things'

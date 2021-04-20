@@ -49,6 +49,7 @@ for d in all_dirs:
     table.append(f"| [{name}](#{name.lower()}) | {meta.get('short')} |")
 
 readme += '\n'.join(table)
+readme += '\n\n'
 readme += '\n'.join(all_entries)
 
 readmefile = pathlib.Path() / 'README.md'
