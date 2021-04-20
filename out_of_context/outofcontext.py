@@ -63,7 +63,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
     @ooc.command()
     @checks.mod()
-    async def show(self, ctx):
+    async def show(self, ctx: commands.Context):
         """
         Show current blocklist. This will eventually break if you have too many lines.
         """
