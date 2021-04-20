@@ -2,7 +2,44 @@
 Welcome to my cogs!
 
 If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` files in the directories of the cogs you wish to install and replace it with a copy of the root-level file.
-## Alot
+
+| Cog Name | Short |
+| --- | --- |
+| [Alot](#alot) | Posts an alot |
+| [Battle](#battle) | Battle with your users |
+| [Big_name](#big_name) | Change a user's name regardless of permissions |
+| [Big_text](#big_text) | Make your message big and emoji-fied |
+| [Clone](#clone) | The bot takes on a user's name and avatar |
+| [Dice](#dice) | Improved dice roller. |
+| [Dm_role](#dm_role) | DM Roles |
+| [Event_config](#event_config) | Configure `on_message` events |
+| [Events](#events) | Silly bot behavior not activated by explicit commands |
+| [Facts](#facts) | Provide random facts |
+| [Goodbot](#goodbot) | Track which users get the most thumbs ups reacts. |
+| [Grammar](#grammar) | Checks grammar of your users - load at your own risk |
+| [Hotel_california](#hotel_california) | Hotel California |
+| [Im_dad](#im_dad) | Hi _ I'm Dad |
+| [Insult](#insult) | Insult users |
+| [Minesweeper](#minesweeper) | None |
+| [Move](#move) | Move post |
+| [Nick_prefix](#nick_prefix) | Adds themed prefix to names |
+| [No_fuck_you](#no_fuck_you) | No fuck you |
+| [Notify](#notify) | None |
+| [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. |
+| [Quotes](#quotes) | Incorrect Quotes by ScatterPatter |
+| [Rock_and_stone](#rock_and_stone) | ROCK AND STONE |
+| [Rolerequest](#rolerequest) | Emoji Request |
+| [Sarcasm](#sarcasm) | Randomly mocks users |
+| [Say](#say) | None |
+| [Search](#search) | Search functions |
+| [Spoop](#spoop) | Sneakily spoops users |
+| [Steve](#steve) | STEVE |
+| [Stonks](#stonks) | STONKS |
+| [Sudo](#sudo) | Warns about sudo attempts |
+| [Weave](#weave) | Create a mosaic of alternating emoji |
+| [Whois](#whois) | Whois for discord |
+| [Wiggler](#wiggler) | WIggle Jeff |
+| [Zalgo](#zalgo) | Zalgoify and anonymize text |## Alot
 Short: Posts an alot
 
 Description: Automatically posts an alot whenever a user says 'alot of things' instead of 'a lot of things'
