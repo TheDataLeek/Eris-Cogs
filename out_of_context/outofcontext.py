@@ -209,7 +209,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         for quote in ooc_list:
             quote_words = [_ for _ in quote.lower().split() if len(_) > 3]
             for word in quote_words:
-                if word not in self.quote_hash:
+                if word not in quote_hash:
                     quote_hash[word] = []
 
                 quote_hash[word].append(quote)
