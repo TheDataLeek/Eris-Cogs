@@ -60,6 +60,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         phrase = ' '.join(phrase)
         async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
             blocklist.append(phrase)
+        await ctx.send('Success')
 
     @ooc.command()
     @checks.mod()
@@ -72,7 +73,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
             for i, phrase in enumerate(blocklist):
                 lines.append(f"{i}  {phrase}")
         lines = '\n'.join(lines)
-        ctx.send(f"```\n{lines}\n```")
+        await ctx.send(f"```\n{lines}\n```")
 
     @ooc.command()
     @checks.mod()
@@ -83,6 +84,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
             if 0 <= index < len(blocklist):
                 blocklist.pop(index)
+        await ctx.send('Success')
 
     def generate_quote_hash(self):
         self.quotes = [s for s in self.quotes if s != ""]
