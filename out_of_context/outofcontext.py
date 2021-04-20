@@ -53,7 +53,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
     @ooc.command()
     @checks.mod()
-    def block(self, ctx, *phrase):
+    async def block(self, ctx, *phrase):
         """
         Add phrase to blocklist
         """
@@ -63,7 +63,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
     @ooc.command()
     @checks.mod()
-    def show(self, ctx):
+    async def show(self, ctx):
         """
         Show current blocklist. This will eventually break if you have too many lines.
         """
@@ -76,7 +76,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
     @ooc.command()
     @checks.mod()
-    def remove(self, ctx, index: int):
+    async def remove(self, ctx, index: int):
         """
         Remove item from current blocklist.
         """
