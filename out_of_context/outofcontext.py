@@ -23,6 +23,16 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         self.bot = bot_instance
 
+        self.config = Config.get_conf(
+            self,
+            identifier=875239875438276234987523048752087,
+            force_registration=True,
+            cog_name="ooc",
+        )
+
+        default_guild = {"ooc_blocklist": []}
+        self.config.register_guild(**default_guild)
+
         self.message_match: RETYPE = re.compile(
             '(?:(["“])([^"”]*?)("|”))', flags=re.IGNORECASE
         )  # flag not required
@@ -36,6 +46,43 @@ class OutOfContext(BaseCog, ErisEventMixin):
         self.generate_quote_hash()
 
         self.bot.add_listener(self.out_of_context_handler, "on_message")
+
+    @commands.group()
+    async def ooc(self, ctx):
+        pass
+
+    @ooc.command()
+    @checks.mod()
+    def block(self, ctx, *phrase):
+        """
+        Add phrase to blocklist
+        """
+        phrase = ' '.join(phrase)
+        async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
+            blocklist.append(phrase)
+
+    @ooc.command()
+    @checks.mod()
+    def show(self, ctx):
+        """
+        Show current blocklist. This will eventually break if you have too many lines.
+        """
+        lines = []
+        async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
+            for i, phrase in enumerate(blocklist):
+                lines.append(f"{i}  {phrase}")
+        lines = '\n'.join(lines)
+        return f"```\n{lines}\n```"
+
+    @ooc.command()
+    @checks.mod()
+    def remove(self, ctx, index: int):
+        """
+        Remove item from current blocklist.
+        """
+        async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
+            if 0 <= index < len(blocklist):
+                blocklist.pop(index)
 
     def generate_quote_hash(self):
         self.quotes = [s for s in self.quotes if s != ""]
@@ -115,6 +162,9 @@ class OutOfContext(BaseCog, ErisEventMixin):
         """
         channel: discord.TextChannel = ctx.channel
 
+        async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
+            phrases_to_block = blocklist
+
         ooc_list = []
 
         # let's start with just the latest 500
@@ -134,7 +184,12 @@ class OutOfContext(BaseCog, ErisEventMixin):
                     quote = match[1]
                     if quote == "":
                         continue
-                    ooc_list.append(quote)
+
+                    for phrase in phrases_to_block:
+                        if phrase in quote:
+                            break
+                    else:
+                        ooc_list.append(quote)
 
             last_message_examined = message
 
