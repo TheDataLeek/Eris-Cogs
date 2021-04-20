@@ -118,7 +118,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
             if not allowed:
                 return
 
-            reply = self.get_quote(ctx)
+            reply = await self.get_quote(ctx)
             async with ctx.typing():
                 sleep(1)
                 await message.channel.send(reply)
@@ -131,7 +131,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         Penny for your thoughts? Posts a random out-of-context quote
         Usage: [p]penny
         """
-        reply = self.get_quote(ctx, most_recent=False)
+        reply = await self.get_quote(ctx, most_recent=False)
         async with ctx.typing():
             sleep(1)
             await ctx.send(reply)
