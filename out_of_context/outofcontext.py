@@ -72,7 +72,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
             for i, phrase in enumerate(blocklist):
                 lines.append(f"{i}  {phrase}")
         lines = '\n'.join(lines)
-        return f"```\n{lines}\n```"
+        ctx.send(f"```\n{lines}\n```")
 
     @ooc.command()
     @checks.mod()
