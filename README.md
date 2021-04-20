@@ -1,5 +1,7 @@
 # Eris' Cogs
 Welcome to my cogs!
+
+If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` files in the directories of the cogs you wish to install and replace it with a copy of the root-level file.
 ## Alot
 Short: Posts an alot
 

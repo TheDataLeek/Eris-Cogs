@@ -9,6 +9,11 @@ from pprint import pprint as pp
 title = 'Eris\' Cogs'
 desc = 'Welcome to my cogs!'
 
+readme = f"# {title}\n{desc}\n\nIf you're on windows, " \
+         f"you'll need to delete the symlinked `eris_event_lib.py` " \
+         f"files in the directories of the cogs you wish to install " \
+         f"and replace it with a copy of the root-level file.\n"
+
 meta_keys = [
     'short',
     'description',
@@ -22,8 +27,6 @@ all_dirs = [
     and d.is_dir()
 ]
 all_dirs = sorted(all_dirs)
-
-readme = f"# {title}\n{desc}\n"
 
 for d in all_dirs:
     name = d.name
