@@ -8,6 +8,7 @@ from .eris_event_lib import ErisEventMixin
 BaseCog = getattr(commands, "Cog", object)
 RETYPE = type(re.compile("a"))
 
+
 class ImDad(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance: bot):
         super().__init__()
@@ -32,10 +33,8 @@ class ImDad(BaseCog, ErisEventMixin):
             if not allowed:
                 return
 
-            whoami = [
-                'Dad',
-                'Mom',
-                'Snek'
-            ]
-            await ctx.send(f"Hi {matched.group(1)} I'm {random.choice(whoami)}", reference=message)
+            whoami = ["Dad", "Mom", "Snek"]
+            await ctx.send(
+                f"Hi {matched.group(1)} I'm {random.choice(whoami)}", reference=message
+            )
             await self.log_last_message(ctx, message)

@@ -14,10 +14,7 @@ class Zalgo(BaseCog):
 
         async def april_fools(message):
             # Prevent acting on DM's
-            it_isnt_april_fools = (
-                random.random() <= 0.99
-                or (message.guild is None)
-            )
+            it_isnt_april_fools = random.random() <= 0.99 or (message.guild is None)
 
             if it_isnt_april_fools:
                 return
@@ -91,7 +88,7 @@ class Zalgo(BaseCog):
         vowels = "aeiouy"
 
         new_msg = []
-        for word in msg.split(' '):
+        for word in msg.split(" "):
             how_many_letters = len([c for c in word if c in string.ascii_letters])
             if how_many_letters <= 3:
                 new_msg.append(word)
@@ -105,14 +102,14 @@ class Zalgo(BaseCog):
                     split_word = list(word)
                     for index in random.sample(vowel_indices, k=how_many_replacements):
                         if split_word[index].isupper():
-                            split_word[index] = 'OOB'
+                            split_word[index] = "OOB"
                         else:
-                            split_word[index] = 'oob'
-                    if word[-1] == 'e':    # overrides how-many logic
-                        split_word[-1] = 'e'
-                    new_msg.append(''.join(split_word))
+                            split_word[index] = "oob"
+                    if word[-1] == "e":  # overrides how-many logic
+                        split_word[-1] = "e"
+                    new_msg.append("".join(split_word))
 
-        new_msg = ' '.join(new_msg)
+        new_msg = " ".join(new_msg)
         return new_msg
 
     @commands.command()

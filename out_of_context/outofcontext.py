@@ -56,10 +56,10 @@ class OutOfContext(BaseCog, ErisEventMixin):
         """
         Add phrase to blocklist
         """
-        phrase = ' '.join(phrase)
+        phrase = " ".join(phrase)
         async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
             blocklist.append(phrase)
-        await ctx.send('Success')
+        await ctx.send("Success")
 
     @ooc.command()
     @checks.mod()
@@ -71,7 +71,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
             for i, phrase in enumerate(blocklist):
                 lines.append(f"{i}  {phrase}")
-        lines = '\n'.join(lines)
+        lines = "\n".join(lines)
         await ctx.send(f"```\n{lines}\n```")
 
     @ooc.command()
@@ -83,7 +83,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
             if 0 <= index < len(blocklist):
                 blocklist.pop(index)
-        await ctx.send('Success')
+        await ctx.send("Success")
 
     @ooc.command()
     @checks.mod()
@@ -209,7 +209,6 @@ class OutOfContext(BaseCog, ErisEventMixin):
                 quote_hash[word].append(quote)
 
         await self.config.guild(ctx.guild).quote_hash.set(quote_hash)
-
 
         await ctx.send(
             f"Done. Processed {message_count} messages, found {len(ooc_list)} quotes."

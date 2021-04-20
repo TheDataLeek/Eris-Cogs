@@ -17,8 +17,8 @@ class Quotes(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
-        self.prompts: Dict[str, List] = (
-            json.loads((data_dir / "prompts.json").read_text())
+        self.prompts: Dict[str, List] = json.loads(
+            (data_dir / "prompts.json").read_text()
         )
 
         # need to also get whois
@@ -34,15 +34,12 @@ class Quotes(BaseCog):
         message: discord.Message = ctx.message
         author: discord.Member = message.author
 
-        num_members = max(1, len(users[:6]))   # set a floor and ceiling
-        if not users:   # if empty
+        num_members = max(1, len(users[:6]))  # set a floor and ceiling
+        if not users:  # if empty
             users = [author]
 
         users = [
-            (
-                self.convert_realname(await self.get_realname(ctx, str(u.id)))
-                or u.nick
-            )
+            (self.convert_realname(await self.get_realname(ctx, str(u.id))) or u.nick)
             for u in users
         ]
         random.shuffle(users)
@@ -52,7 +49,6 @@ class Quotes(BaseCog):
         prompts = self.prompts[f"prompts{int(num_members)}"]
         prompt = random.choice(prompts)
         await ctx.send(prompt.format(**users))
-
 
     async def get_realname(self, ctx, userid: str):
         """

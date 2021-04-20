@@ -7,32 +7,32 @@ from .eris_event_lib import ErisEventMixin
 BaseCog = getattr(commands, "Cog", object)
 
 VOICELINES = [
-    'Rock on!',
-    'Rock and stone.. Yeeaaahhh!',
-    'Rock and stone forever!',
-    'ROCK... AND... STONE!',
-    'Rock and stone!',
-    'For rock and stone!',
-    'We are unbreakable!',
-    'Rock and roll!',
-    'Rock and roll and stone!',
+    "Rock on!",
+    "Rock and stone.. Yeeaaahhh!",
+    "Rock and stone forever!",
+    "ROCK... AND... STONE!",
+    "Rock and stone!",
+    "For rock and stone!",
+    "We are unbreakable!",
+    "Rock and roll!",
+    "Rock and roll and stone!",
     "That's it lads! Rock and stone!",
-    'Like that! Rock and stone!',
-    'Yeaahhh! Rock and stone!',
-    'None can stand before us!',
-    'Rock solid!',
-    'Come on guys! Rock and stone!',
+    "Like that! Rock and stone!",
+    "Yeaahhh! Rock and stone!",
+    "None can stand before us!",
+    "Rock solid!",
+    "Come on guys! Rock and stone!",
     "If you don't rock and stone, you ain't comin' home!",
-    'We fight for rock and stone!',
-    'We rock!',
-    'Rock and stone everyone!',
-    'Stone!',
-    'Rock and stone in the heart!',
-    'For teamwork!',
-    'Did I hear a rock and stone?',
-    'Stone and rock!',
-    'Stone and rock! Oh wait...',
-    'Yeah yeah, rock and stone.',
+    "We fight for rock and stone!",
+    "We rock!",
+    "Rock and stone everyone!",
+    "Stone!",
+    "Rock and stone in the heart!",
+    "For teamwork!",
+    "Did I hear a rock and stone?",
+    "Stone and rock!",
+    "Stone and rock! Oh wait...",
+    "Yeah yeah, rock and stone.",
 ]
 
 
@@ -45,7 +45,9 @@ class RockAndStone(BaseCog, ErisEventMixin):
 
     async def rock_and_stone(self, message: discord.Message):
         clean_message: str = message.clean_content.lower()
-        keyword_in_message: bool = ('rock' in clean_message) and ('stone' in clean_message)
+        keyword_in_message: bool = ("rock" in clean_message) and (
+            "stone" in clean_message
+        )
         if not keyword_in_message:
             return
 

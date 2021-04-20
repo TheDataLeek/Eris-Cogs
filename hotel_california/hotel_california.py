@@ -17,7 +17,7 @@ class HotelCalifornia(BaseCog):
         self.bot: commands.Cog = bot
 
         self.signifier = "ಠ"
-        self.mod_signifier = 'bad mod'
+        self.mod_signifier = "bad mod"
 
     async def find_role(self, ctx: commands.Context, ismod=False):
         role: discord.Role = None
