@@ -53,7 +53,9 @@ class Wiggle(BaseCog):
 
     @wiggle.command()
     @checks.mod()
-    async def setfor(self, ctx: commands.Context, user: discord.Member, *emojis: discord.Emoji):
+    async def setfor(
+        self, ctx: commands.Context, user: discord.Member, *emojis: discord.Emoji
+    ):
         """
         Set a list of emoji for snek to alternate through for another user
         """

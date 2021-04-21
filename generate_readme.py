@@ -19,7 +19,7 @@ readme = (
 meta_keys = [
     "short",
     "description",
-    "author",
+    # "author",
 ]
 
 all_dirs = [
@@ -35,7 +35,7 @@ for d in all_dirs:
 
     new_entry = f"## {name}\n"
 
-    demofile = d / 'demo.png'
+    demofile = d / "demo.png"
     if demofile.exists():
         new_entry += f"![png]({demofile})\n\n"
 
