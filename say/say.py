@@ -23,7 +23,7 @@ class Say(BaseCog):
             g.name: g for g in guilds
         }
         pp(guilds)
-        guild: discord.Guild = guilds.get(process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5))
+        guild: discord.Guild = guilds.get(process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5)[0])
         if guild is None:
             await ctx.send("Couldn't find guild!")
             return
@@ -33,7 +33,7 @@ class Say(BaseCog):
             c.name: c for c in channels
         }
         pp(channels)
-        channel: discord.TextChannel = channels.get(process.extractOne(channelname, list(channels.keys()), score_cutoff=0.5))
+        channel: discord.TextChannel = channels.get(process.extractOne(channelname, list(channels.keys()), score_cutoff=0.5)[0])
         if channel is None:
             await ctx.send("Couldn't find channel!")
             return
