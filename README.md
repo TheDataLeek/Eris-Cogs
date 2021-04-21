@@ -39,7 +39,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Weave](#weave) | Create a mosaic of alternating emoji |
 | [Whois](#whois) | Whois for discord |
 | [Wiggler](#wiggler) | Adds random reactions to posts! |
-| [Zalgo](#zalgo) | Zalgoify text. |
+| [Zalgo](#zalgo) | Memes and replaces text. |
 
 ## Alot
 Short: Posts an alot
@@ -276,8 +276,6 @@ Usages:
 
 [p]export_whois - Privileged users can export the whois DB to file
 
-[p]import_from_legacy_db - Imports from a whois SQL db located in the install directory of the bot
-
 Author: Eris
 ## Wiggler
 Short: Adds random reactions to posts!
@@ -294,10 +292,18 @@ Usage:
 
 Author: Eris
 ## Zalgo
-Short: Zalgoify text.
+Short: Memes and replaces text.
 
-Description: Zalgos the provided message and deletes the original.
+Description: Memes the provided message and deletes the original.
 
-Usage: [p]zalgo <message>
+Usage:
+
+`[p]zalgo message` - [zalgo](https://knowyourmeme.com/memes/zalgo)
+
+`[p]uwu message` - [uwu](https://knowyourmeme.com/memes/uwu)
+
+`[p]oob message` - [oob](https://www.pinterest.com/pin/415879346839911237/)
+
+`[p]spoilerify message` - spoilers every other word
 
 Author: Eris
