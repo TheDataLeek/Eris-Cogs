@@ -156,6 +156,8 @@ Short: Warns when users say sudo
 
 Description: Replies in a channel if someone tries to use sudo - i.e. just uses the letters 'sudo'
 ## Weave
+![png](weave/demo.png)
+
 Short: Create a mosaic of alternating emoji
 
 Description: Create a mosaic of alternating specified emoji. Emojis may be animated or still. Usage: [p]weave emoji emoji width=5 height=3
