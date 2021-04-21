@@ -20,7 +20,7 @@ class Stonks(BaseCog):
 
         self.bot = bot_instance
 
-    @commands.command()
+    @commands.command(aliases=['stonk'])
     async def stock(self, ctx, ticker: str, period=None, interval=None):
         """
         Request ticker info for given stock
