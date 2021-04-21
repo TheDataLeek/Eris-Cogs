@@ -7,6 +7,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
+| [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Insult](#insult) | Insult users | ✅ |
 | [Minesweeper](#minesweeper) | Generate solvable minesweeper boards. | ✅ |
 | [Move](#move) | Move message to another channel | ✅ |
@@ -40,7 +41,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Goodbot](#goodbot) | Track which users get the most thumbs ups reacts. | ❌ |
 | [Grammar](#grammar) | Checks grammar of your users - load at your own risk | ❌ |
 | [Hotel_california](#hotel_california) | Hotel California | ❌ |
-| [Im_dad](#im_dad) | Hi _ I'm Dad | ❌ |
 | [Notify](#notify) | None | ❌ |
 
 ## Alot
@@ -114,9 +114,9 @@ Short: Hotel California
 
 Description: Hotel California
 ## Im_dad
-Short: Hi _ I'm Dad
+Short: Replies Hi _ I'm Dad
 
-Description: Hi _ I'm Dad
+Description: Replies with Hi _ I'm Dad when someone says that they're _
 ## Insult
 Short: Insult users
 

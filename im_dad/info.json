@@ -1,9 +1,10 @@
 {
   "author" : ["Eris"],
-  "description" : "Hi _ I'm Dad",
+  "description" : "Replies with Hi _ I'm Dad when someone says that they're _",
   "name" : "Hi _ I'm Dad",
-  "short": "Hi _ I'm Dad",
+  "short": "Replies Hi _ I'm Dad",
   "required_cogs": {
     "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
-  }
+  },
+  "ready": true
 }
