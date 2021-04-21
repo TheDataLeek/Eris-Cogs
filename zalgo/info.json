@@ -1,6 +1,6 @@
 {
     "author" : ["Eris"],
-    "description" : "Zalgos the provided message and deletes the original.",
     "name": "Zalgo",
-    "short" : "Zalgoify text.\nUsage: [p]zalgo <message>"
+    "short" : "Zalgoify text.",
+    "description" : "Zalgos the provided message and deletes the original.\nUsage: [p]zalgo <message>"
 }
