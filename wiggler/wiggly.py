@@ -52,6 +52,21 @@ class Wiggle(BaseCog):
                 await ctx.send("Success, emoji set.")
 
     @wiggle.command()
+    @checks.mod()
+    async def setfor(self, ctx: commands.Context, user: discord.Member, *emojis: discord.Emoji):
+        """
+        Set a list of emoji for snek to alternate through for another user
+        """
+        async with self.config.guild(ctx.guild).wiggle() as wigglelist:
+            userid = str(user.id)
+            if not len(emojis) and userid in wigglelist:
+                del wigglelist[userid]
+                await ctx.send("Success, reactions removed for user.")
+            else:
+                wigglelist[userid] = [e.id for e in emojis]
+                await ctx.send("Success, emoji set.")
+
+    @wiggle.command()
     async def show(self, ctx: commands.Context, user: Optional[discord.Member] = None):
         """
         Show your set emoji reacts
