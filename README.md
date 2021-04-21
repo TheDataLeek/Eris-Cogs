@@ -260,21 +260,21 @@ Description: Whois for server members. Set, update, and look up names to keep tr
 
 Usages: 
 
-[p]avatar <member> - Posts a full resolution image of a specified user's profile picture
+`[p]avatar <member>` - Posts a full resolution image of a specified user's profile picture
 
-[p]emoji <emoji> - Posts a full resolution image of a specified emoji
+`[p]emoji <emoji>` - Posts a full resolution image of a specified emoji
 
-[p]whois <member> - Look up name
+`[p]whois <member>` - Look up name
 
-[p]theyare <member> <name> - Set name 
+`[p]theyare <member> <name>` - Set name 
 
-[p]iswho <name> - Look up a username given their whois name 
+`[p]iswho <name>` - Look up a username given their whois name 
 
-[p]iseveryone - Lists all members of the server (without pinging!) and their whois names
+`[p]iseveryone` - Lists all members of the server (without pinging!) and their whois names
 
-[p]import_whois - privileged users can export a whois database. File to import should be attached to the command message.
+`[p]import_whois` - privileged users can export a whois database. File to import should be attached to the command message.
 
-[p]export_whois - Privileged users can export the whois DB to file
+`[p]export_whois` - Privileged users can export the whois DB to file
 
 Author: Eris
 ## Wiggler
