@@ -7,6 +7,9 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
+| [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. | ✅ |
+| [Quotes](#quotes) | Incorrect Quotes by ScatterPatter | ✅ |
+| [Rock_and_stone](#rock_and_stone) | Deep Rock Galactic shouting | ✅ |
 | [Rolerequest](#rolerequest) | Emoji-based Role Request | ✅ |
 | [Sarcasm](#sarcasm) | Randomly mocks users | ✅ |
 | [Say](#say) | Send messages as the bot | ✅ |
@@ -39,9 +42,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Nick_prefix](#nick_prefix) | Adds themed prefix to names | ❌ |
 | [No_fuck_you](#no_fuck_you) | No fuck you | ❌ |
 | [Notify](#notify) | None | ❌ |
-| [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. | ❌ |
-| [Quotes](#quotes) | Incorrect Quotes by ScatterPatter | ❌ |
-| [Rock_and_stone](#rock_and_stone) | ROCK AND STONE | ❌ |
 
 ## Alot
 Short: Posts an alot
@@ -150,11 +150,11 @@ Description: Archives a channel of out of context quotes. Posts quotes randomly 
 ## Quotes
 Short: Incorrect Quotes by ScatterPatter
 
-Description: Usage: [p]quote <users> - all credit to https://incorrect-quotes-generator.neocities.org/
+Description: Generates fun short stories between users. Usage: `[p]quote users` - all credit to https://incorrect-quotes-generator.neocities.org/
 ## Rock_and_stone
-Short: ROCK AND STONE
+Short: Deep Rock Galactic shouting
 
-Description: ROCK AND STONE
+Description: Shouts various rock and stone quotes from Deep Rock Galactic
 ## Rolerequest
 Short: Emoji-based Role Request
 
@@ -202,15 +202,15 @@ Description: Whois for server members. Set, update, and look up names to keep tr
 
 Usages: 
 
-`[p]avatar <member>` - Posts a full resolution image of a specified user's profile picture
+`[p]avatar member` - Posts a full resolution image of a specified user's profile picture
 
-`[p]emoji <emoji>` - Posts a full resolution image of a specified emoji
+`[p]emoji emoji` - Posts a full resolution image of a specified emoji
 
-`[p]whois <member>` - Look up name
+`[p]whois member` - Look up name
 
-`[p]theyare <member> <name>` - Set name 
+`[p]theyare member name` - Set name 
 
-`[p]iswho <name>` - Look up a username given their whois name 
+`[p]iswho name` - Look up a username given their whois name 
 
 `[p]iseveryone` - Lists all members of the server (without pinging!) and their whois names
 

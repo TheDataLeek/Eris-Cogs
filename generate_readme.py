@@ -54,10 +54,17 @@ for d in all_dirs:
     new_entry += "\n\n".join(meta_entries)
     all_entries.append(new_entry)
 
-    table.append((name, f"[{name}](#{name.lower()})", f"{meta.get('short')}", f"{'✅' if meta.get('ready', False) else '❌'}"))
+    table.append(
+        (
+            name,
+            f"[{name}](#{name.lower()})",
+            f"{meta.get('short')}",
+            f"{'✅' if meta.get('ready', False) else '❌'}",
+        )
+    )
 
 table = sorted(table, key=lambda tup: (tup[3] != "✅", tup[0]))
-table = ['| ' + ' | '.join(row[1:]) + ' |' for row in table]
+table = ["| " + " | ".join(row[1:]) + " |" for row in table]
 table = ["| Cog Name | Short | Ready? |", "| --- | --- | --- |"] + table
 
 readme += "\n".join(table)

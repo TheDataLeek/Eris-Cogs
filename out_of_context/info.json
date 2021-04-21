@@ -5,5 +5,6 @@
   "short": "Archives a channel of out of context quotes and then posts them randomly during conversation.",
   "required_cogs": {
     "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
-  }
+  },
+  "ready": true
 }

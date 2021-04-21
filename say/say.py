@@ -18,22 +18,24 @@ class Say(BaseCog):
     @checks.mod()
     async def say(self, ctx, guildname: str, channelname: str, *what_to_say: str):
         """gimme a fact"""
-        what_to_say = ' '.join(what_to_say)
+        what_to_say = " ".join(what_to_say)
 
         guilds: List[discord.Guild] = self.bot.guilds
-        guilds: Dict[str, discord.Guild] = {
-            g.name: g for g in guilds
-        }
-        guild: discord.Guild = guilds.get(process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5)[0])
+        guilds: Dict[str, discord.Guild] = {g.name: g for g in guilds}
+        guild: discord.Guild = guilds.get(
+            process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5)[0]
+        )
         if guild is None:
             await ctx.send("Couldn't find guild!")
             return
 
-        channels: List[discord.TextChannel] = [c for c in guild.channels if isinstance(c, discord.TextChannel)]
-        channels: Dict[str, discord.TextChannel] = {
-            c.name: c for c in channels
-        }
-        channel: discord.TextChannel = channels.get(process.extractOne(channelname, list(channels.keys()), score_cutoff=0.5)[0])
+        channels: List[discord.TextChannel] = [
+            c for c in guild.channels if isinstance(c, discord.TextChannel)
+        ]
+        channels: Dict[str, discord.TextChannel] = {c.name: c for c in channels}
+        channel: discord.TextChannel = channels.get(
+            process.extractOne(channelname, list(channels.keys()), score_cutoff=0.5)[0]
+        )
         if channel is None:
             await ctx.send("Couldn't find channel!")
             return
