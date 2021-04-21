@@ -250,7 +250,7 @@ Author: Eris
 ## Weave
 Short: Create a mosaic of alternating emoji
 
-Description: Create a mosaic of alternating specified emoji. Emojis may be animated or still. Usage: [p]weave emoji emoji width= height=3
+Description: Create a mosaic of alternating specified emoji. Emojis may be animated or still. Usage: [p]weave emoji emoji width=5 height=3
 
 Author: Eris, Maddie
 ## Whois
