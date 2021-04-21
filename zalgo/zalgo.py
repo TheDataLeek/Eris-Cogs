@@ -12,6 +12,7 @@ from .eris_event_lib import ErisEventMixin
 
 class Zalgo(BaseCog, ErisEventMixin):
     def __init__(self, bot):
+        super().__init__()
         self.bot = bot
 
         async def april_fools(message):
