@@ -9,6 +9,9 @@ class Weave(BaseCog):
 
     @commands.command()
     async def weave(self, ctx, e1, e2, width: int = 5, length: int = 3):
+        """
+        Weaves provided emojis in a grid of specified dimensions. Will error if too large.
+        """
         # <a:name:id>
         guilds = await self.bot.fetch_guilds(limit=150).flatten()
         all_emoji = dict()
