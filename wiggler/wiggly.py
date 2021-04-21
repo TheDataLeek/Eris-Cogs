@@ -65,9 +65,10 @@ class Wiggle(BaseCog):
         authorid = str(ctx.author.id)
 
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
-            # allowed: bool = await self.allowed(ctx, message)
-            allowed = authorid in wigglelist
-            allowed &= random.random() <= 0.05
+            allowed: bool = random.random() <= 0.05
+            allowed &= authorid in wigglelist
+            if not allowed:
+                return
 
             emoji = random.choice([self.emojis[e] for e in wigglelist[authorid]])
             await message.add_reaction(emoji)
