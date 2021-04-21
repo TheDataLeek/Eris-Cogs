@@ -8,12 +8,10 @@ from typing import Optional, List
 import discord
 from redbot.core import commands, bot, checks, Config
 
-from .eris_event_lib import ErisEventMixin
-
 BaseCog = getattr(commands, "Cog", object)
 
 
-class Wiggle(BaseCog, ErisEventMixin):
+class Wiggle(BaseCog):
     def __init__(self, bot_instance: bot):
         super().__init__()
 
@@ -66,12 +64,10 @@ class Wiggle(BaseCog, ErisEventMixin):
         ctx = await self.bot.get_context(message)
         authorid = str(ctx.author.id)
 
-        async with self.lock_config.channel(
-            message.channel
-        ).get_lock(), self.config.guild(ctx.guild).wiggle() as wigglelist:
+        async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             # allowed: bool = await self.allowed(ctx, message)
-            # allowed &= random.random() <= 0.05
             allowed = authorid in wigglelist
+            allowed &= random.random() <= 0.05
 
             emoji = random.choice([self.emojis[e] for e in wigglelist[authorid]])
             await message.add_reaction(emoji)
