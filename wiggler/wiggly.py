@@ -52,11 +52,14 @@ class Wiggle(BaseCog):
                 await ctx.send("Success, emoji set.")
 
     @wiggle.command()
-    async def show(self, ctx: commands.Context):
+    async def show(self, ctx: commands.Context, user: Optional[discord.Member]=None):
         """
         Show your set emoji reacts
         """
-        author: discord.Member = ctx.author
+        if user is None:
+            author: discord.Member = ctx.author
+        else:
+            author: discord.Member = user
         authorid: str = str(author.id)
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             if authorid in wigglelist:
