@@ -9,9 +9,11 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | --- | --- | --- |
 | [Alot](#alot) | Posts an alot | ✅ |
 | [Big_name](#big_name) | Change a user's name regardless of permissions | ✅ |
+| [Big_text](#big_text) | Make your message big and emoji-fied | ✅ |
 | [Clone](#clone) | The bot takes on a user's name and avatar | ✅ |
 | [Dice](#dice) | Improved dice roller. | ✅ |
 | [Dm_role](#dm_role) | DM everyone with certain role | ✅ |
+| [Event_config](#event_config) | Configure `on_message` events | ✅ |
 | [Facts](#facts) | Provide random facts | ✅ |
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Insult](#insult) | Insult users | ✅ |
@@ -35,8 +37,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Wiggler](#wiggler) | Adds random reactions to posts! | ✅ |
 | [Zalgo](#zalgo) | Memes and replaces text. | ✅ |
 | [Battle](#battle) | Battle with your users | ❌ |
-| [Big_text](#big_text) | Make your message big and emoji-fied | ❌ |
-| [Event_config](#event_config) | Configure `on_message` events | ❌ |
 | [Events](#events) | Silly bot behavior not activated by explicit commands | ❌ |
 | [Goodbot](#goodbot) | Track which users get the most thumbs ups reacts. | ❌ |
 | [Grammar](#grammar) | Checks grammar of your users - load at your own risk | ❌ |

@@ -2,5 +2,6 @@
     "author" : ["Maddie"],
     "description" : "Usage: [p]big_text [ASCII message]",
     "name": "Big Text",
-    "short" : "Make your message big and emoji-fied"
+    "short" : "Make your message big and emoji-fied",
+    "ready": true
 }

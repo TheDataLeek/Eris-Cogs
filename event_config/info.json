@@ -2,5 +2,6 @@
     "author" : ["Eris"],
     "description" : "Configure `on_message` events, specifically which servers they appear in, which channels, etc. for Eris Cogs",
     "name" : "Event Config",
-    "short": "Configure `on_message` events"
+    "short": "Configure `on_message` events",
+    "ready": true
 }
