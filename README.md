@@ -7,6 +7,12 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
+| [Alot](#alot) | Posts an alot | ✅ |
+| [Big_name](#big_name) | Change a user's name regardless of permissions | ✅ |
+| [Clone](#clone) | The bot takes on a user's name and avatar | ✅ |
+| [Dice](#dice) | Improved dice roller. | ✅ |
+| [Dm_role](#dm_role) | DM everyone with certain role | ✅ |
+| [Facts](#facts) | Provide random facts | ✅ |
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Insult](#insult) | Insult users | ✅ |
 | [Minesweeper](#minesweeper) | Generate solvable minesweeper boards. | ✅ |
@@ -28,16 +34,10 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Whois](#whois) | Whois for discord | ✅ |
 | [Wiggler](#wiggler) | Adds random reactions to posts! | ✅ |
 | [Zalgo](#zalgo) | Memes and replaces text. | ✅ |
-| [Alot](#alot) | Posts an alot | ❌ |
 | [Battle](#battle) | Battle with your users | ❌ |
-| [Big_name](#big_name) | Change a user's name regardless of permissions | ❌ |
 | [Big_text](#big_text) | Make your message big and emoji-fied | ❌ |
-| [Clone](#clone) | The bot takes on a user's name and avatar | ❌ |
-| [Dice](#dice) | Improved dice roller. | ❌ |
-| [Dm_role](#dm_role) | DM Roles | ❌ |
 | [Event_config](#event_config) | Configure `on_message` events | ❌ |
 | [Events](#events) | Silly bot behavior not activated by explicit commands | ❌ |
-| [Facts](#facts) | Provide random facts | ❌ |
 | [Goodbot](#goodbot) | Track which users get the most thumbs ups reacts. | ❌ |
 | [Grammar](#grammar) | Checks grammar of your users - load at your own risk | ❌ |
 | [Hotel_california](#hotel_california) | Hotel California | ❌ |
@@ -72,23 +72,23 @@ Usages:
 ## Big_name
 Short: Change a user's name regardless of permissions
 
-Description: Change someone's name - who cares about permissions. Usage: [p]big_name <User> <new name>
+Description: Change someone's name - who cares about permissions. Usage: `[p]big_name [User] [new name]`
 ## Big_text
 Short: Make your message big and emoji-fied
 
-Description: Usage: [p]big_text <ASCII message>
+Description: Usage: [p]big_text [ASCII message]
 ## Clone
 Short: The bot takes on a user's name and avatar
 
-Description: The bot takes on a specified user's name and avatar. Users take 1d10 confusion damage, half as much on a successful save. Usage: [p]clone <User>
+Description: The bot takes on a specified user's name and avatar. Users take 1d10 confusion damage, half as much on a successful save. Usage: [p]clone [User]
 ## Dice
 Short: Improved dice roller.
 
 Description: Improved dice roller, can support arbitrary dice. Usage regex: [p]dice #d#(v#)?
 ## Dm_role
-Short: DM Roles
+Short: DM everyone with certain role
 
-Description: DM a specific role based on fuzzy role name
+Description: DMs everyone with a specific role based on fuzzy role name
 ## Event_config
 Short: Configure `on_message` events
 

@@ -2,5 +2,7 @@
     "author" : ["Eris"],
     "description" : "Provides bear or snake facts based on user input or randomly.",
     "name" : "Facts",
-    "short": "Provide random facts"
+    "short": "Provide random facts",
+    "install_msg": "Bundled facts included.",
+    "ready": true
 }
