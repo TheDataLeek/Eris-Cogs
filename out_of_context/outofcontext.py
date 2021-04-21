@@ -93,9 +93,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         """
         async with self.config.guild(ctx.guild).quotes() as quotes:
             await ctx.send(
-                file=discord.File(
-                    io.StringIO('\n'.join(quotes)), filename="ooc.txt"
-                )
+                file=discord.File(io.StringIO("\n".join(quotes)), filename="ooc.txt")
             )
 
     async def out_of_context_handler(self, message):
@@ -136,7 +134,9 @@ class OutOfContext(BaseCog, ErisEventMixin):
             sleep(1)
             await ctx.send(reply)
 
-    async def get_quote(self, ctx: commands.Context, most_recent: Optional[bool]=True):
+    async def get_quote(
+        self, ctx: commands.Context, most_recent: Optional[bool] = True
+    ):
         channel_id: int = ctx.channel.id
 
         async with self.config.guild(ctx.guild).quotes() as quotes:

@@ -42,12 +42,13 @@ class Wiggle(BaseCog, ErisEventMixin):
     @wiggle.command()
     async def set(self, ctx: commands.Context, *emojis: discord.Emoji):
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
-            if not len(emojis) and ctx.author.id in wigglelist:
-                del wigglelist[ctx.author.id]
-                await ctx.send('Success, reactions removed for user.')
+            authorid = str(ctx.author.id)
+            if not len(emojis) and authorid in wigglelist:
+                del wigglelist[authorid]
+                await ctx.send("Success, reactions removed for user.")
             else:
-                wigglelist[ctx.author.id] = [e.id for e in emojis]
-                await ctx.send('Success, emoji set.')
+                wigglelist[authorid] = [e.id for e in emojis]
+                await ctx.send("Success, emoji set.")
 
     @wiggle.command()
     @checks.mod()
@@ -57,18 +58,21 @@ class Wiggle(BaseCog, ErisEventMixin):
             for userid, emojiids in wigglelist.items():
                 user: discord.Member = guild.get_member(int(userid))
                 emojis: List[discord.Emoji] = [self.emojis[e] for e in emojiids]
-                await ctx.send(f"{','.join([str(e) for e in emojis])} for {user.display_name}")
-
+                await ctx.send(
+                    f"{' '.join([str(e) for e in emojis])} for {user.display_name}"
+                )
 
     async def wiggle_handler(self, message: discord.message):
         ctx = await self.bot.get_context(message)
+        authorid = str(ctx.author.id)
 
-        async with self.lock_config.channel(message.channel).get_lock(), self.config.guild(ctx.guild).wiggle() as wigglelist:
-            author = ctx.message.author
+        async with self.lock_config.channel(
+            message.channel
+        ).get_lock(), self.config.guild(ctx.guild).wiggle() as wigglelist:
             allowed: bool = await self.allowed(ctx, message)
             # allowed &= random.random() <= 0.05
             allowed &= random.random() <= 1
-            allowed &= str(author.id) in wigglelist
+            allowed &= authorid in wigglelist
 
-            emoji = random.choice([self.emojis[e] for e in wigglelist[str(author.id)]])
+            emoji = random.choice([self.emojis[e] for e in wigglelist[authorid]])
             await message.add_reaction(emoji)
