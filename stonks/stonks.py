@@ -23,7 +23,7 @@ class Stonks(BaseCog):
     @commands.command()
     async def stock(self, ctx, ticker: str, period=None, interval=None):
         """
-        Request ticker info
+        Request ticker info for given stock
 
         Periods = 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
 

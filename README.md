@@ -34,8 +34,8 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Search](#search) | Search functions |
 | [Spoop](#spoop) | Sneakily spoops users |
 | [Steve](#steve) | STEVE |
-| [Stonks](#stonks) | STONKS |
-| [Sudo](#sudo) | Warns about sudo attempts |
+| [Stonks](#stonks) | A stock tracker using yahoofinance |
+| [Sudo](#sudo) | Warns when users say sudo |
 | [Weave](#weave) | Create a mosaic of alternating emoji |
 | [Whois](#whois) | Whois for discord |
 | [Wiggler](#wiggler) | Adds random reactions to posts! |
@@ -236,15 +236,15 @@ Description: STEVE
 
 Author: Eris
 ## Stonks
-Short: STONKS
+Short: A stock tracker using yahoofinance
 
-Description: none
+Description: Displays current and historical stock information using the yahoo finance API
 
 Author: Eris
 ## Sudo
-Short: Warns about sudo attempts
+Short: Warns when users say sudo
 
-Description: Errors if someone tries to use sudo
+Description: Replies in a channel if someone tries to use sudo - i.e. just uses the letters 'sudo'
 
 Author: Eris
 ## Weave
