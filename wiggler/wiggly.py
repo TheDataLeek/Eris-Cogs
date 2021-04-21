@@ -65,11 +65,10 @@ class Wiggle(BaseCog, ErisEventMixin):
 
         async with self.lock_config.channel(message.channel).get_lock(), self.config.guild(ctx.guild).wiggle() as wigglelist:
             author = ctx.message.author
-            authorid = int(author.id)
             allowed: bool = await self.allowed(ctx, message)
             # allowed &= random.random() <= 0.05
             allowed &= random.random() <= 1
-            allowed &= authorid in wigglelist
+            allowed &= str(author.id) in wigglelist
 
-            emoji = random.choice([self.emojis[e] for e in wigglelist[authorid]])
+            emoji = random.choice([self.emojis[e] for e in wigglelist[str(author.id)]])
             await message.add_reaction(emoji)
