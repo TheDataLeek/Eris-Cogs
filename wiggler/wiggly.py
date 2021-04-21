@@ -56,8 +56,8 @@ class Wiggle(BaseCog, ErisEventMixin):
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             for userid, emojiids in wigglelist.items():
                 user: discord.Member = guild.get_member(int(userid))
-                emoji: emoji.Emoji = random.choice([self.emojis[e] for e in emojiids])
-                await ctx.send(f"{str(emoji)} for {user.display_name}")
+                emojis: List[discord.Emoji] = [self.emojis[e] for e in emojiids]
+                await ctx.send(f"{','.join([str(e) for e in emojis])} for {user.display_name}")
 
 
     async def wiggle_handler(self, message: discord.message):
