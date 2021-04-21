@@ -2,5 +2,6 @@
     "author" : ["Eris"],
     "description" : "Good Bot Bad Bot - Track which users get the most thumbs ups reacts.",
     "name" : "Good Bot",
-    "short": "Track which users get the most thumbs ups reacts."
+    "short": "Track which users get the most thumbs ups reacts.",
+    "hidden": true
 }
