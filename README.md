@@ -47,28 +47,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 Short: Posts an alot
 
 Description: Automatically posts an alot whenever a user says 'alot of things' instead of 'a lot of things'
-## Battle
-Short: Battle with your users
-
-Description: Battle with your users
-
-Usages:
-
-[p]attack <member> - Starts a battle
-
-[p]protect <member>
-
-[p]status <member> - Displays user's stats
-
-[p]set_attribute <member> <attribute> <value> - Sets a user's stat. Requires owner permissions.
-
-[p]elevate <member> - Levels up a user. Requires owner permissions.
-
-[p]full_heal_user <member> - Fully heals a user. Requires owner permissions.
-
-[p]heal_user <member> - Heals a user. Requires owner permissions.
-
-[p]reload_user <member> - Reloads a user's stats. Requires owner permissions.
 ## Big_name
 Short: Change a user's name regardless of permissions
 
@@ -93,26 +71,10 @@ Description: DMs everyone with a specific role based on fuzzy role name
 Short: Configure `on_message` events
 
 Description: Configure `on_message` events, specifically which servers they appear in, which channels, etc. for Eris Cogs
-## Events
-Short: Silly bot behavior not activated by explicit commands
-
-Description: A bunch of silly events
 ## Facts
 Short: Provide random facts
 
 Description: Provides bear or snake facts based on user input or randomly.
-## Goodbot
-Short: Track which users get the most thumbs ups reacts.
-
-Description: Good Bot Bad Bot - Track which users get the most thumbs ups reacts.
-## Grammar
-Short: Checks grammar of your users - load at your own risk
-
-Description: Grammar Module - insult your illiterate friends.
-## Hotel_california
-Short: Hotel California
-
-Description: Hotel California
 ## Im_dad
 Short: Replies Hi _ I'm Dad
 
@@ -143,10 +105,6 @@ Description: Theme your nickname, some include NSFW language and themes.
 Short: Replies 'no fuck you'
 
 Description: Replies with 'no fuck you' if someone says 'fuck you'
-## Notify
-Short: None
-
-Description: Twilio Notifications for @everyone tags
 ## Out_of_context
 Short: Archives a channel of out of context quotes and then posts them randomly during conversation.
 

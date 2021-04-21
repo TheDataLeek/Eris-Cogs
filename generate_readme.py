@@ -37,29 +37,31 @@ for d in all_dirs:
     name = d.name.capitalize()
     meta = json.loads((d / "info.json").read_text())
 
-    new_entry = f"## {name}\n"
+    ready = meta.get('ready', False)
 
-    demofile = d / "demo.png"
-    if demofile.exists():
-        new_entry += f"![png]({demofile})\n\n"
+    if ready:
+        new_entry = f"## {name}\n"
+        demofile = d / "demo.png"
+        if demofile.exists():
+            new_entry += f"![png]({demofile})\n\n"
 
-    meta_entries = []
-    for k in meta_keys:
-        val = meta.get(k)
-        if k == "author":
-            val = ", ".join(val)
-        if val:
-            val = val.replace("\n", "\n\n")
-        meta_entries.append(f"{k.capitalize()}: {val}")
-    new_entry += "\n\n".join(meta_entries)
-    all_entries.append(new_entry)
+        meta_entries = []
+        for k in meta_keys:
+            val = meta.get(k)
+            if k == "author":
+                val = ", ".join(val)
+            if val:
+                val = val.replace("\n", "\n\n")
+            meta_entries.append(f"{k.capitalize()}: {val}")
+        new_entry += "\n\n".join(meta_entries)
+        all_entries.append(new_entry)
 
     table.append(
         (
             name,
             f"[{name}](#{name.lower()})",
             f"{meta.get('short')}",
-            f"{'✅' if meta.get('ready', False) else '❌'}",
+            f"{'✅' if ready else '❌'}",
         )
     )
 
