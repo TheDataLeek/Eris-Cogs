@@ -2,5 +2,8 @@
   "author" : ["Eris"],
   "description" : "STEVE",
   "name" : "STEVE",
-  "short": "STEVE"
+  "short": "STEVE",
+  "required_cogs": {
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+  }
 }

@@ -2,5 +2,6 @@
   "author" : ["Eris"],
   "description" : "Search Functions",
   "name" : "search",
+  "requirements": ["aiohttp"],
   "short": "Search functions"
 }

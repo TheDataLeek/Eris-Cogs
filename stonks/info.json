@@ -4,5 +4,6 @@
     "name" : "Stonks",
     "install_msg": "Makes API calls against the yahoofinance api",
     "requirements": ["yfinance", "mplfinance", "matplotlib"],
-    "short": "A stock tracker using yahoofinance"
+    "short": "A stock tracker using yahoofinance",
+    "ready": true
 }

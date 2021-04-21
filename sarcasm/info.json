@@ -2,5 +2,8 @@
     "author" : ["Eris"],
     "description" : "Sarcasm Module - randomly mocks users",
     "name" : "Sarcasm",
-    "short": "Randomly mocks users"
+    "short": "Randomly mocks users",
+    "required_cogs": {
+        "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+    }
 }

@@ -2,5 +2,9 @@
   "author" : ["Eris"],
   "description" : "Replies in a channel if someone tries to use sudo - i.e. just uses the letters 'sudo'",
   "name" : "Sudo",
-  "short": "Warns when users say sudo"
+  "short": "Warns when users say sudo",
+  "required_cogs": {
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+  },
+  "ready": true
 }

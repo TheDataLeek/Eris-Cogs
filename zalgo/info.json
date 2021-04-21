@@ -2,5 +2,9 @@
     "author" : ["Eris"],
     "name": "Zalgo",
     "short" : "Memes and replaces text.",
-    "description" : "Memes the provided message and deletes the original.\nUsage:\n`[p]zalgo message` - [zalgo](https://knowyourmeme.com/memes/zalgo)\n`[p]uwu message` - [uwu](https://knowyourmeme.com/memes/uwu)\n`[p]oob message` - [oob](https://www.pinterest.com/pin/415879346839911237/)\n`[p]spoilerify message` - spoilers every other word"
+    "description" : "Memes the provided message and deletes the original.\nUsage:\n`[p]zalgo message` - [zalgo](https://knowyourmeme.com/memes/zalgo)\n`[p]uwu message` - [uwu](https://knowyourmeme.com/memes/uwu)\n`[p]oob message` - [oob](https://www.pinterest.com/pin/415879346839911237/)\n`[p]spoilerify message` - spoilers every other word",
+    "required_cogs": {
+        "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+    },
+    "ready": true
 }

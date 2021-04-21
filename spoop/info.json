@@ -2,5 +2,8 @@
   "author" : ["Eris"],
   "description" : "Sneakily spoops a user randomly or on mod prompting. NSFW spoops!",
   "name" : "Spoop",
-  "short": "Sneakily spoops users"
+  "short": "Sneakily spoops users",
+  "required_cogs": {
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+  }
 }

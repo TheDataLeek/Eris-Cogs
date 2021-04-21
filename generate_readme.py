@@ -28,7 +28,7 @@ all_dirs = [
 all_dirs = sorted(all_dirs)
 
 all_entries = []
-table = ["| Cog Name | Short |", "| --- | --- |"]
+table = []
 for d in all_dirs:
     name = d.name.capitalize()
     meta = json.loads((d / "info.json").read_text())
@@ -50,7 +50,11 @@ for d in all_dirs:
     new_entry += "\n\n".join(meta_entries)
     all_entries.append(new_entry)
 
-    table.append(f"| [{name}](#{name.lower()}) | {meta.get('short')} |")
+    table.append((name, f"[{name}](#{name.lower()})", f"{meta.get('short')}", f"{'✅' if meta.get('ready', False) else '❌'}"))
+
+table = sorted(table, key=lambda tup: (tup[3] != "✅", tup[0]))
+table = ['| ' + ' | '.join(row[1:]) + ' |' for row in table]
+table = ["| Cog Name | Short | Ready? |", "| --- | --- | --- |"] + table
 
 readme += "\n".join(table)
 readme += "\n\n"

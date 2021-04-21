@@ -19,18 +19,6 @@ ZOEPHONE = os.environ.get("ZOEPHONE")
 SNEKPHONE = os.environ.get("SNEKPHONE")
 
 
-def get_realname(userid: str):
-    con = sqlite3.connect(WHOFILE)
-    c = con.cursor()
-    c.execute("SELECT name " "FROM usernames " "WHERE userid=?", (userid,))
-    name = c.fetchall()
-    con.close()
-    if len(name) == 0:
-        return None
-    else:
-        return name[0][0]
-
-
 class Notify(BaseCog):
     def __init__(self, bot):
         self.bot = bot
