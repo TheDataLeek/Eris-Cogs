@@ -97,7 +97,7 @@ class Wiggle(BaseCog):
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             for userid, emojiids in wigglelist.items():
                 user: discord.Member = guild.get_member(int(userid))
-                emojis: List[discord.Emoji] = [self.emojis[e] for e in emojiids]
+                emojis: List[discord.Emoji] = [self.emojis[str(e)] for e in emojiids]
                 await ctx.send(
                     f"{' '.join([str(e) for e in emojis])} for {user.display_name}"
                 )

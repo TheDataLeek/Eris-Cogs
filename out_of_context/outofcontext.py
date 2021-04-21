@@ -24,7 +24,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         self.bot = bot_instance
 
-        self.config = Config.get_conf(
+        self.oocconfig = Config.get_conf(
             self,
             identifier=875239875438276234987523048752087,
             force_registration=True,
@@ -36,7 +36,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
             "quotes": [],
             "quote_hash": [],
         }
-        self.config.register_guild(**default_guild)
+        self.oocconfig.register_guild(**default_guild)
 
         self.message_match: RETYPE = re.compile(
             '(?:(["“])([^"”]*?)("|”))', flags=re.IGNORECASE
@@ -57,7 +57,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         Add phrase to blocklist
         """
         phrase = " ".join(phrase).lower()
-        async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
+        async with self.oocconfig.guild(ctx.guild).ooc_blocklist() as blocklist:
             blocklist.append(phrase)
         await ctx.send("Success")
 
@@ -68,7 +68,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         Show current blocklist. This will eventually break if you have too many lines.
         """
         lines = []
-        async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
+        async with self.oocconfig.guild(ctx.guild).ooc_blocklist() as blocklist:
             for i, phrase in enumerate(blocklist):
                 lines.append(f"{i}  {phrase}")
         lines = "\n".join(lines)
@@ -80,7 +80,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         """
         Remove item from current blocklist.
         """
-        async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
+        async with self.oocconfig.guild(ctx.guild).ooc_blocklist() as blocklist:
             if 0 <= index < len(blocklist):
                 blocklist.pop(index)
         await ctx.send("Success")
@@ -91,7 +91,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         """
         Remove item from current blocklist.
         """
-        async with self.config.guild(ctx.guild).quotes() as quotes:
+        async with self.oocconfig.guild(ctx.guild).quotes() as quotes:
             await ctx.send(
                 file=discord.File(io.StringIO("\n".join(quotes)), filename="ooc.txt")
             )
@@ -139,7 +139,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
     ):
         channel_id: int = ctx.channel.id
 
-        async with self.config.guild(ctx.guild).quotes() as quotes:
+        async with self.oocconfig.guild(ctx.guild).quotes() as quotes:
             reply = random.choice(quotes)
 
         if channel_id not in self.message_log:
@@ -153,7 +153,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         random.shuffle(split_message)
         split_message = [s for s in split_message if len(s) > 3]
 
-        async with self.config.guild(ctx.guild).quote_hash() as quote_hash:
+        async with self.oocconfig.guild(ctx.guild).quote_hash() as quote_hash:
             for word in split_message:
                 if word in quote_hash:
                     reply = random.choice(quote_hash[word])
@@ -170,7 +170,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         """
         channel: discord.TextChannel = ctx.channel
 
-        async with self.config.guild(ctx.guild).ooc_blocklist() as blocklist:
+        async with self.oocconfig.guild(ctx.guild).ooc_blocklist() as blocklist:
             phrases_to_block = blocklist
 
         ooc_list = []
@@ -203,7 +203,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
         ooc_list = list(set(ooc_list))
 
-        await self.config.guild(ctx.guild).quotes.set(ooc_list)
+        await self.oocconfig.guild(ctx.guild).quotes.set(ooc_list)
 
         quote_hash = dict()
         for quote in ooc_list:
@@ -214,7 +214,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
 
                 quote_hash[word].append(quote)
 
-        await self.config.guild(ctx.guild).quote_hash.set(quote_hash)
+        await self.oocconfig.guild(ctx.guild).quote_hash.set(quote_hash)
 
         await ctx.send(
             f"Done. Processed {message_count} messages, found {len(ooc_list)} quotes."
