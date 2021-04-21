@@ -1,6 +1,7 @@
 import discord
 from redbot.core import commands, checks, bot
 from random import choice as randchoice
+from pprint import pprint as pp
 
 from typing import List, Dict
 
@@ -21,16 +22,20 @@ class Say(BaseCog):
         guilds: Dict[str, discord.Guild] = {
             g.name: g for g in guilds
         }
+        pp(guilds)
         guild: discord.Guild = guilds.get(process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5))
         if guild is None:
             await ctx.send("Couldn't find guild!")
+            return
 
         channels: List[discord.TextChannel] = [c for c in guild.channels if isinstance(c, discord.TextChannel)]
         channels: Dict[str, discord.TextChannel] = {
             c.name: c for c in channels
         }
+        pp(channels)
         channel: discord.TextChannel = channels.get(process.extractOne(channelname, list(channels.keys()), score_cutoff=0.5))
         if channel is None:
             await ctx.send("Couldn't find channel!")
+            return
 
         await channel.send(what_to_say)
