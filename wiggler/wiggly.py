@@ -39,6 +39,9 @@ class Wiggle(BaseCog):
 
     @wiggle.command()
     async def set(self, ctx: commands.Context, *emojis: discord.Emoji):
+        """
+        Set a list of emoji for snek to alternate through
+        """
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             authorid = str(ctx.author.id)
             if not len(emojis) and authorid in wigglelist:
@@ -50,6 +53,9 @@ class Wiggle(BaseCog):
 
     @wiggle.command()
     async def show(self, ctx: commands.Context):
+        """
+        Show your set emoji reacts
+        """
         author: discord.Member = ctx.author
         authorid: str = str(author.id)
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
@@ -62,6 +68,9 @@ class Wiggle(BaseCog):
     @wiggle.command()
     @checks.mod()
     async def showall(self, ctx: commands.Context):
+        """
+        Show all emoji reacts for all users in guild
+        """
         guild: discord.Guild = ctx.guild
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             for userid, emojiids in wigglelist.items():
