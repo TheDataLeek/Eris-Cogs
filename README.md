@@ -38,7 +38,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Sudo](#sudo) | Warns about sudo attempts |
 | [Weave](#weave) | Create a mosaic of alternating emoji |
 | [Whois](#whois) | Whois for discord |
-| [Wiggler](#wiggler) | WIggle Jeff |
+| [Wiggler](#wiggler) | Adds random reactions to posts! |
 | [Zalgo](#zalgo) | Zalgoify text.
 Usage: [p]zalgo <message> |
 
@@ -281,9 +281,17 @@ Usages:
 
 Author: Eris
 ## Wiggler
-Short: WIggle Jeff
+Short: Adds random reactions to posts!
 
-Description: none
+Description: Adds random reactions to posts! User configurable.
+
+Usage:
+
+`[p]wiggle set emojis...` - set list of random emoji to choose from.
+
+`[p]wiggle show` - show your registered emoji
+
+`[p]wiggle showall` - show all registered emoji (requires mod access)
 
 Author: Eris
 ## Zalgo
