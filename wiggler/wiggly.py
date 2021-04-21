@@ -40,9 +40,9 @@ class Wiggle(BaseCog, ErisEventMixin):
         pass
 
     @wiggle.command()
-    async def set(self, ctx: commands.Context, *emojis: Optional[List[discord.Emoji]]):
+    async def set(self, ctx: commands.Context, *emojis: List[discord.Emoji]):
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
-            if not len(emojis):
+            if not len(emojis) and ctx.author.id in wigglelist:
                 del wigglelist[ctx.author.id]
             else:
                 wigglelist[ctx.author.id] = [e.id for e in emojis]
