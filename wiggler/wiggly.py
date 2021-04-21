@@ -2,9 +2,11 @@
 import random
 import re
 
+from typing import Optional
+
 # third party
 import discord
-from redbot.core import commands, bot
+from redbot.core import commands, bot, checks, Config
 
 from .eris_event_lib import ErisEventMixin
 
@@ -16,51 +18,40 @@ class Wiggle(BaseCog, ErisEventMixin):
         super().__init__()
 
         self.bot = bot_instance
+
+        self.config = Config.get_conf(
+            self,
+            identifier=8766782347657182931290319283,
+            force_registration=True,
+            cog_name="wiggle",
+        )
+
+        default_guild = {
+            "wiggle": {},
+        }
+        self.config.register_guild(**default_guild)
+
         self.bot.add_listener(self.wiggle, "on_message")
+
+    @commands.group()
+    async def wiggle(self, ctx: commands.Context):
+        pass
+
+    @wiggle.command()
+    async def set(self, ctx: commands.Context, emoji: Optional[discord.Emoji]=None):
+        async with self.config.guild(ctx.guild).wiggle() as wigglelist:
+            if emoji is None:
+                del wigglelist[ctx.author.id]
+            else:
+                wigglelist[ctx.author.id] = emoji
 
     async def wiggle(self, message: discord.message):
         ctx = await self.bot.get_context(message)
 
-        async with self.lock_config.channel(message.channel).get_lock():
+        async with self.lock_config.channel(message.channel).get_lock(), self.config.guild(ctx.guild).wiggle() as wigglelist:
+            author = ctx.message.author
             allowed: bool = await self.allowed(ctx, message)
-            author: discord.Member = message.author
+            allowed &= random.random() <= 0.05
+            allowed &= author.id in wigglelist
 
-            wiggler_id = 605433851707392033
-            dogbless = 687144702394499293
-            dansen = 702322986765516802
-            bongo = 559949424034316288
-            gobbin = 710232795741552700
-
-            emojis = {e.id: e for e in self.bot.emojis}
-
-            bulbas = [e for e in self.bot.emojis if "bulb" in e.name]
-
-            # juff
-            if author.id == 405152630055108619 and random.random() <= 0.5:
-                await message.add_reaction(emojis[wiggler_id])
-                return
-
-            # ed
-            if author.id == 159771760508534784 and random.random() <= 0.01:
-                await message.add_reaction(emojis[dogbless])
-                return
-
-            # zoe
-            if author.id == 142431859148718080 and random.random() <= 0.05:
-                await message.add_reaction(emojis[dansen])
-                return
-
-            # nikki
-            if author.id == 287464881081548810 and random.random() <= 0.1:
-                await message.add_reaction(emojis[bongo])
-                return
-
-            # bryan
-            if author.id == 179084207174189056 and random.random() <= 0.1:
-                await message.add_reaction(random.choice(bulbas))
-                return
-
-            # max
-            if author.id == 159773326737145856 and random.random() <= 0.2:
-                await message.add_reaction(emojis[gobbin])
-                return
+            await message.add_reaction(wigglelist[author.id])

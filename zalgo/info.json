@@ -1,6 +1,6 @@
 {
     "author" : ["Eris"],
-    "description" : "Usage: [p]zalgo <message>",
+    "description" : "Zalgos the provided message and deletes the original.",
     "name": "Zalgo",
-    "short" : "Zalgoify and anonymize text"
+    "short" : "Zalgoify text.\nUsage: [p]zalgo <message>"
 }

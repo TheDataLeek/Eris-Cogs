@@ -39,7 +39,8 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Weave](#weave) | Create a mosaic of alternating emoji |
 | [Whois](#whois) | Whois for discord |
 | [Wiggler](#wiggler) | WIggle Jeff |
-| [Zalgo](#zalgo) | Zalgoify and anonymize text |
+| [Zalgo](#zalgo) | Zalgoify text.
+Usage: [p]zalgo <message> |
 
 ## Alot
 Short: Posts an alot
@@ -286,8 +287,10 @@ Description: none
 
 Author: Eris
 ## Zalgo
-Short: Zalgoify and anonymize text
+Short: Zalgoify text.
 
-Description: Usage: [p]zalgo <message>
+Usage: [p]zalgo <message>
+
+Description: Zalgos the provided message and deletes the original.
 
 Author: Eris
