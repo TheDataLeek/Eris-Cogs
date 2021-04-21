@@ -7,6 +7,10 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
+| [Insult](#insult) | Insult users | ✅ |
+| [Minesweeper](#minesweeper) | Generate solvable minesweeper boards. | ✅ |
+| [Move](#move) | Move message to another channel | ✅ |
+| [Nick_prefix](#nick_prefix) | Adds themed prefix to names | ✅ |
 | [No_fuck_you](#no_fuck_you) | Replies 'no fuck you' | ✅ |
 | [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. | ✅ |
 | [Quotes](#quotes) | Incorrect Quotes by ScatterPatter | ✅ |
@@ -37,10 +41,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Grammar](#grammar) | Checks grammar of your users - load at your own risk | ❌ |
 | [Hotel_california](#hotel_california) | Hotel California | ❌ |
 | [Im_dad](#im_dad) | Hi _ I'm Dad | ❌ |
-| [Insult](#insult) | Insult users | ❌ |
-| [Minesweeper](#minesweeper) | None | ❌ |
-| [Move](#move) | Move post | ❌ |
-| [Nick_prefix](#nick_prefix) | Adds themed prefix to names | ❌ |
 | [Notify](#notify) | None | ❌ |
 
 ## Alot
@@ -120,17 +120,21 @@ Description: Hi _ I'm Dad
 ## Insult
 Short: Insult users
 
-Description: Usage: [p]insult <user>
+Description: Insults users via tagging.
 
-[p]insult. Includes NSFW insults
+Usage: `[p]insult user`
+
+ Includes NSFW insults
 ## Minesweeper
-Short: None
+![png](minesweeper/demo.png)
 
-Description: Minesweeper
+Short: Generate solvable minesweeper boards.
+
+Description: Generates guaranteed solvable minesweeper boards using emojis and spoilers.
 ## Move
-Short: Move post
+Short: Move message to another channel
 
-Description: Move post
+Description: Moves message to another channel for easy moderation.
 ## Nick_prefix
 Short: Adds themed prefix to names
 

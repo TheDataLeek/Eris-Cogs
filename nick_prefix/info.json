@@ -2,5 +2,7 @@
     "author" : ["Eris"],
     "description" : "Theme your nickname, some include NSFW language and themes.",
     "name" : "Nick Prefix",
-    "short": "Adds themed prefix to names"
+    "short": "Adds themed prefix to names",
+    "install_msg": "Comes with bundled nicks, some nickname prefixes might be nsfw!",
+    "ready": true
 }
