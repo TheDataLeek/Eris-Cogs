@@ -1,6 +1,7 @@
 {
     "author" : ["Eris"],
-    "description" : "Emoji role request",
-    "name" : "rolerequest",
-    "short": "Emoji Request"
+    "description" : "Emoji-based role request for user roles.",
+    "name" : "Role Request",
+    "short": "Emoji-based Role Request",
+    "ready": true
 }

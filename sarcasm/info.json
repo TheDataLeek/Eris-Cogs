@@ -5,5 +5,7 @@
     "short": "Randomly mocks users",
     "required_cogs": {
         "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
-    }
+    },
+    "install_msg": "Includes the spongebob meme in the bundled data.",
+    "ready": true
 }

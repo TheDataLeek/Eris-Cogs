@@ -75,11 +75,19 @@ class RoleRequest(BaseCog):
         bot.add_listener(add_role_to_user, "on_raw_reaction_add")
         bot.add_listener(remove_role_from_user, "on_raw_reaction_remove")
 
-    @commands.command(pass_context=True)
+    @commands.group()
+    async def role(self, ctx: commands.Context):
+        pass
+
+    @role.command(pass_context=True)
     @checks.mod()
     async def designate(
         self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji
     ):
+        """
+        Mod-only command to designate a message as a role-request message. Once designated, any user who reacts
+        with the provided emoji will be given the role.
+        """
         msg: discord.Message = await ctx.message.channel.fetch_message(msg_id)
 
         # make sure we have that one
@@ -107,9 +115,12 @@ class RoleRequest(BaseCog):
             hooks[msg_id] = {emoji_id: role_name}
         await self.config.guild(ctx.guild).hooks.set(hooks)
 
-    @commands.command(pass_context=True)
+    @role.command(pass_context=True)
     @checks.mod()
     async def clear_message(self, ctx: commands.Context, msg_id: str):
+        """
+        Mod-only command to clear all role-request emoji from a message
+        """
         msg: discord.Message = await ctx.message.channel.fetch_message(msg_id)
         hooks = await self.config.guild(ctx.guild).hooks()
         if msg_id not in hooks:
@@ -120,7 +131,10 @@ class RoleRequest(BaseCog):
 
         await msg.clear_reactions()
 
-    @commands.command(pass_context=True)
+    @role.command(pass_context=True, hidden=True)
     @checks.is_owner()
     async def clear_all_data(self, ctx):
+        """
+        Clear all data associated with role requests
+        """
         await self.config.guild(ctx.guild).hooks.set({})

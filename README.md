@@ -7,6 +7,8 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
+| [Rolerequest](#rolerequest) | Emoji-based Role Request | ✅ |
+| [Sarcasm](#sarcasm) | Randomly mocks users | ✅ |
 | [Say](#say) | Send messages as the bot | ✅ |
 | [Search](#search) | Search the internet! | ✅ |
 | [Spoop](#spoop) | Sneakily spoops users | ✅ |
@@ -40,8 +42,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. | ❌ |
 | [Quotes](#quotes) | Incorrect Quotes by ScatterPatter | ❌ |
 | [Rock_and_stone](#rock_and_stone) | ROCK AND STONE | ❌ |
-| [Rolerequest](#rolerequest) | Emoji Request | ❌ |
-| [Sarcasm](#sarcasm) | Randomly mocks users | ❌ |
 
 ## Alot
 Short: Posts an alot
@@ -156,9 +156,9 @@ Short: ROCK AND STONE
 
 Description: ROCK AND STONE
 ## Rolerequest
-Short: Emoji Request
+Short: Emoji-based Role Request
 
-Description: Emoji role request
+Description: Emoji-based role request for user roles.
 ## Sarcasm
 Short: Randomly mocks users
 
