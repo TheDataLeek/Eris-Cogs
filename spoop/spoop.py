@@ -54,6 +54,9 @@ class Spoop(BaseCog, ErisEventMixin):
     @commands.command()
     @checks.mod()
     async def spoop(self, ctx, user: discord.Member = None):
+        """
+        Sends a random spooky creepy quote to provided user
+        """
         if user is None:
             await ctx.message.author.send("Stop being such a fuckup")
             await ctx.message.delete()

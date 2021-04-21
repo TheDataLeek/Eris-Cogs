@@ -1,10 +1,14 @@
 # Eris' Cogs
 Welcome to my cogs!
 
+The table below lists all available cogs, as well as their current state. If a cog is listed as 'not ready' that simply means that I haven't gone through to productionalize / standardize the code. They still work, I just haven't cleaned them up entirely yet. Use at your own risk!
+
 If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` files in the directories of the cogs you wish to install and replace it with a copy of the root-level file.
 
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
+| [Spoop](#spoop) | Sneakily spoops users | ✅ |
+| [Steve](#steve) | Provides LARGE pictures of Steve when asked | ✅ |
 | [Stonks](#stonks) | A stock tracker using yahoofinance | ✅ |
 | [Sudo](#sudo) | Warns when users say sudo | ✅ |
 | [Weave](#weave) | Create a mosaic of alternating emoji | ✅ |
@@ -38,8 +42,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Sarcasm](#sarcasm) | Randomly mocks users | ❌ |
 | [Say](#say) | None | ❌ |
 | [Search](#search) | Search functions | ❌ |
-| [Spoop](#spoop) | Sneakily spoops users | ❌ |
-| [Steve](#steve) | STEVE | ❌ |
 
 ## Alot
 Short: Posts an alot
@@ -174,9 +176,9 @@ Short: Sneakily spoops users
 
 Description: Sneakily spoops a user randomly or on mod prompting. NSFW spoops!
 ## Steve
-Short: STEVE
+Short: Provides LARGE pictures of Steve when asked
 
-Description: STEVE
+Description: If users ask variations on "Where's Steve?" the bot will post several LARGE pictures of steve. Small chance for these photos to be in a random order.
 ## Stonks
 ![png](stonks/demo.png)
 
