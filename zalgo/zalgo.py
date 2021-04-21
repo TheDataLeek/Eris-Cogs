@@ -138,6 +138,7 @@ class Zalgo(BaseCog):
 
     @commands.command()
     async def spoilerify(self, ctx, *msg):
+        """Spoiler every other word"""
         new_msg = []
         do_it = False
         for word in msg:
