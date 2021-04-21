@@ -52,7 +52,7 @@ class Wiggle(BaseCog):
                 await ctx.send("Success, emoji set.")
 
     @wiggle.command()
-    async def show(self, ctx: commands.Context, user: Optional[discord.Member]=None):
+    async def show(self, ctx: commands.Context, user: Optional[discord.Member] = None):
         """
         Show your set emoji reacts
         """
@@ -63,7 +63,9 @@ class Wiggle(BaseCog):
         authorid: str = str(author.id)
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             if authorid in wigglelist:
-                emojis: List[discord.Emoji] = [self.emojis[e] for e in wigglelist[authorid]]
+                emojis: List[discord.Emoji] = [
+                    self.emojis[e] for e in wigglelist[authorid]
+                ]
                 await ctx.send(
                     f"{' '.join([str(e) for e in emojis])} for {author.display_name}"
                 )
