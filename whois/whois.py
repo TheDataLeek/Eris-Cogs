@@ -30,6 +30,9 @@ class WhoIs(BaseCog):
 
     @commands.command()
     async def theyare(self, ctx, user: discord.Member, *name: str):
+        """
+        Set the real name of the user
+        """
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             whois_dict[str(user.id)] = " ".join(name)
 
@@ -37,6 +40,9 @@ class WhoIs(BaseCog):
 
     @commands.command()
     async def whois(self, ctx, user: discord.Member = None):
+        """
+        Return the real name of the tagged user
+        """
         if user is None:
             user = ctx.message.author
         realname = await self.get_realname(ctx, str(user.id))
@@ -53,6 +59,9 @@ class WhoIs(BaseCog):
 
     @commands.command()
     async def iswho(self, ctx, realname: str):
+        """
+        Reverse whois, where you search for the real name and get the tag of the matching users
+        """
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             matches = []
             for userid, name in whois_dict.items():
@@ -66,6 +75,9 @@ class WhoIs(BaseCog):
 
     @commands.command()
     async def iseveryone(self, ctx):
+        """
+        Print all entries in the whois db
+        """
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             for userid, name in whois_dict.items():
                 member: discord.Member = ctx.guild.get_member(int(userid))
@@ -75,6 +87,9 @@ class WhoIs(BaseCog):
     @commands.command()
     @checks.is_owner()
     async def import_whois(self, ctx):
+        """
+        Import whois db for guild from file
+        """
         message: discord.Message = ctx.message
         file_to_import = None
         for attachment in message.attachments:
@@ -102,6 +117,9 @@ class WhoIs(BaseCog):
     @commands.command()
     @checks.is_owner()
     async def export_whois(self, ctx):
+        """
+        Export whois db for guild from file
+        """
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             output = json.dumps(whois_dict)
             await ctx.send(
@@ -124,6 +142,9 @@ class WhoIs(BaseCog):
     @commands.command(hidden=True)
     @checks.is_owner()
     async def import_from_legacy_db(self, ctx):
+        """
+        Import whois db for guild from legacy file
+        """
         WHOFILE = os.path.join(str(pathlib.Path.home()), "whois.db")
         with sqlite3.connect(WHOFILE) as con:
             cursor = con.cursor()
@@ -136,11 +157,17 @@ class WhoIs(BaseCog):
 
     @commands.command()
     async def avatar(self, ctx, user: discord.Member = None):
+        """
+        Show user avatar. Defaults to author if none specified
+        """
         if user is None:
             user = ctx.message.author
         await ctx.send(user.avatar_url)
 
     @commands.command()
     async def emoji(self, ctx, *args: discord.Emoji):
+        """
+        Show provided emoji. Must be a custom emoji, and the bot must have access to it.
+        """
         for emoji in args:
             await ctx.send(emoji.url)
