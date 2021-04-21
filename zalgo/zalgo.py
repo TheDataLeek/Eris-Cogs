@@ -7,8 +7,10 @@ import string
 
 BaseCog = getattr(commands, "Cog", object)
 
+from .eris_event_lib import ErisEventMixin
 
-class Zalgo(BaseCog):
+
+class Zalgo(BaseCog, ErisEventMixin):
     def __init__(self, bot):
         self.bot = bot
 
