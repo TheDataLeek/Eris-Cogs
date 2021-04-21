@@ -24,7 +24,6 @@ class Say(BaseCog):
         guilds: Dict[str, discord.Guild] = {
             g.name: g for g in guilds
         }
-        pp(guilds)
         guild: discord.Guild = guilds.get(process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5)[0])
         if guild is None:
             await ctx.send("Couldn't find guild!")
@@ -34,7 +33,6 @@ class Say(BaseCog):
         channels: Dict[str, discord.TextChannel] = {
             c.name: c for c in channels
         }
-        pp(channels)
         channel: discord.TextChannel = channels.get(process.extractOne(channelname, list(channels.keys()), score_cutoff=0.5)[0])
         if channel is None:
             await ctx.send("Couldn't find channel!")
