@@ -16,8 +16,10 @@ class Say(BaseCog):
 
     @commands.command(pass_context=True, rest_is_raw=True)
     @checks.mod()
-    async def say(self, ctx, guildname: str, channelname: str, what_to_say: str):
+    async def say(self, ctx, guildname: str, channelname: str, *what_to_say: str):
         """gimme a fact"""
+        what_to_say = ' '.join(what_to_say)
+
         guilds: List[discord.Guild] = self.bot.guilds
         guilds: Dict[str, discord.Guild] = {
             g.name: g for g in guilds
