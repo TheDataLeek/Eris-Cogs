@@ -1,5 +1,5 @@
 # Eris' Cogs
-Welcome to my cogs!
+Welcome to my cogs! If you have any questions please [join my discord!](http://discord.gg/ee3NyDq)
 
 The table below lists all available cogs, as well as their current state. If a cog is listed as 'not ready' that simply means that I haven't gone through to productionalize / standardize the code. They still work, I just haven't cleaned them up entirely yet. Use at your own risk!
 

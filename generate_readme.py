@@ -7,7 +7,7 @@ from pprint import pprint as pp
 
 
 title = "Eris' Cogs"
-desc = "Welcome to my cogs!"
+desc = "Welcome to my cogs! If you have any questions please [join my discord!](http://discord.gg/ee3NyDq)"
 
 readme = (
     f"# {title}\n{desc}\n\nThe table below lists all available cogs, "
