@@ -31,7 +31,7 @@ class Wiggle(BaseCog, ErisEventMixin):
         }
         self.config.register_guild(**default_guild)
 
-        self.bot.add_listener(self.wiggle, "on_message")
+        self.bot.add_listener(self.wiggle_handler, "on_message")
 
     @commands.group()
     async def wiggle(self, ctx: commands.Context):
@@ -45,7 +45,7 @@ class Wiggle(BaseCog, ErisEventMixin):
             else:
                 wigglelist[ctx.author.id] = emoji
 
-    async def wiggle(self, message: discord.message):
+    async def wiggle_handler(self, message: discord.message):
         ctx = await self.bot.get_context(message)
 
         async with self.lock_config.channel(message.channel).get_lock(), self.config.guild(ctx.guild).wiggle() as wigglelist:
