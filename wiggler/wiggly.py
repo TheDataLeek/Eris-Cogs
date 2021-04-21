@@ -2,7 +2,7 @@
 import random
 import re
 
-from typing import Optional
+from typing import Optional, List
 
 # third party
 import discord
@@ -18,6 +18,8 @@ class Wiggle(BaseCog, ErisEventMixin):
         super().__init__()
 
         self.bot = bot_instance
+
+        self.emojis = {e.id: e for e in self.bot.emojis}
 
         self.config = Config.get_conf(
             self,
@@ -38,12 +40,24 @@ class Wiggle(BaseCog, ErisEventMixin):
         pass
 
     @wiggle.command()
-    async def set(self, ctx: commands.Context, emoji: Optional[discord.Emoji]=None):
+    async def set(self, ctx: commands.Context, *emojis: Optional[List[discord.Emoji]]):
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
-            if emoji is None:
+            if not len(emojis):
                 del wigglelist[ctx.author.id]
             else:
-                wigglelist[ctx.author.id] = emoji
+                wigglelist[ctx.author.id] = [e.id for e in emojis]
+        await ctx.send('Success, emoji set.')
+
+    @wiggle.command()
+    @checks.mod()
+    async def show(self, ctx: commands.Context):
+        guild: discord.Guild = ctx.guild
+        async with self.config.guild(ctx.guild).wiggle() as wigglelist:
+            for userid, emojiids in wigglelist.items():
+                user: discord.Member = guild.get_member(userid)
+                emoji: emoji.Emoji = random.choice([self.emojis[e] for e in emojiids])
+                await ctx.send(f"{str(emoji)} for {user.nick}")
+
 
     async def wiggle_handler(self, message: discord.message):
         ctx = await self.bot.get_context(message)
@@ -54,4 +68,5 @@ class Wiggle(BaseCog, ErisEventMixin):
             allowed &= random.random() <= 0.05
             allowed &= author.id in wigglelist
 
-            await message.add_reaction(wigglelist[author.id])
+            emoji = random.choice([self.emojis[e] for e in wigglelist[author.id]])
+            await message.add_reaction(emoji)
