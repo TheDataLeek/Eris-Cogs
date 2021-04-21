@@ -110,5 +110,10 @@ class Wiggle(BaseCog):
             if not allowed:
                 return
 
-            emoji = random.choice([self.emojis[e] for e in wigglelist[authorid]])
-            await message.add_reaction(emoji)
+            if random.random() <= 0.1:
+                for emojiid in wigglelist[authorid]:
+                    emoji = self.emojis[emojiid]
+                    await message.add_reaction(emoji)
+            else:
+                emoji = random.choice([self.emojis[e] for e in wigglelist[authorid]])
+                await message.add_reaction(emoji)
