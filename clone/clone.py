@@ -12,6 +12,9 @@ class Clone(BaseCog):
     @commands.command()
     @checks.mod()
     async def clone(self, ctx, user: discord.Member):
+        """
+        Clones specified user
+        """
         new_nick = user.display_name
         my_role = [r for r in user.guild.roles if "snek color" == r.name.lower()]
         if len(my_role) != 1:

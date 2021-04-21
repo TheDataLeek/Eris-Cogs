@@ -6,5 +6,6 @@
   "install_msg": "Loads in local image instead of linking.",
   "required_cogs": {
     "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
-  }
+  },
+  "ready": true
 }

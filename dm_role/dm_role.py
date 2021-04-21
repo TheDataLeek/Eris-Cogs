@@ -10,7 +10,11 @@ class DMRole(BaseCog):
         self.bot = bot
 
     @commands.command()
+    @checks.mod()
     async def tell(self, ctx, rolename: str, *message: str):
+        """
+        Mod-only command to DM everyone who has specified role
+        """
         message = " ".join(message)
 
         scores = sorted(
