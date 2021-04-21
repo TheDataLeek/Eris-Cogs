@@ -236,6 +236,8 @@ Description: STEVE
 
 Author: Eris
 ## Stonks
+![png](stonks/demo.png)
+
 Short: A stock tracker using yahoofinance
 
 Description: Displays current and historical stock information using the yahoo finance API

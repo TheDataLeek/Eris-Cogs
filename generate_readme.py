@@ -32,7 +32,12 @@ table = ["| Cog Name | Short |", "| --- | --- |"]
 for d in all_dirs:
     name = d.name.capitalize()
     meta = json.loads((d / "info.json").read_text())
+
     new_entry = f"## {name}\n"
+
+    demofile = d / 'demo.png'
+    if demofile.exists():
+        new_entry += f"![png]({demofile})\n\n"
 
     meta_entries = []
     for k in meta_keys:
