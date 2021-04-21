@@ -7,6 +7,8 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
+| [Say](#say) | Send messages as the bot | ✅ |
+| [Search](#search) | Search the internet! | ✅ |
 | [Spoop](#spoop) | Sneakily spoops users | ✅ |
 | [Steve](#steve) | Provides LARGE pictures of Steve when asked | ✅ |
 | [Stonks](#stonks) | A stock tracker using yahoofinance | ✅ |
@@ -40,8 +42,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Rock_and_stone](#rock_and_stone) | ROCK AND STONE | ❌ |
 | [Rolerequest](#rolerequest) | Emoji Request | ❌ |
 | [Sarcasm](#sarcasm) | Randomly mocks users | ❌ |
-| [Say](#say) | None | ❌ |
-| [Search](#search) | Search functions | ❌ |
 
 ## Alot
 Short: Posts an alot
@@ -164,13 +164,15 @@ Short: Randomly mocks users
 
 Description: Sarcasm Module - randomly mocks users
 ## Say
-Short: None
+Short: Send messages as the bot
 
-Description: Allowed users can command the bot to say anything in a certain channel. Usage [p]say <message>
+Description: Users with mod status can command the bot to say anything in a certain channel.
+
+Usage `[p]say guild channel ...message`
 ## Search
-Short: Search functions
+Short: Search the internet!
 
-Description: Search Functions
+Description: Search the internet for useful info. Currently only wikipedia supported.
 ## Spoop
 Short: Sneakily spoops users
 
