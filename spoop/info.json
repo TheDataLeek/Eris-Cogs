@@ -5,7 +5,8 @@
   "short": "Sneakily spoops users",
   "install_msg": "Bundled NSFW messages included here! I've copied a bunch of yandere/tsundere quotes randomly and therefore their contents are not SFW. While not required, I highly recommend using this cog in tandem with my WhoIs cog in order to utilize realnames for extra spookiness",
   "required_cogs": {
-    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs",
+    "whois": "http://github.com/TheDataLeek/Eris-Cogs"
   },
   "ready": true
 }

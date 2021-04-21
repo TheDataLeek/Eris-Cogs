@@ -1,6 +1,11 @@
 {
     "author" : ["Eris"],
-    "description" : "Usage: [p]quote <users> - all credit to https://incorrect-quotes-generator.neocities.org/",
+    "description" : "Generates fun short stories between users. Usage: `[p]quote users` - all credit to https://incorrect-quotes-generator.neocities.org/",
     "name": "Quotes",
-    "short" : "Incorrect Quotes by ScatterPatter"
+    "short" : "Incorrect Quotes by ScatterPatter",
+    "required_cogs": {
+        "whois": "http://github.com/TheDataLeek/Eris-Cogs"
+    },
+    "ready": true,
+    "install_msg": "Includes bundled json data for quotes"
 }

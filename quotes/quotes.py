@@ -31,6 +31,9 @@ class Quotes(BaseCog):
 
     @commands.command()
     async def quote(self, ctx: commands.Context, *users: discord.Member):
+        """
+        Quote up to 6 users in a fun short story
+        """
         message: discord.Message = ctx.message
         author: discord.Member = message.author
 

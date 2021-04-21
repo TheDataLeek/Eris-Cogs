@@ -1,9 +1,10 @@
 {
   "author" : ["Eris"],
-  "description" : "ROCK AND STONE",
+  "description" : "Shouts various rock and stone quotes from Deep Rock Galactic",
   "name" : "ROCK AND STONE",
-  "short": "ROCK AND STONE",
+  "short": "Deep Rock Galactic shouting",
   "required_cogs": {
     "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
-  }
+  },
+  "ready": true
 }
