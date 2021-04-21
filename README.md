@@ -7,6 +7,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
+| [No_fuck_you](#no_fuck_you) | Replies 'no fuck you' | ✅ |
 | [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. | ✅ |
 | [Quotes](#quotes) | Incorrect Quotes by ScatterPatter | ✅ |
 | [Rock_and_stone](#rock_and_stone) | Deep Rock Galactic shouting | ✅ |
@@ -40,7 +41,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Minesweeper](#minesweeper) | None | ❌ |
 | [Move](#move) | Move post | ❌ |
 | [Nick_prefix](#nick_prefix) | Adds themed prefix to names | ❌ |
-| [No_fuck_you](#no_fuck_you) | No fuck you | ❌ |
 | [Notify](#notify) | None | ❌ |
 
 ## Alot
@@ -136,7 +136,7 @@ Short: Adds themed prefix to names
 
 Description: Theme your nickname, some include NSFW language and themes.
 ## No_fuck_you
-Short: No fuck you
+Short: Replies 'no fuck you'
 
 Description: Replies with 'no fuck you' if someone says 'fuck you'
 ## Notify

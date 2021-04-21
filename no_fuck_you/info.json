@@ -2,8 +2,9 @@
   "author" : ["Eris"],
   "description" : "Replies with 'no fuck you' if someone says 'fuck you'",
   "name" : "No, Fuck You",
-  "short": "No fuck you",
+  "short": "Replies 'no fuck you'",
   "required_cogs": {
     "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
-  }
+  },
+  "ready": true
 }
