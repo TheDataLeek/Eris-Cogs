@@ -1,19 +1,36 @@
 import discord
-from redbot.core import commands, checks
+from redbot.core import commands, checks, bot
 from random import choice as randchoice
+
+from typing import List, Dict
+
+from fuzzywuzzy import process
 
 BaseCog = getattr(commands, "Cog", object)
 
-GENERAL = 142435106257240064
-
 
 class Say(BaseCog):
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot_instance: bot):
+        self.bot = bot_instance
 
-    @commands.command(pass_context=True, hidden=True, rest_is_raw=True)
-    @checks.is_owner()
-    async def say(self, ctx, what_to_say: str):
+    @commands.command(pass_context=True, rest_is_raw=True)
+    @checks.mod()
+    async def say(self, ctx, guildname: str, channelname: str, what_to_say: str):
         """gimme a fact"""
-        channel = self.bot.get_channel(GENERAL)
-        await channel.send(ctx.message.content[5:])
+        guilds: List[discord.Guild] = self.bot.guilds
+        guilds: Dict[str, discord.Guild] = {
+            g.name: g for g in guilds
+        }
+        guild: discord.Guild = guilds.get(process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5))
+        if guild is None:
+            await ctx.send("Couldn't find guild!")
+
+        channels: List[discord.TextChannel] = [c for c in guild.channels if isinstance(c, discord.TextChannel)]
+        channels: Dict[str, discord.TextChannel] = {
+            c.name: c for c in channels
+        }
+        channel: discord.TextChannel = channels.get(process.extractOne(channelname, list(channels.keys()), score_cutoff=0.5))
+        if channel is None:
+            await ctx.send("Couldn't find channel!")
+
+        await channel.send(what_to_say)
