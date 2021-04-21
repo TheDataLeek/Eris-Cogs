@@ -17,7 +17,7 @@ class Wiggle(BaseCog):
 
         self.bot = bot_instance
 
-        self.emojis = {e.id: e for e in self.bot.emojis}
+        self.emojis = {str(e.id): e for e in self.bot.emojis}
 
         self.config = Config.get_conf(
             self,
@@ -48,7 +48,7 @@ class Wiggle(BaseCog):
                 del wigglelist[authorid]
                 await ctx.send("Success, reactions removed for user.")
             else:
-                wigglelist[authorid] = [e.id for e in emojis]
+                wigglelist[authorid] = [str(e.id) for e in emojis]
                 await ctx.send("Success, emoji set.")
 
     @wiggle.command()
@@ -65,7 +65,7 @@ class Wiggle(BaseCog):
                 del wigglelist[userid]
                 await ctx.send("Success, reactions removed for user.")
             else:
-                wigglelist[userid] = [e.id for e in emojis]
+                wigglelist[userid] = [str(e.id) for e in emojis]
                 await ctx.send("Success, emoji set.")
 
     @wiggle.command()
@@ -117,5 +117,7 @@ class Wiggle(BaseCog):
                     emoji = self.emojis[emojiid]
                     await message.add_reaction(emoji)
             else:
-                emoji = random.choice([self.emojis[e] for e in wigglelist[authorid]])
+                emojids = wigglelist[authorid]
+                emojis = [self.emojis[e] for e in emojids]
+                emoji = random.choice(emojis)
                 await message.add_reaction(emoji)
