@@ -70,7 +70,7 @@ Description: DMs everyone with a specific role based on fuzzy role name
 ## Event_config
 Short: Configure `on_message` events
 
-Description: Configure `on_message` events, specifically which servers they appear in, which channels, etc. for Eris Cogs
+Description: Configure `on_message` events, specifically which servers they appear in, which channels, etc. for Eris Cogs. By default, global events are on, guild-events are off. You'll need to run `[p]econf enable` in the guild you want events to run in.
 ## Facts
 Short: Provide random facts
 
