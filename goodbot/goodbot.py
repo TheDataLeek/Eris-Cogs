@@ -224,13 +224,19 @@ class GoodBot(BaseCog):
             ],
             key=lambda tup: -sum(*tup[1].values),
         ):
+            # convert eid:count obj to emoji:count
             emoji = {
                 self.emojis.get(str(eid), eid): cnt
                 for eid, cnt in obj.items()
                 if (len(eid) < 5) or (eid in self.emojis)
             }
-            emoji = [(e, c) for e, c in scores.items() if e]
+            # prune missing
+            emoji = [(e, c) for e, c in emoji.items() if e]
+            # sort
+            emoji = sorted(emoji, key=lambda tup: -tup[1])
+            # limit to top 3
             emoji = emoji[:3]
+            # format
             emoji = ', '.join(f"{e} ({c})" for e, c in emoji)
             users.append(f"{user.display_name} - {emoji}")
 
