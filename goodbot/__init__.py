@@ -1,4 +1,4 @@
-from .goodbot import GoodBot, generate_handlers
+from .goodbot import GoodBot
 
 
 def setup(bot):
