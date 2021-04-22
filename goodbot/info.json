@@ -3,5 +3,8 @@
     "description" : "Good Bot Bad Bot - Track which users get the most thumbs ups reacts.",
     "name" : "Good Bot",
     "short": "Track which users get the most thumbs ups reacts.",
+    "required_cogs": {
+        "whois": "http://github.com/TheDataLeek/Eris-Cogs"
+    },
     "hidden": true
 }

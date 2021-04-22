@@ -2,11 +2,12 @@
 
 import os
 import discord
-from redbot.core import commands
-from redbot.core import utils
+from redbot.core import utils, data_manager, commands, Config
 import sqlite3 as sq
 
 import pprint as pp
+
+from typing import Optional
 
 import pathlib
 import random
@@ -16,72 +17,6 @@ BaseCog = getattr(commands, "Cog", object)
 
 RATINGSFILE = os.path.join(str(pathlib.Path.home()), "bots.db")
 
-
-names = [
-    "bot",
-    "human",
-    "person",
-    "thing",
-    "boy",
-    "girl",
-    "robot",
-    "flesh creature",
-    "meat suit",
-    "individual",
-    "member of the collective",
-    "unspeakable horror",
-    "slut",
-    "creature",
-    "wonder boy",
-    "wonder girl",
-    "cat",
-    "dolphin",
-    "batman",
-    "dragon",
-    "abomination",
-    "squid",
-    "doggo",
-    "kitter",
-    "hoarder",
-    "harlot",
-    "cupcake",
-    "noodle",
-    "computer",
-    "tentacle from the abyss",
-    "worshiper of the sun",
-    "acolyte of Sal-Shaggoth",
-]
-
-goodwords = [
-    "good",
-    "awesome",
-    "excellent",
-    "most excellent",
-    "average",
-    "solidly ok",
-    "surpassed all expectations",
-    "a+",
-    "pleasantly surprising",
-    "happy",
-    "rockstar",
-    "ninja",
-    "perfect",
-]
-
-badwords = [
-    "bad",
-    "mediocre",
-    "below average",
-    "subpar",
-    "awful",
-    "horrifying",
-    "naughty",
-    "evil",
-    "macabre",
-    "disappointing",
-    "depressing",
-    "failing",
-]
 
 
 def user_exists(userid, cursor=None):
@@ -138,20 +73,38 @@ class GoodBot(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
-        con = sq.connect(RATINGSFILE)
-        with con:
-            con.execute(
-                "CREATE TABLE IF NOT EXISTS ratings("
-                "id INT PRIMARY KEY,"
-                "userid TEXT UNIQUE,"
-                "good INT,"
-                "bad INT"
-                ")"
-            )
-            con.commit()
+        self.whois = self.bot.get_cog("WhoIs")
+
+        data_dir: pathlib.Path = data_manager.bundled_data_path(self)
+        self.names = [s for s in (data_dir / 'names.txt').read_text().split('\n') if s]
+        self.good = [s for s in (data_dir / 'good.txt').read_text().split('\n') if s]
+        self.bad = [s for s in (data_dir / 'bad.txt').read_text().split('\n') if s]
+
+        self.config = Config.get_conf(
+            self,
+            identifier=7846324170810587603284975287,
+            force_registration=True,
+            cog_name="goodbot",
+        )
+
+        default_global = {
+            "scores": {}
+        }
+        default_guild = {
+            "scores": {}
+        }
+        self.config.register_global(**default_global)
+        self.config.register_guild(**default_guild)
 
         self.previous_author = dict()
         self.noticed = set()
+
+    async def getuser(self, ctx: commands.Context, authorid: str) -> Optional[str]:
+        if self.whois is not None:
+            realname = self.whois.convert_realname(
+                await self.whois.get_realname(ctx, authorid)
+            )
+            return realname
 
     @commands.command()
     async def rating(self, ctx, user: discord.Member = None):
