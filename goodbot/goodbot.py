@@ -224,6 +224,8 @@ class GoodBot(BaseCog):
             ],
             key=lambda tup: -sum(*tup[1].values),
         ):
+            print(user)
+            pp(obj)
             # convert eid:count obj to emoji:count
             emoji = {
                 self.emojis.get(str(eid), eid): cnt
@@ -236,9 +238,11 @@ class GoodBot(BaseCog):
             emoji = sorted(emoji, key=lambda tup: -tup[1])
             # limit to top 3
             emoji = emoji[:3]
+            pp(emoji)
             # format
             emoji = ', '.join(f"{e} ({c})" for e, c in emoji)
             users.append(f"{user.display_name} - {emoji}")
+        pp(users)
 
         response = '\n'.join(users)
         await ctx.send(response)
