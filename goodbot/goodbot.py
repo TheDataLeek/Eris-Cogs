@@ -216,11 +216,15 @@ class GoodBot(BaseCog):
 
         # iterate through users in [total num of emoji] descending if they are in the server
         users = ["User - scores"]
+        pp(scores)
         for user, obj in sorted(
             [
-                (ctx.guild.get_member(userid), obj)
+                (
+                        ctx.guild.get_member(int(userid)),
+                        obj
+                )
                 for userid, obj in scores.items()
-                if ctx.guild.get_member(userid) is not None
+                if ctx.guild.get_member(int(userid)) is not None
             ],
             key=lambda tup: -sum(*tup[1].values),
         ):
