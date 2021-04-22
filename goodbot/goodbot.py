@@ -7,7 +7,7 @@ import sqlite3 as sq
 
 import pprint as pp
 
-from typing import Optional
+from typing import Optional, Union
 
 import pathlib
 import random
@@ -15,58 +15,6 @@ import random
 BaseCog = getattr(commands, "Cog", object)
 
 
-RATINGSFILE = os.path.join(str(pathlib.Path.home()), "bots.db")
-
-
-
-def user_exists(userid, cursor=None):
-    if cursor is None:
-        con = sq.connect(RATINGSFILE)
-        c = con.cursor()
-    else:
-        c = cursor
-
-    c.execute("SELECT * FROM ratings WHERE userid=?", (userid,))
-
-    results = c.fetchall()
-
-    exists = False
-
-    if len(results) != 0:
-        exists = True
-
-    if cursor is None:
-        con.close()
-
-    return exists
-
-
-def get_user_rating(userid, cursor=None):
-    if cursor is None:
-        con = sq.connect(RATINGSFILE)
-        c = con.cursor()
-    else:
-        c = cursor
-
-    c.execute("SELECT good, bad FROM ratings WHERE userid=?", (userid,))
-
-    results = c.fetchall()
-
-    rating = None
-
-    if len(results) != 0:
-        rating = (results[0][0], results[0][1])
-    else:
-        # Add if doesn't exist, hopefully prevent crashes
-        c.execute(
-            "INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)", (userid, 0, 0)
-        )
-        con.commit()
-
-    if cursor is None:
-        con.close()
-
-    return rating
 
 
 class GoodBot(BaseCog):
@@ -88,7 +36,9 @@ class GoodBot(BaseCog):
         )
 
         default_global = {
-            "scores": {}
+            "imported": False,
+            "scores": {},
+            "threshold": 7,
         }
         default_guild = {
             "scores": {}
@@ -96,8 +46,99 @@ class GoodBot(BaseCog):
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
 
-        self.previous_author = dict()
-        self.noticed = set()
+        bot.add_listener(self.parse_reaction_add, "on_reaction_add")
+        bot.add_listener(self.parse_reaction_remove, "on_reaction_remove")
+
+        self.legacyfile = os.path.join(str(pathlib.Path.home()), "bots.db")   # for old version
+
+    async def parse_reaction_add(self, reaction: discord.Reaction, user: Union[discord.Member, discord.User]):
+        """
+        User is the user that added the reaction
+        """
+        # Prevent acting on DM's and if the bot reacted
+        if reaction.message.guild is None or user.bot:
+            return
+
+        ctx: commands.Context = await self.bot.get_context(reaction.message)
+
+        async with self.config.guild(ctx.guild).scores() as guildscores, self.config.scores() as globalscores:
+            pass
+
+        rating = None  # (+, -)
+        # MM: you've had your fun
+        # Upvote SpatulaFish
+        # if reaction.emoji in ['👎', '👍'] and reaction.message.author.id == '142431859148718080':
+        #     rating = (1, 0)
+        if reaction.emoji == "👎":
+            # MM proposal:
+            # Element of randomness: Self downvotes could result in updoot
+            if user.id == reaction.message.author.id:
+                if random.random() < 0.5:
+                    rating = (1, 0)
+                else:
+                    rating = (0, 1)
+            else:
+                rating = (0, 1)
+            # MM proposal:
+            # Just call the poor sod a bad bot
+            # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
+            #     await bot.delete_message(reaction.message)
+            if (reaction.count >= LIMIT) and (
+                    reaction.message.id not in gb_instance.noticed
+            ):
+                phrase = "{} IS A {} {}".format(
+                    reaction.message.author.mention,
+                    random.choice(badwords).upper(),
+                    random.choice(names).upper(),
+                )
+                await ctx.send(phrase, reference=reaction.message)
+                # await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
+                gb_instance.noticed.add(reaction.message.id)
+        elif reaction.emoji == "👍":
+            # Downvote for self votes
+            if user.id == reaction.message.author.id:
+                rating = (0, 1)
+            else:
+                rating = (1, 0)
+            if (reaction.count >= LIMIT) and (
+                    reaction.message.id not in gb_instance.noticed
+            ):
+                phrase = "{} IS A {} {}".format(
+                    reaction.message.author.mention,
+                    random.choice(goodwords).upper(),
+                    random.choice(names).upper(),
+                )
+                await ctx.send(phrase, reference=reaction.message)
+                # await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
+                gb_instance.noticed.add(reaction.message.id)
+
+        if rating is not None:
+            await rate_user(reaction.message.author.id, rating)
+
+    async def parse_reaction_remove(self, reaction, user):
+        # Prevent acting on DM's
+        if reaction.message.guild is None:
+            return
+
+        server = reaction.message.guild.id
+        channel = reaction.message.channel.id
+
+        rating = None
+        # do nothing for remove, already punished once for self votes
+        if user.id == reaction.message.author.id:
+            return
+        elif reaction.emoji == "👎":
+            rating = (1, 0)
+        elif reaction.emoji == "👍":
+            rating = (0, 1)
+        else:
+            return
+
+        await rate_user(reaction.message.author.id, rating)
+
+    return goodbot, parse_reaction_add, parse_reaction_remove
+
+
 
     async def getuser(self, ctx: commands.Context, authorid: str) -> Optional[str]:
         if self.whois is not None:
@@ -171,142 +212,3 @@ class GoodBot(BaseCog):
         pretty_version = pp.pformat(resolved_previous)
         await ctx.send("```{}```".format(pretty_version))
 
-
-def generate_handlers(bot, gb_instance):
-    async def goodbot(message, reaction=None, action=None):
-        # Prevent snek from voting on herself or counting
-        # if bot.user.id == message.author.id:
-        #     return
-
-        # Prevent acting on DM's
-        if message.guild is None:
-            return
-
-        clean_message = message.clean_content.lower()
-        server = message.guild.id
-        channel = message.channel.id
-
-        rating = None
-        if "good bot" in clean_message:
-            rating = (1, 0)
-        elif "bad bot" in clean_message:
-            rating = (0, 1)
-        else:
-            prev_author = message.author.id
-            if server not in gb_instance.previous_author:
-                gb_instance.previous_author[server] = dict()
-            gb_instance.previous_author[server][channel] = prev_author
-
-        if (
-            (rating is not None)
-            and (gb_instance.previous_author[server].get(channel) is not None)
-            and (gb_instance.previous_author[server][channel] != message.author.id)
-        ):
-            await rate_user(gb_instance.previous_author[server][channel], rating)
-
-    async def rate_user(userid, rating):
-        con = sq.connect(RATINGSFILE)
-        c = con.cursor()
-        if not user_exists(userid):
-            c.execute(
-                "INSERT INTO ratings(userid, good, bad) VALUES(?,?,?)",
-                (userid, *rating),
-            )
-            con.commit()
-        else:
-            oldgood, oldbad = get_user_rating(userid, cursor=c)
-            good, bad = (oldgood + rating[0], oldbad + rating[1])
-            # MM: You've had your fun
-            # if ((userid == '142431859148718080') and ((good - bad) <= 0)):
-            #     bad = good - 3
-            c.execute(
-                "UPDATE ratings SET good=?, bad=? WHERE userid=?", (good, bad, userid)
-            )
-            con.commit()
-        con.close()
-
-    async def parse_reaction_add(reaction, user):
-        # Prevent acting on DM's
-        if reaction.message.guild is None:
-            return
-
-        server = reaction.message.guild.id
-        channel = reaction.message.channel.id
-
-        context = await bot.get_context(reaction.message)
-
-        LIMIT = 7
-
-        rating = None  # (+, -)
-        # MM: you've had your fun
-        # Upvote SpatulaFish
-        # if reaction.emoji in ['👎', '👍'] and reaction.message.author.id == '142431859148718080':
-        #     rating = (1, 0)
-        if reaction.emoji == "👎":
-            # MM proposal:
-            # Element of randomness: Self downvotes could result in updoot
-            if user.id == reaction.message.author.id:
-                if random.random() < 0.5:
-                    rating = (1, 0)
-                else:
-                    rating = (0, 1)
-            else:
-                rating = (0, 1)
-            # MM proposal:
-            # Just call the poor sod a bad bot
-            # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
-            #     await bot.delete_message(reaction.message)
-            if (reaction.count >= LIMIT) and (
-                reaction.message.id not in gb_instance.noticed
-            ):
-                phrase = "{} IS A {} {}".format(
-                    reaction.message.author.mention,
-                    random.choice(badwords).upper(),
-                    random.choice(names).upper(),
-                )
-                await context.send(phrase, reference=reaction.message)
-                # await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
-                gb_instance.noticed.add(reaction.message.id)
-        elif reaction.emoji == "👍":
-            # Downvote for self votes
-            if user.id == reaction.message.author.id:
-                rating = (0, 1)
-            else:
-                rating = (1, 0)
-            if (reaction.count >= LIMIT) and (
-                reaction.message.id not in gb_instance.noticed
-            ):
-                phrase = "{} IS A {} {}".format(
-                    reaction.message.author.mention,
-                    random.choice(goodwords).upper(),
-                    random.choice(names).upper(),
-                )
-                await context.send(phrase, reference=reaction.message)
-                # await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
-                gb_instance.noticed.add(reaction.message.id)
-
-        if rating is not None:
-            await rate_user(reaction.message.author.id, rating)
-
-    async def parse_reaction_remove(reaction, user):
-        # Prevent acting on DM's
-        if reaction.message.guild is None:
-            return
-
-        server = reaction.message.guild.id
-        channel = reaction.message.channel.id
-
-        rating = None
-        # do nothing for remove, already punished once for self votes
-        if user.id == reaction.message.author.id:
-            return
-        elif reaction.emoji == "👎":
-            rating = (1, 0)
-        elif reaction.emoji == "👍":
-            rating = (0, 1)
-        else:
-            return
-
-        await rate_user(reaction.message.author.id, rating)
-
-    return goodbot, parse_reaction_add, parse_reaction_remove
