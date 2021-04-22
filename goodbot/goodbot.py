@@ -112,13 +112,14 @@ class GoodBot(BaseCog):
             ctx.guild
         ).messages() as messagetracking:
             thresh = int(settings['thresh'])
-            if reaction.count >= thresh:
+            has_been_noticed = messagetracking.get(str(msg.id), False)
+            if not has_been_noticed and reaction.count >= thresh:
                 if reaction.emoji == "👍":
                     phrase = self.generate_message(og_author, good=True)
                 elif reaction.emoji == "👎":
                     phrase = self.generate_message(og_author, good=False)
                 else:
-                    phrase = f"{og_author.mention} has been {str(reaction.emoji)}'d"
+                    phrase = f"{og_author.mention} has been {reaction.emoji}'d"
                 await ctx.send(phrase, reference=reaction.message)
 
                 messagetracking[str(msg.id)] = True
