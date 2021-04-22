@@ -239,7 +239,7 @@ class GoodBot(BaseCog):
             emoji = emoji[:3]
             # format
             emoji = ", ".join(f"{e} ({c})" for e, c in emoji)
-            users.append(f"[{total}] - {user.display_name} - {emoji}")
+            users.append(f"{user.display_name} [{total}] - {emoji}")
 
         response = "\n".join(users)
         await ctx.send(response)
