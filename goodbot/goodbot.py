@@ -229,7 +229,7 @@ class GoodBot(BaseCog):
                 for eid, cnt in obj.items()
                 if (len(eid) < 5) or (eid in self.emojis)
             }
-            emoji = [(emoji, count) for emoji, count in scores.items() if emoji]
+            emoji = [(e, c) for e, c in scores.items() if e]
             emoji = emoji[:3]
             emoji = ', '.join(f"{e} ({c})" for e, c in emoji)
             users.append(f"{user.display_name} - {emoji}")
