@@ -222,7 +222,7 @@ class GoodBot(BaseCog):
             if ctx.guild.get_member(int(userid)) is not None
         ]
         pp(score_list)
-        for user, obj in sorted(
+        for user, obj, _ in sorted(
             score_list,
             key=lambda tup: -sum(tup[2])
         ):
