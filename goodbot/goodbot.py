@@ -35,12 +35,7 @@ class GoodBot(BaseCog):
             cog_name="goodbot",
         )
 
-        default_global = {
-            "scores": {},
-            "settings": {
-                "thresh": 7
-            }
-        }
+        default_global = {"scores": {}, "settings": {"thresh": 7}}
         default_guild = {
             "scores": {},
             "messages": {},
@@ -111,7 +106,7 @@ class GoodBot(BaseCog):
         async with self.config.settings() as settings, self.config.guild(
             ctx.guild
         ).messages() as messagetracking:
-            thresh = int(settings['thresh'])
+            thresh = int(settings["thresh"])
             has_been_noticed = messagetracking.get(str(msg.id), False)
             if not has_been_noticed and reaction.count >= thresh:
                 if reaction.emoji == "👍":
@@ -165,7 +160,11 @@ class GoodBot(BaseCog):
         else:
             scores = user_global_scores
 
-        scores = {self.emojis.get(str(eid), eid): cnt for eid, cnt in scores.items()}
+        scores = {
+            self.emojis.get(str(eid), eid): cnt
+            for eid, cnt in scores.items()
+            if (len(eid) < 5) or (eid in self.emojis)
+        }
         scores = [(emoji, count) for emoji, count in scores.items() if emoji]
 
         formatted = [f"Scores for {user.mention}"]
