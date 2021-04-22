@@ -55,15 +55,21 @@ class EventConfig(BaseCog):
         Usage: [p]econf show
         """
         events_status = await self.config.eris_events_enabled()
+        guild_status = await self.config.guild(ctx.guild).enabled()
         async with self.config.guild(
             ctx.guild
         ).channel_whitelist() as whitelist, self.config.guild(
             ctx.guild
         ).channel_blacklist() as blacklist:
             if events_status:
-                await ctx.send("Events are currently ON")
+                await ctx.send("Global events are currently ON")
             else:
-                await ctx.send("Events are currently OFF")
+                await ctx.send("Global events are currently OFF")
+
+            if guild_status:
+                await ctx.send("Guild events are currently ON")
+            else:
+                await ctx.send("Guild events are currently OFF")
 
             if len(whitelist) == 0:
                 await ctx.send("Whitelist empty!")
