@@ -41,7 +41,8 @@ class GoodBot(BaseCog):
             "threshold": 7,
         }
         default_guild = {
-            "scores": {}
+            "scores": {},
+            "messages": {},
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
@@ -50,6 +51,14 @@ class GoodBot(BaseCog):
         bot.add_listener(self.parse_reaction_remove, "on_reaction_remove")
 
         self.legacyfile = os.path.join(str(pathlib.Path.home()), "bots.db")   # for old version
+
+    def generate_message(self, author: discord.Member, good=True) -> str:
+        phrase = "{} IS A {} {}".format(
+            author.mention,
+            random.choice(self.good if good else self.bad).upper(),
+            random.choice(self.names).upper(),
+        )
+        return phrase
 
     async def parse_reaction_add(self, reaction: discord.Reaction, user: Union[discord.Member, discord.User]):
         """
@@ -60,60 +69,52 @@ class GoodBot(BaseCog):
             return
 
         ctx: commands.Context = await self.bot.get_context(reaction.message)
+        msg: discord.Message = reaction.message
+        og_author: discord.Member = msg.author
 
-        async with self.config.guild(ctx.guild).scores() as guildscores, self.config.scores() as globalscores:
-            pass
-
-        rating = None  # (+, -)
-        # MM: you've had your fun
-        # Upvote SpatulaFish
-        # if reaction.emoji in ['👎', '👍'] and reaction.message.author.id == '142431859148718080':
-        #     rating = (1, 0)
-        if reaction.emoji == "👎":
-            # MM proposal:
-            # Element of randomness: Self downvotes could result in updoot
-            if user.id == reaction.message.author.id:
-                if random.random() < 0.5:
-                    rating = (1, 0)
+        # check if we've hit the threshold and notify if so
+        async with self.config.threshold() as thresh, self.config.guild(ctx.guild).messages() as messagetracking:
+            if reaction.count >= thresh:
+                if reaction.emoji == "👍":
+                    phrase = self.generate_message(og_author, good=True)
+                elif reaction.emoji == "👎":
+                    phrase = self.generate_message(og_author, good=False)
                 else:
-                    rating = (0, 1)
-            else:
-                rating = (0, 1)
-            # MM proposal:
-            # Just call the poor sod a bad bot
-            # if ((reaction.message.author.id != '142431859148718080') and (reaction.count >= 5)):
-            #     await bot.delete_message(reaction.message)
-            if (reaction.count >= LIMIT) and (
-                    reaction.message.id not in gb_instance.noticed
-            ):
-                phrase = "{} IS A {} {}".format(
-                    reaction.message.author.mention,
-                    random.choice(badwords).upper(),
-                    random.choice(names).upper(),
-                )
+                    phrase = f"{og_author.mention} has been {str(reaction.emoji)}'d"
                 await ctx.send(phrase, reference=reaction.message)
-                # await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
-                gb_instance.noticed.add(reaction.message.id)
-        elif reaction.emoji == "👍":
-            # Downvote for self votes
-            if user.id == reaction.message.author.id:
-                rating = (0, 1)
-            else:
-                rating = (1, 0)
-            if (reaction.count >= LIMIT) and (
-                    reaction.message.id not in gb_instance.noticed
-            ):
-                phrase = "{} IS A {} {}".format(
-                    reaction.message.author.mention,
-                    random.choice(goodwords).upper(),
-                    random.choice(names).upper(),
-                )
-                await ctx.send(phrase, reference=reaction.message)
-                # await bot.send_filtered(reaction.message.channel, content=phrase, reference=reaction.message)
-                gb_instance.noticed.add(reaction.message.id)
 
-        if rating is not None:
-            await rate_user(reaction.message.author.id, rating)
+                messagetracking[str(msg.id)] = True
+
+        # track user scores
+        async with self.config.guild(ctx.guild).scores() as guildscores, self.config.scores() as globalscores:
+            # track scores for all emoji for each guild
+            if str(og_author.id) not in guildscores:
+                guildscores[str(og_author.id)] = {}
+
+            # track all reactions
+            if str(msg.id) not in messagetracking:
+                messagetracking[str(msg.id)] = {}
+
+            if str(og_author.id) not in globalscores:
+                globalscores[str(og_author.id)] = {}
+
+            # convert emoji to str (leave if unicode)
+            reaction_emoji: Union[discord.Emoji, str] = reaction.emoji
+            reactionid = reaction_emoji
+            if not isinstance(reaction_emoji, str):
+                reactionid = str(reaction_emoji.id)
+
+            # collect in guild counter
+            if reactionid not in guildscores[str(og_author.id)]:
+                guildscores[str(og_author.id)][reactionid] = 1
+            else:
+                guildscores[str(og_author.id)][reactionid] += 1
+
+            # collect in global counter
+            if reactionid not in globalscores[str(og_author.id)]:
+                globalscores[str(og_author.id)][reactionid] = 1
+            else:
+                globalscores[str(og_author.id)][reactionid] += 1
 
     async def parse_reaction_remove(self, reaction, user):
         # Prevent acting on DM's
