@@ -169,8 +169,15 @@ class GoodBot(BaseCog):
         scores = [(emoji, count) for emoji, count in scores.items() if emoji]
 
         formatted = [f"Scores for {user.mention}"]
+        count = 0
         for emoji, count in sorted(scores, key=lambda tup: -tup[1]):
-            formatted.append(f"{str(emoji)} = {count}")
+            if count >= 10:
+                break
+            try:
+                int(emoji)
+            except ValueError:
+                formatted.append(f"{str(emoji)} = {count}")
+                count += 1
 
         formatted = "\n".join(formatted)
         await ctx.send(formatted)
