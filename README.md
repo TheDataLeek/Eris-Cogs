@@ -76,6 +76,8 @@ Short: Provide random facts
 
 Description: Provides bear or snake facts based on user input or randomly.
 ## Goodbot
+![png](goodbot/demo.png)
+
 Short: Good Bot Emoji Tracker
 
 Description: Good Bot Emoji Tracker - tracks all emoji reactions (that the bot has access to) for all users in your server! Upon reaching a vote-threshold, replies to the original message and compliments the user!
