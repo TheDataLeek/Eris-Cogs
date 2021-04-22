@@ -217,13 +217,13 @@ class GoodBot(BaseCog):
         # iterate through users in [total num of emoji] descending if they are in the server
         users = []
         score_list = [
-            (ctx.guild.get_member(int(userid)), obj, list(obj.values()))
+            (ctx.guild.get_member(int(userid)), obj, sum(list(obj.values())))
             for userid, obj in scores.items()
             if ctx.guild.get_member(int(userid)) is not None
         ]
-        for user, obj, _ in sorted(
+        for user, obj, total in sorted(
             score_list,
-            key=lambda tup: -sum(tup[2])
+            key=lambda tup: -tup[2]
         ):
             # convert eid:count obj to emoji:count
             emoji = {
@@ -239,7 +239,7 @@ class GoodBot(BaseCog):
             emoji = emoji[:3]
             # format
             emoji = ", ".join(f"{e} ({c})" for e, c in emoji)
-            users.append(f"{user.display_name} - {emoji}")
+            users.append(f"[{total}] - {user.display_name} - {emoji}")
 
         response = "\n".join(users)
         await ctx.send(response)
