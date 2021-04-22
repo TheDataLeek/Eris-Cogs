@@ -224,7 +224,7 @@ class GoodBot(BaseCog):
         pp(score_list)
         for user, obj in sorted(
             score_list,
-            key=lambda tup: -sum(*tup[2])
+            key=lambda tup: -sum(tup[2])
         ):
             print(user)
             pp(obj)
