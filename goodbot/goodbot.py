@@ -201,7 +201,7 @@ class GoodBot(BaseCog):
         await ctx.send(formatted)
 
     @commands.command()
-    async def allratings(self, ctx, which: Optional[str] = "guild"):
+    async def allratings(self, ctx, which: Optional[str] = "guild", full: Optional[bool] = False):
         """
         See the top 10 emoji scores for a user for either the current guild OR overall
         """
@@ -215,19 +215,16 @@ class GoodBot(BaseCog):
                 scores = globalscores
 
         # iterate through users in [total num of emoji] descending if they are in the server
-        users = ["User - scores"]
+        users = []
         score_list = [
             (ctx.guild.get_member(int(userid)), obj, list(obj.values()))
             for userid, obj in scores.items()
             if ctx.guild.get_member(int(userid)) is not None
         ]
-        pp(score_list)
         for user, obj, _ in sorted(
             score_list,
             key=lambda tup: -sum(tup[2])
         ):
-            print(user)
-            pp(obj)
             # convert eid:count obj to emoji:count
             emoji = {
                 self.emojis.get(str(eid), eid): cnt
@@ -239,12 +236,11 @@ class GoodBot(BaseCog):
             # sort
             emoji = sorted(emoji, key=lambda tup: -tup[1])
             # limit to top 3
-            emoji = emoji[:3]
-            pp(emoji)
+            if not full:
+                emoji = emoji[:3]
             # format
             emoji = ", ".join(f"{e} ({c})" for e, c in emoji)
             users.append(f"{user.display_name} - {emoji}")
-        pp(users)
 
         response = "\n".join(users)
         await ctx.send(response)
