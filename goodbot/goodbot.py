@@ -36,9 +36,10 @@ class GoodBot(BaseCog):
         )
 
         default_global = {
-            "imported": False,
             "scores": {},
-            "threshold": 7,
+            "settings": {
+                "thresh": 7
+            }
         }
         default_guild = {
             "scores": {},
@@ -105,9 +106,10 @@ class GoodBot(BaseCog):
         og_author: discord.Member = msg.author
 
         # check if we've hit the threshold and notify if so
-        async with self.config.threshold() as thresh, self.config.guild(
+        async with self.config.settings() as settings, self.config.guild(
             ctx.guild
         ).messages() as messagetracking:
+            thresh = int(settings['thresh'])
             if reaction.count >= thresh:
                 if reaction.emoji == "👍":
                     phrase = self.generate_message(og_author, good=True)
