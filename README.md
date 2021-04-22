@@ -15,6 +15,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Dm_role](#dm_role) | DM everyone with certain role | ✅ |
 | [Event_config](#event_config) | Configure `on_message` events | ✅ |
 | [Facts](#facts) | Provide random facts | ✅ |
+| [Goodbot](#goodbot) | Good Bot Emoji Tracker | ✅ |
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Insult](#insult) | Insult users | ✅ |
 | [Minesweeper](#minesweeper) | Generate solvable minesweeper boards. | ✅ |
@@ -38,7 +39,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Zalgo](#zalgo) | Memes and replaces text. | ✅ |
 | [Battle](#battle) | Battle with your users | ❌ |
 | [Events](#events) | Silly bot behavior not activated by explicit commands | ❌ |
-| [Goodbot](#goodbot) | Track which users get the most thumbs ups reacts. | ❌ |
 | [Grammar](#grammar) | Checks grammar of your users - load at your own risk | ❌ |
 | [Hotel_california](#hotel_california) | Hotel California | ❌ |
 | [Notify](#notify) | None | ❌ |
@@ -75,6 +75,10 @@ Description: Configure `on_message` events, specifically which servers they appe
 Short: Provide random facts
 
 Description: Provides bear or snake facts based on user input or randomly.
+## Goodbot
+Short: Good Bot Emoji Tracker
+
+Description: Good Bot Emoji Tracker - tracks all emoji reactions (that the bot has access to) for all users in your server! Upon reaching a vote-threshold, replies to the original message and compliments the user!
 ## Im_dad
 Short: Replies Hi _ I'm Dad
 

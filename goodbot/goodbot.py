@@ -2,7 +2,7 @@
 
 import os
 import discord
-from redbot.core import utils, data_manager, commands, Config
+from redbot.core import utils, data_manager, commands, Config, checks
 import sqlite3 as sq
 
 import pprint as pp
@@ -49,6 +49,24 @@ class GoodBot(BaseCog):
         self.legacyfile = os.path.join(
             str(pathlib.Path.home()), "bots.db"
         )  # for old version
+
+    @commands.command()
+    @checks.mod
+    async def set_rating_threshold(
+            self, ctx, thresh: int
+    ):
+        """
+        Sets the threshold for the goodbot compliment
+        """
+        if thresh < 1:
+            await ctx.send("Please set a reasonable bound")
+            return
+
+        async with self.config.settings() as settings:
+            settings["thresh"] = thresh
+
+        await ctx.send(f"Success, new threshold has been set to {thresh}")
+
 
     def generate_message(self, author: discord.Member, good=True) -> str:
         phrase = "{} IS A {} {}".format(
@@ -146,6 +164,9 @@ class GoodBot(BaseCog):
     async def rating(
         self, ctx, user: Optional[discord.Member] = None, which: Optional[str] = "guild"
     ):
+        """
+        See the top 10 emoji scores for a user for either the current guild OR overall
+        """
         if user is None:
             user = ctx.author
 
