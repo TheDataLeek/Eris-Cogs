@@ -165,11 +165,11 @@ class GoodBot(BaseCog):
         else:
             scores = user_global_scores
 
-        scores = {self.emojis.get(str(eid)): cnt for eid, cnt in scores.items()}
+        scores = {self.emojis.get(str(eid), eid): cnt for eid, cnt in scores.items()}
         scores = [(emoji, count) for emoji, count in scores.items() if emoji]
 
         formatted = [f"Scores for {user.mention}"]
-        for emoji, count in sorted(scores, key=lambda tup: tup[1]):
+        for emoji, count in sorted(scores, key=lambda tup: -tup[1]):
             formatted.append(f"{str(emoji)} = {count}")
 
         formatted = "\n".join(formatted)
