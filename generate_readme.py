@@ -37,7 +37,7 @@ for d in all_dirs:
     name = d.name.capitalize()
     meta = json.loads((d / "info.json").read_text())
 
-    ready = meta.get('ready', False)
+    ready = meta.get("ready", False)
 
     if ready:
         new_entry = f"## {name}\n"

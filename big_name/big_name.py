@@ -20,6 +20,6 @@ class BigName(BaseCog):
             await ctx.send("Sowwy, nicks must be between 2 and 32 characters!")
             return
 
-    @commands.command(aliases=['bn'])
+    @commands.command(aliases=["bn"])
     async def big_name(self, ctx, user: discord.Member, *, new_nick: str = ""):
         await self.update_username(ctx, user, new_nick.strip())

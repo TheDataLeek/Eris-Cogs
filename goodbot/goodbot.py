@@ -15,18 +15,18 @@ import random
 BaseCog = getattr(commands, "Cog", object)
 
 
-
-
 class GoodBot(BaseCog):
     def __init__(self, bot):
         self.bot = bot
 
         self.whois = self.bot.get_cog("WhoIs")
 
+        self.emojis = {str(e.id): e for e in self.bot.emojis}
+
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
-        self.names = [s for s in (data_dir / 'names.txt').read_text().split('\n') if s]
-        self.good = [s for s in (data_dir / 'good.txt').read_text().split('\n') if s]
-        self.bad = [s for s in (data_dir / 'bad.txt').read_text().split('\n') if s]
+        self.names = [s for s in (data_dir / "names.txt").read_text().split("\n") if s]
+        self.good = [s for s in (data_dir / "good.txt").read_text().split("\n") if s]
+        self.bad = [s for s in (data_dir / "bad.txt").read_text().split("\n") if s]
 
         self.config = Config.get_conf(
             self,
@@ -50,7 +50,9 @@ class GoodBot(BaseCog):
         bot.add_listener(self.parse_reaction_add, "on_reaction_add")
         bot.add_listener(self.parse_reaction_remove, "on_reaction_remove")
 
-        self.legacyfile = os.path.join(str(pathlib.Path.home()), "bots.db")   # for old version
+        self.legacyfile = os.path.join(
+            str(pathlib.Path.home()), "bots.db"
+        )  # for old version
 
     def generate_message(self, author: discord.Member, good=True) -> str:
         phrase = "{} IS A {} {}".format(
@@ -60,7 +62,37 @@ class GoodBot(BaseCog):
         )
         return phrase
 
-    async def parse_reaction_add(self, reaction: discord.Reaction, user: Union[discord.Member, discord.User]):
+    async def track_user(
+        self,
+        ctx: commands.Context,
+        author: discord.Member,
+        reaction: discord.Reaction,
+        initial_val=1,
+        step=1,
+    ):
+        # track user scores
+        async with self.config.guild(
+            ctx.guild
+        ).scores() as guildscores, self.config.scores() as globalscores:
+            # convert emoji to str (leave if unicode)
+            reaction_emoji: Union[discord.Emoji, str] = reaction.emoji
+            reactionid = reaction_emoji
+            if not isinstance(reaction_emoji, str):
+                reactionid = str(reaction_emoji.id)
+
+            # initialize and collect in counters
+            for D in [guildscores, globalscores]:
+                if str(author.id) not in D:
+                    D[str(author.id)] = {}
+
+                if reactionid not in D[str(author.id)]:
+                    D[str(author.id)][reactionid] = initial_val
+                else:
+                    D[str(author.id)][reactionid] += step
+
+    async def parse_reaction_add(
+        self, reaction: discord.Reaction, user: Union[discord.Member, discord.User]
+    ):
         """
         User is the user that added the reaction
         """
@@ -73,7 +105,9 @@ class GoodBot(BaseCog):
         og_author: discord.Member = msg.author
 
         # check if we've hit the threshold and notify if so
-        async with self.config.threshold() as thresh, self.config.guild(ctx.guild).messages() as messagetracking:
+        async with self.config.threshold() as thresh, self.config.guild(
+            ctx.guild
+        ).messages() as messagetracking:
             if reaction.count >= thresh:
                 if reaction.emoji == "👍":
                     phrase = self.generate_message(og_author, good=True)
@@ -85,61 +119,21 @@ class GoodBot(BaseCog):
 
                 messagetracking[str(msg.id)] = True
 
-        # track user scores
-        async with self.config.guild(ctx.guild).scores() as guildscores, self.config.scores() as globalscores:
-            # track scores for all emoji for each guild
-            if str(og_author.id) not in guildscores:
-                guildscores[str(og_author.id)] = {}
-
-            # track all reactions
-            if str(msg.id) not in messagetracking:
-                messagetracking[str(msg.id)] = {}
-
-            if str(og_author.id) not in globalscores:
-                globalscores[str(og_author.id)] = {}
-
-            # convert emoji to str (leave if unicode)
-            reaction_emoji: Union[discord.Emoji, str] = reaction.emoji
-            reactionid = reaction_emoji
-            if not isinstance(reaction_emoji, str):
-                reactionid = str(reaction_emoji.id)
-
-            # collect in guild counter
-            if reactionid not in guildscores[str(og_author.id)]:
-                guildscores[str(og_author.id)][reactionid] = 1
-            else:
-                guildscores[str(og_author.id)][reactionid] += 1
-
-            # collect in global counter
-            if reactionid not in globalscores[str(og_author.id)]:
-                globalscores[str(og_author.id)][reactionid] = 1
-            else:
-                globalscores[str(og_author.id)][reactionid] += 1
+        await self.track_user(ctx, og_author, reaction)
 
     async def parse_reaction_remove(self, reaction, user):
-        # Prevent acting on DM's
-        if reaction.message.guild is None:
+        """
+        User is the user that added the reaction
+        """
+        # Prevent acting on DM's and if the bot reacted
+        if reaction.message.guild is None or user.bot:
             return
 
-        server = reaction.message.guild.id
-        channel = reaction.message.channel.id
+        ctx: commands.Context = await self.bot.get_context(reaction.message)
+        msg: discord.Message = reaction.message
+        og_author: discord.Member = msg.author
 
-        rating = None
-        # do nothing for remove, already punished once for self votes
-        if user.id == reaction.message.author.id:
-            return
-        elif reaction.emoji == "👎":
-            rating = (1, 0)
-        elif reaction.emoji == "👍":
-            rating = (0, 1)
-        else:
-            return
-
-        await rate_user(reaction.message.author.id, rating)
-
-    return goodbot, parse_reaction_add, parse_reaction_remove
-
-
+        await self.track_user(ctx, og_author, reaction, initial_val=1, step=-1)
 
     async def getuser(self, ctx: commands.Context, authorid: str) -> Optional[str]:
         if self.whois is not None:
@@ -149,67 +143,29 @@ class GoodBot(BaseCog):
             return realname
 
     @commands.command()
-    async def rating(self, ctx, user: discord.Member = None):
-        """
-        Displays a user rating in the form <score> (<updoots>/<downdoots>/<totaldoots>)
-        """
+    async def rating(
+        self, ctx, user: Optional[discord.Member] = None, which: Optional[str] = "guild"
+    ):
         if user is None:
             user = ctx.author
 
-        if not user_exists(user.id):
-            await ctx.send("{} hasn't been rated".format(user.mention))
-            return
+        async with self.config.guild(
+            ctx.guild
+        ).scores() as guildscores, self.config.scores() as globalscores:
+            user_guild_scores = guildscores.get(str(user.id), {})
+            user_global_scores = globalscores.get(str(user.id), {})
 
-        good, bad = get_user_rating(user.id)
+        if which == "guild":
+            scores = user_guild_scores
+        else:
+            scores = user_global_scores
 
-        await ctx.send("User {} has a score of {}".format(user.mention, good - bad))
+        scores = {self.emojis.get(str(eid)): cnt for eid, cnt in scores.items()}
+        scores = [(emoji, count) for emoji, count in scores.items() if emoji]
 
-    @commands.command()
-    async def goodbots(self, ctx):
-        con = sq.connect(RATINGSFILE)
-        c = con.cursor()
-        c.execute("SELECT userid, good, bad from ratings ORDER BY (good - bad) DESC")
-        db_results = c.fetchall()
-        results = []
-        for userid, good, bad in db_results:
-            try:
-                user = ctx.guild.get_member(int(userid))
-                if user is not None:
-                    results.append(
-                        (
-                            user.nick,
-                            good,
-                            bad,
-                            good - bad,
-                            100 * (good - bad) / (good + bad),
-                        )
-                    )
-            except Exception as e:
-                print(e)
-                pass
-        results.sort(key=lambda tup: -tup[-2])
-        results = [
-            "{}  -> {} - {} = {} ({:0.02f}% positive)".format(*row) for row in results
-        ]
-        await ctx.send("Scores:")
-        for i in range(0, len(results), 20):
-            await ctx.send("```{}```".format("\n".join(results[i : i + 20])))
-        con.close()
+        formatted = [f"Scores for {user.mention}"]
+        for emoji, count in sorted(scores, key=lambda tup: tup[1]):
+            formatted.append(f"{str(emoji)} - {count}")
 
-    @commands.command()
-    async def see_previous(self, ctx):
-        if ctx.message.author.id != "142431859148718080":
-            return
-        resolved_previous = {
-            self.bot.get_guild(server_id).name: {
-                self.bot.get_channel(channel_id)
-                .name: self.bot.get_guild(server_id)
-                .get_member(user_id)
-                .name
-                for channel_id, user_id in channels.items()
-            }
-            for server_id, channels in self.previous_author.items()
-        }
-        pretty_version = pp.pformat(resolved_previous)
-        await ctx.send("```{}```".format(pretty_version))
-
+        formatted = "\n".join(formatted)
+        await ctx.send(formatted)
