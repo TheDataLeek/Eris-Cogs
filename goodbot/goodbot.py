@@ -90,6 +90,8 @@ class GoodBot(BaseCog):
                     D[str(author.id)][reactionid] = initial_val
                 else:
                     D[str(author.id)][reactionid] += step
+                    if D[str(author.id)][reactionid] == 0:
+                        del D[str(author.id)][reactionid]
 
     async def parse_reaction_add(
         self, reaction: discord.Reaction, user: Union[discord.Member, discord.User]
@@ -167,7 +169,7 @@ class GoodBot(BaseCog):
 
         formatted = [f"Scores for {user.mention}"]
         for emoji, count in sorted(scores, key=lambda tup: tup[1]):
-            formatted.append(f"{str(emoji)} - {count}")
+            formatted.append(f"{str(emoji)} = {count}")
 
         formatted = "\n".join(formatted)
         await ctx.send(formatted)
