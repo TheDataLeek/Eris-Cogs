@@ -51,7 +51,7 @@ class GoodBot(BaseCog):
         )  # for old version
 
     @commands.command()
-    @checks.mod
+    @checks.mod()
     async def set_rating_threshold(
             self, ctx, thresh: int
     ):
