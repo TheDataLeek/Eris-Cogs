@@ -5,7 +5,7 @@ import discord
 from redbot.core import utils, data_manager, commands, Config, checks
 import sqlite3 as sq
 
-import pprint as pp
+from pprint import pprint as pp
 
 from typing import Optional, Union, Dict
 
