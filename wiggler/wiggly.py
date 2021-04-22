@@ -103,6 +103,10 @@ class Wiggle(BaseCog):
                 )
 
     async def wiggle_handler(self, message: discord.message):
+        # don't proc on DMs
+        if message.guild is None:
+            return
+
         ctx = await self.bot.get_context(message)
         authorid = str(ctx.author.id)
 
