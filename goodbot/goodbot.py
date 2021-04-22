@@ -7,7 +7,7 @@ import sqlite3 as sq
 
 import pprint as pp
 
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 
 import pathlib
 import random
@@ -159,7 +159,11 @@ class GoodBot(BaseCog):
 
     @commands.command()
     async def rating(
-        self, ctx, user: Optional[discord.Member] = None, which: Optional[str] = "guild"
+        self,
+        ctx,
+        user: Optional[discord.Member] = None,
+        which: Optional[str] = "guild",
+        full: Optional[bool] = False,
     ):
         """
         See the top 10 emoji scores for a user for either the current guild OR overall
@@ -184,10 +188,52 @@ class GoodBot(BaseCog):
             if (len(eid) < 5) or (eid in self.emojis)
         }
         scores = [(emoji, count) for emoji, count in scores.items() if emoji]
+        scores = sorted(scores, key=lambda tup: -tup[1])
+
+        if not full:
+            scores = scores[:10]
 
         formatted = [f"Scores for {user.mention}"]
-        for emoji, count in sorted(scores, key=lambda tup: -tup[1]):
+        for emoji, count in scores:
             formatted.append(f"{str(emoji)} = {count}")
 
         formatted = "\n".join(formatted)
         await ctx.send(formatted)
+
+    @commands.command()
+    async def allratings(self, ctx, which: Optional[str] = "guild"):
+        """
+        See the top 10 emoji scores for a user for either the current guild OR overall
+        """
+
+        scores: Dict
+        if which == "guild":
+            async with self.config.guild(ctx.guild).scores() as guildscores:
+                scores = guildscores
+        else:
+            async with self.config.scores() as globalscores:
+                scores = globalscores
+
+        # iterate through users in [total num of emoji] descending if they are in the server
+        users = ["User - scores"]
+        for user, obj in sorted(
+            [
+                (ctx.guild.get_member(userid), obj)
+                for userid, obj in scores.items()
+                if ctx.guild.get_member(userid) is not None
+            ],
+            key=lambda tup: -sum(*tup[1].values),
+        ):
+            emoji = {
+                self.emojis.get(str(eid), eid): cnt
+                for eid, cnt in obj.items()
+                if (len(eid) < 5) or (eid in self.emojis)
+            }
+            emoji = [(emoji, count) for emoji, count in scores.items() if emoji]
+            emoji = emoji[:3]
+            emoji = ', '.join(f"{e} ({c})" for e, c in emoji)
+            users.append(f"{user.display_name} - {emoji}")
+
+        response = '\n'.join(users)
+        await ctx.send(response)
+
