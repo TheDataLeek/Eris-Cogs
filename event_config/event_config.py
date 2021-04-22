@@ -27,6 +27,7 @@ class EventConfig(BaseCog):
             "channel_whitelist": ["general"],
             "channel_blacklist": [],
             "last_message_interacted_with_id": None,
+            "enabled": False
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
@@ -34,6 +35,16 @@ class EventConfig(BaseCog):
     @commands.group()
     async def econf(self, ctx):
         pass
+
+    @econf.command()
+    @checks.mod()
+    async def enable(self, ctx):
+        await self.config.guild(ctx.guild).enabled.set(True)
+
+    @econf.command()
+    @checks.mod()
+    async def disable(self, ctx):
+        await self.config.guild(ctx.guild).enabled.set(False)
 
     @econf.command()
     @checks.mod()
