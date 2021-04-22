@@ -27,7 +27,7 @@ class EventConfig(BaseCog):
             "channel_whitelist": ["general"],
             "channel_blacklist": [],
             "last_message_interacted_with_id": None,
-            "enabled": False
+            "enabled": False,
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)

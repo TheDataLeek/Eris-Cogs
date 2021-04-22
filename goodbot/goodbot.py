@@ -52,9 +52,7 @@ class GoodBot(BaseCog):
 
     @commands.command()
     @checks.mod()
-    async def set_rating_threshold(
-            self, ctx, thresh: int
-    ):
+    async def set_rating_threshold(self, ctx, thresh: int):
         """
         Sets the threshold for the goodbot compliment
         """
@@ -66,7 +64,6 @@ class GoodBot(BaseCog):
             settings["thresh"] = thresh
 
         await ctx.send(f"Success, new threshold has been set to {thresh}")
-
 
     def generate_message(self, author: discord.Member, good=True) -> str:
         phrase = "{} IS A {} {}".format(

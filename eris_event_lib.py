@@ -15,7 +15,7 @@ class ErisEventMixin(object):
             "channel_whitelist": ["general"],
             "channel_blacklist": [],
             "last_message_interacted_with_id": None,
-            "enabled": False
+            "enabled": False,
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
@@ -26,7 +26,9 @@ class ErisEventMixin(object):
         self.lock_config.register_channel(locked=None)  # This is never going to be set
 
     async def allowed(self, ctx, message: discord.Message):
-        turned_on = (await self.config.eris_events_enabled()) and (await self.config.guild(ctx.guild).enabled)
+        turned_on = (await self.config.eris_events_enabled()) and (
+            await self.config.guild(ctx.guild).enabled
+        )
 
         if message.guild is None or not turned_on:
             return False
