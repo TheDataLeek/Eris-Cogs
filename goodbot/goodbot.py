@@ -198,7 +198,14 @@ class GoodBot(BaseCog):
             formatted.append(f"{str(emoji)} = {count}")
 
         formatted = "\n".join(formatted)
-        await ctx.send(formatted)
+
+        embed = discord.Embed(
+            title=f"Scores for {user.mention}",
+            type="rich",
+            description=formatted,
+        )
+        embed = utils.embed.randomize_colour(embed)
+        await ctx.send(embed)
 
     @commands.command()
     async def allratings(self, ctx, which: Optional[str] = "guild"):
