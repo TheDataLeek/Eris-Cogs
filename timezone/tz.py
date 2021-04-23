@@ -126,9 +126,9 @@ class Timezone(BaseCog):
                 await ctx.send("Error, I can't find your specified origin timezone")
 
         # set origin timezone
-        origin = pytz.timezone('UTC')
+        origin = pytz.timezone("UTC")
         now = datetime.datetime.utcnow()
-        origin = origin.localize(now)   # utc localized
+        origin = origin.localize(now)  # utc localized
 
         origin = origin.astimezone(pytz.timezone(from_timezone))  # actual
 
@@ -141,6 +141,7 @@ class Timezone(BaseCog):
         )
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)
+
     #
     # @tz.command()
     # async def ip(self, ctx: commands.Context, ip: str):
@@ -151,10 +152,10 @@ class Timezone(BaseCog):
 
 
 if __name__ == "__main__":
-    origin = pytz.timezone('UTC')
+    origin = pytz.timezone("UTC")
     now = datetime.datetime.utcnow()
     origin = origin.localize(now)
-    print(origin)   # utc localized
+    print(origin)  # utc localized
 
     origin = origin.astimezone(pytz.timezone("America/Denver"))
     print(origin)
