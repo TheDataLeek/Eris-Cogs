@@ -112,18 +112,20 @@ class Wiggle(BaseCog):
             for userid, emojiids in wigglelist.items():
                 user: discord.Member = guild.get_member(int(userid))
                 emojis: List[discord.Emoji] = [self.emojis[str(e)] for e in emojiids]
-                formatted.append(
-                    f"{' '.join([str(e) for e in emojis])} for {user.display_name}"
-                )
+                line = f"{' '.join([str(e) for e in emojis])} for {user.display_name}"
+                # formatted.append(line)
+                await ctx.send(line)
+
 
         formatted = '\n'.join(formatted)
-        embedded_response = discord.Embed(
-            title=f"Wiggle Emoji for {ctx.guild.name}",
-            type="rich",
-            description=formatted,
-        )
-        embedded_response = embed.randomize_colour(embedded_response)
-        await ctx.send(embed=embedded_response)
+        # embedded_response = discord.Embed(
+        #     title=f"Wiggle Emoji for {ctx.guild.name}",
+        #     type="rich",
+        #     description=formatted,
+        # )
+        # embedded_response = embed.randomize_colour(embedded_response)
+        # await ctx.send(embed=embedded_response)
+
 
     async def wiggle_handler(self, message: discord.message):
         # don't proc on DMs
