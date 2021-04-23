@@ -118,7 +118,7 @@ class Wiggle(BaseCog):
                 formatted.append(line)
                 # await ctx.send(line)
 
-        formatted = '\n'.join(formatted)
+        formatted = "\n".join(formatted)
         pages = list(pagify(formatted))
         await menu(ctx, pages, DEFAULT_CONTROLS)
         # embedded_response = discord.Embed(
@@ -128,7 +128,6 @@ class Wiggle(BaseCog):
         # )
         # embedded_response = embed.randomize_colour(embedded_response)
         # await ctx.send(embed=embedded_response)
-
 
     async def wiggle_handler(self, message: discord.message):
         # don't proc on DMs

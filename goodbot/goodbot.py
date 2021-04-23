@@ -158,7 +158,7 @@ class GoodBot(BaseCog):
             )
             return realname
 
-    @commands.command(aliases=['ratings'])
+    @commands.command(aliases=["ratings"])
     async def rating(
         self,
         ctx,
@@ -229,10 +229,7 @@ class GoodBot(BaseCog):
             for userid, obj in scores.items()
             if ctx.guild.get_member(int(userid)) is not None
         ]
-        for user, obj, total in sorted(
-            score_list,
-            key=lambda tup: -tup[2]
-        ):
+        for user, obj, total in sorted(score_list, key=lambda tup: -tup[2]):
             # convert eid:count obj to emoji:count
             emoji = {
                 self.emojis.get(str(eid), eid): cnt

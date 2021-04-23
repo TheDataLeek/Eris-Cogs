@@ -35,27 +35,29 @@ class HotelCalifornia(BaseCog):
 
     @hotel.command(pass_context=True)
     @checks.mod()
-    async def memberrole(self, ctx: commands.Context, role: Optional[discord.Role]=None):
-        name = 'None'
+    async def memberrole(
+        self, ctx: commands.Context, role: Optional[discord.Role] = None
+    ):
+        name = "None"
         str_id = None
         if role is not None:
             name = role.name
             str_id = str(role.id)
 
         await self.config.guild(ctx.guild).member_role.set(str_id)
-        await ctx.send(f'Success, the member punishment role has been set to {name}')
+        await ctx.send(f"Success, the member punishment role has been set to {name}")
 
     @hotel.command(pass_context=True)
     @checks.mod()
-    async def modrole(self, ctx: commands.Context, role: Optional[discord.Role]=None):
-        name = 'None'
+    async def modrole(self, ctx: commands.Context, role: Optional[discord.Role] = None):
+        name = "None"
         str_id = None
         if role is not None:
             name = role.name
             str_id = str(role.id)
 
         await self.config.guild(ctx.guild).mod_role.set(str_id)
-        await ctx.send(f'Success, the moderator punishment role has been set to {name}')
+        await ctx.send(f"Success, the moderator punishment role has been set to {name}")
 
     @commands.command(pass_context=True)
     @checks.mod()
@@ -73,7 +75,7 @@ class HotelCalifornia(BaseCog):
         role = ctx.guild.get_role(int(role_id))
         if not user.bot:
             await user.add_roles(role)
-            await ctx.send('Success - user punished')
+            await ctx.send("Success - user punished")
 
     @commands.command(pass_context=True)
     @checks.mod()
@@ -90,4 +92,4 @@ class HotelCalifornia(BaseCog):
         role = ctx.guild.get_role(int(role_id))
         if not user.bot:
             await user.remove_roles(role)
-            await ctx.send('Success - user freed')
+            await ctx.send("Success - user freed")
