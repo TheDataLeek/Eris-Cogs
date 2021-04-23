@@ -49,6 +49,9 @@ class Timezone(BaseCog):
 
     @tz.command()
     async def list(self, ctx: commands.Context):
+        """
+        List all available timezones
+        """
         formatted = "\n".join(pytz.all_timezones)
         pages = list(pagify(formatted))
         await menu(ctx, pages, DEFAULT_CONTROLS)
