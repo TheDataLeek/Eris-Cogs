@@ -7,6 +7,7 @@ from typing import Optional, List
 # third party
 import discord
 from redbot.core import commands, bot, checks, Config
+from redbot.core.utils import embed
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -86,9 +87,16 @@ class Wiggle(BaseCog):
                 emojis: List[discord.Emoji] = [
                     self.emojis[e] for e in wigglelist[authorid]
                 ]
-                await ctx.send(
-                    f"{' '.join([str(e) for e in emojis])} for {author.display_name}"
+
+                formatted = f"{' '.join([str(e) for e in emojis])}"
+
+                embedded_response = discord.Embed(
+                    title=f"Wiggle Emoji for {user.display_name}",
+                    type="rich",
+                    description=formatted,
                 )
+                embedded_response = embed.randomize_colour(embedded_response)
+                await ctx.send(embed=embedded_response)
 
     @wiggle.command()
     @checks.mod()
@@ -99,13 +107,23 @@ class Wiggle(BaseCog):
         self.emojis = {str(e.id): e for e in self.bot.emojis}
 
         guild: discord.Guild = ctx.guild
+        formatted = []
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             for userid, emojiids in wigglelist.items():
                 user: discord.Member = guild.get_member(int(userid))
                 emojis: List[discord.Emoji] = [self.emojis[str(e)] for e in emojiids]
-                await ctx.send(
+                formatted.append(
                     f"{' '.join([str(e) for e in emojis])} for {user.display_name}"
                 )
+
+        formatted = '\n'.join(formatted)
+        embedded_response = discord.Embed(
+            title=f"Wiggle Emoji for {ctx.guild.name}",
+            type="rich",
+            description=formatted,
+        )
+        embedded_response = embed.randomize_colour(embedded_response)
+        await ctx.send(embed=embedded_response)
 
     async def wiggle_handler(self, message: discord.message):
         # don't proc on DMs
