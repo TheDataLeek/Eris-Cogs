@@ -1,5 +1,9 @@
 # stdlib
+import datetime
+import pytz
+from dateutil import tz
 from typing import Optional, Dict
+from pprint import pprint as pp
 
 # third party
 import discord
@@ -15,24 +19,7 @@ BaseCog = getattr(commands, "Cog", object)
 class Timezone(BaseCog):
     def __init__(self, bot_instance: bot):
         self.bot: bot = bot_instance
-        self.timezones = {
-            "HST": -10,
-            "Hawaii Standard Time": -10,
-            "HDT": -9,
-            "Hawaii-Aleutian Daylight Time": -9,
-            "AKDT": -8,
-            "Alaska Daylight Time": -8,
-            "PDT": -7,
-            "Pacific Daylight Time": -7,
-            "MST": -7,
-            "Mountain Standard Time": -7,
-            "MDT": -6,
-            "Mountain Daylight Time": -6,
-            "CDT": -5,
-            "Central Daylight Time": -5,
-            "EDT": -4,
-            "Eastern Daylight Time": -4,
-        }
+        self.timezones = pytz.all_timezones
 
         self.config = Config.get_conf(
             self,
@@ -46,6 +33,8 @@ class Timezone(BaseCog):
 
         self.tzapisettings: Dict[str, str] = {}
         self.token: str = ""
+
+        self.fmt = '%Y-%m-%d %H:%M:%S %Z%z'
 
     async def get_token(self):
         self.tzapisettings = await self.bot.get_shared_api_tokens("timezone")
@@ -66,7 +55,7 @@ class Timezone(BaseCog):
             "1. Go to TimezoneAPI here https://timezoneapi.io/developers\n"
             "2. Sign up for a free account (15k credits / month)\n"
             "3. In your email you'll get a token.\n"
-            "4. You can now set that token IN A DM WITH THE BOT via `.set api timezone token <your token here>"
+            "4. You can now set that token IN A DM WITH THE BOT via `.set api timezone token <your token here>`"
         )
 
         embedded_response = discord.Embed(
@@ -77,9 +66,9 @@ class Timezone(BaseCog):
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)
 
-    def get_timezone_from_string(self, timezone):
+    def get_timezone_from_string(self, timezone: str) -> Optional[str]:
         if timezone not in self.timezones:
-            timezone, score = process.extractOne(timezone, list(self.timezones.keys()))
+            timezone, score = process.extractOne(timezone, list(self.timezones))
             if score <= 0.5:
                 return None
         return timezone
@@ -110,8 +99,34 @@ class Timezone(BaseCog):
             await ctx.send("Error, can't find timezone!")
             return
 
+        if from_timezone is None:
+            async with self.config.default_timezone() as defaults:
+                if str(ctx.author.id) not in defaults:
+                    await ctx.send('No default set, need to provide origin timezone')
+                else:
+                    from_timezone = defaults[str(ctx.author.id)]
+
+        # set origin timezone
+        origin = pytz.timezone(from_timezone)
+        now = datetime.datetime.now()
+        origin = origin.localize(now)
+
+        to_timezone = pytz.timezone(timezone)
+        result = origin.astimezone(to_timezone)
+
+        embedded_response = discord.Embed(
+            title=f"{from_timezone} -> {timezone}",
+            type="rich",
+            description=f"{origin.strftime(self.fmt)} = {result.strftime(self.fmt)}",
+        )
+        embedded_response = embed.randomize_colour(embedded_response)
+        await ctx.send(embed=embedded_response)
+
+
+
+
     @tz.command()
-    async def iplookup(self, ctx: commands.Context, ip: str):
+    async def ip(self, ctx: commands.Context, ip: str):
         await self.get_token()
         if self.token is None:
             await ctx.send("Need to set timezoneapi token first!")
@@ -119,4 +134,6 @@ class Timezone(BaseCog):
 
 
 if __name__ == "__main__":
-    pass
+    origin = pytz.timezone('CET')
+    now = datetime.datetime.now()
+    pp(origin.localize(now))
