@@ -188,7 +188,7 @@ class GoodBot(BaseCog):
         scores = {
             self.emojis.get(str(eid), eid): cnt
             for eid, cnt in scores.items()
-            if (len(eid) < 5) or (eid in self.emojis)
+            # if (len(eid) < 5) or (eid in self.emojis)
         }
         scores = [(emoji, count) for emoji, count in scores.items() if emoji]
         scores = sorted(scores, key=lambda tup: -tup[1])
@@ -236,7 +236,7 @@ class GoodBot(BaseCog):
             emoji = {
                 self.emojis.get(str(eid), eid): cnt
                 for eid, cnt in obj.items()
-                if (len(eid) < 5) or (eid in self.emojis)
+                # if (len(eid) < 5) or (eid in self.emojis)
             }
             # prune missing
             emoji = [(e, c) for e, c in emoji.items() if e]
