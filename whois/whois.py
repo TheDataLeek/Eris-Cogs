@@ -8,6 +8,8 @@ import io
 import pathlib
 import sqlite3
 
+from typing import Union
+
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -165,7 +167,7 @@ class WhoIs(BaseCog):
         await ctx.send(user.avatar_url)
 
     @commands.command()
-    async def emoji(self, ctx, *args: discord.Emoji):
+    async def emoji(self, ctx, *args: Union[discord.PartialEmoji, discord.Emoji]):
         """
         Show provided emoji. Must be a custom emoji, and the bot must have access to it.
         """
