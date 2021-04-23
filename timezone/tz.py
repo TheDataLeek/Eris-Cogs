@@ -52,7 +52,7 @@ class Timezone(BaseCog):
         self.token = self.tzapisettings.get("token", None)
 
     @commands.group()
-    def tz(self, ctx: commands.Context):
+    async def tz(self, ctx: commands.Context):
         """Group for timezone/ip info"""
         pass
 
