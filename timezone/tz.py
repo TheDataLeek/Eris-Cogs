@@ -95,6 +95,9 @@ class Timezone(BaseCog):
         if len(timezone) == 0:
             async with self.config.default_timezone() as defaults:
                 del defaults[str(ctx.author.id)]
+                await ctx.send(
+                    f"Success, {ctx.author.display_name}'s default cleared"
+                )
                 return
 
         timezone = " ".join(timezone)
