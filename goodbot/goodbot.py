@@ -194,7 +194,7 @@ class GoodBot(BaseCog):
         if not full:
             scores = scores[:10]
 
-        formatted = [f"Scores for {user.mention}"]
+        formatted = []
         for emoji, count in scores:
             formatted.append(f"{str(emoji)} = {count}")
 
