@@ -2,7 +2,7 @@
 import datetime
 import pytz
 from dateutil import tz
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 from pprint import pprint as pp
 
 # third party
@@ -122,12 +122,17 @@ class Timezone(BaseCog):
 
     @tz.command()
     async def to(
-        self, ctx: commands.Context, timezone: str, from_timezone: Optional[str] = None
+        self, ctx: commands.Context, timezone: Union[discord.Member, str], from_timezone: Optional[str] = None
     ):
         """
         Convert to specified timezone
         """
-        timezone = self.get_timezone_from_string(timezone)
+        if isinstance(timezone, str):
+            timezone = self.get_timezone_from_string(timezone)
+        else:
+            async with self.config.default_timezone() as defaults:
+                timezone = defaults.get(str(timezone.id))
+
         if timezone is None:
             await ctx.send("Error, can't find timezone!")
             return
