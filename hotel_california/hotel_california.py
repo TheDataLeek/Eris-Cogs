@@ -63,12 +63,17 @@ class HotelCalifornia(BaseCog):
         userroles: List[discord.Role] = user.roles
         ismod: bool = any(r.permissions.administrator for r in userroles)
         if ismod:
-            role_id = await self.config.guild(ctx.guild).mod_role.get()
+            role_id = await self.config.guild(ctx.guild).mod_role()
         else:
-            role_id = await self.config.guild(ctx.guild).member_role.get()
+            role_id = await self.config.guild(ctx.guild).member_role()
+        if role_id is None:
+            await ctx.send("Error: Need to set member/moderator roles first!")
+            return
+
         role = ctx.guild.get_role(int(role_id))
         if not user.bot:
             await user.add_roles(role)
+            await ctx.send('Success - user punished')
 
     @commands.command(pass_context=True)
     @checks.mod()
@@ -76,9 +81,13 @@ class HotelCalifornia(BaseCog):
         userroles: List[discord.Role] = user.roles
         ismod: bool = any(r.permissions.administrator for r in userroles)
         if ismod:
-            role_id = await self.config.guild(ctx.guild).mod_role.get()
+            role_id = await self.config.guild(ctx.guild).mod_role()
         else:
-            role_id = await self.config.guild(ctx.guild).member_role.get()
+            role_id = await self.config.guild(ctx.guild).member_role()
+        if role_id is None:
+            await ctx.send("Error: Need to set member/moderator roles first!")
+            return
         role = ctx.guild.get_role(int(role_id))
         if not user.bot:
             await user.remove_roles(role)
+            await ctx.send('Success - user freed')
