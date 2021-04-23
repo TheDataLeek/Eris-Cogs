@@ -57,7 +57,7 @@ class Timezone(BaseCog):
         pass
 
     @tz.command()
-    def help(self, ctx: commands.Context):
+    async def help(self, ctx: commands.Context):
         """
         Get help on the timezoneapi token configuration
         """
@@ -85,7 +85,7 @@ class Timezone(BaseCog):
         return timezone
 
     @tz.command()
-    def default(self, ctx: commands.Context, timezone: str):
+    async def default(self, ctx: commands.Context, timezone: str):
         """
         Sets your default timezone
         """
@@ -102,7 +102,7 @@ class Timezone(BaseCog):
         )
 
     @tz.command()
-    def to(
+    async def to(
         self, ctx: commands.Context, timezone: str, from_timezone: Optional[str] = None
     ):
         timezone = self.get_timezone_from_string(timezone)
@@ -111,8 +111,8 @@ class Timezone(BaseCog):
             return
 
     @tz.command()
-    def iplookup(self, ctx: commands.Context, ip: str):
-        self.get_token()
+    async def iplookup(self, ctx: commands.Context, ip: str):
+        await self.get_token()
         if self.token is None:
             await ctx.send("Need to set timezoneapi token first!")
             return
