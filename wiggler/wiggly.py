@@ -119,7 +119,7 @@ class Wiggle(BaseCog):
                 # await ctx.send(line)
 
         formatted = '\n'.join(formatted)
-        pages = list(pagify(formatted, page_length=1000))
+        pages = list(pagify(formatted))
         await menu(ctx, pages, DEFAULT_CONTROLS)
         # embedded_response = discord.Embed(
         #     title=f"Wiggle Emoji for {ctx.guild.name}",
