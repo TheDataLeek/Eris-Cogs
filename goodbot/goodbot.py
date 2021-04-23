@@ -206,7 +206,7 @@ class GoodBot(BaseCog):
             description=formatted,
         )
         embedded_response = embed.randomize_colour(embedded_response)
-        await ctx.send(embedded_response)
+        await ctx.send(embed=embedded_response)
 
     @commands.command()
     async def allratings(self, ctx, which: Optional[str] = "guild"):
