@@ -9,6 +9,8 @@ from pprint import pprint as pp
 import discord
 from redbot.core import commands, bot, Config
 from redbot.core.utils import embed
+from redbot.core.utils.chat_formatting import pagify
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 from fuzzywuzzy import process
 import aiohttp
@@ -34,7 +36,7 @@ class Timezone(BaseCog):
         self.tzapisettings: Dict[str, str] = {}
         self.token: str = ""
 
-        self.fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+        self.fmt = '%H:%M:%S %Z%z'
 
     async def get_token(self):
         self.tzapisettings = await self.bot.get_shared_api_tokens("timezone")
@@ -44,6 +46,12 @@ class Timezone(BaseCog):
     async def tz(self, ctx: commands.Context):
         """Group for timezone/ip info"""
         pass
+
+    @tz.command()
+    async def list(self, ctx: commands.Context):
+        formatted = "\n".join(pytz.all_timezones)
+        pages = list(pagify(formatted))
+        await menu(ctx, pages, DEFAULT_CONTROLS)
 
     @tz.command()
     async def help(self, ctx: commands.Context):
@@ -115,9 +123,9 @@ class Timezone(BaseCog):
         result = origin.astimezone(to_timezone)
 
         embedded_response = discord.Embed(
-            title=f"{from_timezone} -> {timezone}",
+            title=f"Converting {from_timezone} to {timezone}",
             type="rich",
-            description=f"{origin.strftime(self.fmt)} = {result.strftime(self.fmt)}",
+            description=f"It's currently {origin.strftime(self.fmt)} which is equal to {result.strftime(self.fmt)}",
         )
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)
@@ -134,6 +142,10 @@ class Timezone(BaseCog):
 
 
 if __name__ == "__main__":
-    origin = pytz.timezone('CET')
+    origin = pytz.timezone('America/Denver')
     now = datetime.datetime.now()
-    pp(origin.localize(now))
+    origin = origin.localize(now)
+    print(origin)
+
+    to_timezone = pytz.timezone('America/Los_Angeles')
+    print(origin.astimezone(to_timezone))
