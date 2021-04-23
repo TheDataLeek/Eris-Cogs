@@ -1,9 +1,8 @@
 {
     "author" : ["Eris"],
-    "description" : "Timezone converter! Switch between multiple US timezones easily, also provides IP lookups",
+    "description" : "Timezone converter! Switch between multiple US timezones easily",
     "name" : "Timezone",
     "short": "US Timezone converter",
-    "install_msg": "You'll need to sign up for a timezoneapi token available here - https://timezoneapi.io/plans/confirmed",
     "requirements": ["fuzzywuzzy", "aiohttp", "pytz"],
-    "ready": false
+    "ready": true
 }

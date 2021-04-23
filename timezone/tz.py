@@ -33,14 +33,14 @@ class Timezone(BaseCog):
         default_global = {"default_timezone": {}}
         self.config.register_global(**default_global)
 
-        self.tzapisettings: Dict[str, str] = {}
-        self.token: str = ""
+        # self.tzapisettings: Dict[str, str] = {}
+        # self.token: str = ""
 
         self.fmt = "%H:%M:%S %Z%z"
 
-    async def get_token(self):
-        self.tzapisettings = await self.bot.get_shared_api_tokens("timezone")
-        self.token = self.tzapisettings.get("token", None)
+    # async def get_token(self):
+    #     self.tzapisettings = await self.bot.get_shared_api_tokens("timezone")
+    #     self.token = self.tzapisettings.get("token", None)
 
     @commands.group()
     async def tz(self, ctx: commands.Context):
@@ -56,26 +56,26 @@ class Timezone(BaseCog):
         pages = list(pagify(formatted, page_length=300))
         await menu(ctx, pages, DEFAULT_CONTROLS)
 
-    @tz.command()
-    async def help(self, ctx: commands.Context):
-        """
-        Get help on the timezoneapi token configuration
-        """
-        msg = (
-            "In order to get IP lookups working, you'll need to enable the timezone API\n"
-            "1. Go to TimezoneAPI here https://timezoneapi.io/developers\n"
-            "2. Sign up for a free account (15k credits / month)\n"
-            "3. In your email you'll get a token.\n"
-            "4. You can now set that token IN A DM WITH THE BOT via `.set api timezone token <your token here>`"
-        )
-
-        embedded_response = discord.Embed(
-            title=f"API Signup Info",
-            type="rich",
-            description=msg,
-        )
-        embedded_response = embed.randomize_colour(embedded_response)
-        await ctx.send(embed=embedded_response)
+    # @tz.command()
+    # async def help(self, ctx: commands.Context):
+    #     """
+    #     Get help on the timezoneapi token configuration
+    #     """
+    #     msg = (
+    #         "In order to get IP lookups working, you'll need to enable the timezone API\n"
+    #         "1. Go to TimezoneAPI here https://timezoneapi.io/developers\n"
+    #         "2. Sign up for a free account (15k credits / month)\n"
+    #         "3. In your email you'll get a token.\n"
+    #         "4. You can now set that token IN A DM WITH THE BOT via `.set api timezone token <your token here>`"
+    #     )
+    #
+    #     embedded_response = discord.Embed(
+    #         title=f"API Signup Info",
+    #         type="rich",
+    #         description=msg,
+    #     )
+    #     embedded_response = embed.randomize_colour(embedded_response)
+    #     await ctx.send(embed=embedded_response)
 
     def get_timezone_from_string(self, timezone: str) -> Optional[str]:
         if timezone not in self.timezones:
@@ -138,13 +138,13 @@ class Timezone(BaseCog):
         )
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)
-
-    @tz.command()
-    async def ip(self, ctx: commands.Context, ip: str):
-        await self.get_token()
-        if self.token is None:
-            await ctx.send("Need to set timezoneapi token first!")
-            return
+    #
+    # @tz.command()
+    # async def ip(self, ctx: commands.Context, ip: str):
+    #     await self.get_token()
+    #     if self.token is None:
+    #         await ctx.send("Need to set timezoneapi token first!")
+    #         return
 
 
 if __name__ == "__main__":
