@@ -4,6 +4,8 @@ import os
 import discord
 from redbot.core import utils, data_manager, commands, Config, checks
 from redbot.core.utils import embed
+from redbot.core.utils.chat_formatting import pagify
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 import sqlite3 as sq
 
 from pprint import pprint as pp
@@ -248,10 +250,13 @@ class GoodBot(BaseCog):
 
         response = "\n".join(users)
 
-        embedded_response = discord.Embed(
-            title=f"All Scores for {ctx.guild.name if which == 'guild' else 'Everyone'}",
-            type="rich",
-            description=response,
-        )
-        embedded_response = embed.randomize_colour(embedded_response)
-        await ctx.send(embed=embedded_response)
+        pages = list(pagify(response))
+        await menu(ctx, pages, DEFAULT_CONTROLS)
+
+        # embedded_response = discord.Embed(
+        #     title=f"All Scores for {ctx.guild.name if which == 'guild' else 'Everyone'}",
+        #     type="rich",
+        #     description=response,
+        # )
+        # embedded_response = embed.randomize_colour(embedded_response)
+        # await ctx.send(embed=embedded_response)
