@@ -35,6 +35,7 @@ class Wiggle(BaseCog):
 
     @commands.group()
     async def wiggle(self, ctx: commands.Context):
+        """Group for wiggle commands"""
         pass
 
     @wiggle.command()
@@ -73,6 +74,8 @@ class Wiggle(BaseCog):
         """
         Show your set emoji reacts
         """
+        self.emojis = {str(e.id): e for e in self.bot.emojis}
+
         if user is None:
             author: discord.Member = ctx.author
         else:
@@ -93,6 +96,8 @@ class Wiggle(BaseCog):
         """
         Show all emoji reacts for all users in guild
         """
+        self.emojis = {str(e.id): e for e in self.bot.emojis}
+
         guild: discord.Guild = ctx.guild
         async with self.config.guild(ctx.guild).wiggle() as wigglelist:
             for userid, emojiids in wigglelist.items():
@@ -106,6 +111,8 @@ class Wiggle(BaseCog):
         # don't proc on DMs
         if message.guild is None:
             return
+
+        self.emojis = {str(e.id): e for e in self.bot.emojis}
 
         ctx = await self.bot.get_context(message)
         authorid = str(ctx.author.id)
