@@ -78,6 +78,9 @@ class Timezone(BaseCog):
     #     await ctx.send(embed=embedded_response)
 
     def get_timezone_from_string(self, timezone: str) -> Optional[str]:
+        if timezone is None:
+            return None
+
         if timezone not in self.timezones:
             timezone, score = process.extractOne(timezone, list(self.timezones))
             if score <= 0.5:
@@ -120,10 +123,10 @@ class Timezone(BaseCog):
                     await ctx.send("No default set, need to provide origin timezone")
                 else:
                     from_timezone = defaults[str(ctx.author.id)]
-        else:
-            from_timezone = self.get_timezone_from_string(from_timezone)
-            if from_timezone is None:
-                await ctx.send("Error, I can't find your specified origin timezone")
+
+        from_timezone = self.get_timezone_from_string(from_timezone)
+        if from_timezone is None:
+            await ctx.send("Error, I can't find your specified origin timezone")
 
         # set origin timezone
         origin = pytz.timezone("UTC")
