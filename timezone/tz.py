@@ -106,6 +106,9 @@ class Timezone(BaseCog):
     async def to(
         self, ctx: commands.Context, timezone: str, from_timezone: Optional[str] = None
     ):
+        """
+        Convert to specified timezone
+        """
         timezone = self.get_timezone_from_string(timezone)
         if timezone is None:
             await ctx.send("Error, can't find timezone!")
