@@ -158,7 +158,7 @@ class GoodBot(BaseCog):
             )
             return realname
 
-    @commands.command()
+    @commands.command(aliases=['ratings'])
     async def rating(
         self,
         ctx,
@@ -201,7 +201,7 @@ class GoodBot(BaseCog):
         formatted = "\n".join(formatted)
 
         embedded_response = discord.Embed(
-            title=f"Scores for {user.mention}",
+            title=f"Scores for {user.display_name}",
             type="rich",
             description=formatted,
         )
@@ -250,4 +250,11 @@ class GoodBot(BaseCog):
             users.append(f"{user.display_name} [{total}] - {emoji}")
 
         response = "\n".join(users)
-        await ctx.send(response)
+
+        embedded_response = discord.Embed(
+            title=f"All Scores for {ctx.guild.name if which == 'guild' else 'Everyone'}",
+            type="rich",
+            description=response,
+        )
+        embedded_response = embed.randomize_colour(embedded_response)
+        await ctx.send(embed=embedded_response)
