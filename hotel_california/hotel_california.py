@@ -4,9 +4,9 @@ from pprint import pprint as pp
 # third party
 import discord
 from discord import utils
-from redbot.core import commands, data_manager, Config, checks
+from redbot.core import commands, data_manager, Config, checks, Config
 
-from typing import List
+from typing import List, Union, Optional
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -16,29 +16,57 @@ class HotelCalifornia(BaseCog):
     def __init__(self, bot: commands.Cog):
         self.bot: commands.Cog = bot
 
-        self.signifier = "ಠ"
-        self.mod_signifier = "bad mod"
+        self.config = Config.get_conf(
+            self,
+            identifier=123458687089708978970987566,
+            force_registration=True,
+            cog_name="hotel_cali",
+        )
 
-    async def find_role(self, ctx: commands.Context, ismod=False):
-        role: discord.Role = None
-        for guild_role in ctx.guild.roles:
-            if ismod and self.mod_signifier in guild_role.name.lower():
-                role = guild_role
-                break
-            elif self.signifier in guild_role.name.lower():
-                role = guild_role
-                break
-        else:
-            await ctx.send("Sorry, I can't find that role!")
+        default_guild = {
+            "member_role": None,
+            "mod_role": None,
+        }
+        self.config.register_guild(**default_guild)
 
-        return role
+    @commands.group()
+    async def hotel(self, ctx):
+        pass
+
+    @hotel.command(pass_context=True)
+    @checks.mod()
+    async def memberrole(self, ctx: commands.Context, role: Optional[discord.Role]=None):
+        name = 'None'
+        str_id = None
+        if role is not None:
+            name = role.name
+            str_id = str(role.id)
+
+        await self.config.guild(ctx.guild).member_role.set(str_id)
+        await ctx.send(f'Success, the member punishment role has been set to {name}')
+
+    @hotel.command(pass_context=True)
+    @checks.mod()
+    async def modrole(self, ctx: commands.Context, role: Optional[discord.Role]=None):
+        name = 'None'
+        str_id = None
+        if role is not None:
+            name = role.name
+            str_id = str(role.id)
+
+        await self.config.guild(ctx.guild).mod_role.set(str_id)
+        await ctx.send(f'Success, the moderator punishment role has been set to {name}')
 
     @commands.command(pass_context=True)
     @checks.mod()
     async def punish(self, ctx: commands.Context, user: discord.Member):
         userroles: List[discord.Role] = user.roles
         ismod: bool = any(r.permissions.administrator for r in userroles)
-        role = await self.find_role(ctx, ismod=ismod)
+        if ismod:
+            role_id = await self.config.guild(ctx.guild).mod_role.get()
+        else:
+            role_id = await self.config.guild(ctx.guild).member_role.get()
+        role = ctx.guild.get_role(int(role_id))
         if not user.bot:
             await user.add_roles(role)
 
@@ -47,16 +75,10 @@ class HotelCalifornia(BaseCog):
     async def free(self, ctx: commands.Context, user: discord.Member):
         userroles: List[discord.Role] = user.roles
         ismod: bool = any(r.permissions.administrator for r in userroles)
-        role = await self.find_role(ctx, ismod=ismod)
+        if ismod:
+            role_id = await self.config.guild(ctx.guild).mod_role.get()
+        else:
+            role_id = await self.config.guild(ctx.guild).member_role.get()
+        role = ctx.guild.get_role(int(role_id))
         if not user.bot:
             await user.remove_roles(role)
-
-    # @commands.command(pass_context=True)
-    # async def hotel_california(self, ctx: commands.Context):
-    #     await ctx.send("For Jeff <3")
-    #
-    #     role = await self.find_role(ctx)
-    #     msg: discord.Message = ctx.message
-    #     user: discord.Member = msg.author
-    #
-    #     await user.add_roles(role)

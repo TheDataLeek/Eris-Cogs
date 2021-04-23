@@ -16,6 +16,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Event_config](#event_config) | Configure `on_message` events | ✅ |
 | [Facts](#facts) | Provide random facts | ✅ |
 | [Goodbot](#goodbot) | Good Bot Emoji Tracker | ✅ |
+| [Hotel_california](#hotel_california) | Role-based "punishment" for infractions on moderator whim. | ✅ |
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Insult](#insult) | Insult users | ✅ |
 | [Minesweeper](#minesweeper) | Generate solvable minesweeper boards. | ✅ |
@@ -40,7 +41,6 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Battle](#battle) | Battle with your users | ❌ |
 | [Events](#events) | Silly bot behavior not activated by explicit commands | ❌ |
 | [Grammar](#grammar) | Checks grammar of your users - load at your own risk | ❌ |
-| [Hotel_california](#hotel_california) | Hotel California | ❌ |
 | [Notify](#notify) | None | ❌ |
 
 ## Alot
@@ -81,6 +81,10 @@ Description: Provides bear or snake facts based on user input or randomly.
 Short: Good Bot Emoji Tracker
 
 Description: Good Bot Emoji Tracker - tracks all emoji reactions (that the bot has access to) for all users in your server! Upon reaching a vote-threshold, replies to the original message and compliments the user!
+## Hotel_california
+Short: Role-based "punishment" for infractions on moderator whim.
+
+Description: Role based "punishment". Allows users to punish via assigning roles.
 ## Im_dad
 Short: Replies Hi _ I'm Dad
 
