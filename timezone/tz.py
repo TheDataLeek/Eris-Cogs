@@ -54,7 +54,9 @@ class Timezone(BaseCog):
         """
         tzs = pytz.all_timezones
         if start:
-            tzs = [tz for tz in tzs if tz.startswith(start)]
+            tzs = [tz for tz in tzs if tz.lower().startswith(start)]
+            if len(tzs) == 0:
+                return
 
         formatted = "\n".join(tzs)
         pages = list(pagify(formatted, page_length=300))
