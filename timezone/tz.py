@@ -92,6 +92,11 @@ class Timezone(BaseCog):
         """
         Sets your default timezone
         """
+        if len(timezone) == 0:
+            async with self.config.default_timezone() as defaults:
+                del defaults[str(ctx.author.id)]
+                return
+
         timezone = " ".join(timezone)
         timezone = self.get_timezone_from_string(timezone)
         if timezone is None:
