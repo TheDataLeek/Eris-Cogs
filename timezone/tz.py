@@ -36,7 +36,7 @@ class Timezone(BaseCog):
         self.tzapisettings: Dict[str, str] = {}
         self.token: str = ""
 
-        self.fmt = '%H:%M:%S %Z%z'
+        self.fmt = "%H:%M:%S %Z%z"
 
     async def get_token(self):
         self.tzapisettings = await self.bot.get_shared_api_tokens("timezone")
@@ -53,7 +53,7 @@ class Timezone(BaseCog):
         List all available timezones
         """
         formatted = "\n".join(pytz.all_timezones)
-        pages = list(pagify(formatted))
+        pages = list(pagify(formatted, page_length=300))
         await menu(ctx, pages, DEFAULT_CONTROLS)
 
     @tz.command()
@@ -85,10 +85,11 @@ class Timezone(BaseCog):
         return timezone
 
     @tz.command()
-    async def default(self, ctx: commands.Context, timezone: str):
+    async def default(self, ctx: commands.Context, *timezone: str):
         """
         Sets your default timezone
         """
+        timezone = " ".join(timezone)
         timezone = self.get_timezone_from_string(timezone)
         if timezone is None:
             await ctx.send("Error, can't find timezone!")
@@ -113,17 +114,22 @@ class Timezone(BaseCog):
         if from_timezone is None:
             async with self.config.default_timezone() as defaults:
                 if str(ctx.author.id) not in defaults:
-                    await ctx.send('No default set, need to provide origin timezone')
+                    await ctx.send("No default set, need to provide origin timezone")
                 else:
                     from_timezone = defaults[str(ctx.author.id)]
+        else:
+            from_timezone = self.get_timezone_from_string(from_timezone)
+            if from_timezone is None:
+                await ctx.send("Error, I can't find your specified origin timezone")
 
         # set origin timezone
-        origin = pytz.timezone(from_timezone)
-        now = datetime.datetime.now()
-        origin = origin.localize(now)
+        origin = pytz.timezone('UTC')
+        now = datetime.datetime.utcnow()
+        origin = origin.localize(now)   # utc localized
 
-        to_timezone = pytz.timezone(timezone)
-        result = origin.astimezone(to_timezone)
+        origin = origin.astimezone(pytz.timezone(from_timezone))  # actual
+
+        result = origin.astimezone(pytz.timezone(timezone))  # converted
 
         embedded_response = discord.Embed(
             title=f"Converting {from_timezone} to {timezone}",
@@ -132,9 +138,6 @@ class Timezone(BaseCog):
         )
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)
-
-
-
 
     @tz.command()
     async def ip(self, ctx: commands.Context, ip: str):
@@ -145,10 +148,13 @@ class Timezone(BaseCog):
 
 
 if __name__ == "__main__":
-    origin = pytz.timezone('America/Denver')
-    now = datetime.datetime.now()
+    origin = pytz.timezone('UTC')
+    now = datetime.datetime.utcnow()
     origin = origin.localize(now)
+    print(origin)   # utc localized
+
+    origin = origin.astimezone(pytz.timezone("America/Denver"))
     print(origin)
 
-    to_timezone = pytz.timezone('America/Los_Angeles')
+    to_timezone = pytz.timezone("America/Los_Angeles")
     print(origin.astimezone(to_timezone))
