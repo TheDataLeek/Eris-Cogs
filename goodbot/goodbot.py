@@ -3,6 +3,7 @@
 import os
 import discord
 from redbot.core import utils, data_manager, commands, Config, checks
+from redbot.core.utils import embed
 import sqlite3 as sq
 
 from pprint import pprint as pp
@@ -204,7 +205,7 @@ class GoodBot(BaseCog):
             type="rich",
             description=formatted,
         )
-        embed = utils.embed.randomize_colour(embed)
+        embed = embed.randomize_colour(embed)
         await ctx.send(embed)
 
     @commands.command()
