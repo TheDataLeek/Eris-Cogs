@@ -8,6 +8,8 @@ from typing import Optional, List
 import discord
 from redbot.core import commands, bot, checks, Config
 from redbot.core.utils import embed
+from redbot.core.utils.chat_formatting import pagify
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -113,11 +115,12 @@ class Wiggle(BaseCog):
                 user: discord.Member = guild.get_member(int(userid))
                 emojis: List[discord.Emoji] = [self.emojis[str(e)] for e in emojiids]
                 line = f"{' '.join([str(e) for e in emojis])} for {user.display_name}"
-                # formatted.append(line)
-                await ctx.send(line)
-
+                formatted.append(line)
+                # await ctx.send(line)
 
         formatted = '\n'.join(formatted)
+        pages = list(pagify(formatted, page_length=1000))
+        await menu(ctx, pages, DEFAULT_CONTROLS)
         # embedded_response = discord.Embed(
         #     title=f"Wiggle Emoji for {ctx.guild.name}",
         #     type="rich",
