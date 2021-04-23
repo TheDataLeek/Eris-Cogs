@@ -91,7 +91,7 @@ class Wiggle(BaseCog):
                 formatted = f"{' '.join([str(e) for e in emojis])}"
 
                 embedded_response = discord.Embed(
-                    title=f"Wiggle Emoji for {user.display_name}",
+                    title=f"Wiggle Emoji for {author.display_name}",
                     type="rich",
                     description=formatted,
                 )
