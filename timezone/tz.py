@@ -129,12 +129,14 @@ class Timezone(BaseCog):
             async with self.config.default_timezone() as defaults:
                 if str(ctx.author.id) not in defaults:
                     await ctx.send("No default set, need to provide origin timezone")
+                    return
                 else:
                     from_timezone = defaults[str(ctx.author.id)]
 
         from_timezone = self.get_timezone_from_string(from_timezone)
         if from_timezone is None:
             await ctx.send("Error, I can't find your specified origin timezone")
+            return
 
         # set origin timezone
         origin = pytz.timezone("UTC")
