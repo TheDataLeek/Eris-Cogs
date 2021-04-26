@@ -194,6 +194,10 @@ class AutoReact(BaseCog):
             return
 
         ctx = await self.bot.get_context(message)
+        user: discord.Member = message.author
+        if user.bot:
+            return
+
         channel: Union[
             discord.VoiceChannel, discord.TextChannel, discord.CategoryChannel
         ] = message.channel

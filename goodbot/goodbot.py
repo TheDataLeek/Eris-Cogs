@@ -253,10 +253,10 @@ class GoodBot(BaseCog):
         pages = list(pagify(response))
         await menu(ctx, pages, DEFAULT_CONTROLS)
 
-        # embedded_response = discord.Embed(
-        #     title=f"All Scores for {ctx.guild.name if which == 'guild' else 'Everyone'}",
-        #     type="rich",
-        #     description=response,
-        # )
+        embedded_response = discord.Embed(
+            title=f"All Scores for {ctx.guild.name if which == 'guild' else 'Everyone'}",
+            type="rich",
+            description=response,
+        )
         # embedded_response = embed.randomize_colour(embedded_response)
         # await ctx.send(embed=embedded_response)
