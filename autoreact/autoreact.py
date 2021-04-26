@@ -77,7 +77,7 @@ class AutoReact(BaseCog):
 
     @autoreact.command()
     @checks.mod()
-    async def showall(self, ctx: commands.Context):
+    async def show(self, ctx: commands.Context):
         """
         Show all emoji reacts for all users in guild
         """
@@ -93,12 +93,15 @@ class AutoReact(BaseCog):
                 formatted.append(line)
                 # await ctx.send(line)
 
-        formatted = "\n".join(formatted)
-        if len(formatted) > 2000:
-            pages = list(pagify(formatted))
-            await menu(ctx, pages, DEFAULT_CONTROLS)
+        if formatted:
+            formatted = "\n".join(formatted)
+            if len(formatted) > 2000:
+                pages = list(pagify(formatted))
+                await menu(ctx, pages, DEFAULT_CONTROLS)
+            else:
+                await ctx.send(formatted)
         else:
-            await ctx.send(formatted)
+            await ctx.send("No autoreacts have been set!")
 
     async def autoreact_handler(self, message: discord.message):
         # don't proc on DMs
