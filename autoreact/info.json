@@ -1,0 +1,7 @@
+{
+    "author" : ["Eris"],
+    "description" : "Auto reacts to posts. Similar to wiggly",
+    "name" : "AutoReact",
+    "short": "Adds reactions to posts!",
+    "ready": true
+}

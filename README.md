@@ -8,6 +8,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | Cog Name | Short | Ready? |
 | --- | --- | --- |
 | [Alot](#alot) | Posts an alot | ✅ |
+| [Autoreact](#autoreact) | Adds reactions to posts! | ✅ |
 | [Big_name](#big_name) | Change a user's name regardless of permissions | ✅ |
 | [Big_text](#big_text) | Make your message big and emoji-fied | ✅ |
 | [Clone](#clone) | The bot takes on a user's name and avatar | ✅ |
@@ -48,6 +49,10 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 Short: Posts an alot
 
 Description: Automatically posts an alot whenever a user says 'alot of things' instead of 'a lot of things'
+## Autoreact
+Short: Adds reactions to posts!
+
+Description: Auto reacts to posts. Similar to wiggly
 ## Big_name
 Short: Change a user's name regardless of permissions
 
