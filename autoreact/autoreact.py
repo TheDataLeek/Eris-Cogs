@@ -66,7 +66,7 @@ class AutoReact(BaseCog):
         """
         Set a list of emoji to react with in the channel
         """
-        channelid = str(channel)
+        channelid = str(channel.id)
         async with self.config.guild(ctx.guild).channel() as channeldict:
             if not len(emojis) and channelid in channeldict:
                 del channeldict[channelid]
