@@ -32,10 +32,12 @@ class AutoReact(BaseCog):
         default_guild = {
             "autoreact": {},
             "automsg": {},
+            "channel": {},
         }
         self.config.register_guild(**default_guild)
 
         self.bot.add_listener(self.autoreact_handler, "on_message")
+        self.bot.add_listener(self.channel_handler, "on_message")
 
     def convert_from_ids(self, emoji_ids: List[str]) -> List[Union[str, discord.Emoji]]:
         self.emojis = {str(e.id): e for e in self.bot.emojis}
@@ -54,6 +56,27 @@ class AutoReact(BaseCog):
     async def autoreact(self, ctx: commands.Context):
         """Group for autoreact commands"""
         pass
+
+    @autoreact.command()
+    @checks.mod()
+    async def channel(self, ctx, channel: discord.TextChannel, *emojis: Union[str, discord.Emoji]):
+        """
+        Set a list of emoji to react with in the channel
+        """
+        channelid = str(channel)
+        async with self.config.guild(ctx.guild).channel() as channeldict:
+            if not len(emojis) and channelid in channeldict:
+                del channeldict[channelid]
+                await ctx.send("Success, reactions removed for user.")
+            else:
+                converted = []
+                for e in emojis:
+                    if isinstance(e, discord.Emoji):
+                        converted.append(str(e.id))
+                    else:
+                        converted.append(e)
+                channeldict[channelid] = converted
+                await ctx.send("Success, emoji set.")
 
     @autoreact.command()
     @checks.mod()
@@ -140,3 +163,19 @@ class AutoReact(BaseCog):
                 if has_msg:
                     msg = automsgdict[authorid]
                     await ctx.send(msg, reference=message)
+
+    async def channel_handler(self, message: discord.message):
+        # don't proc on DMs
+        if message.guild is None:
+            return
+
+        ctx = await self.bot.get_context(message)
+        channelid = str(message.channel.id)
+
+        async with self.config.guild(ctx.guild).channel() as channeldict:
+            if channelid not in channeldict:
+                return
+
+            emojis: List[Union[str, discord.Emoji]] = self.convert_from_ids(channeldict[channelid])
+            for emoji in emojis:
+                await message.add_reaction(emoji)
