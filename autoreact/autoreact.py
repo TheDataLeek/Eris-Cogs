@@ -107,7 +107,7 @@ class AutoReact(BaseCog):
         """
         async with self.config.guild(ctx.guild).automsg() as automsgdict:
             userid = str(user.id)
-            if not len(msg) and userid in automsgdict:
+            if len(msg) == 0 and userid in automsgdict:
                 del automsgdict[userid]
                 await ctx.send("Success, messages removed for user.")
             else:
@@ -170,7 +170,8 @@ class AutoReact(BaseCog):
             return
 
         ctx = await self.bot.get_context(message)
-        channelid = str(message.channel.id)
+        channel: Union[discord.VoiceChannel, discord.TextChannel, discord.CategoryChannel] = message.channel
+        channelid = str(channel.id)
 
         async with self.config.guild(ctx.guild).channel() as channeldict:
             if channelid not in channeldict:
