@@ -200,7 +200,6 @@ class AutoReact(BaseCog):
         channelid = str(channel.id)
 
         async with self.config.guild(ctx.guild).channel() as channeldict:
-            pp(channeldict)
             if channelid not in channeldict:
                 return
 
