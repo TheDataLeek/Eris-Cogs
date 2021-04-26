@@ -117,5 +117,4 @@ class AutoReact(BaseCog):
 
             emojis: List[Union[str, discord.Emoji]] = self.convert_from_ids(autoreactdict[authorid])
             for emojiid in emojis:
-                emoji = self.emojis[emojiid]
                 await message.add_reaction(emoji)
