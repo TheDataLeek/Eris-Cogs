@@ -24,7 +24,7 @@ class AutoReact(BaseCog):
 
         self.config = Config.get_conf(
             self,
-            identifier=8766782347657182931290319283,
+            identifier=982035871304957,
             force_registration=True,
             cog_name="autoreact",
         )
