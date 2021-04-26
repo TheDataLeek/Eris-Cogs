@@ -31,6 +31,7 @@ class AutoReact(BaseCog):
 
         default_guild = {
             "autoreact": {},
+            "automsg": {},
         }
         self.config.register_guild(**default_guild)
 
@@ -77,6 +78,22 @@ class AutoReact(BaseCog):
 
     @autoreact.command()
     @checks.mod()
+    async def msg( self, ctx: commands.Context, user: discord.Member, *msg: str):
+        """
+        Set a list of emoji to react with
+        """
+        async with self.config.guild(ctx.guild).automsg() as automsgdict:
+            userid = str(user.id)
+            if not len(msg) and userid in automsgdict:
+                del automsgdict[userid]
+                await ctx.send("Success, messages removed for user.")
+            else:
+                msg = ' '.join(msg)
+                automsgdict[userid] = msg
+                await ctx.send("Success, message set.")
+
+    @autoreact.command()
+    @checks.mod()
     async def show(self, ctx: commands.Context):
         """
         Show all emoji reacts for all users in guild
@@ -111,10 +128,15 @@ class AutoReact(BaseCog):
         ctx = await self.bot.get_context(message)
         authorid = str(ctx.author.id)
 
-        async with self.config.guild(ctx.guild).autoreact() as autoreactdict:
-            if authorid not in autoreactdict:
-                return
+        async with self.config.guild(ctx.guild).autoreact() as autoreactdict, self.config.guild(ctx.guild).automsg() as automsgdict:
+            has_reacts = authorid in autoreactdict
+            has_msg = authorid in automsgdict
 
-            emojis: List[Union[str, discord.Emoji]] = self.convert_from_ids(autoreactdict[authorid])
-            for emoji in emojis:
-                await message.add_reaction(emoji)
+            if has_reacts or has_msg:
+                if has_reacts:
+                    emojis: List[Union[str, discord.Emoji]] = self.convert_from_ids(autoreactdict[authorid])
+                    for emoji in emojis:
+                        await message.add_reaction(emoji)
+                if has_msg:
+                    msg = automsgdict[authorid]
+                    await ctx.send(msg, reference=message)
