@@ -102,9 +102,7 @@ class Timezone(BaseCog):
             async with self.config.default_timezone() as defaults:
                 if str(ctx.author.id) in defaults:
                     del defaults[str(ctx.author.id)]
-                await ctx.send(
-                    f"Success, {ctx.author.display_name}'s default cleared"
-                )
+                await ctx.send(f"Success, {ctx.author.display_name}'s default cleared")
                 return
 
         timezone = " ".join(timezone)
@@ -122,7 +120,10 @@ class Timezone(BaseCog):
 
     @tz.command()
     async def to(
-        self, ctx: commands.Context, timezone: Union[discord.Member, str], from_timezone: Optional[str] = None
+        self,
+        ctx: commands.Context,
+        timezone: Union[discord.Member, str],
+        from_timezone: Optional[str] = None,
     ):
         """
         Convert to specified timezone
