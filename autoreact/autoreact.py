@@ -2,7 +2,7 @@
 import random
 import re
 
-from typing import Optional, List
+from typing import Optional, List, Union
 
 # third party
 import discord
@@ -36,24 +36,43 @@ class AutoReact(BaseCog):
 
         self.bot.add_listener(self.autoreact_handler, "on_message")
 
+    def convert_from_ids(self, emoji_ids: List[str]) -> List[Union[str, discord.Emoji]]:
+        self.emojis = {str(e.id): e for e in self.bot.emojis}
+        converted = []
+        for eid in emoji_ids:
+            try:
+                int(eid)
+                emoji = self.emojis.get(str(eid), None)
+                if emoji:
+                    converted.append(emoji)
+            except ValueError:
+                converted.append(eid)
+        return converted
+
     @commands.group()
     async def autoreact(self, ctx: commands.Context):
-        """Group for wiggle commands"""
+        """Group for autoreact commands"""
         pass
 
     @autoreact.command()
     @checks.mod()
-    async def set( self, ctx: commands.Context, user: discord.Member, *emojis: discord.Emoji ):
+    async def set( self, ctx: commands.Context, user: discord.Member, *emojis: Union[str, discord.Emoji]):
         """
-        Set a list of emoji for snek to alternate through for another user
+        Set a list of emoji to react with
         """
-        async with self.config.guild(ctx.guild).wiggle() as wigglelist:
+        async with self.config.guild(ctx.guild).autoreact() as autoreactdict:
             userid = str(user.id)
-            if not len(emojis) and userid in wigglelist:
-                del wigglelist[userid]
+            if not len(emojis) and userid in autoreactdict:
+                del autoreactdict[userid]
                 await ctx.send("Success, reactions removed for user.")
             else:
-                wigglelist[userid] = [str(e.id) for e in emojis]
+                converted = []
+                for e in emojis:
+                    if isinstance(e, discord.Emoji):
+                        converted.append(str(e.id))
+                    else:
+                        converted.append(e)
+                autoreactdict[userid] = converted
                 await ctx.send("Success, emoji set.")
 
     @autoreact.command()
@@ -66,10 +85,10 @@ class AutoReact(BaseCog):
 
         guild: discord.Guild = ctx.guild
         formatted = []
-        async with self.config.guild(ctx.guild).wiggle() as wigglelist:
-            for userid, emojiids in wigglelist.items():
+        async with self.config.guild(ctx.guild).autoreact() as autoreactdict:
+            for userid, emojiids in autoreactdict.items():
                 user: discord.Member = guild.get_member(int(userid))
-                emojis: List[discord.Emoji] = [self.emojis[str(e)] for e in emojiids]
+                emojis: List[Union[str, discord.Emoji]] = self.convert_from_ids(emojiids)
                 line = f"{' '.join([str(e) for e in emojis])} for {user.display_name}"
                 formatted.append(line)
                 # await ctx.send(line)
@@ -86,15 +105,14 @@ class AutoReact(BaseCog):
         if message.guild is None:
             return
 
-        self.emojis = {str(e.id): e for e in self.bot.emojis}
-
         ctx = await self.bot.get_context(message)
         authorid = str(ctx.author.id)
 
-        async with self.config.guild(ctx.guild).wiggle() as wigglelist:
-            if authorid not in wigglelist:
+        async with self.config.guild(ctx.guild).autoreact() as autoreactdict:
+            if authorid not in autoreactdict:
                 return
 
-            for emojiid in wigglelist[authorid]:
+            emojis: List[Union[str, discord.Emoji]] = self.convert_from_ids(autoreactdict[authorid])
+            for emojiid in emojis:
                 emoji = self.emojis[emojiid]
                 await message.add_reaction(emoji)
