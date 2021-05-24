@@ -76,6 +76,7 @@ class WhoIs(BaseCog):
             await ctx.send(f"The following users match: {', '.join(matches)}")
 
     @commands.command()
+    @checks.mod()
     async def iseveryone(self, ctx):
         """
         Print all entries in the whois db
