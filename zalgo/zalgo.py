@@ -32,7 +32,6 @@ class Zalgo(BaseCog, ErisEventMixin):
                 # new_msg = random.choice([self.uwuify, self.oobify])(message.content)
                 new_msg = self.uwuify(message.content)
 
-                await ctx.message.delete()
                 await ctx.send(new_msg)
             await self.log_last_message(ctx, message)
 
