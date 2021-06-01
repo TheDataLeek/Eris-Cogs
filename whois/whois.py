@@ -92,8 +92,8 @@ class WhoIs(BaseCog):
                     users.append((member, name))
         users = sorted(users, key=lambda tup: tup[1])
         users = [
-            f"**{member.display_name}** ({member.name}) is {name}"
-            for member, name in users
+            f"{i}) **{member.display_name}** ({member.name}) is {name}"
+            for i, (member, name) in enumerate(users)
         ]
         users = '\n'.join(users)
         pages = list(pagify(users))
