@@ -78,8 +78,8 @@ class WhoIs(BaseCog):
         else:
             await ctx.send(f"The following users match: {', '.join(matches)}")
 
+    # @checks.mod()
     @commands.command()
-    @checks.mod()
     async def iseveryone(self, ctx):
         """
         Print all entries in the whois db
@@ -92,7 +92,7 @@ class WhoIs(BaseCog):
                     users.append((member, name))
         users = sorted(users, key=lambda tup: tup[1])
         users = [
-            f"{member.display_name} ({member.name}) is {name}"
+            f"**{member.display_name}** ({member.name}) is {name}"
             for member, name in users
         ]
         users = '\n'.join(users)
