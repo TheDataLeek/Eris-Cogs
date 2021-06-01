@@ -3,10 +3,13 @@ import sqlite3
 import os
 import json
 import discord
-from redbot.core import commands, data_manager, Config, checks, bot
 import io
 import pathlib
 import sqlite3
+
+from redbot.core import commands, data_manager, Config, checks, bot
+from redbot.core.utils.chat_formatting import pagify
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 from typing import Union
 
@@ -82,10 +85,19 @@ class WhoIs(BaseCog):
         Print all entries in the whois db
         """
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            users = []
             for userid, name in whois_dict.items():
                 member: discord.Member = ctx.guild.get_member(int(userid))
                 if member is not None:
-                    await ctx.send(f"{member.display_name} is {name}")
+                    users.append((member, name))
+        users = sorted(users, key=lambda tup: tup[1])
+        users = [
+            f"{member.display_name} ({member.name}) is {name}"
+            for member, name in users
+        ]
+        users = '\n'.join(users)
+        pages = list(pagify(users))
+        await menu(ctx, pages, DEFAULT_CONTROLS)
 
     @commands.command()
     @checks.is_owner()
