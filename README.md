@@ -16,6 +16,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Dm_role](#dm_role) | DM everyone with certain role | ✅ |
 | [Event_config](#event_config) | Configure `on_message` events | ✅ |
 | [Facts](#facts) | Provide random facts | ✅ |
+| [Fires](#fires) | US Firemap | ✅ |
 | [Goodbot](#goodbot) | Good Bot Emoji Tracker | ✅ |
 | [Hotel_california](#hotel_california) | Role-based "punishment" for infractions on moderator whim. | ✅ |
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
@@ -81,6 +82,10 @@ Description: Configure `on_message` events, specifically which servers they appe
 Short: Provide random facts
 
 Description: Provides bear or snake facts based on user input or randomly.
+## Fires
+Short: US Firemap
+
+Description: Show US Firemap
 ## Goodbot
 ![png](goodbot/demo.png)
 

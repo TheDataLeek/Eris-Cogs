@@ -1,0 +1,7 @@
+{
+    "author" : ["Eris"],
+    "description" : "Show US Firemap",
+    "name" : "Fires",
+    "short": "US Firemap",
+    "ready": true
+}
