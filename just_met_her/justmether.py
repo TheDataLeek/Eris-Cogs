@@ -35,6 +35,6 @@ class JustMetHer(BaseCog, ErisEventMixin):
 
             phrase = ["I hardly knew 'er!", "I just met 'er!"]
             await ctx.send(
-                f"{matched.group(1)}? {random.choice(phrase)}", reference=message
+                f"{matched.group(1)}'er? {random.choice(phrase)}", reference=message
             )
             await self.log_last_message(ctx, message)
