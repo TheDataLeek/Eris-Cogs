@@ -14,7 +14,7 @@ class JustMetHer(BaseCog, ErisEventMixin):
         super().__init__()
         self.bot = bot_instance
         self.searchpattern: RETYPE = re.compile(
-                r"\b(\w+)er\b", flags=re.IGNORECASE
+                r"\b(\w{2,})er\b", flags=re.IGNORECASE
         )
 
         self.bot.add_listener(self.met_her, "on_message")
@@ -22,7 +22,7 @@ class JustMetHer(BaseCog, ErisEventMixin):
     async def met_her(self, message: discord.Message):
         clean_message: str = message.clean_content.lower()
         matched = self.searchpattern.search(clean_message)
-        activated: bool = matched and (random.random() < 0.25)
+        activated: bool = matched and (random.random() < 0.5)
         if not activated:
             return
 
