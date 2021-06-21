@@ -14,7 +14,7 @@ class JustMetHer(BaseCog, ErisEventMixin):
         super().__init__()
         self.bot = bot_instance
         self.searchpattern: RETYPE = re.compile(
-                r"\b(\w{2,})er\b", flags=re.IGNORECASE
+                r"\b(\w{2,})[eiouya]r\b", flags=re.IGNORECASE
         )
 
         self.bot.add_listener(self.met_her, "on_message")
