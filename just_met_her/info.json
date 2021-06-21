@@ -1,0 +1,10 @@
+{
+  "author" : ["Eris"],
+  "description" : "Replies with '_______________, I just met her!'",
+  "name" : "Just Met Her",
+  "short": "Just Met Her",
+  "required_cogs": {
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+  },
+  "ready": true
+}
