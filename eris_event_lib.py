@@ -27,7 +27,7 @@ class ErisEventMixin(object):
 
     async def allowed(self, ctx, message: discord.Message):
         turned_on = (await self.config.eris_events_enabled()) and (
-            await self.config.guild(ctx.guild).enabled
+            await self.config.guild(ctx.guild).enabled()
         )
 
         if message.guild is None or not turned_on:
