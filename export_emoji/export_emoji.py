@@ -30,14 +30,15 @@ class ExportEmoji(BaseCog):
             return
 
         buf = io.BytesIO()
-        zf = zipfile.ZipFile(buf, 'w')
-        for e in emoji:
-            asset = e.url
-            url = str(asset)
-            name = f"{e.name}.gif"
-            new_buf = io.BytesIO()
-            await asset.save(new_buf)
-            zf.writestr(name, new_buf.read())
+        with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for e in emoji:
+                asset = e.url
+                url = str(asset)
+                name = f"{e.name}.gif"
+                new_buf = io.BytesIO()
+                await asset.save(new_buf)
+                zf.writestr(name, new_buf.getvalue())
+
         buf.seek(0)
 
         await ctx.send(
