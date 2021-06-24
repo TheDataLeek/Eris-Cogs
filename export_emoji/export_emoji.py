@@ -30,24 +30,21 @@ class ExportEmoji(BaseCog):
 
         data = [
             {
-                'url': e.url,
+                'asset': e.url,
+                'url': str(e.url),
                 'name': e.name,
                 'data': None
             }
             for e in emoji
         ]
-        async with aiohttp.ClientSession() as session:
-            for obj in data:
-                url = obj['url']
-                await ctx.send(url)
-                async with session.get(url) as resp:
-                    img = await resp.read()
-                    obj['data'] = io.BytesIO(img)
-                    await ctx.send(
-                        file=discord.File(obj['data'], filename=obj['name'])
-                    )
-
-                break
+        for obj in data:
+            asset: discord.Asset = obj['asset']
+            buf = io.BytesIO()
+            await asset.save(buf)
+            obj['data'] = buf
+            await ctx.send(
+                file=discord.File(obj['data'], filename=obj['name'])
+            )
 
 
 
