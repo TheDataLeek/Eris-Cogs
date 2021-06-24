@@ -1,5 +1,6 @@
 # stdlib
 import io
+import zipfile
 from zipfile import ZipFile
 
 from typing import Union
@@ -28,23 +29,21 @@ class ExportEmoji(BaseCog):
             await ctx.send("No emoji to download!")
             return
 
-        data = [
-            {
-                'asset': e.url,
-                'url': str(e.url),
-                'name': e.name,
-                'data': None
-            }
-            for e in emoji
-        ]
-        for obj in data:
-            asset: discord.Asset = obj['asset']
-            buf = io.BytesIO()
-            await asset.save(buf)
-            obj['data'] = buf
-            await ctx.send(
-                file=discord.File(obj['data'], filename=obj['name'])
-            )
+        buf = io.BytesIO()
+        zf = zipfile.ZipFile(buf, 'w')
+        for e in emoji:
+            asset = e.url
+            url = str(asset)
+            name = f"{e.name}.gif"
+            new_buf = io.BytesIO()
+            await asset.save(new_buf)
+            zf.write(name, new_buf)
+
+        await ctx.send(
+            file=discord.File(buf, filename='export.zip')
+        )
+
+
 
 
 
