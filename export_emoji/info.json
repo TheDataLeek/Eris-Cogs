@@ -1,0 +1,8 @@
+{
+    "author" : ["Eris"],
+    "description" : "Bulk exports emoji for slack",
+    "name" : "Export Emoji",
+    "short": "Bulk Emoji Export",
+    "requirements": ["aiohttp"],
+    "ready": true
+}

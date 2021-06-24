@@ -15,6 +15,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Dice](#dice) | Improved dice roller. | ✅ |
 | [Dm_role](#dm_role) | DM everyone with certain role | ✅ |
 | [Event_config](#event_config) | Configure `on_message` events | ✅ |
+| [Export_emoji](#export_emoji) | Bulk Emoji Export | ✅ |
 | [Facts](#facts) | Provide random facts | ✅ |
 | [Fires](#fires) | US Firemap | ✅ |
 | [Goodbot](#goodbot) | Good Bot Emoji Tracker | ✅ |
@@ -79,6 +80,10 @@ Description: DMs everyone with a specific role based on fuzzy role name
 Short: Configure `on_message` events
 
 Description: Configure `on_message` events, specifically which servers they appear in, which channels, etc. for Eris Cogs. By default, global events are on, guild-events are off. You'll need to run `[p]econf enable` in the guild you want events to run in.
+## Export_emoji
+Short: Bulk Emoji Export
+
+Description: Bulk exports emoji for slack
 ## Facts
 Short: Provide random facts
 
