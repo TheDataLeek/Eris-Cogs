@@ -39,6 +39,7 @@ class ExportEmoji(BaseCog):
         async with aiohttp.ClientSession() as session:
             for obj in data:
                 url = obj['url']
+                await ctx.send(url)
                 async with session.get(url) as resp:
                     img = await resp.read()
                     obj['data'] = io.BytesIO(img)
