@@ -16,7 +16,7 @@ class ExportEmoji(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def export(self, ctx, *emoji: discord.emoji):
+    async def export(self, ctx, *emoji: discord.Emoji):
         """
         Insult the user.
         Usage: [p]insult <Member>
