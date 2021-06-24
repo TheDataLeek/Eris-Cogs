@@ -2,6 +2,8 @@
 import io
 from zipfile import ZipFile
 
+from typing import Union
+
 # third party
 import discord
 from redbot.core import commands, data_manager
@@ -16,7 +18,7 @@ class ExportEmoji(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def export(self, ctx, *emoji: discord.Emoji):
+    async def export(self, ctx, *emoji: Union[discord.PartialEmoji, discord.Emoji]):
         """
         Insult the user.
         Usage: [p]insult <Member>
@@ -26,15 +28,26 @@ class ExportEmoji(BaseCog):
             await ctx.send("No emoji to download!")
             return
 
-        urls = [e.url for e in emoji]
-        data = []
+        data = [
+            {
+                'url': e.url,
+                'name': e.name,
+                'data': None
+            }
+            for e in emoji
+        ]
         async with aiohttp.ClientSession() as session:
-            for url in urls:
+            for obj in data:
+                url = obj['url']
                 async with session.get(url) as resp:
                     img = await resp.read()
-                    data.append(img)
+                    obj['data'] = io.BytesIO(img)
+                    await ctx.send(
+                        file=discord.File(obj['data'], filename=obj['name'])
+                    )
 
-        await ctx.send(urls)
+                break
+
 
 
 
