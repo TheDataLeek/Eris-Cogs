@@ -38,6 +38,7 @@ class ExportEmoji(BaseCog):
             new_buf = io.BytesIO()
             await asset.save(new_buf)
             zf.writestr(name, new_buf.read())
+        buf.seek(0)
 
         await ctx.send(
             file=discord.File(buf, filename='export.zip')
