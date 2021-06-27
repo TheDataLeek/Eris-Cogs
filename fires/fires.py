@@ -14,7 +14,7 @@ BaseCog = getattr(commands, "Cog", object)
 class Fires(BaseCog):
     def __init__(self, bot):
         self.bot = bot
-        self.date_format = '%Y-%m-%d'
+        self.date_format = "%Y-%m-%d"
         self.url_string = "https://fsapps.nwcg.gov/data/lg_fire/lg_fire_nifc_{}.png"
 
     @commands.command()

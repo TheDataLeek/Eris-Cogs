@@ -95,7 +95,7 @@ class WhoIs(BaseCog):
             f"{i}) **{member.display_name}** ({member.name}) is {name}"
             for i, (member, name) in enumerate(users)
         ]
-        users = '\n'.join(users)
+        users = "\n".join(users)
         pages = list(pagify(users))
         await menu(ctx, pages, DEFAULT_CONTROLS)
 

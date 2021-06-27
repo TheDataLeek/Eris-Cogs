@@ -30,7 +30,7 @@ class ExportEmoji(BaseCog):
             return
 
         buf = io.BytesIO()
-        with zipfile.ZipFile(buf, 'w') as zf:
+        with zipfile.ZipFile(buf, "w") as zf:
             for e in emoji:
                 asset = e.url
                 url = str(asset)
@@ -41,14 +41,4 @@ class ExportEmoji(BaseCog):
 
         buf.seek(0)
 
-        await ctx.send(
-            file=discord.File(buf, filename='export.zip')
-        )
-
-
-
-
-
-
-
-
+        await ctx.send(file=discord.File(buf, filename="export.zip"))
