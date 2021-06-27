@@ -43,6 +43,7 @@ class EventConfig(BaseCog):
         now = time.time()
         timeout_ends = now + (60 * 60)  # one hour in seconds
         await self.config.guild(ctx.guild).timeout.set(timeout_ends)
+        await ctx.send("Timed out for an hour!")
 
     @econf.command()
     @checks.mod()
