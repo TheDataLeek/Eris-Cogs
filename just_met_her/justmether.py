@@ -13,7 +13,7 @@ class JustMetHer(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance: bot):
         super().__init__()
         self.bot = bot_instance
-        # https://regex101.com/r/FQfm4m/1/
+        # https://regex101.com/r/FQfm4m/2/
         self.searchpattern: RETYPE = re.compile(
             r"\b(\w{3,})[eiouya]re?\b", flags=re.IGNORECASE
         )
