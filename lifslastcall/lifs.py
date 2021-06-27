@@ -96,21 +96,23 @@ class Lifs(BaseCog):
         num_sig_patrons = random.randint(1, 6)
         summary.append(f"**{num_sig_patrons} / 6 patrons**")
         choices = random.sample(self.patrons, k=num_sig_patrons)
-        how_many_of_renears_friends = len([c for c in choices if 'sub-table' in c])
-        renears_friends = random.sample(self.renears_friends, k=how_many_of_renears_friends)
-        r_i = 0
-        for i, c in enumerate(choices):
-            if 'sub-table' in c:
-                choices[i] = f"{choices[i]} - {renears_friends[r_i]}"
-                r_i += 1
 
-            summary.append(f'- {choices[i]}')
+        friend_copy = [s for s in self.renears_friends]
+        i = 0
+        while True:
+            if i >= len(choices):
+                break
+
+            choice = choices[i]
+            if 'sub-table' in choice:
+                choices.pop(i)
+                random_friend = friend_copy.pop(random.randint(0, 19))
+                choices.insert(i, random_friend)
+
+            i += 1
+
+        for c in choices:
+            summary.append(f'- {c}')
 
         summary = '\n'.join(summary)
         await ctx.send(summary)
-
-    @commands.command()
-    async def renears_friend(self, ctx):
-        await ctx.send(random.choice(self.renears_friends))
-
-
