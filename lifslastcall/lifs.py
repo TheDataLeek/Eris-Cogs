@@ -50,6 +50,10 @@ class Lifs(BaseCog):
             (19, 19): "Floon Blagmaar",
             (20, 20): "[Faction Spy Watching Renaer], FACTION SPY: Determine faction randomly or choose appropriately based on the events in the campaign so far.",
         }
+        self.renears_friends = []
+        for (lower, upper), friend in self.renears.items():
+            num_entries = (upper - lower) + 1
+            self.renears_friends += [friend for _ in range(num_entries)]
         self.events = [
             s.strip()
             for s in """
@@ -85,17 +89,20 @@ class Lifs(BaseCog):
         summary = []
         event_occurs = random.randint(1, 6) == 1
         if event_occurs:
-            summary.append(f"Event occurs! {random.choice(self.events)}")
+            summary.append(f"**Event occurs!** {random.choice(self.events)}")
+        else:
+            summary.append("**No event today**")
 
         num_sig_patrons = random.randint(1, 6)
         summary.append(f"**{num_sig_patrons} / 6 patrons**")
-        for _ in range(num_sig_patrons):
-            roll = random.randint(0, 19)
-            patron = self.patrons[roll]
-            if roll in (6, 7):
-                roll = random.randint(1, 20)
-
-            summary.append(f'- {patron}')
+        choices = random.sample(self.patrons, k=num_sig_patrons)
+        how_many_of_renears_friends = len([c for c in choices if 'sub-table' in c])
+        renears_friends = random.sample(self.renears_friends, k=how_many_of_renears_friends)
+        r_i = 0
+        for i, c in enumerate(choices):
+            if 'sub-table' in c:
+                choices[i] = f"{choices[i]} - {renears_friends[r_i]}"
+                r_i += 1
 
         summary = '\n'.join(summary)
         await ctx.send(summary)
