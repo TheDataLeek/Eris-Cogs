@@ -48,7 +48,10 @@ class Lifs(BaseCog):
             (17, 17): "Parlek Lateriff",
             (18, 18): "Meloon Wardragon",
             (19, 19): "Floon Blagmaar",
-            (20, 20): "[Faction Spy Watching Renaer], FACTION SPY: Determine faction randomly or choose appropriately based on the events in the campaign so far.",
+            (
+                20,
+                20,
+            ): "[Faction Spy Watching Renaer], FACTION SPY: Determine faction randomly or choose appropriately based on the events in the campaign so far.",
         }
         self.renears_friends = []
         for (lower, upper), friend in self.renears.items():
@@ -104,18 +107,18 @@ class Lifs(BaseCog):
                 break
 
             choice = choices[i]
-            if 'sub-table' in choice or 'Again' in choice:
+            if "sub-table" in choice or "Again" in choice:
                 choices.pop(i)
                 random_friend = friend_copy.pop(random.randint(0, 19))
-                original = 'Renear'
-                if 'sub-table' in choice:
-                    original = 'Renear\'s Friend'
+                original = "Renear"
+                if "sub-table" in choice:
+                    original = "Renear's Friend"
                 choices.insert(i, f"{original}\n-- {random_friend}")
             else:
                 i += 1
 
         for c in choices:
-            summary.append(f'- {c}')
+            summary.append(f"- {c}")
 
-        summary = '\n'.join(summary)
+        summary = "\n".join(summary)
         await ctx.send(summary)
