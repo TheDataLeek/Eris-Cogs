@@ -104,12 +104,15 @@ class Lifs(BaseCog):
                 break
 
             choice = choices[i]
-            if 'sub-table' in choice:
+            if 'sub-table' in choice or 'Again' in choice:
                 choices.pop(i)
                 random_friend = friend_copy.pop(random.randint(0, 19))
-                choices.insert(i, random_friend)
-
-            i += 1
+                original = 'Renear'
+                if 'sub-table' in choice:
+                    original = 'Renear\'s Friend'
+                choices.insert(i, f"{original}\n--- {random_friend}")
+            else:
+                i += 1
 
         for c in choices:
             summary.append(f'- {c}')
