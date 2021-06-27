@@ -23,6 +23,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Insult](#insult) | Insult users | ✅ |
 | [Just_met_her](#just_met_her) | Just Met Her | ✅ |
+| [Lifslastcall](#lifslastcall) | Lif's | ✅ |
 | [Minesweeper](#minesweeper) | Generate solvable minesweeper boards. | ✅ |
 | [Move](#move) | Move message to another channel | ✅ |
 | [Nick_prefix](#nick_prefix) | Adds themed prefix to names | ✅ |
@@ -118,6 +119,10 @@ Usage: `[p]insult user`
 Short: Just Met Her
 
 Description: Replies with '_______________, I just met her!'
+## Lifslastcall
+Short: Lif's
+
+Description: Lifs Last Call flowchart
 ## Minesweeper
 ![png](minesweeper/demo.png)
 
