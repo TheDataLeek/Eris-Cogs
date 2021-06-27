@@ -1,3 +1,7 @@
+# stdlib
+import time
+
+# 3rd party
 import discord
 from redbot.core import Config, bot
 
@@ -16,6 +20,7 @@ class ErisEventMixin(object):
             "channel_blacklist": [],
             "last_message_interacted_with_id": None,
             "enabled": False,
+            "timeout": 0,
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
@@ -49,6 +54,14 @@ class ErisEventMixin(object):
             return False
 
         if "http" in message.content:
+            return False
+
+        # check timeout
+        now = time.time()
+        timeout = await self.config.guild(ctx.guild).timeout()
+        if timeout is None:
+            timeout = 0
+        if now <= timeout:
             return False
 
         last_message_interacted_with = await self.config.guild(

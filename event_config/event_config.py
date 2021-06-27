@@ -28,6 +28,7 @@ class EventConfig(BaseCog):
             "channel_blacklist": [],
             "last_message_interacted_with_id": None,
             "enabled": False,
+            "timeout": 0,
         }
         self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
@@ -35,6 +36,13 @@ class EventConfig(BaseCog):
     @commands.group()
     async def econf(self, ctx):
         pass
+
+    @econf.command()
+    @checks.mod()
+    async def timeout(self, ctx):
+        now = time.time()
+        timeout_ends = now + (60 * 60)  # one hour in seconds
+        await self.config.guild(ctx.guild).timeout.set(timeout_ends)
 
     @econf.command()
     @checks.mod()
