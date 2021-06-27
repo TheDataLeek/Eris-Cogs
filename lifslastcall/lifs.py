@@ -110,7 +110,7 @@ class Lifs(BaseCog):
                 original = 'Renear'
                 if 'sub-table' in choice:
                     original = 'Renear\'s Friend'
-                choices.insert(i, f"{original}\n--- {random_friend}")
+                choices.insert(i, f"{original}\n-- {random_friend}")
             else:
                 i += 1
 
