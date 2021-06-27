@@ -108,3 +108,9 @@ class Lifs(BaseCog):
 
         summary = '\n'.join(summary)
         await ctx.send(summary)
+
+    @commands.command()
+    async def renears_friend(self, ctx):
+        await ctx.send(random.choice(self.renears_friends))
+
+
