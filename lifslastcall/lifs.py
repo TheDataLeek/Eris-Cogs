@@ -96,3 +96,6 @@ class Lifs(BaseCog):
                 roll = random.randint(1, 20)
 
             summary.append(f'- {patron}')
+
+        summary = '\n'.join(summary)
+        await ctx.send(summary)
