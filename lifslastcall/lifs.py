@@ -104,5 +104,7 @@ class Lifs(BaseCog):
                 choices[i] = f"{choices[i]} - {renears_friends[r_i]}"
                 r_i += 1
 
+            summary.append(f'- {choices[i]}')
+
         summary = '\n'.join(summary)
         await ctx.send(summary)
