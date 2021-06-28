@@ -1,6 +1,7 @@
 import os
 from urllib import parse
 from pprint import pprint as pp
+import json
 
 from redbot.core import commands
 import aiohttp
@@ -53,7 +54,8 @@ class Search(BaseCog):
 
         async with aiohttp.ClientSession() as session:
             async with session.get(search) as resp:
-                data = await resp.json()
+                data = await resp.text()
+                data = json.loads(data)
                 links = []
                 contents = data['queryresult']
                 if contents['success'] == 'true':
