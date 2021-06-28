@@ -58,7 +58,7 @@ class Search(BaseCog):
                 data = json.loads(data)
                 links = []
                 contents = data['queryresult']
-                if contents['success'] == 'true':
+                if contents['success']:
                     for pod in contents['pods']:
                         for subpod in pod['subpods']:
                             links.append(subpod['img']['src'])
