@@ -57,9 +57,9 @@ class Search(BaseCog):
                 links = []
                 contents = data['queryresult']
                 if contents['success'] == 'true':
-                    if len(contents['pods']) > 0:
-                        links.append(contents['pods'][0]['subpods'][0]['img']['src'])
-                        links.append(contents['pods'][1]['subpods'][0]['img']['src'])
+                    for pod in contents['pods']:
+                        for subpod in pod['subpods']:
+                            links.append(subpod['img']['src'])
                 if links:
                     await ctx.send('\n'.join(links))
 
