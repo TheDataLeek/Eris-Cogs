@@ -49,7 +49,7 @@ class Search(BaseCog):
             return
 
         term = parse.quote_plus(" ".join(term))
-        search = self.wolfram_search_link.format(term)
+        search = self.wolfram_search_link.format(appid, term)
 
         async with aiohttp.ClientSession() as session:
             async with session.get(search) as resp:
