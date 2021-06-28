@@ -7,6 +7,8 @@ import json
 from redbot.core import commands
 import discord
 import aiohttp
+from redbot.core.utils.chat_formatting import pagify
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -65,13 +67,22 @@ class Search(BaseCog):
                             links.append(subpod['img']['src'])
             if links:
                 imgs = []
-                for i, link in enumerate(links[:10]):
+                for i, link in enumerate(links):
                     async with session.get(link) as resp:
                         imgs.append(discord.File(io.BytesIO(await resp.read()), filename=f"{i}.gif"))
 
-                await ctx.send(
-                    files=imgs
-                )
+                # await ctx.send(
+                #     files=imgs
+                # )
+                embeds = [
+                    discord.Embed(
+                        title=" ".join(term),
+                        type="rich",
+                        image=img
+                    )
+                    for img in imgs
+                ]
+                await menu(ctx, embeds, DEFAULT_CONTROLS)
             else:
                 await ctx.send('Request not understood!')
 
