@@ -18,6 +18,7 @@ class Search(BaseCog):
         self.bot = bot
         self.wiki_search_link = "https://en.wikipedia.org/w/api.php?action=opensearch&search={}&limit=1&namespace=0&format=json"
         self.wolfram_search_link = "https://api.wolframalpha.com/v2/query?appid={}&input={}&format=image&output=json"
+        self.google_search_link = "https://www.google.com/search?q={}"
 
     @commands.command()
     async def wiki(self, ctx, *term: str):
@@ -49,7 +50,10 @@ class Search(BaseCog):
         """
         appid = await self.get_wolfram_token()
         if appid is None:
-            await ctx.send('No token set!')
+            await ctx.send('No token set!\n'
+                           '1. Navigate to https://products.wolframalpha.com/api/documentation/\n'
+                           '2. Sign up for an AppID\n'
+                           '3. In a DM use `.set api wolfram appid <appid>`')
             return
 
         new_term = parse.quote(" ".join(term))
@@ -76,4 +80,14 @@ class Search(BaseCog):
                 )
             else:
                 await ctx.send('Request not understood!')
+
+    @commands.command()
+    async def google(self, ctx, *term: str):
+        """
+        Search Wolfram Alpha
+        """
+        new_term = parse.quote(" ".join(term))
+        search = self.google_search_link.format(new_term)
+
+        await ctx.send(search)
 
