@@ -7,7 +7,6 @@ import json
 from redbot.core import commands
 import discord
 import aiohttp
-import wolframalpha
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -66,17 +65,11 @@ class Search(BaseCog):
                             links.append(subpod['img']['src'])
             if links:
                 imgs = []
-                for i, link in enumerate(links):
+                for i, link in enumerate(links[:10]):
                     async with session.get(link) as resp:
                         imgs.append(discord.File(io.BytesIO(await resp.read()), filename=f"{i}.gif"))
 
                 await ctx.send(
-                    files=imgs[:10]
+                    files=imgs
                 )
 
-
-if __name__ == '__main__':
-    appid = os.environ['WOLFRAM']
-    client = wolframalpha.Client(appid)
-    res = client.query("current weather")
-    print(next(res.results).text)
