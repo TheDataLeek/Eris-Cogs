@@ -48,8 +48,8 @@ class Search(BaseCog):
             await ctx.send('No token set!')
             return
 
-        term = parse.quote_plus(" ".join(term))
-        search = self.wolfram_search_link.format(appid, term)
+        new_term = parse.quote(" ".join(term))
+        search = self.wolfram_search_link.format(appid, new_term)
 
         async with aiohttp.ClientSession() as session:
             async with session.get(search) as resp:
