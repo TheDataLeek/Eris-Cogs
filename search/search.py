@@ -68,13 +68,10 @@ class Search(BaseCog):
                 imgs = []
                 for link in links:
                     async with session.get(link) as resp:
-                        imgs.append(io.BytesIO(await resp.read()))
+                        imgs.append(discord.File(io.BytesIO(await resp.read())))
 
                 await ctx.send(
-                    files=[
-                        discord.File(img)
-                        for img in imgs
-                    ]
+                    files=imgs[:10]
                 )
 
 
