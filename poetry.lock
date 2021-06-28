@@ -215,6 +215,18 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
+name = "jaraco.context"
+version = "4.0.0"
+description = "Context managers by jaraco"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "pytest-black (>=0.3.7)", "pytest-mypy"]
+
+[[package]]
 name = "kiwisolver"
 version = "1.3.1"
 description = "A fast implementation of the Cassowary constraint solver"
@@ -262,6 +274,14 @@ numpy = ">=1.15"
 pillow = ">=6.2.0"
 pyparsing = ">=2.0.3,<2.0.4 || >2.0.4,<2.1.2 || >2.1.2,<2.1.6 || >2.1.6"
 python-dateutil = ">=2.1"
+
+[[package]]
+name = "more-itertools"
+version = "8.8.0"
+description = "More routines for operating on iterables, beyond itertools"
+category = "main"
+optional = false
+python-versions = ">=3.5"
 
 [[package]]
 name = "mplfinance"
@@ -521,9 +541,6 @@ category = "main"
 optional = false
 python-versions = "*"
 
-[package.dependencies]
-contextlib2 = ">=0.5.5"
-
 [[package]]
 name = "six"
 version = "1.15.0"
@@ -593,6 +610,31 @@ docs = ["Sphinx (>=1.7.3,<1.8.0)", "sphinxcontrib-asyncio (>=0.2.0,<0.3.0)", "sp
 test = ["aiohttp", "flake8 (>=3.8.4,<3.9.0)", "psutil", "pycodestyle (>=2.6.0,<2.7.0)", "pyOpenSSL (>=19.0.0,<19.1.0)", "mypy (>=0.800)"]
 
 [[package]]
+name = "wolframalpha"
+version = "5.0.0"
+description = "Wolfram|Alpha 2.0 API client"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+"jaraco.context" = "*"
+more-itertools = "*"
+xmltodict = "*"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "pmxbot", "keyring", "pytest-black (>=0.3.7)", "pytest-mypy"]
+
+[[package]]
+name = "xmltodict"
+version = "0.12.0"
+description = "Makes working with XML feel like you are working with JSON"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
 name = "yarl"
 version = "1.6.3"
 description = "Yet another URL library"
@@ -622,7 +664,7 @@ requests = ">=2.20"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8.2,<3.9"
-content-hash = "96278e59b96e1027515f2a4b9e0b37f0db6c536adb8ce7fd1a6c0775696ae29a"
+content-hash = "1604d064bb990646eb89a848c5b677e8a2ecdba0a49f02276d71aa392d9883ea"
 
 [metadata.files]
 aiohttp = [
@@ -799,6 +841,7 @@ click = [
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
+    {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 commonmark = [
     {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
@@ -831,6 +874,10 @@ fuzzywuzzy = [
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
     {file = "idna-2.10.tar.gz", hash = "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6"},
+]
+"jaraco.context" = [
+    {file = "jaraco.context-4.0.0-py3-none-any.whl", hash = "sha256:1dd2a6c13a1be2ea9bd28b448ca3dfff6a20297d511ff13c495a001002fcf436"},
+    {file = "jaraco.context-4.0.0.tar.gz", hash = "sha256:4cdf4a1a1ede942e926fb75951769972191966cef91c67131afbc163a69bf585"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.3.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:fd34fbbfbc40628200730bc1febe30631347103fc8d3d4fa012c21ab9c11eca9"},
@@ -935,6 +982,10 @@ matplotlib = [
     {file = "matplotlib-3.3.3-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:746897fbd72bd462b888c74ed35d812ca76006b04f717cd44698cdfc99aca70d"},
     {file = "matplotlib-3.3.3-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:5ed3d3342698c2b1f3651f8ea6c099b0f196d16ee00e33dc3a6fee8cb01d530a"},
     {file = "matplotlib-3.3.3.tar.gz", hash = "sha256:b1b60c6476c4cfe9e5cf8ab0d3127476fd3d5f05de0f343a452badaad0e4bdec"},
+]
+more-itertools = [
+    {file = "more-itertools-8.8.0.tar.gz", hash = "sha256:83f0308e05477c68f56ea3a888172c78ed5d5b3c282addb67508e7ba6c8f813a"},
+    {file = "more_itertools-8.8.0-py3-none-any.whl", hash = "sha256:2cf89ec599962f2ddc4d568a05defc40e0a587fbc10d5989713638864c36be4d"},
 ]
 mplfinance = [
     {file = "mplfinance-0.12.7a5-py3-none-any.whl", hash = "sha256:36804e76c0df86d66187184845debaf7bd0afe4599c1aa9a8e3f33161797e7fb"},
@@ -1041,21 +1092,25 @@ pillow = [
     {file = "Pillow-8.1.0-cp36-cp36m-macosx_10_10_x86_64.whl", hash = "sha256:d355502dce85ade85a2511b40b4c61a128902f246504f7de29bbeec1ae27933a"},
     {file = "Pillow-8.1.0-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:93a473b53cc6e0b3ce6bf51b1b95b7b1e7e6084be3a07e40f79b42e83503fbf2"},
     {file = "Pillow-8.1.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:2353834b2c49b95e1313fb34edf18fca4d57446675d05298bb694bca4b194174"},
+    {file = "Pillow-8.1.0-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:1d208e670abfeb41b6143537a681299ef86e92d2a3dac299d3cd6830d5c7bded"},
     {file = "Pillow-8.1.0-cp36-cp36m-win32.whl", hash = "sha256:dd9eef866c70d2cbbea1ae58134eaffda0d4bfea403025f4db6859724b18ab3d"},
     {file = "Pillow-8.1.0-cp36-cp36m-win_amd64.whl", hash = "sha256:b09e10ec453de97f9a23a5aa5e30b334195e8d2ddd1ce76cc32e52ba63c8b31d"},
     {file = "Pillow-8.1.0-cp37-cp37m-macosx_10_10_x86_64.whl", hash = "sha256:b02a0b9f332086657852b1f7cb380f6a42403a6d9c42a4c34a561aa4530d5234"},
     {file = "Pillow-8.1.0-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:ca20739e303254287138234485579b28cb0d524401f83d5129b5ff9d606cb0a8"},
     {file = "Pillow-8.1.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:604815c55fd92e735f9738f65dabf4edc3e79f88541c221d292faec1904a4b17"},
+    {file = "Pillow-8.1.0-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:cf6e33d92b1526190a1de904df21663c46a456758c0424e4f947ae9aa6088bf7"},
     {file = "Pillow-8.1.0-cp37-cp37m-win32.whl", hash = "sha256:47c0d93ee9c8b181f353dbead6530b26980fe4f5485aa18be8f1fd3c3cbc685e"},
     {file = "Pillow-8.1.0-cp37-cp37m-win_amd64.whl", hash = "sha256:96d4dc103d1a0fa6d47c6c55a47de5f5dafd5ef0114fa10c85a1fd8e0216284b"},
     {file = "Pillow-8.1.0-cp38-cp38-macosx_10_10_x86_64.whl", hash = "sha256:7916cbc94f1c6b1301ac04510d0881b9e9feb20ae34094d3615a8a7c3db0dcc0"},
     {file = "Pillow-8.1.0-cp38-cp38-manylinux1_i686.whl", hash = "sha256:3de6b2ee4f78c6b3d89d184ade5d8fa68af0848f9b6b6da2b9ab7943ec46971a"},
     {file = "Pillow-8.1.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:cdbbe7dff4a677fb555a54f9bc0450f2a21a93c5ba2b44e09e54fcb72d2bd13d"},
+    {file = "Pillow-8.1.0-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:f50e7a98b0453f39000619d845be8b06e611e56ee6e8186f7f60c3b1e2f0feae"},
     {file = "Pillow-8.1.0-cp38-cp38-win32.whl", hash = "sha256:cb192176b477d49b0a327b2a5a4979552b7a58cd42037034316b8018ac3ebb59"},
     {file = "Pillow-8.1.0-cp38-cp38-win_amd64.whl", hash = "sha256:6c5275bd82711cd3dcd0af8ce0bb99113ae8911fc2952805f1d012de7d600a4c"},
     {file = "Pillow-8.1.0-cp39-cp39-macosx_10_10_x86_64.whl", hash = "sha256:165c88bc9d8dba670110c689e3cc5c71dbe4bfb984ffa7cbebf1fac9554071d6"},
     {file = "Pillow-8.1.0-cp39-cp39-manylinux1_i686.whl", hash = "sha256:5e2fe3bb2363b862671eba632537cd3a823847db4d98be95690b7e382f3d6378"},
     {file = "Pillow-8.1.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:7612520e5e1a371d77e1d1ca3a3ee6227eef00d0a9cddb4ef7ecb0b7396eddf7"},
+    {file = "Pillow-8.1.0-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:d673c4990acd016229a5c1c4ee8a9e6d8f481b27ade5fc3d95938697fa443ce0"},
     {file = "Pillow-8.1.0-cp39-cp39-win32.whl", hash = "sha256:dc577f4cfdda354db3ae37a572428a90ffdbe4e51eda7849bf442fb803f09c9b"},
     {file = "Pillow-8.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:22d070ca2e60c99929ef274cfced04294d2368193e935c5d6febfd8b601bf865"},
     {file = "Pillow-8.1.0-pp36-pypy36_pp73-macosx_10_10_x86_64.whl", hash = "sha256:a3d3e086474ef12ef13d42e5f9b7bbf09d39cf6bd4940f982263d6954b13f6a9"},
@@ -1168,18 +1223,26 @@ pyyaml = [
     {file = "PyYAML-5.4.1-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:bb4191dfc9306777bc594117aee052446b3fa88737cd13b7188d0e7aa8162185"},
     {file = "PyYAML-5.4.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:6c78645d400265a062508ae399b60b8c167bf003db364ecb26dcab2bda048253"},
     {file = "PyYAML-5.4.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:4e0583d24c881e14342eaf4ec5fbc97f934b999a6828693a99157fde912540cc"},
+    {file = "PyYAML-5.4.1-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:72a01f726a9c7851ca9bfad6fd09ca4e090a023c00945ea05ba1638c09dc3347"},
+    {file = "PyYAML-5.4.1-cp36-cp36m-manylinux2014_s390x.whl", hash = "sha256:895f61ef02e8fed38159bb70f7e100e00f471eae2bc838cd0f4ebb21e28f8541"},
     {file = "PyYAML-5.4.1-cp36-cp36m-win32.whl", hash = "sha256:3bd0e463264cf257d1ffd2e40223b197271046d09dadf73a0fe82b9c1fc385a5"},
     {file = "PyYAML-5.4.1-cp36-cp36m-win_amd64.whl", hash = "sha256:e4fac90784481d221a8e4b1162afa7c47ed953be40d31ab4629ae917510051df"},
     {file = "PyYAML-5.4.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:5accb17103e43963b80e6f837831f38d314a0495500067cb25afab2e8d7a4018"},
     {file = "PyYAML-5.4.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:e1d4970ea66be07ae37a3c2e48b5ec63f7ba6804bdddfdbd3cfd954d25a82e63"},
+    {file = "PyYAML-5.4.1-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:cb333c16912324fd5f769fff6bc5de372e9e7a202247b48870bc251ed40239aa"},
+    {file = "PyYAML-5.4.1-cp37-cp37m-manylinux2014_s390x.whl", hash = "sha256:fe69978f3f768926cfa37b867e3843918e012cf83f680806599ddce33c2c68b0"},
     {file = "PyYAML-5.4.1-cp37-cp37m-win32.whl", hash = "sha256:dd5de0646207f053eb0d6c74ae45ba98c3395a571a2891858e87df7c9b9bd51b"},
     {file = "PyYAML-5.4.1-cp37-cp37m-win_amd64.whl", hash = "sha256:08682f6b72c722394747bddaf0aa62277e02557c0fd1c42cb853016a38f8dedf"},
     {file = "PyYAML-5.4.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:d2d9808ea7b4af864f35ea216be506ecec180628aced0704e34aca0b040ffe46"},
     {file = "PyYAML-5.4.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:8c1be557ee92a20f184922c7b6424e8ab6691788e6d86137c5d93c1a6ec1b8fb"},
+    {file = "PyYAML-5.4.1-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:fd7f6999a8070df521b6384004ef42833b9bd62cfee11a09bda1079b4b704247"},
+    {file = "PyYAML-5.4.1-cp38-cp38-manylinux2014_s390x.whl", hash = "sha256:bfb51918d4ff3d77c1c856a9699f8492c612cde32fd3bcd344af9be34999bfdc"},
     {file = "PyYAML-5.4.1-cp38-cp38-win32.whl", hash = "sha256:fa5ae20527d8e831e8230cbffd9f8fe952815b2b7dae6ffec25318803a7528fc"},
     {file = "PyYAML-5.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:0f5f5786c0e09baddcd8b4b45f20a7b5d61a7e7e99846e3c799b05c7c53fa696"},
     {file = "PyYAML-5.4.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:294db365efa064d00b8d1ef65d8ea2c3426ac366c0c4368d930bf1c5fb497f77"},
     {file = "PyYAML-5.4.1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:74c1485f7707cf707a7aef42ef6322b8f97921bd89be2ab6317fd782c2d53183"},
+    {file = "PyYAML-5.4.1-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:d483ad4e639292c90170eb6f7783ad19490e7a8defb3e46f97dfe4bacae89122"},
+    {file = "PyYAML-5.4.1-cp39-cp39-manylinux2014_s390x.whl", hash = "sha256:fdc842473cd33f45ff6bce46aea678a54e3d21f1b61a7750ce3c498eedfe25d6"},
     {file = "PyYAML-5.4.1-cp39-cp39-win32.whl", hash = "sha256:49d4cdd9065b9b6e206d0595fee27a96b5dd22618e7520c33204a4a3239d5b10"},
     {file = "PyYAML-5.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:c20cfa2d49991c8b4147af39859b167664f2ad4561704ee74c1de03318e898db"},
     {file = "PyYAML-5.4.1.tar.gz", hash = "sha256:607774cbba28732bfa802b54baa7484215f530991055bb562efbed5b2f20a45e"},
@@ -1235,6 +1298,14 @@ uvloop = [
     {file = "uvloop-0.15.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:fab95c88d0c3694089c93a8c46fdab30117c4ce0d1afa2ab7d6f4d0607495857"},
     {file = "uvloop-0.15.0-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:2d76da5529025f9771855505cfde7bf16b9b0001e2fe05b0abf3e4fc01a5dfdb"},
     {file = "uvloop-0.15.0.tar.gz", hash = "sha256:1a503d5b49da6e3dd5607d6e533a5315b1caedbf629901807c65a23a09cad065"},
+]
+wolframalpha = [
+    {file = "wolframalpha-5.0.0-py3-none-any.whl", hash = "sha256:159f5d8fd31e4a734a34a9f3ae8aec4e9b2ef392607f82069b4a324b6b1831d5"},
+    {file = "wolframalpha-5.0.0.tar.gz", hash = "sha256:38bf27654039ec85cc62c199dd319b6a4d6a7badfed7af1cd161f081afdb57c0"},
+]
+xmltodict = [
+    {file = "xmltodict-0.12.0-py2.py3-none-any.whl", hash = "sha256:8bbcb45cc982f48b2ca8fe7e7827c5d792f217ecf1792626f808bf41c3b86051"},
+    {file = "xmltodict-0.12.0.tar.gz", hash = "sha256:50d8c638ed7ecb88d90561beedbf720c9b4e851a9fa6c47ebd64e99d166d8a21"},
 ]
 yarl = [
     {file = "yarl-1.6.3-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:0355a701b3998dcd832d0dc47cc5dedf3874f966ac7f870e0f3a6788d802d434"},
