@@ -13,6 +13,7 @@ class Search(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         self.wiki_search_link = "https://en.wikipedia.org/w/api.php?action=opensearch&search={}&limit=1&namespace=0&format=json"
+        self.wolfram_search_link = "https://api.wolframalpha.com/v2/query?appid={}&input={}&format=image&output=json"
 
     @commands.command()
     async def wiki(self, ctx, *term: str):
@@ -47,9 +48,20 @@ class Search(BaseCog):
             await ctx.send('No token set!')
             return
 
-        client = wolframalpha.Client(appid)
-        res = client.query(' '.join(term))
-        await ctx.send(next(res.results).text)
+        term = parse.quote_plus(" ".join(term))
+        search = self.wolfram_search_link.format(term)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(search) as resp:
+                data = await resp.json()
+                links = []
+                contents = data['queryresult']
+                if contents['success'] == 'true':
+                    if len(contents['pods']) > 0:
+                        links.append(contents['pods'][0]['subpods'][0]['img']['src'])
+                        links.append(contents['pods'][1]['subpods'][0]['img']['src'])
+                if links:
+                    await ctx.send('\n'.join(links))
 
 
 if __name__ == '__main__':
