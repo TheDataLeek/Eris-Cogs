@@ -74,15 +74,7 @@ class Search(BaseCog):
                 # await ctx.send(
                 #     files=imgs
                 # )
-                embeds = [
-                    discord.Embed(
-                        title=" ".join(term),
-                        type="rich",
-                        image=img
-                    )
-                    for img in imgs
-                ]
-                await menu(ctx, embeds, DEFAULT_CONTROLS)
+                await menu(ctx, imgs, DEFAULT_CONTROLS)
             else:
                 await ctx.send('Request not understood!')
 
