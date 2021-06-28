@@ -50,10 +50,12 @@ class Search(BaseCog):
         """
         appid = await self.get_wolfram_token()
         if appid is None:
-            await ctx.send('No token set!\n'
-                           '1. Navigate to https://products.wolframalpha.com/api/documentation/\n'
-                           '2. Sign up for an AppID\n'
-                           '3. In a DM use `.set api wolfram appid <appid>`')
+            await ctx.send(
+                "No token set!\n"
+                "1. Navigate to https://products.wolframalpha.com/api/documentation/\n"
+                "2. Sign up for an AppID\n"
+                "3. In a DM use `.set api wolfram appid <appid>`"
+            )
             return
 
         new_term = parse.quote(" ".join(term))
@@ -64,22 +66,24 @@ class Search(BaseCog):
                 data = await resp.text()
                 data = json.loads(data)
                 links = []
-                contents = data['queryresult']
-                if contents['success']:
-                    for pod in contents['pods']:
-                        for subpod in pod['subpods']:
-                            links.append(subpod['img']['src'])
+                contents = data["queryresult"]
+                if contents["success"]:
+                    for pod in contents["pods"]:
+                        for subpod in pod["subpods"]:
+                            links.append(subpod["img"]["src"])
             if links:
                 imgs = []
                 for i, link in enumerate(links[:10]):
                     async with session.get(link) as resp:
-                        imgs.append(discord.File(io.BytesIO(await resp.read()), filename=f"{i}.gif"))
+                        imgs.append(
+                            discord.File(
+                                io.BytesIO(await resp.read()), filename=f"{i}.gif"
+                            )
+                        )
 
-                await ctx.send(
-                    files=imgs
-                )
+                await ctx.send(files=imgs)
             else:
-                await ctx.send('Request not understood!')
+                await ctx.send("Request not understood!")
 
     @commands.command()
     async def google(self, ctx, *term: str):
@@ -90,4 +94,3 @@ class Search(BaseCog):
         search = self.google_search_link.format(new_term)
 
         await ctx.send(search)
-
