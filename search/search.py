@@ -72,4 +72,6 @@ class Search(BaseCog):
                 await ctx.send(
                     files=imgs
                 )
+            else:
+                await ctx.send('Request not understood!')
 
