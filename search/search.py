@@ -1,9 +1,11 @@
+import io
 import os
 from urllib import parse
 from pprint import pprint as pp
 import json
 
 from redbot.core import commands
+import discord
 import aiohttp
 import wolframalpha
 
@@ -62,8 +64,18 @@ class Search(BaseCog):
                     for pod in contents['pods']:
                         for subpod in pod['subpods']:
                             links.append(subpod['img']['src'])
-                if links:
-                    await ctx.send('\n'.join(links))
+            if links:
+                imgs = []
+                for link in links:
+                    async with session.get(link) as resp:
+                        imgs.append(io.BytesIO(await resp.read()))
+
+                await ctx.send(
+                    files=[
+                        discord.File(img)
+                        for img in imgs
+                    ]
+                )
 
 
 if __name__ == '__main__':
