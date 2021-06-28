@@ -67,14 +67,13 @@ class Search(BaseCog):
                             links.append(subpod['img']['src'])
             if links:
                 imgs = []
-                for i, link in enumerate(links):
+                for i, link in enumerate(links[:10]):
                     async with session.get(link) as resp:
                         imgs.append(discord.File(io.BytesIO(await resp.read()), filename=f"{i}.gif"))
 
-                # await ctx.send(
-                #     files=imgs
-                # )
-                await menu(ctx, imgs, DEFAULT_CONTROLS)
+                await ctx.send(
+                    files=imgs
+                )
             else:
                 await ctx.send('Request not understood!')
 
