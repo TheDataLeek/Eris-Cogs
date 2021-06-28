@@ -66,9 +66,9 @@ class Search(BaseCog):
                             links.append(subpod['img']['src'])
             if links:
                 imgs = []
-                for link in links:
+                for i, link in enumerate(links):
                     async with session.get(link) as resp:
-                        imgs.append(discord.File(io.BytesIO(await resp.read())))
+                        imgs.append(discord.File(io.BytesIO(await resp.read()), filename=f"{i}.gif"))
 
                 await ctx.send(
                     files=imgs[:10]
