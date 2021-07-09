@@ -1,6 +1,7 @@
 import os
 import io
 from time import sleep
+import time
 import random
 import re
 import pathlib
@@ -179,9 +180,10 @@ class OutOfContext(BaseCog, ErisEventMixin):
         message: discord.Message
         last_message_examined: discord.Message = None
         message_count = 0
+        stime = time.time()
         while True:
             chunk = await channel.history(
-                limit=5000, before=last_message_examined
+                limit=1000, before=last_message_examined
             ).flatten()
             if len(chunk) == 0:
                 break
@@ -215,7 +217,11 @@ class OutOfContext(BaseCog, ErisEventMixin):
                 quote_hash[word].append(quote)
 
         await self.oocconfig.guild(ctx.guild).quote_hash.set(quote_hash)
+        
+        delta = time.time() - stime
+        minutes = delta // 60
+        seconds = delta - minutes
 
         await ctx.send(
-            f"Done. Processed {message_count} messages, found {len(ooc_list)} quotes."
+            f"Done. Processed {message_count} messages, found {len(ooc_list)} quotes. Duration of {minutes:0.0f}M {seconds:0.03f}S"
         )
