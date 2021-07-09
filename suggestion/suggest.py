@@ -26,6 +26,8 @@ class Suggest(BaseCog):
             "Want to submit a PR? Use this url! https://github.com/TheDataLeek/Eris-Cogs/compare",
             f"Here's the folder for the cog you've asked about! https://github.com/TheDataLeek/Eris-Cogs/tree/master/{cog}",
         ]
+        if cog is None:
+            lines = lines[:2]
         embedded_response = discord.Embed(
             title=f"Contribute to Snek!",
             type="rich",
