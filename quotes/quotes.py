@@ -66,10 +66,10 @@ class Quotes(BaseCog):
             return realname
 
         if len(realname) > 32:
-            realname = realname.split(" ")[0]
-            realname = "".join(
-                c for c in realname if c.lower() in string.ascii_lowercase
-            )
-            return realname
+            # https://regex101.com/r/CrMmz9/1
+            match = re.match(r'^(.{,32})[^a-z]', realname, re.IGNORECASE)
+            if match is not None:
+                realname = match.group(1)
+                return realname
         else:
             return realname
