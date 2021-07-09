@@ -39,6 +39,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Steve](#steve) | Provides LARGE pictures of Steve when asked | ✅ |
 | [Stonks](#stonks) | A stock tracker using yahoofinance | ✅ |
 | [Sudo](#sudo) | Warns when users say sudo | ✅ |
+| [Suggestion](#suggestion) | Suggest | ✅ |
 | [Timezone](#timezone) | US Timezone converter | ✅ |
 | [Weave](#weave) | Create a mosaic of alternating emoji | ✅ |
 | [Whois](#whois) | Whois for discord | ✅ |
@@ -191,6 +192,10 @@ Description: Displays current and historical stock information using the yahoo f
 Short: Warns when users say sudo
 
 Description: Replies in a channel if someone tries to use sudo - i.e. just uses the letters 'sudo'
+## Suggestion
+Short: Suggest
+
+Description: Suggest a change, provides ez access urls
 ## Timezone
 Short: US Timezone converter
 
