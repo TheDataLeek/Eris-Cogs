@@ -139,6 +139,6 @@ def plot_history(history):
 
 
 if __name__ == "__main__":
-    history = yf.Ticker("GME").history(period="1d", interval="5m")
+    history = yf.Ticker("SQ").history(period="1d", interval="5m")
     print(history)
     buf = plot_history(history)
