@@ -220,8 +220,8 @@ class OutOfContext(BaseCog, ErisEventMixin):
         
         delta = time.time() - stime
         minutes = delta // 60
-        seconds = delta - minutes
+        seconds = delta - (minutes * 60)
 
         await ctx.send(
-            f"Done. Processed {message_count} messages, found {len(ooc_list)} quotes. Duration of {minutes:0.0f}M {seconds:0.03f}S"
+            f"Done. Processed {message_count} messages, found {len(ooc_list)} quotes. Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds"
         )
