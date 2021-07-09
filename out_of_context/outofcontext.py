@@ -181,7 +181,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
         message_count = 0
         while True:
             chunk = await channel.history(
-                limit=500, before=last_message_examined
+                limit=5000, before=last_message_examined
             ).flatten()
             if len(chunk) == 0:
                 break
