@@ -23,7 +23,7 @@ class JustMetHer(BaseCog, ErisEventMixin):
     async def met_her(self, message: discord.Message):
         clean_message: str = message.clean_content.lower()
         matched = self.searchpattern.search(clean_message)
-        activated: bool = matched and (random.random() < (1 / 3))
+        activated: bool = matched and (random.random() < (1 / 10))
         if not activated:
             return
 
