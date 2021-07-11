@@ -37,7 +37,7 @@ class IMDBLookup(BaseCog):
             return
 
         m: MovieType = movies[0]
-        self.ia.update(m, info=['plot', 'cast', 'rating', 'runtime', 'technical'])
+        self.ia.update(m, info=['main', 'plot', 'cast', 'rating', 'runtime', 'technical'])
 
         cast = '\n'.join([str(p) for p in m['cast'][:10]])
 
