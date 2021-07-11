@@ -37,7 +37,7 @@ class IMDBLookup(BaseCog):
             return
 
         m: MovieType = movies[0]
-        self.ia.update(m, info=['main', 'synopsis', 'plot', 'cast', 'rating', 'runtime'])
+        self.ia.update(m, info=['plot', 'cast', 'rating', 'runtime', 'technical'])
 
         cast = '\n'.join([str(p) for p in m['cast'][:10]])
 
@@ -47,7 +47,9 @@ class IMDBLookup(BaseCog):
             # thumbnail=m['cover_url'][0],
             description=(
                 f"Runtime: {m['runtime'][0]} minutes\n"
-                f"{m['plot'][0]}\n"
+                f"{m['technical']}\n"
+                f"*{m['plot'][0]}*\n"
+                "__Cast__\n"
                 f"{cast}\n..."
             )
         )
