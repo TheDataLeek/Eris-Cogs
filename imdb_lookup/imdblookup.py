@@ -21,7 +21,7 @@ class IMDBLookup(BaseCog):
         self.ia = imdb.IMDb()
 
     @commands.group()
-    async def imdb(self):
+    async def imdb(self, ctx: commands.Context):
         pass
 
     @commands.command()
