@@ -39,7 +39,7 @@ class IMDBLookup(BaseCog):
         m: MovieType = movies[0]
         self.ia.update(m, info=['main', 'synopsis', 'plot', 'cast', 'rating', 'runtime'])
 
-        cast = '\n'.join(m['cast'][:10])
+        cast = '\n'.join([str(p) for p in m['cast'][:10]])
 
         embedded_response = discord.Embed(
             title=f"{m} (User Rating: {m['rating']})",
