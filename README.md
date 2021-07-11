@@ -21,6 +21,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Goodbot](#goodbot) | Good Bot Emoji Tracker | ✅ |
 | [Hotel_california](#hotel_california) | Role-based "punishment" for infractions on moderator whim. | ✅ |
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
+| [Imdb_lookup](#imdb_lookup) | IMDB | ✅ |
 | [Insult](#insult) | Insult users | ✅ |
 | [Just_met_her](#just_met_her) | Just Met Her | ✅ |
 | [Lifslastcall](#lifslastcall) | Lif's | ✅ |
@@ -108,6 +109,10 @@ Description: Role based "punishment". Allows users to punish via assigning roles
 Short: Replies Hi _ I'm Dad
 
 Description: Replies with Hi _ I'm Dad when someone says that they're _
+## Imdb_lookup
+Short: IMDB
+
+Description: IMDB Lookup
 ## Insult
 Short: Insult users
 

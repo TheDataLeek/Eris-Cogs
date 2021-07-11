@@ -1,0 +1,8 @@
+{
+    "author" : ["Eris"],
+    "description" : "IMDB Lookup",
+    "name" : "IMDB",
+    "short": "IMDB",
+    "requirements": ["imdbpy"],
+    "ready": true
+}
