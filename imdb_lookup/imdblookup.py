@@ -40,13 +40,13 @@ class IMDBLookup(BaseCog):
         self.ia.update(m, info=['main', 'synopsis', 'plot', 'cast', 'rating', 'runtime'])
 
         embedded_response = discord.Embed(
-            title=f"{m} ({m['rating']})",
+            title=f"{m} (User Rating: {m['rating']})",
             type="rich",
             # thumbnail=m['cover_url'][0],
             description=(
-                f"{m['runtime'][0]}\n"
+                f"Runtime: {m['runtime'][0]} minutes\n"
                 f"{m['plot'][0]}\n"
-                f"{m['cast'][0]}\n"
+                f"{'\n'.join(m['cast'][:10])}\n..."
             )
         )
         embedded_response = embed.randomize_colour(embedded_response)
