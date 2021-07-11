@@ -24,13 +24,13 @@ class IMDBLookup(BaseCog):
     async def imdb(self, ctx: commands.Context):
         pass
 
-    @commands.command()
+    @imdb.command()
     async def movie(self, ctx, *name: str):
         name = ' '.join(name)
-        movies: List[imdb.Movie] = self.ia.search_movie(name, info='main')
+        movies: List[imdb.Movie] = self.ia.search_movie(name)
         await ctx.send(movies[0])
 
-    @commands.command()
+    @imdb.command()
     async def person(self, ctx, *name: str):
         name = ' '.join(name)
-        people: List[imdb.Person] = self.ia.search_person(name, info='main')
+        people: List[imdb.Person] = self.ia.search_person(name)
