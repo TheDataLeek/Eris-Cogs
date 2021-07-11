@@ -33,13 +33,13 @@ class IMDBLookup(BaseCog):
         name = ' '.join(name)
         movies: List[imdb.Movie] = self.ia.search_movie(name)
         m: MovieType = movies[0]
-        self.ia.update(m, info=['main', 'synopsis'])
+        self.ia.update(m, info=['main', 'synopsis', 'plot'])
 
         embedded_response = discord.Embed(
             title=str(m),
             type="rich",
             description=(
-                f"{m['main'][0]}"
+                f"{m['plot'][0]}"
             )
         )
         embedded_response = embed.randomize_colour(embedded_response)
