@@ -37,12 +37,12 @@ class IMDBLookup(BaseCog):
             return
 
         m: MovieType = movies[0]
-        self.ia.update(m, info=['main', 'synopsis', 'plot', 'cast', 'rating', 'runtime', 'cover_url'])
+        self.ia.update(m, info=['main', 'synopsis', 'plot', 'cast', 'rating', 'runtime'])
 
         embedded_response = discord.Embed(
             title=f"{m} ({m['rating']})",
             type="rich",
-            thumbnail=m['cover_url'][0],
+            # thumbnail=m['cover_url'][0],
             description=(
                 f"{m['runtime'][0]}\n"
                 f"{m['plot'][0]}\n"
