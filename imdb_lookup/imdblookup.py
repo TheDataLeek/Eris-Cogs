@@ -6,10 +6,14 @@ import random
 # third party
 import discord
 from redbot.core import commands, data_manager
+from redbot.core.utils import embed
 import imdb
 
 
 from typing import List
+
+
+class MovieType(imdb.utils._Container):pass
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -28,7 +32,18 @@ class IMDBLookup(BaseCog):
     async def movie(self, ctx, *name: str):
         name = ' '.join(name)
         movies: List[imdb.Movie] = self.ia.search_movie(name)
-        await ctx.send(movies[0])
+        m: MovieType = movies[0]
+        self.ia.update(m, info=['main', 'synopsis'])
+
+        embedded_response = discord.Embed(
+            title=str(m),
+            type="rich",
+            description=(
+                f"{m['main'][0]}"
+            )
+        )
+        embedded_response = embed.randomize_colour(embedded_response)
+        await ctx.send(embed=embedded_response)
 
     @imdb.command()
     async def person(self, ctx, *name: str):
