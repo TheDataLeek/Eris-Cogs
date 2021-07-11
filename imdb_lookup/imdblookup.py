@@ -28,7 +28,7 @@ class IMDBLookup(BaseCog):
     async def movie(self, ctx, *name: str):
         name = ' '.join(name)
         movies: List[imdb.Movie] = self.ia.search_movie(name, info='main')
-        return movies[0]
+        await ctx.send(movies[0])
 
     @commands.command()
     async def person(self, ctx, *name: str):
