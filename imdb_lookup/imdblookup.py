@@ -16,6 +16,9 @@ from typing import List
 class MovieType(imdb.utils._Container):
     pass
 
+class PersonType(imdb.utils._Container):
+    pass
+
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -55,6 +58,23 @@ class IMDBLookup(BaseCog):
     async def person(self, ctx, *name: str):
         name = " ".join(name)
         people: List[imdb.Person] = self.ia.search_person(name)
+        if not people:
+            await ctx.send("Unable to find person!")
+            return
+
+        p: PersonType = movies[0]
+        self.ia.update(
+            p,
+            info=["main"]
+        )
+
+        summary = "\n".join(p.summary().split("\n")[2:])
+
+        embedded_response = discord.Embed(
+            title=f"Person", type="rich", description=summary
+        )
+        embedded_response = embed.randomize_colour(embedded_response)
+        await ctx.send(embed=embedded_response)
 
 
 if __name__ == "__main__":
@@ -62,10 +82,10 @@ if __name__ == "__main__":
     ia = imdb.IMDb()
     movies = ia.search_movie(name)
 
-    m = movies[0]
-    ia.update(m, info=["main", "plot", "cast", "rating", "runtime", "technical"])
+    p = movies[0]
+    ia.update(p, info=["main", "plot", "cast", "rating", "runtime", "technical"])
 
-    print(m.summary())
+    print(p.summary())
     # return
     # cast = '\n'.join([str(p) for p in m['cast'][:10]])
     #
