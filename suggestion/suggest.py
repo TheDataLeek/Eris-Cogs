@@ -20,9 +20,9 @@ class Suggest(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def suggest(self, ctx, cog: Optional[str]=None):
+    async def suggest(self, ctx, cog: Optional[str] = None):
         lines = [
-            'Here\'s the repo for Eris Cogs: https://github.com/TheDataLeek/Eris-Cogs',
+            "Here's the repo for Eris Cogs: https://github.com/TheDataLeek/Eris-Cogs",
             "Want to submit a PR? Use this url! https://github.com/TheDataLeek/Eris-Cogs/compare",
             f"Here's the folder for the cog you've asked about! https://github.com/TheDataLeek/Eris-Cogs/tree/master/{cog}",
         ]
@@ -31,7 +31,7 @@ class Suggest(BaseCog):
         embedded_response = discord.Embed(
             title=f"Contribute to Snek!",
             type="rich",
-            description='\n'.join(lines),
+            description="\n".join(lines),
         )
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)

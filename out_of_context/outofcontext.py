@@ -217,7 +217,7 @@ class OutOfContext(BaseCog, ErisEventMixin):
                 quote_hash[word].append(quote)
 
         await self.oocconfig.guild(ctx.guild).quote_hash.set(quote_hash)
-        
+
         delta = time.time() - stime
         minutes = delta // 60
         seconds = delta - (minutes * 60)

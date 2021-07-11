@@ -67,7 +67,7 @@ class Quotes(BaseCog):
 
         if len(realname) > 32:
             # https://regex101.com/r/CrMmz9/1
-            match = re.match(r'^(.{,32})[^a-z]', realname, re.IGNORECASE)
+            match = re.match(r"^(.{,32})[^a-z]", realname, re.IGNORECASE)
             if match is not None:
                 realname = match.group(1)
                 return realname

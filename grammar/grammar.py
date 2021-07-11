@@ -97,7 +97,7 @@ class Grammar(BaseCog):
 
     @commands.command()
     async def addword(self, ctx):
-        """ Adds word to spellchecker """
+        """Adds word to spellchecker"""
         words = ctx.message.content.split(" ")[1:]
 
         self.spell.word_frequency.load_words(words)

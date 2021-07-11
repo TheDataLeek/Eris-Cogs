@@ -13,7 +13,8 @@ import imdb
 from typing import List
 
 
-class MovieType(imdb.utils._Container):pass
+class MovieType(imdb.utils._Container):
+    pass
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -30,40 +31,39 @@ class IMDBLookup(BaseCog):
 
     @imdb.command()
     async def movie(self, ctx, *name: str):
-        name = ' '.join(name)
+        name = " ".join(name)
         movies: List[imdb.Movie] = self.ia.search_movie(name)
         if not movies:
-            await ctx.send('Unable to find movie!')
+            await ctx.send("Unable to find movie!")
             return
 
         m: MovieType = movies[0]
-        self.ia.update(m, info=['main', 'summary', 'plot', 'cast', 'rating', 'runtime', 'technical'])
+        self.ia.update(
+            m,
+            info=["main", "summary", "plot", "cast", "rating", "runtime", "technical"],
+        )
 
-        summary = '\n'.join(m.summary().split('\n')[2:])
-
-        # cast = '\n'.join([str(p) for p in m['cast'][:10]])
+        summary = "\n".join(m.summary().split("\n")[2:])
 
         embedded_response = discord.Embed(
-            title=f"Movie",
-            type="rich",
-            description=summary
+            title=f"Movie", type="rich", description=summary
         )
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)
 
     @imdb.command()
     async def person(self, ctx, *name: str):
-        name = ' '.join(name)
+        name = " ".join(name)
         people: List[imdb.Person] = self.ia.search_person(name)
 
 
-if __name__ == '__main__':
-    name = 'kong'
+if __name__ == "__main__":
+    name = "kong"
     ia = imdb.IMDb()
     movies = ia.search_movie(name)
 
     m = movies[0]
-    ia.update(m, info=['main', 'plot', 'cast', 'rating', 'runtime', 'technical'])
+    ia.update(m, info=["main", "plot", "cast", "rating", "runtime", "technical"])
 
     print(m.summary())
     # return
