@@ -16,6 +16,7 @@ from typing import List
 class MovieType(imdb.utils._Container):
     pass
 
+
 class PersonType(imdb.utils._Container):
     pass
 
@@ -30,10 +31,16 @@ class IMDBLookup(BaseCog):
 
     @commands.group()
     async def imdb(self, ctx: commands.Context):
+        """
+        Search for movies or people!
+        """
         pass
 
     @imdb.command()
     async def movie(self, ctx, *name: str):
+        """
+        Get a summary about a movie
+        """
         name = " ".join(name)
         movies: List[imdb.Movie] = self.ia.search_movie(name)
         if not movies:
@@ -56,6 +63,9 @@ class IMDBLookup(BaseCog):
 
     @imdb.command()
     async def person(self, ctx, *name: str):
+        """
+        Get a summary about a person
+        """
         name = " ".join(name)
         people: List[imdb.Person] = self.ia.search_person(name)
         if not people:
@@ -63,10 +73,7 @@ class IMDBLookup(BaseCog):
             return
 
         p: PersonType = people[0]
-        self.ia.update(
-            p,
-            info=["main"]
-        )
+        self.ia.update(p, info=["main"])
 
         summary = "\n".join(p.summary().split("\n")[2:])
 
