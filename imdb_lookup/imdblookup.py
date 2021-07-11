@@ -39,19 +39,14 @@ class IMDBLookup(BaseCog):
         m: MovieType = movies[0]
         self.ia.update(m, info=['main', 'summary', 'plot', 'cast', 'rating', 'runtime', 'technical'])
 
-        cast = '\n'.join([str(p) for p in m['cast'][:10]])
+        summary = '\n'.join(m.summary().split('\n')[2:])
+
+        # cast = '\n'.join([str(p) for p in m['cast'][:10]])
 
         embedded_response = discord.Embed(
-            title=f"{m} (User Rating: {m['rating']})",
+            title=f"Movie",
             type="rich",
-            # thumbnail=m['cover_url'][0],
-            description=(
-                f"Runtime: {m['runtime'][0]} minutes\n\n"
-                f"{m['summary']}\n"
-                f"*{m['plot'][0]}*\n\n"
-                "__Cast__\n"
-                f"{cast}\n..."
-            )
+            description=summary
         )
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)
@@ -60,3 +55,30 @@ class IMDBLookup(BaseCog):
     async def person(self, ctx, *name: str):
         name = ' '.join(name)
         people: List[imdb.Person] = self.ia.search_person(name)
+
+
+if __name__ == '__main__':
+    name = 'kong'
+    ia = imdb.IMDb()
+    movies = ia.search_movie(name)
+
+    m = movies[0]
+    ia.update(m, info=['main', 'plot', 'cast', 'rating', 'runtime', 'technical'])
+
+    print(m.summary())
+    # return
+    # cast = '\n'.join([str(p) for p in m['cast'][:10]])
+    #
+    # embedded_response = discord.Embed(
+    #     title=f"{m} (User Rating: {m['rating']})",
+    #     type="rich",
+    #     # thumbnail=m['cover_url'][0],
+    #     description=(
+    #         f"Runtime: {m['runtime'][0]} minutes\n\n"
+    #         f"*{m['plot'][0]}*\n\n"
+    #         "__Cast__\n"
+    #         f"{cast}\n..."
+    #     )
+    # )
+    # await instance.movie(None, 'king kong')
+    #
