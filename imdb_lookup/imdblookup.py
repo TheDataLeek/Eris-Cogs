@@ -62,7 +62,7 @@ class IMDBLookup(BaseCog):
             await ctx.send("Unable to find person!")
             return
 
-        p: PersonType = movies[0]
+        p: PersonType = people[0]
         self.ia.update(
             p,
             info=["main"]
