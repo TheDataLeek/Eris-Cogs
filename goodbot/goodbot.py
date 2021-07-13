@@ -24,8 +24,6 @@ class GoodBot(BaseCog):
 
         self.whois = self.bot.get_cog("WhoIs")
 
-        self.emojis = {str(e.id): e for e in self.bot.emojis}
-
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
         self.names = [s for s in (data_dir / "names.txt").read_text().split("\n") if s]
         self.good = [s for s in (data_dir / "good.txt").read_text().split("\n") if s]
@@ -52,6 +50,11 @@ class GoodBot(BaseCog):
         self.legacyfile = os.path.join(
             str(pathlib.Path.home()), "bots.db"
         )  # for old version
+
+        self._update_cache()
+
+    def _update_cache(self):
+        self.emojis = {str(e.id): e for e in self.bot.emojis}
 
     @commands.command()
     @checks.mod()
@@ -174,6 +177,8 @@ class GoodBot(BaseCog):
         if user is None:
             user = ctx.author
 
+        self._update_cache()
+
         async with self.config.guild(
             ctx.guild
         ).scores() as guildscores, self.config.scores() as globalscores:
@@ -215,6 +220,7 @@ class GoodBot(BaseCog):
         """
         See the top 10 emoji scores for a user for either the current guild OR overall
         """
+        self._update_cache()
 
         scores: Dict
         if which == "guild":
