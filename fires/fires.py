@@ -22,15 +22,7 @@ class Fires(BaseCog):
         """
         Show the firemap
         """
-        date = dt.datetime.now()
+        date = dt.datetime.now() - dt.timedelta(hours=6)
         datestring = date.strftime(self.date_format)
         url = self.url_string.format(datestring)
         await ctx.send(url)
-        # async with aiohttp.ClientSession() as session:
-        #     async with session.get(url) as resp:
-        #         img = await resp.read()
-        #         await ctx.send(
-        #                 file=discord.File(
-        #                     img, filename=f"fires_{datestring}.png"
-        #                     )
-        #                 )
