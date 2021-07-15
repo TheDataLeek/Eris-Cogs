@@ -27,9 +27,6 @@ class ExportEmoji(BaseCog):
         String emoji cannot be exported
         """
         message: discord.Message = ctx.message
-        if len(emoji) == 0:
-            await ctx.send("No emoji to download!")
-            return
 
         buf = io.BytesIO()
         count = 0
@@ -56,6 +53,10 @@ class ExportEmoji(BaseCog):
                     count += 1
 
         buf.seek(0)
+
+        if count == 0:
+            await ctx.send("No emoji to download!")
+            return
 
         await ctx.send(file=discord.File(buf, filename=f"export_of_{count:0.0f}.zip"))
 
