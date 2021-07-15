@@ -111,14 +111,7 @@ class ExportEmoji(BaseCog):
         substrings: List[str] = _CUSTOM_EMOJI_RE.findall(message.content)
         # taken from https://github.com/Rapptz/discord.py/blob/master/discord/partial_emoji.py#L95
         # waiting for discord.py 2.0
-        for substring in substrings:
-            print(substring)
-            match: re.Match = _CUSTOM_EMOJI_RE.match(substring)
-            print(match)
-            groups = match.groupdict()
-            animated = bool(groups["animated"])
-            emoji_id = int(groups["id"])
-            name = groups["name"]
+        for animated, name, emoji_id in substrings:
             nam, new_buf = await self._export_emoji(
                 discord.PartialEmoji(name=name, animated=animated, id=emoji_id)
             )
