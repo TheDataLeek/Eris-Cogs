@@ -37,9 +37,9 @@ class ExportEmoji(BaseCog):
         """
         message: discord.Message = ctx.message
 
-        buf = io.BytesIO()
+        zipbuf = io.BytesIO()
         count = 0
-        with zipfile.ZipFile(buf, "w") as zf:
+        with zipfile.ZipFile(zipbuf, "w") as zf:
             for emoji_to_export in emoji_list:
                 if isinstance(emoji_to_export, discord.PartialEmoji) or isinstance(
                     emoji_to_export, discord.Emoji
@@ -52,26 +52,26 @@ class ExportEmoji(BaseCog):
                     message: discord.Message = await ctx.message.channel.fetch_message(
                         emoji_to_export
                     )
-                    buf_list = await self._export_from_message(ctx, message)
-                    for name, buf in buf_list:
-                        zf.writestr(name, buf.getvalue())
+                    buf_list = await self._export_from_message(message)
+                    for name, zipbuf in buf_list:
+                        zf.writestr(name, zipbuf.getvalue())
                         count += 1
 
             if message.reference:
                 message_id = message.reference.message_id
                 referenced_message = await ctx.message.channel.fetch_message(message_id)
-                buf_list = await self._export_from_message(ctx, referenced_message)
+                buf_list = await self._export_from_message(referenced_message)
                 for name, buf in buf_list:
                     zf.writestr(name, buf.getvalue())
                     count += 1
 
-        buf.seek(0)
+        zipbuf.seek(0)
 
         if count == 0:
             await ctx.send("Nothing to download or export!")
             return
 
-        await ctx.send(file=discord.File(buf, filename=f"export_of_{count:0.0f}.zip"))
+        await ctx.send(file=discord.File(zipbuf, filename=f"export_of_{count:0.0f}.zip"))
 
     async def _export_emoji(
         self, emoji: Union[discord.Emoji, discord.PartialEmoji]
@@ -95,7 +95,7 @@ class ExportEmoji(BaseCog):
             return name, new_buf
 
     async def _export_from_message(
-        self, ctx: commands.context, message: discord.Message
+        self, message: discord.Message
     ) -> List[Tuple[str, io.BytesIO]]:
         reactions = message.reactions
         results = []
