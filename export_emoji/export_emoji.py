@@ -89,7 +89,8 @@ class ExportEmoji(BaseCog):
         if asset:
             name = f"{sticker.name}.png"
             new_buf = io.BytesIO()
-            await asset.save(new_buf)
+            num_bytes: int = await asset.save(new_buf)
+            print(num_bytes)
             return name, new_buf
 
     async def _export_from_message(
