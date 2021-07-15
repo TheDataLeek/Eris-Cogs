@@ -44,8 +44,8 @@ class ExportEmoji(BaseCog):
                 if isinstance(emoji_to_export, discord.PartialEmoji) or isinstance(
                     emoji_to_export, discord.Emoji
                 ):
-                    name, new_buf = await self._export_emoji(emoji_to_export)
-                    zf.writestr(name, new_buf.getvalue())
+                    name, buf = await self._export_emoji(emoji_to_export)
+                    zf.writestr(name, buf.getvalue())
                     count += 1
                 elif isinstance(emoji_to_export, int):
                     # if int, assume message id
@@ -53,8 +53,8 @@ class ExportEmoji(BaseCog):
                         emoji_to_export
                     )
                     buf_list = await self._export_from_message(message)
-                    for name, zipbuf in buf_list:
-                        zf.writestr(name, zipbuf.getvalue())
+                    for name, buf in buf_list:
+                        zf.writestr(name, buf.getvalue())
                         count += 1
 
             if message.reference:
