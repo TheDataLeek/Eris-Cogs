@@ -23,7 +23,7 @@ _CUSTOM_EMOJI_RE = re.compile(
 
 class ExportEmoji(BaseCog):
     def __init__(self, bot):
-        self.bot: discord.ClientUser = bot
+        self.bot: commands.Bot = bot
 
     @commands.command()
     async def export(
@@ -90,7 +90,6 @@ class ExportEmoji(BaseCog):
             name = f"{sticker.name}.png"
             new_buf = io.BytesIO()
             num_bytes: int = await asset.save(new_buf)
-            print(num_bytes)
             return name, new_buf
 
     async def _export_from_message(
@@ -114,9 +113,9 @@ class ExportEmoji(BaseCog):
         # waiting for discord.py 2.0
         for animated, name, emoji_id in substrings:
             state = message._state
-            name, new_buf = await self._export_emoji(
-                discord.PartialEmoji.with_state(state, name=name, animated=animated, id=emoji_id)
-            )
+            emoji = discord.PartialEmoji.with_state(state, name=name, animated=animated, id=emoji_id)
+            await ctx.send(emoji)
+            name, new_buf = await self._export_emoji(emoji)
             results.append((name, new_buf))
 
         return results
