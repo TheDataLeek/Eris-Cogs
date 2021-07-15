@@ -16,7 +16,9 @@ BaseCog = getattr(commands, "Cog", object)
 
 # https://github.com/Rapptz/discord.py/blob/master/discord/partial_emoji.py#L95
 # Thanks @TrustyJaid!!
-_CUSTOM_EMOJI_RE = re.compile(r'<?(?P<animated>a)?:?(?P<name>[A-Za-z0-9\_]+):(?P<id>[0-9]{13,20})>?')
+_CUSTOM_EMOJI_RE = re.compile(
+    r"<?(?P<animated>a)?:?(?P<name>[A-Za-z0-9\_]+):(?P<id>[0-9]{13,20})>?"
+)
 
 
 class ExportEmoji(BaseCog):
@@ -64,7 +66,7 @@ class ExportEmoji(BaseCog):
         buf.seek(0)
 
         if count == 0:
-            await ctx.send("No emoji to download!")
+            await ctx.send("Nothing to download or export!")
             return
 
         await ctx.send(file=discord.File(buf, filename=f"export_of_{count:0.0f}.zip"))
@@ -82,9 +84,7 @@ class ExportEmoji(BaseCog):
         await asset.save(new_buf)
         return name, new_buf
 
-    async def _export_sticker(
-            self, sticker: discord.Sticker
-    ) -> Tuple[str, io.BytesIO]:
+    async def _export_sticker(self, sticker: discord.Sticker) -> Tuple[str, io.BytesIO]:
         asset: Optional[discord.Asset] = sticker.image_url
         if asset:
             name = f"{sticker.name}.png"
@@ -103,8 +103,22 @@ class ExportEmoji(BaseCog):
                 name, new_buf = await self._export_emoji(react_emoji)
                 results.append((name, new_buf))
 
+        # currently does not work for some reason...
         for sticker in message.stickers:
             name, new_buf = await self._export_sticker(sticker)
+            results.append((name, new_buf))
+
+        all_emoji = _CUSTOM_EMOJI_RE.findall(message.content)
+        # taken from https://github.com/Rapptz/discord.py/blob/master/discord/partial_emoji.py#L95
+        # waiting for discord.py 2.0
+        for match in all_emoji:
+            groups = match.groupdict()
+            animated = bool(groups["animated"])
+            emoji_id = int(groups["id"])
+            name = groups["name"]
+            nam, new_buf = await self._export_emoji(
+                discord.PartialEmoji(name=name, animated=animated, id=emoji_id)
+            )
             results.append((name, new_buf))
 
         return results
