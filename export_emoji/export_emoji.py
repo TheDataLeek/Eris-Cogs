@@ -50,7 +50,7 @@ class ExportEmoji(BaseCog):
                     message: discord.Message = await ctx.message.channel.fetch_message(
                         e
                     )
-                    buf_list = await self._export_from_message(message)
+                    buf_list = await self._export_from_message(ctx, message)
                     for name, buf in buf_list:
                         zf.writestr(name, buf.getvalue())
                         count += 1
@@ -58,7 +58,7 @@ class ExportEmoji(BaseCog):
             if message.reference:
                 message_id = message.reference.message_id
                 referenced_message = await ctx.message.channel.fetch_message(message_id)
-                buf_list = await self._export_from_message(referenced_message)
+                buf_list = await self._export_from_message(ctx, referenced_message)
                 for name, buf in buf_list:
                     zf.writestr(name, buf.getvalue())
                     count += 1
@@ -93,7 +93,7 @@ class ExportEmoji(BaseCog):
             return name, new_buf
 
     async def _export_from_message(
-        self, message: discord.Message
+        self, ctx: commands.context, message: discord.Message
     ) -> List[Tuple[str, io.BytesIO]]:
         reactions = message.reactions
         results = []
@@ -113,7 +113,7 @@ class ExportEmoji(BaseCog):
         # waiting for discord.py 2.0
         for animated, name, emoji_id in substrings:
             nam, new_buf = await self._export_emoji(
-                discord.PartialEmoji(name=name, animated=animated, id=emoji_id)
+                discord.PartialEmoji.with_state(ctx, name=name, animated=animated, id=emoji_id)
             )
             results.append((name, new_buf))
 
