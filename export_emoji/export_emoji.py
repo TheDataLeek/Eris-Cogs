@@ -76,13 +76,13 @@ class ExportEmoji(BaseCog):
     ) -> Tuple[str, io.BytesIO]:
         asset: discord.Asset = emoji.url
         url = str(asset)
+        print(url)
         suffix = "png"
         if emoji.animated:
             suffix = "gif"
         name = f"{emoji.name}.{suffix}"
         new_buf = io.BytesIO()
         num_bytes: int = await asset.save(new_buf)
-        print(num_bytes)
         return name, new_buf
 
     async def _export_sticker(self, sticker: discord.Sticker) -> Tuple[str, io.BytesIO]:
