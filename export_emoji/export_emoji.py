@@ -118,7 +118,7 @@ class ExportEmoji(BaseCog):
             emoji = discord.PartialEmoji.with_state(
                 state, name=name, animated=animated, id=emoji_id
             )
-            await ctx.send(emoji)
+            # await ctx.send(emoji)
             name, new_buf = await self._export_emoji(emoji)
             results.append((name, new_buf))
 
