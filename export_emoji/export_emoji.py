@@ -27,7 +27,7 @@ class ExportEmoji(BaseCog):
 
     @commands.command()
     async def export(
-        self, ctx, *emoji: Union[discord.PartialEmoji, discord.Emoji, int, str]
+        self, ctx, *emoji_list: Union[discord.PartialEmoji, discord.Emoji, int, str]
     ):
         """
         Export emoji to zipfile.
@@ -40,15 +40,17 @@ class ExportEmoji(BaseCog):
         buf = io.BytesIO()
         count = 0
         with zipfile.ZipFile(buf, "w") as zf:
-            for e in emoji:
-                if isinstance(e, discord.PartialEmoji) or isinstance(e, discord.Emoji):
-                    name, new_buf = await self._export_emoji(e)
+            for emoji_to_export in emoji_list:
+                if isinstance(emoji_to_export, discord.PartialEmoji) or isinstance(
+                    emoji_to_export, discord.Emoji
+                ):
+                    name, new_buf = await self._export_emoji(emoji_to_export)
                     zf.writestr(name, new_buf.getvalue())
                     count += 1
-                elif isinstance(e, int):
+                elif isinstance(emoji_to_export, int):
                     # if int, assume message id
                     message: discord.Message = await ctx.message.channel.fetch_message(
-                        e
+                        emoji_to_export
                     )
                     buf_list = await self._export_from_message(ctx, message)
                     for name, buf in buf_list:
@@ -76,7 +78,6 @@ class ExportEmoji(BaseCog):
     ) -> Tuple[str, io.BytesIO]:
         asset: discord.Asset = emoji.url
         url = str(asset)
-        print(url)
         suffix = "png"
         if emoji.animated:
             suffix = "gif"
@@ -114,7 +115,9 @@ class ExportEmoji(BaseCog):
         # waiting for discord.py 2.0
         for animated, name, emoji_id in substrings:
             state = message._state
-            emoji = discord.PartialEmoji.with_state(state, name=name, animated=animated, id=emoji_id)
+            emoji = discord.PartialEmoji.with_state(
+                state, name=name, animated=animated, id=emoji_id
+            )
             await ctx.send(emoji)
             name, new_buf = await self._export_emoji(emoji)
             results.append((name, new_buf))
