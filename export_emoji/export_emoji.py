@@ -1,9 +1,10 @@
 # stdlib
+import re
 import io
 import zipfile
 from zipfile import ZipFile
 
-from typing import Union, Tuple, List
+from typing import Union, Tuple, List, Optional
 
 # third party
 import discord
@@ -12,6 +13,10 @@ import aiohttp
 
 
 BaseCog = getattr(commands, "Cog", object)
+
+# https://github.com/Rapptz/discord.py/blob/master/discord/partial_emoji.py#L95
+# Thanks @TrustyJaid!!
+_CUSTOM_EMOJI_RE = re.compile(r'<?(?P<animated>a)?:?(?P<name>[A-Za-z0-9\_]+):(?P<id>[0-9]{13,20})>?')
 
 
 class ExportEmoji(BaseCog):
@@ -77,6 +82,16 @@ class ExportEmoji(BaseCog):
         await asset.save(new_buf)
         return name, new_buf
 
+    async def _export_sticker(
+            self, sticker: discord.Sticker
+    ) -> Tuple[str, io.BytesIO]:
+        asset: Optional[discord.Asset] = sticker.image_url
+        if asset:
+            name = f"{sticker.name}.png"
+            new_buf = io.BytesIO()
+            await asset.save(new_buf)
+            return name, new_buf
+
     async def _export_from_message(
         self, message: discord.Message
     ) -> List[Tuple[str, io.BytesIO]]:
@@ -87,5 +102,9 @@ class ExportEmoji(BaseCog):
             if not isinstance(react_emoji, str):
                 name, new_buf = await self._export_emoji(react_emoji)
                 results.append((name, new_buf))
+
+        for sticker in message.stickers:
+            name, new_buf = await self._export_sticker(sticker)
+            results.append((name, new_buf))
 
         return results
