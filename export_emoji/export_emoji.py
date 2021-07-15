@@ -108,10 +108,11 @@ class ExportEmoji(BaseCog):
             name, new_buf = await self._export_sticker(sticker)
             results.append((name, new_buf))
 
-        all_emoji = _CUSTOM_EMOJI_RE.findall(message.content)
+        substrings: List[str] = _CUSTOM_EMOJI_RE.findall(message.content)
         # taken from https://github.com/Rapptz/discord.py/blob/master/discord/partial_emoji.py#L95
         # waiting for discord.py 2.0
-        for match in all_emoji:
+        for substring in substrings:
+            match = _CUSTOM_EMOJI_RE.match(substring)
             groups = match.groupdict()
             animated = bool(groups["animated"])
             emoji_id = int(groups["id"])
