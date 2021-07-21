@@ -19,6 +19,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Facts](#facts) | Provide random facts | ✅ |
 | [Fires](#fires) | US Firemap | ✅ |
 | [Goodbot](#goodbot) | Good Bot Emoji Tracker | ✅ |
+| [Haiku](#haiku) | Haiku | ✅ |
 | [Hotel_california](#hotel_california) | Role-based "punishment" for infractions on moderator whim. | ✅ |
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Imdb_lookup](#imdb_lookup) | IMDB | ✅ |
@@ -101,6 +102,10 @@ Description: Show US Firemap
 Short: Good Bot Emoji Tracker
 
 Description: Good Bot Emoji Tracker - tracks all emoji reactions (that the bot has access to) for all users in your server! Upon reaching a vote-threshold, replies to the original message and compliments the user!
+## Haiku
+Short: Haiku
+
+Description: Determines haikus!
 ## Hotel_california
 Short: Role-based "punishment" for infractions on moderator whim.
 
