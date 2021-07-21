@@ -25,7 +25,7 @@ class Haiku(BaseCog, ErisEventMixin):
 
     async def check_haiku(self, message: discord.Message):
         message_content, _ = re.subn(r"\s+", ' ', str(message.clean_content))
-        message_content, _ = re.subn(r"[^a-z]", '', message_content, flags=re.IGNORECASE)
+        message_content, _ = re.subn(r"[^a-z ]", '', message_content, flags=re.IGNORECASE)
         print(message_content)
         message_syllables = []
         split_message = [w for w in message_content.split(' ') if w]
