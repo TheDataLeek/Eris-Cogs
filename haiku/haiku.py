@@ -48,9 +48,9 @@ class Haiku(BaseCog, ErisEventMixin):
 
     async def check_haiku(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
-        allowed: bool = await self.allowed(ctx, message)
-        if not allowed:
-            return
+        # allowed: bool = await self.allowed(ctx, message)
+        # if not allowed:
+        #     return
 
         message_syllables = self.get_syllables(ctx.clean_content)
 
