@@ -23,6 +23,7 @@ class Haiku(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.check_haiku, "on_message")
 
     async def check_haiku(self, message: discord.Message):
+        print(message)
         message_syllables = []
         for word in message.clean_content.split(' '):
             cmu = self.syllable_dict.get(word.lower())
@@ -32,9 +33,11 @@ class Haiku(BaseCog, ErisEventMixin):
                 syll_count = syllables.estimate(word)
 
             message_syllables.append((word, syll_count))
+        print(message_syllables)
 
         # initial check
         total = sum([c for _, c in message_syllables])
+        print(total)
         if total != 17:
             return
 
@@ -47,11 +50,15 @@ class Haiku(BaseCog, ErisEventMixin):
             cwords.append(word)
             ctotal = (5 if syll_flag else 7)
             if csum == ctotal:
+                print(cwords)
                 splits.append(cwords)
                 cwords = []
+                csum = 0
                 syll_flag ^= 1
             elif csum > ctotal:
                 return
+
+        print(splits)
 
         ctx = await self.bot.get_context(message)
         await ctx.send('\n'.join(' '.join(w for w in s) for s in splits))
