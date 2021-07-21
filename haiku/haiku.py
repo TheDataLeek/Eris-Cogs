@@ -20,13 +20,9 @@ class Haiku(BaseCog, ErisEventMixin):
 
         self.syllable_dict = cmudict.dict()
 
-        self.bot.add_listener(self.no_sudo, "on_message")
+        self.bot.add_listener(self.check_haiku, "on_message")
 
-    async def no_sudo(self, message: discord.Message):
-        keyword_in_message: bool = "sudo" in message.clean_content.lower()
-        if not keyword_in_message:
-            return
-
+    async def check_haiku(self, message: discord.Message):
         message_syllables = []
         for word in message.clean_content.split(' '):
             cmu = self.syllable_dict.get(word.lower())
