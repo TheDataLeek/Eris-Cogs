@@ -37,10 +37,9 @@ class Haiku(BaseCog, ErisEventMixin):
         for word in split_message:
             cmu = self.syllable_dict.get(word.lower())
             if cmu is not None:
-                if isinstance(cmu[0], str):
-                    syll_count = len(cmu)
-                else:
-                    syll_count = len(cmu[0])
+                if not isinstance(cmu[0], str):
+                    cmu = cmu[0]
+                syll_count = len([w for w in cmu if w[-1].isdigit()])
             else:
                 syll_count = syllables.estimate(word)
 
