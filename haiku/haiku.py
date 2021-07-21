@@ -34,7 +34,6 @@ class Haiku(BaseCog, ErisEventMixin):
         message_content, _ = re.subn(
             r"[^a-z ]", "", message_content, flags=re.IGNORECASE
         )
-        print(message_content)
         message_syllables = []
         split_message = [w for w in message_content.split(" ") if w]
         for word in split_message:
@@ -47,7 +46,7 @@ class Haiku(BaseCog, ErisEventMixin):
                 syll_count = syllables.estimate(word)
 
             message_syllables.append((word, syll_count))
-        # print(message_syllables)
+        print(message_syllables)
 
         # initial check
         total = sum([c for _, c in message_syllables])
