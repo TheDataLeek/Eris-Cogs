@@ -8,7 +8,7 @@ import nltk
 from nltk.corpus import cmudict
 import syllables
 
-nltk.download('cmudict')
+nltk.download("cmudict")
 
 from .eris_event_lib import ErisEventMixin
 
@@ -30,11 +30,13 @@ class Haiku(BaseCog, ErisEventMixin):
         if not allowed:
             return
 
-        message_content, _ = re.subn(r"\s+", ' ', str(message.clean_content))
-        message_content, _ = re.subn(r"[^a-z ]", '', message_content, flags=re.IGNORECASE)
+        message_content, _ = re.subn(r"\s+", " ", str(message.clean_content))
+        message_content, _ = re.subn(
+            r"[^a-z ]", "", message_content, flags=re.IGNORECASE
+        )
         # print(message_content)
         message_syllables = []
-        split_message = [w for w in message_content.split(' ') if w]
+        split_message = [w for w in message_content.split(" ") if w]
         for word in split_message:
             cmu = self.syllable_dict.get(word.lower())
             if cmu is not None:
@@ -60,7 +62,7 @@ class Haiku(BaseCog, ErisEventMixin):
         for word, count in message_syllables:
             csum += count
             cwords.append(word)
-            ctotal = (5 if syll_flag else 7)
+            ctotal = 5 if syll_flag else 7
             if csum == ctotal:
                 # print(cwords)
                 splits.append(cwords)
@@ -71,7 +73,7 @@ class Haiku(BaseCog, ErisEventMixin):
                 return
 
         # print(splits)
-        formatted = '\n'.join(' '.join(w for w in s) for s in splits)
+        formatted = "\n".join(" ".join(w for w in s) for s in splits)
         embedded_response = discord.Embed(
             title=f"Accidental Haiku?",
             type="rich",
@@ -88,6 +90,5 @@ class Haiku(BaseCog, ErisEventMixin):
         #     await self.log_last_message(ctx, message)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     import nltk

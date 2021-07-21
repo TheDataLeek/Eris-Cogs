@@ -71,7 +71,9 @@ class ExportEmoji(BaseCog):
             await ctx.send("Nothing to download or export!")
             return
 
-        await ctx.send(file=discord.File(zipbuf, filename=f"export_of_{count:0.0f}.zip"))
+        await ctx.send(
+            file=discord.File(zipbuf, filename=f"export_of_{count:0.0f}.zip")
+        )
 
     async def _export_emoji(
         self, emoji: Union[discord.Emoji, discord.PartialEmoji]
