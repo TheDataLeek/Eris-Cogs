@@ -115,7 +115,7 @@ class Haiku(BaseCog, ErisEventMixin):
             return
 
         if msg_id in self.log:
-            await ctx.send('\n'.join(str(self.log[msg_id])))
+            await ctx.send('\n'.join(str(_) for _ in self.log[msg_id]))
 
 
 if __name__ == "__main__":
