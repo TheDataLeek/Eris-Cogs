@@ -56,7 +56,7 @@ class Haiku(BaseCog, ErisEventMixin):
 
         flag = True
 
-        message_syllables = self.get_syllables(ctx.clean_content)
+        message_syllables = self.get_syllables(str(message.clean_content))
 
         # initial check
         total = sum([c for _, c in message_syllables])
