@@ -24,6 +24,8 @@ class Haiku(BaseCog, ErisEventMixin):
 
         self.syllable_dict = cmudict.dict()
 
+        self.log = {}
+
         self.bot.add_listener(self.check_haiku, "on_message")
 
     def get_syllables(self, message: str) -> List:
@@ -52,12 +54,14 @@ class Haiku(BaseCog, ErisEventMixin):
         # if not allowed:
         #     return
 
+        flag = True
+
         message_syllables = self.get_syllables(ctx.clean_content)
 
         # initial check
         total = sum([c for _, c in message_syllables])
         if total != 17:
-            return
+            flag = False
 
         splits = []
         csum = 0
@@ -73,24 +77,30 @@ class Haiku(BaseCog, ErisEventMixin):
                 csum = 0
                 syll_flag ^= 1
             elif csum > ctotal:
-                return
+                flag = False
 
         formatted = "\n".join(" ".join(w for w in s) for s in splits)
+        self.log[ctx.message.id] = [message_syllables, total, formatted]
+
+        if not flag:
+            return
+
         embedded_response = discord.Embed(
             title=f"Accidental Haiku?",
             type="rich",
             description=formatted,
         )
         embedded_response = embed.randomize_colour(embedded_response)
+
         await ctx.send(embed=embedded_response)
 
     @commands.command()
     async def syllables(self, ctx, *msg: str):
-        msg = ' '.join(msg)
+        msg = " ".join(msg)
         syllables = self.get_syllables(msg)
 
         msg = [f"{word} ({count})" for word, count in syllables]
-        msg = ' '.join(msg)
+        msg = " ".join(msg)
 
         await ctx.send(msg)
 
