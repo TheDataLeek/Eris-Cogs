@@ -2,8 +2,11 @@ import sys
 
 import discord
 from redbot.core import commands, bot, Config
+import nltk
 from nltk.corpus import cmudict
 import syllables
+
+nltk.download('cmudict')
 
 from .eris_event_lib import ErisEventMixin
 
