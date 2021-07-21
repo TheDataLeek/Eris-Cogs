@@ -24,6 +24,11 @@ class Haiku(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.check_haiku, "on_message")
 
     async def check_haiku(self, message: discord.Message):
+        ctx = await self.bot.get_context(message)
+        allowed: bool = await self.allowed(ctx, message)
+        if not allowed:
+            return
+
         message_content, _ = re.subn(r"\s+", ' ', str(message.clean_content))
         message_content, _ = re.subn(r"[^a-z ]", '', message_content, flags=re.IGNORECASE)
         print(message_content)
@@ -32,7 +37,10 @@ class Haiku(BaseCog, ErisEventMixin):
         for word in split_message:
             cmu = self.syllable_dict.get(word.lower())
             if cmu is not None:
-                syll_count = len(cmu)
+                if isinstance(cmu[0], str):
+                    syll_count = len(cmu)
+                else:
+                    syll_count = len(cmu[0])
             else:
                 syll_count = syllables.estimate(word)
 
@@ -63,8 +71,6 @@ class Haiku(BaseCog, ErisEventMixin):
                 return
 
         print(splits)
-
-        ctx = await self.bot.get_context(message)
         await ctx.send('\n'.join(' '.join(w for w in s) for s in splits))
 
         # async with self.lock_config.channel(message.channel).get_lock():
