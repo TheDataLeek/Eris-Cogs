@@ -8,6 +8,8 @@ import nltk
 from nltk.corpus import cmudict
 import syllables
 
+from typing import List
+
 nltk.download("cmudict")
 
 from .eris_event_lib import ErisEventMixin
@@ -24,13 +26,8 @@ class Haiku(BaseCog, ErisEventMixin):
 
         self.bot.add_listener(self.check_haiku, "on_message")
 
-    async def check_haiku(self, message: discord.Message):
-        ctx = await self.bot.get_context(message)
-        allowed: bool = await self.allowed(ctx, message)
-        if not allowed:
-            return
-
-        message_content, _ = re.subn(r"\s+", " ", str(message.clean_content))
+    def get_syllables(self, message: str) -> List:
+        message_content, _ = re.subn(r"\s+", " ", message)
         message_content, _ = re.subn(
             r"[^a-z ]", "", message_content, flags=re.IGNORECASE
         )
@@ -46,11 +43,19 @@ class Haiku(BaseCog, ErisEventMixin):
                 syll_count = syllables.estimate(word)
 
             message_syllables.append((word, syll_count))
-        print(message_syllables)
+
+        return message_syllables
+
+    async def check_haiku(self, message: discord.Message):
+        ctx = await self.bot.get_context(message)
+        allowed: bool = await self.allowed(ctx, message)
+        if not allowed:
+            return
+
+        message_syllables = self.get_syllables(ctx.clean_content)
 
         # initial check
         total = sum([c for _, c in message_syllables])
-        print(total)
         if total != 17:
             return
 
@@ -63,7 +68,6 @@ class Haiku(BaseCog, ErisEventMixin):
             cwords.append(word)
             ctotal = 5 if syll_flag else 7
             if csum == ctotal:
-                # print(cwords)
                 splits.append(cwords)
                 cwords = []
                 csum = 0
@@ -71,7 +75,6 @@ class Haiku(BaseCog, ErisEventMixin):
             elif csum > ctotal:
                 return
 
-        # print(splits)
         formatted = "\n".join(" ".join(w for w in s) for s in splits)
         embedded_response = discord.Embed(
             title=f"Accidental Haiku?",
@@ -81,12 +84,15 @@ class Haiku(BaseCog, ErisEventMixin):
         embedded_response = embed.randomize_colour(embedded_response)
         await ctx.send(embed=embedded_response)
 
-        # async with self.lock_config.channel(message.channel).get_lock():
-        #     allowed: bool = await self.allowed(ctx, message)
-        #     if not allowed:
-        #         return
-        #
-        #     await self.log_last_message(ctx, message)
+    @commands.command()
+    async def syllables(self, ctx, *msg: str):
+        msg = ' '.join(msg)
+        syllables = self.get_syllables(msg)
+
+        msg = [f"{word} ({count})" for word, count in syllables]
+        msg = ' '.join(msg)
+
+        await ctx.send(msg)
 
 
 if __name__ == "__main__":
