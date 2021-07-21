@@ -8,7 +8,7 @@ import nltk
 from nltk.corpus import cmudict
 import syllables
 
-from typing import List
+from typing import List, Optional
 
 nltk.download("cmudict")
 
@@ -103,6 +103,19 @@ class Haiku(BaseCog, ErisEventMixin):
         msg = " ".join(msg)
 
         await ctx.send(msg)
+
+
+    @commands.command()
+    async def haikulog(self, ctx, msg_id: Optional[int] = None):
+        message: discord.Message = ctx.message
+        if message.reference:
+            msg_id = message.reference.message_id
+
+        if msg_id is None:
+            return
+
+        if msg_id in self.log:
+            await ctx.send(self.log[msg_id])
 
 
 if __name__ == "__main__":
