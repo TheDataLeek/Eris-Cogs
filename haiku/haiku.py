@@ -3,6 +3,7 @@ import re
 
 import discord
 from redbot.core import commands, bot, Config
+from redbot.core.utils import embed
 import nltk
 from nltk.corpus import cmudict
 import syllables
@@ -31,7 +32,7 @@ class Haiku(BaseCog, ErisEventMixin):
 
         message_content, _ = re.subn(r"\s+", ' ', str(message.clean_content))
         message_content, _ = re.subn(r"[^a-z ]", '', message_content, flags=re.IGNORECASE)
-        print(message_content)
+        # print(message_content)
         message_syllables = []
         split_message = [w for w in message_content.split(' ') if w]
         for word in split_message:
@@ -44,11 +45,11 @@ class Haiku(BaseCog, ErisEventMixin):
                 syll_count = syllables.estimate(word)
 
             message_syllables.append((word, syll_count))
-        print(message_syllables)
+        # print(message_syllables)
 
         # initial check
         total = sum([c for _, c in message_syllables])
-        print(total)
+        # print(total)
         if total != 17:
             return
 
@@ -61,7 +62,7 @@ class Haiku(BaseCog, ErisEventMixin):
             cwords.append(word)
             ctotal = (5 if syll_flag else 7)
             if csum == ctotal:
-                print(cwords)
+                # print(cwords)
                 splits.append(cwords)
                 cwords = []
                 csum = 0
@@ -69,8 +70,15 @@ class Haiku(BaseCog, ErisEventMixin):
             elif csum > ctotal:
                 return
 
-        print(splits)
-        await ctx.send('\n'.join(' '.join(w for w in s) for s in splits))
+        # print(splits)
+        formatted = '\n'.join(' '.join(w for w in s) for s in splits)
+        embedded_response = discord.Embed(
+            title=f"Accidental Haiku?",
+            type="rich",
+            description=formatted,
+        )
+        embedded_response = embed.randomize_colour(embedded_response)
+        await ctx.send(embed=embedded_response)
 
         # async with self.lock_config.channel(message.channel).get_lock():
         #     allowed: bool = await self.allowed(ctx, message)
