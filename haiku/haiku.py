@@ -1,4 +1,5 @@
 import sys
+import re
 
 import discord
 from redbot.core import commands, bot, Config
@@ -23,7 +24,8 @@ class Haiku(BaseCog, ErisEventMixin):
         self.bot.add_listener(self.check_haiku, "on_message")
 
     async def check_haiku(self, message: discord.Message):
-        print(message)
+        message_content, _ = re.subn(r"\s+", ' ', str(message.clean_content))
+        print(message_content)
         message_syllables = []
         for word in message.clean_content.split(' '):
             cmu = self.syllable_dict.get(word.lower())
