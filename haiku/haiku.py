@@ -23,6 +23,12 @@ class Haiku(BaseCog, ErisEventMixin):
         self.bot = bot_instance
 
         self.syllable_dict = cmudict.dict()
+        self.custom_syllables = {
+            'youre': 1,
+            'theyre': 1,
+            'cant': 1,
+            'havent': 2,
+        }
 
         self.log = {}
 
@@ -36,8 +42,11 @@ class Haiku(BaseCog, ErisEventMixin):
         message_syllables = []
         split_message = [w for w in message_content.split(" ") if w]
         for word in split_message:
+            custom = self.custom_syllables.get(word.lower())
             cmu = self.syllable_dict.get(word.lower())
-            if cmu is not None:
+            if custom is not None:
+                syll_count = custom
+            elif cmu is not None:
                 if not isinstance(cmu[0], str):
                     cmu = cmu[0]
                 syll_count = len([w for w in cmu if w[-1].isdigit()])
@@ -50,9 +59,12 @@ class Haiku(BaseCog, ErisEventMixin):
 
     async def check_haiku(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
-        # allowed: bool = await self.allowed(ctx, message)
-        # if not allowed:
-        #     return
+
+        if message.author.bot:
+            return
+
+        if 'http' in message.clean_content:
+            return
 
         flag = True
 
