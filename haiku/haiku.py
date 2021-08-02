@@ -14,8 +14,7 @@ nltk.download("cmudict")
 
 from .eris_event_lib import ErisEventMixin
 
-BaseCog = getattr(commands, "Cog", object)
-
+BaseCog = getattr(commands, "Cog", ob
 
 class Haiku(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance: bot):
@@ -31,6 +30,7 @@ class Haiku(BaseCog, ErisEventMixin):
         }
 
         self.log = {}
+        self.quote_re = re.compile(r'\|\|([^\|]*)\|\|', re.DOTALL)
 
         self.bot.add_listener(self.check_haiku, "on_message")
 
@@ -65,7 +65,10 @@ class Haiku(BaseCog, ErisEventMixin):
 
         if 'http' in message.clean_content:
             return
-
+        #Cleaned is the message with one spoiler removed
+        cleaned = self.quote_re.sub(message.clean_content,"")
+        if self.quote_re.match(message.clean_content):
+            return
         flag = True
 
         message_syllables = self.get_syllables(str(message.clean_content))
