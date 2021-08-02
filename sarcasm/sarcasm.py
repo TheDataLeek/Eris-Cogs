@@ -1,71 +1,51 @@
-import os
-import time
-import re
-import discord
-from redbot.core import commands
-import random
-from functools import reduce
 import io
+from time import sleep
+import discord
+from redbot.core import commands, data_manager, Config, checks, bot
+import random
 
-import sqlite3
-import pathlib
-import csv
+from .eris_event_lib import ErisEventMixin
 
 BaseCog = getattr(commands, "Cog", object)
 
 
-class Sarcasm(BaseCog):
-    def __init__(self, bot):
-        self.bot = bot
+class Sarcasm(BaseCog, ErisEventMixin):
+    def __init__(self, bot_instance):
+        super().__init__()
+        self.bot: bot = bot_instance
 
-        async def sarcasm_module(message):
-            if message.guild is None:
-                return
-            clean_message = message.clean_content.lower()
-            # MM: Added so list instead of string
-            message_split = clean_message.split(' ')
+        data_dir = data_manager.bundled_data_path(self)
+        self.sarcastic_image = (data_dir / "img.png").read_bytes()
 
-            # BLACKLIST CHANNELS
-            blacklist = [
-                'news',
-                'rpg',
-                'events',
-                'recommends',
-                'politisophy',
-                'eyebleach',
-                'weeb-lyfe',
-                'out-of-context',
-                'jokes',
-                'anime-club',
-            ]
+        self.bot.add_listener(self.add_sarcasm, "on_message")
 
-            message_channel = message.channel.name.lower()
+    async def add_sarcasm(self, message: discord.Message):
+        randomly_activated: bool = random.random() <= 0.005
+        if not randomly_activated:
+            return
 
-            if (
-                # DO NOT RESPOND TO SELF MESSAGES
-                (bot.user.id == message.author.id or message.content.startswith('.')) or
-                (message.channel.name is None) or
-                (reduce(
-                    lambda acc, n: acc or (n == message_channel),
-                    blacklist,
-                    False)) or
-                ('@' in clean_message) or
-                ('thank' in clean_message) or
-                ('http' in clean_message)
-                ):
+        ctx = await self.bot.get_context(message)
+
+        async with self.lock_config.channel(message.channel).get_lock():
+            allowed: bool = await self.allowed(ctx, message)
+            if not allowed:
                 return
 
-            ctx = await bot.get_context(message)
+            new_message = self.add_sarcasm_to_string(message.clean_content)
+            if new_message == message.clean_content:
+                return
 
-            # if str(ctx.author.id) == '142431859148718080' and random.random() <= 1:
-            if random.random() <= 0.02:
-                await ctx.send(add_sarcasm(clean_message))
+            async with ctx.typing():
+                sleep(1)
+                await ctx.send(new_message)
                 if random.random() <= 0.1:
-                    with open('./data/sarcasm/img.png', 'rb') as fobj:
-                        await ctx.send(file=discord.File(fobj))
-                return
+                    await ctx.send(
+                        file=discord.File(
+                            io.BytesIO(self.sarcastic_image), filename="sarcasm.png"
+                        )
+                    )
 
-        self.bot.add_listener(sarcasm_module, 'on_message')
+            await self.log_last_message(ctx, message)
 
-def add_sarcasm(message):
-    return ''.join(c if random.random() <= 0.5 else c.upper() for c in message)
+    def add_sarcasm_to_string(self, message: str):
+        return "".join(c if random.random() <= 0.5 else c.upper() for c in message)

@@ -1,7 +1,6 @@
 {
-    "name": "FishCogs",
-    "author": "Eris",
+    "name": "Eris-Cogs",
+    "author": ["Eris"],
     "short": "Eris' cogs for Red-DiscordBot",
-    "description": "foobar",
-    "install_msg": "Foobar"
+    "description": "Thanks for adding my repo! I hope you enjoy what's here, please don't hesitate to reach out on my [github](https://github.com/TheDataLeek/Eris-Cogs) or [discord](http://discord.gg/ee3NyDq) if you run into issues!"
 }

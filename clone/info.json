@@ -1,0 +1,8 @@
+{
+  "author" : ["Eris", "Maddie"],
+  "description" : "The bot takes on a specified user's name and avatar. Users take 1d10 confusion damage, half as much on a successful save. Usage: [p]clone [User]",
+  "name" : "Clone",
+  "short": "The bot takes on a user's name and avatar",
+  "install_msg": "Requires a new role called 'snek color' to be created that's above the bot's normal color",
+  "ready": true
+}

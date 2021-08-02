@@ -1,0 +1,7 @@
+{
+    "author" : ["Eris"],
+    "description" : "Grammar Module - insult your illiterate friends.",
+    "short": "Checks grammar of your users - load at your own risk",
+    "name" : "Grammar",
+    "hidden": true
+}

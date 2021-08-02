@@ -1,0 +1,7 @@
+{
+    "author" : ["Eris"],
+    "description" : "Adds random reactions to posts! User configurable.\nUsage:\n`[p]wiggle set emojis...` - set list of random emoji to choose from.\n`[p]wiggle show` - show your registered emoji\n`[p]wiggle showall` - show all registered emoji (requires mod access)",
+    "name" : "Wiggler",
+    "short": "Adds random reactions to posts!",
+    "ready": true
+}

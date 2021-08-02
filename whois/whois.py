@@ -1,154 +1,189 @@
+import string
+import sqlite3
 import os
+import json
 import discord
-from redbot.core import commands
-import sqlite3 as sq
-
+import io
 import pathlib
+import sqlite3
+import re
+
+from redbot.core import commands, data_manager, Config, checks, bot
+from redbot.core.utils.chat_formatting import pagify
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
+
+from typing import Union
+
 
 BaseCog = getattr(commands, "Cog", object)
 
-WHOFILE = os.path.join(str(pathlib.Path.home()), 'whois.db')
-
 
 class WhoIs(BaseCog):
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot_instance):
+        self.bot: bot = bot_instance
 
-        con = sq.connect(WHOFILE)
-        with con:
-            con.execute(
-                'CREATE TABLE IF NOT EXISTS usernames('
-                    'id INT PRIMARY KEY,'
-                    'userid TEXT,'
-                    'name TEXT'
-                ')'
-            )
+        data_dir = data_manager.bundled_data_path(self)
 
-            con.execute(
-                'CREATE TABLE IF NOT EXISTS usernicks('
-                    'id INT PRIMARY KEY,'
-                    'userid TEXT,'
-                    'nick TEXT'
-                ')'
-            )
+        self.config = Config.get_conf(
+            self,
+            identifier=746578326459283047523,
+            force_registration=True,
+            cog_name="whois",
+        )
+
+        default_guild = {"whois_dict": {}}
+        self.config.register_guild(**default_guild)
 
     @commands.command()
-    async def iseveryone(self, ctx):
-        con = sq.connect(WHOFILE)
-        cursor = con.cursor()
-        cursor.execute(
-            'SELECT userid, name '
-            'FROM usernames'
-        )
-        results = cursor.fetchall()
-        results = [
-            (ctx.guild.get_member(int(userid)), name)
-            for userid, name in results
-        ]
-        for (mention, name) in results:
-            await ctx.send('{} is {}'.format(mention, name))
-        con.close()
-
-    @commands.command()
-    async def iswho(self, ctx):
-        name = ' '.join(ctx.message.clean_content.split(' ')[1:]).lower()
-        if name == '':
-            await ctx.send('Please specify a person')
-            return
-
-        con = sq.connect(WHOFILE)
-
-        cursor = con.cursor()
-
-        cursor.execute(
-            'SELECT userid '
-            'FROM usernames '
-            'WHERE name LIKE \'%{}%\''.format(name)
-        )
-        results = cursor.fetchall()
-        if len(results) == 0:
-            await ctx.send('No users found! Please try again.')
-            return
-
-        members = []
-        for (userid,) in results:
-            member = ctx.guild.get_member(int(userid))
-            members.append(member.mention)
-        await ctx.send('The following users match: {}'.format(', '.join(members)))
-        con.close()
-
-    @commands.command(pass_context=True, no_pm=True)
-    async def whois(self, ctx, user: discord.Member=None):
+    async def theyare(self, ctx, user: discord.Member, *name: str):
         """
-        Ask who a person is
+        Set the real name of the user
+        """
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            whois_dict[str(user.id)] = " ".join(name)
+
+        await ctx.send("Done")
+
+    @commands.command()
+    async def whois(self, ctx, user: discord.Member = None):
+        """
+        Return the real name of the tagged user
         """
         if user is None:
-            await ctx.send('Please provide a user to specify')
-            return
+            user = ctx.message.author
+        realname = await self.get_realname(ctx, str(user.id))
 
-        con = sq.connect(WHOFILE)
+        await ctx.send(realname or "User not registered!")
 
-        cursor = con.cursor()
-        cursor.execute(
-            'SELECT name FROM usernames WHERE userid=?',
-            (user.id,)
-        )
-        names = cursor.fetchall()
+    async def get_realname(self, ctx, userid: str):
+        """
+        Separate func here for others to use
+        """
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            realname = whois_dict.get(userid, None)
+        return realname
 
-        cursor.execute(
-            'SELECT nick FROM usernicks WHERE userid=?',
-            (user.id,)
-        )
-        nicks = cursor.fetchall()
+    @commands.command()
+    async def iswho(self, ctx, realname: str):
+        """
+        Reverse whois, where you search for the real name and get the tag of the matching users
+        """
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            matches = []
+            for userid, name in whois_dict.items():
+                if realname in name.lower():
+                    matches.append(ctx.guild.get_member(int(userid)).mention)
 
-        message = (
-            'User: {}\n'
-            'Realname: {}\n'
-            'Known Aliases: {}'
-        ).format(
-            user.name,
-            'No Name Known!' if len(names) == 0 else ', '.join(x[0] for x in names),
-            str(list(x[0] for x in nicks))
-        )
-
-        con.close()
-
-        await ctx.send(message)
-
-    @commands.command(pass_context=True)
-    async def theyare(self, ctx, user: discord.Member=None, realname: str=None):
-        if user is None or realname is None:
-            await ctx.send('Please specify a <user> and a <realname>')
-            return
-
-        con = sq.connect(WHOFILE)
-        cursor = con.cursor()
-
-        cursor.execute(
-            'SELECT * FROM usernames WHERE userid=?',
-            (user.id,)
-        )
-        name_entry = cursor.fetchall()
-
-        if len(name_entry) != 0:
-            userid = name_entry[0][0]
-            cursor.execute(
-                'UPDATE usernames '
-                    'SET name=? '
-                    'WHERE userid=?',
-                (realname, userid)
-            )
-            con.commit()
+        if len(matches) == 0:
+            await ctx.send("No users found!")
         else:
-            cursor.execute(
-                'INSERT INTO usernames('
-                    'userid, name)'
-                'VALUES(?,?)',
-                (user.id, realname)
+            await ctx.send(f"The following users match: {', '.join(matches)}")
+
+    # @checks.mod()
+    @commands.command()
+    async def iseveryone(self, ctx):
+        """
+        Print all entries in the whois db
+        """
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            users = []
+            for userid, name in whois_dict.items():
+                member: discord.Member = ctx.guild.get_member(int(userid))
+                if member is not None:
+                    users.append((member, name))
+        users = sorted(users, key=lambda tup: tup[1])
+        users = [
+            f"{i}) **{member.display_name}** ({member.name}) is {name}"
+            for i, (member, name) in enumerate(users)
+        ]
+        users = "\n".join(users)
+        pages = list(pagify(users))
+        await menu(ctx, pages, DEFAULT_CONTROLS)
+
+    @commands.command()
+    @checks.is_owner()
+    async def import_whois(self, ctx):
+        """
+        Import whois db for guild from file
+        """
+        message: discord.Message = ctx.message
+        file_to_import = None
+        for attachment in message.attachments:
+            if attachment.filename == "whois.json":
+                file_to_import = attachment
+                break
+        if file_to_import is None:
+            await ctx.send("Please provide a file attached to this command.")
+            return
+
+        try:
+            new_whois_data = await file_to_import.read()
+            new_whois_data = new_whois_data.decode("utf-8")
+            new_whois_data = json.loads(new_whois_data)
+        except:
+            await ctx.send("Unable to parse input json!")
+            return
+
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            for userid, name in new_whois_data.items():
+                whois_dict[userid] = name
+
+        await ctx.send("Done")
+
+    @commands.command()
+    @checks.is_owner()
+    async def export_whois(self, ctx):
+        """
+        Export whois db for guild from file
+        """
+        async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+            output = json.dumps(whois_dict)
+            await ctx.send(
+                file=discord.File(io.StringIO(output), filename="whois.json")
             )
-            con.commit()
-        con.close()
 
-        await ctx.send('User Registered')
+    def convert_realname(self, realname: str):
+        if realname is None:
+            return realname
 
+        if len(realname) > 32:
+            # https://regex101.com/r/CrMmz9/1
+            match = re.match(r"^(.{,32})[^a-z]", realname, re.IGNORECASE)
+            if match is not None:
+                realname = match.group(1)
+                return realname
+        else:
+            return realname
 
+    @commands.command(hidden=True)
+    @checks.is_owner()
+    async def import_from_legacy_db(self, ctx):
+        """
+        Import whois db for guild from legacy file
+        """
+        WHOFILE = os.path.join(str(pathlib.Path.home()), "whois.db")
+        with sqlite3.connect(WHOFILE) as con:
+            cursor = con.cursor()
+            cursor.execute("SELECT userid, name " "FROM usernames")
+            results = cursor.fetchall()
+
+            async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
+                for userid, name in results:
+                    whois_dict[userid] = name
+
+    @commands.command()
+    async def avatar(self, ctx, user: discord.Member = None):
+        """
+        Show user avatar. Defaults to author if none specified
+        """
+        if user is None:
+            user = ctx.message.author
+        await ctx.send(user.avatar_url)
+
+    @commands.command()
+    async def emoji(self, ctx, *args: Union[discord.PartialEmoji, discord.Emoji]):
+        """
+        Show provided emoji. Must be a custom emoji, and the bot must have access to it.
+        """
+        for emoji in args:
+            await ctx.send(emoji.url)

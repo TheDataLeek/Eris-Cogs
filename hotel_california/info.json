@@ -1,0 +1,8 @@
+{
+    "author" : ["Eris"],
+    "description" : "Role based \"punishment\". Allows users to punish via assigning roles.",
+    "name" : "Hotel California",
+    "short": "Role-based \"punishment\" for infractions on moderator whim.",
+    "hidden": false,
+    "ready": true
+}

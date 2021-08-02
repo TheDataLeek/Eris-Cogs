@@ -1,0 +1,9 @@
+{
+    "author" : ["Eris"],
+    "description" : "Displays current and historical stock information using the yahoo finance API",
+    "name" : "Stonks",
+    "install_msg": "Makes API calls against the yahoofinance api",
+    "requirements": ["yfinance", "mplfinance", "matplotlib"],
+    "short": "A stock tracker using yahoofinance",
+    "ready": true
+}

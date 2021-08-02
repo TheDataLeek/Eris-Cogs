@@ -1,0 +1,7 @@
+{
+    "author" : ["Eris"],
+    "description" : "Configure `on_message` events, specifically which servers they appear in, which channels, etc. for Eris Cogs. By default, global events are on, guild-events are off. You'll need to run `[p]econf enable` in the guild you want events to run in.",
+    "name" : "Event Config",
+    "short": "Configure `on_message` events",
+    "ready": true
+}

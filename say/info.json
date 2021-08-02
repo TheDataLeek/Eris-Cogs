@@ -1,0 +1,8 @@
+{
+    "author" : ["Eris"],
+    "description" : "Users with mod status can command the bot to say anything in a certain channel.\nUsage `[p]say guild channel ...message`",
+    "name" : "Say",
+    "short": "Send messages as the bot",
+    "requirements": ["fuzzywuzzy"],
+    "ready": true
+}

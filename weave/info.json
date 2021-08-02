@@ -1,0 +1,7 @@
+{
+  "author" : ["Eris", "Maddie"],
+  "name" : "Weave",
+  "short": "Create a mosaic of alternating emoji",
+  "description" : "Create a mosaic of alternating specified emoji. Emojis may be animated or still. Usage: [p]weave emoji emoji width=5 height=3",
+  "ready": true
+}

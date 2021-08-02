@@ -1,34 +1,46 @@
-import discord
-from discord.ext import commands
-from .utils.dataIO import fileIO
+# stdlib
 import random
 import re
 
-dice_format = '([0-9]+)d([0-9]+)(v[0-9])?'
+# third party
+from redbot.core import commands, bot
 
-class Dice:
-    def __init__(self, bot):
-        self.bot = bot
+BaseCog = getattr(commands, "Cog", object)
 
-    @commands.command(pass_context=True, no_pm=True)
+
+class Dice(BaseCog):
+    def __init__(self, bot_instance: bot):
+        self.bot = bot_instance
+        num = "[0-9]+"  # matches 1 12 1238 will not match 'asdf'
+        how_many = f"({num})"
+        what_type = f"d({num})"
+        optional_drop = f"(v{num})?"
+        self.dice_regex = re.compile(
+            f"{how_many}{what_type}{optional_drop}", flags=re.IGNORECASE
+        )
+
+    @commands.command()
     async def dice(self, ctx, roll: str):
-        if not re.match(dice_format, roll):
-            await self.bot.say('Please Roll dice in the form {}'.format(dice_format))
+        """
+        Rolls arbitrary dice!
+        Usage: [p]dice '([0-9]+)d([0-9]+)(v[0-9])?'
+        Example: [p]dice 4d6v1
+        """
+        match = self.dice_regex.match(roll)
+
+        if match is None or match.group(1) is None or match.group(2) is None:
+            await self.bot.send_help_for(ctx, self.dice)
             return
 
-        terms = re.findall(dice_format, roll)[0]
-        numdice = int(terms[0])
-        typedice = int(terms[1])
-        dropdice = terms[2]
+        numdice = int(match.group(1))
+        typedice = int(match.group(2))
 
         rolls = [random.randint(1, typedice) for _ in range(numdice)]
         rolls.sort(key=lambda x: -x)
-        if dropdice != '':
-            rolls = rolls[:-int(dropdice[1:])]
-        await self.bot.say('Rolling {}... {} = {}'.format(roll, sum(rolls), str(rolls)))
 
+        if match.group(3) is not None:
+            rolls = rolls[: -int(match.group(3)[1:])]
 
-def setup(bot):
-    n = Dice(bot)
-    bot.add_cog(n)
+        formatted_rolls = " + ".join(str(r) for r in rolls)
 
+        await ctx.send(f"Rolling {roll}... {sum(rolls)} ({formatted_rolls})")

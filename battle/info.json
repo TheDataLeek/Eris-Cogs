@@ -1,5 +1,6 @@
 {
-    "author" : "SpatulaFish",
-    "description" : "Battle with your users",
-    "name" : "battle"
+    "author" : ["Eris"],
+    "description" : "Battle with your users\nUsages:\n[p]attack <member> - Starts a battle\n[p]protect <member>\n[p]status <member> - Displays user's stats\n[p]set_attribute <member> <attribute> <value> - Sets a user's stat. Requires owner permissions.\n[p]elevate <member> - Levels up a user. Requires owner permissions.\n[p]full_heal_user <member> - Fully heals a user. Requires owner permissions.\n[p]heal_user <member> - Heals a user. Requires owner permissions.\n[p]reload_user <member> - Reloads a user's stats. Requires owner permissions.",
+    "short": "Battle with your users",
+    "name" : "Battle"
 }

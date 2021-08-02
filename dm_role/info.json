@@ -1,0 +1,8 @@
+{
+  "author" : ["Eris"],
+  "description" : "DMs everyone with a specific role based on fuzzy role name",
+  "name" : "DM Role",
+  "short": "DM everyone with certain role",
+  "requirements": ["fuzzywuzzy"],
+  "ready": true
+}

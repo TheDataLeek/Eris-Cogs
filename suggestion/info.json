@@ -1,0 +1,7 @@
+{
+    "author" : ["Eris"],
+    "description" : "Suggest a change, provides ez access urls",
+    "name" : "Suggest",
+    "short": "Suggest",
+    "ready": true
+}

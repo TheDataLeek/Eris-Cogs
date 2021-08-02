@@ -1,0 +1,11 @@
+{
+  "author" : ["Eris"],
+  "description" : "Determines haikus!",
+  "name" : "Haiku",
+  "short": "Haiku",
+  "required_cogs": {
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+  },
+  "requirements": ["nltk", "syllables"],
+  "ready": true
+}

@@ -1,5 +1,9 @@
 {
-    "author" : "Airen and JennJenn, extended by Eris",
-    "description" : "Usage: [p]insult <user>\n[p]insult",
-    "name" : "Insults generator"
+    "author" : ["Eris"],
+    "description" : "Insults users via tagging.\nUsage: `[p]insult user`\n Includes NSFW insults",
+    "name" : "Insult",
+    "short": "Insult users",
+    "install_msg": "Includes bundled nsfw insults! Also makes API calls to insult APIs",
+    "requirements": ["aiohttp"],
+    "ready": true
 }

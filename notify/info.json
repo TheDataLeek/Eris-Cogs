@@ -1,5 +1,7 @@
 {
-    "author" : "Eris",
+    "author" : ["Eris"],
     "description" : "Twilio Notifications for @everyone tags",
-    "name" : "notify"
+    "name" : "notify",
+    "hidden": true,
+    "disabled": true
 }

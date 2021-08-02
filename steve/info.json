@@ -1,0 +1,10 @@
+{
+  "author" : ["Eris"],
+  "description" : "If users ask variations on \"Where's Steve?\" the bot will post several LARGE pictures of steve. Small chance for these photos to be in a random order.",
+  "name" : "STEVE",
+  "short": "Provides LARGE pictures of Steve when asked",
+  "required_cogs": {
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+  },
+  "ready": true
+}

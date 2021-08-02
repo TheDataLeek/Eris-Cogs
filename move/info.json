@@ -1,0 +1,7 @@
+{
+  "author" : ["Eris"],
+  "description" : "Moves message to another channel for easy moderation.",
+  "name" : "Move",
+  "short": "Move message to another channel",
+  "ready": true
+}

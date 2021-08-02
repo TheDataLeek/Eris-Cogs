@@ -1,0 +1,7 @@
+{
+  "author" : ["Eris"],
+  "description" : "Generates guaranteed solvable minesweeper boards using emojis and spoilers.",
+  "name" : "Minesweeper",
+  "short": "Generate solvable minesweeper boards.",
+  "ready": true
+}
