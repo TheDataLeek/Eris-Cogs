@@ -16,6 +16,7 @@ from .eris_event_lib import ErisEventMixin
 
 BaseCog = getattr(commands, "Cog", object)
 
+
 class Haiku(BaseCog, ErisEventMixin):
     def __init__(self, bot_instance: bot):
         super().__init__()
