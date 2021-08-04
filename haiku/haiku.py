@@ -68,7 +68,7 @@ class Haiku(BaseCog, ErisEventMixin):
             return
         #Cleaned is the message with one spoiler removed
         cleaned = self.quote_re.sub(message.clean_content,"")
-        if self.quote_re.match(message.clean_content):
+        if self.quote_re.search(message.clean_content):
             return
         flag = True
 
