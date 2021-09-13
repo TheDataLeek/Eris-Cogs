@@ -32,7 +32,7 @@ class ImDad(BaseCog, ErisEventMixin):
             allowed: bool = await self.allowed(ctx, message)
             if not allowed:
                 return
-
+            #whoami = ["Dad", "Mom", "Snek"]
             whoami = ["Ed"]
             await ctx.send(
                 f"Hi {matched.group(1)} I'm {random.choice(whoami)}", reference=message
