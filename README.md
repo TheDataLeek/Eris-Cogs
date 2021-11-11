@@ -43,6 +43,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Sudo](#sudo) | Warns when users say sudo | ✅ |
 | [Suggestion](#suggestion) | Suggest | ✅ |
 | [Timezone](#timezone) | US Timezone converter | ✅ |
+| [Venmo](#venmo) | Venmo Replacement | ✅ |
 | [Weave](#weave) | Create a mosaic of alternating emoji | ✅ |
 | [Whois](#whois) | Whois for discord | ✅ |
 | [Wiggler](#wiggler) | Adds random reactions to posts! | ✅ |
@@ -210,6 +211,10 @@ Description: Suggest a change, provides ez access urls
 Short: US Timezone converter
 
 Description: Timezone converter! Switch between multiple US timezones easily
+## Venmo
+Short: Venmo Replacement
+
+Description: Posts my cashapp link
 ## Weave
 ![png](weave/demo.png)
 

@@ -1,0 +1,10 @@
+{
+  "author" : ["Eris"],
+  "description" : "Posts my cashapp link",
+  "name" : "Venmo Replacement",
+  "short": "Venmo Replacement",
+  "required_cogs": {
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+  },
+  "ready": true
+}
