@@ -7,7 +7,7 @@ BaseCog = getattr(commands, "Cog", object)
 RETYPE = type(re.compile("a"))
 
 
-class Venmo(BaseCog, ErisEventMixin):
+class Venmo(BaseCog):
     def __init__(self, bot_instance: bot):
         super().__init__()
         self.bot = bot_instance
