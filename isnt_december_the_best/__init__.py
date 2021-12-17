@@ -1,4 +1,4 @@
-from .big_name import BigName
+from .december import December
 
 
 def setup(bot):
