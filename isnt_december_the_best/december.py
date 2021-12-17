@@ -1,5 +1,5 @@
 import discord
-from redbot.core import commands
+from redbot.core import commands, checks
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -16,6 +16,7 @@ class December(BaseCog):
             return
 
     @commands.command()
+    @checks.owner()
     async def isnt_december_the_best(self, ctx):
         for member in ctx.guild.members:
             await self.update_username(ctx, member, "Deer")
