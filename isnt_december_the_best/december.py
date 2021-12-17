@@ -20,3 +20,9 @@ class December(BaseCog):
     async def isnt_december_the_best(self, ctx):
         for member in ctx.guild.members:
             await self.update_username(ctx, member, "Deer")
+
+    @commands.command()
+    @checks.is_owner()
+    async def reset_deercember(self, ctx):
+        for member in ctx.guild.members:
+            await self.update_username(ctx, member, None)
