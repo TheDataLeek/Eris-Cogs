@@ -24,6 +24,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Imdb_lookup](#imdb_lookup) | IMDB | ✅ |
 | [Insult](#insult) | Insult users | ✅ |
+| [Isnt_december_the_best](#isnt_december_the_best) | Isn't December the Best | ✅ |
 | [Just_met_her](#just_met_her) | Just Met Her | ✅ |
 | [Lifslastcall](#lifslastcall) | Lif's | ✅ |
 | [Minesweeper](#minesweeper) | Generate solvable minesweeper boards. | ✅ |
@@ -127,6 +128,10 @@ Description: Insults users via tagging.
 Usage: `[p]insult user`
 
  Includes NSFW insults
+## Isnt_december_the_best
+Short: Isn't December the Best
+
+Description: Isn't december the best
 ## Just_met_her
 Short: Just Met Her
 
