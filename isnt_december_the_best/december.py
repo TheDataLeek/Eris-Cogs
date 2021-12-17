@@ -21,6 +21,6 @@ class December(BaseCog):
             return
 
     @commands.command(aliases=["bn"])
-    async def big_name(self, ctx, user: discord.Member, *, new_nick: str = ""):
+    async def isnt_december_the_best(self, ctx, user: discord.Member, *, new_nick: str = ""):
         for member in ctx.guild.members:
             await self.update_username(ctx, user, "Deer")
