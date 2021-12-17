@@ -18,4 +18,4 @@ class December(BaseCog):
     @commands.command()
     async def isnt_december_the_best(self, ctx):
         for member in ctx.guild.members:
-            await self.update_username(ctx, user, "Deer")
+            await self.update_username(ctx, member, "Deer")
