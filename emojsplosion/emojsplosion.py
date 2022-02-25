@@ -36,11 +36,13 @@ class EmojSplosion(BaseCog):
             await ctx.send("Need to reply to a message!")
             return
 
-        referenced: discord.Message = message.reference
+        channel: discord.Channel = ctx.channel
+        referenced: discord.MessageReference = message.reference
+        referenced_message: discord.Message = await channel.fetch_message(referenced.message_id)
 
         emojis = random.sample(self.emojis, 20)
         for e in emojis:
             # try:
-            await referenced.add_reaction(e)
+            await referenced_message.add_reaction(e)
             # except:
             #     pass
