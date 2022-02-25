@@ -14,6 +14,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Clone](#clone) | The bot takes on a user's name and avatar | ✅ |
 | [Dice](#dice) | Improved dice roller. | ✅ |
 | [Dm_role](#dm_role) | DM everyone with certain role | ✅ |
+| [Emojsplosion](#emojsplosion) | EMOJSPLOSION | ✅ |
 | [Event_config](#event_config) | Configure `on_message` events | ✅ |
 | [Export_emoji](#export_emoji) | Bulk Emoji Export | ✅ |
 | [Facts](#facts) | Provide random facts | ✅ |
@@ -82,6 +83,10 @@ Description: Improved dice roller, can support arbitrary dice. Usage regex: [p]d
 Short: DM everyone with certain role
 
 Description: DMs everyone with a specific role based on fuzzy role name
+## Emojsplosion
+Short: EMOJSPLOSION
+
+Description: EMOJSPLOSION
 ## Event_config
 Short: Configure `on_message` events
 
