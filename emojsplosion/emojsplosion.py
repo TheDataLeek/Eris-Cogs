@@ -25,7 +25,7 @@ class EmojSplosion(BaseCog):
     async def get_emojis(self):
         self.emojis = [e for e in self.bot.emojis]
 
-    @commands.command()
+    @commands.command(aliases=['emojsploj'])
     async def emojsplosion(
         self, ctx: commands.Context
     ):
@@ -42,7 +42,7 @@ class EmojSplosion(BaseCog):
 
         emojis = random.sample(self.emojis, 20)
         for e in emojis:
-            # try:
-            await referenced_message.add_reaction(e)
-            # except:
-            #     pass
+            try:
+                await referenced_message.add_reaction(e)
+            except:
+                pass
