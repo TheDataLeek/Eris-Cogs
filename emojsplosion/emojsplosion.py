@@ -40,7 +40,7 @@ class EmojSplosion(BaseCog):
 
         emojis = random.sample(self.emojis, 20)
         for e in emojis:
-            try:
-                await referenced.add_reaction(e)
-            except:
-                pass
+            # try:
+            await referenced.add_reaction(e)
+            # except:
+            #     pass
