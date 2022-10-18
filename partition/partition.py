@@ -17,7 +17,7 @@ class Partition(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def insult(self, ctx, how_many_teams: int, *users: discord.Member):
+    async def partition(self, ctx, how_many_teams: int, *users: discord.Member):
         """
         Partitions teams
         Usage: [p]partition <Members>
