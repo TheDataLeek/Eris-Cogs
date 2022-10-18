@@ -33,6 +33,8 @@ class Partition(BaseCog):
         for team_index in range(how_many_teams):
             start = team_index * n_members_per_team
             end = (team_index + 1) * n_members_per_team
+            if team_index == how_many_teams - 1:
+                end = len(users) + 1
             teams[team_index] = users[start:end]
 
         formatted_message = ['```']
