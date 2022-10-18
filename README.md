@@ -33,6 +33,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Nick_prefix](#nick_prefix) | Adds themed prefix to names | ✅ |
 | [No_fuck_you](#no_fuck_you) | Replies 'no fuck you' | ✅ |
 | [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. | ✅ |
+| [Partition](#partition) | Partition Teams | ✅ |
 | [Quotes](#quotes) | Incorrect Quotes by ScatterPatter | ✅ |
 | [Rock_and_stone](#rock_and_stone) | Deep Rock Galactic shouting | ✅ |
 | [Rolerequest](#rolerequest) | Emoji-based Role Request | ✅ |
@@ -167,6 +168,10 @@ Description: Replies with 'no fuck you' if someone says 'fuck you'
 Short: Archives a channel of out of context quotes and then posts them randomly during conversation.
 
 Description: Archives a channel of out of context quotes. Posts quotes randomly or in response to commands. Quotes must be in quotation marks to be archived. Usage: [p]penny
+## Partition
+Short: Partition Teams
+
+Description: Partitions users into teams
 ## Quotes
 Short: Incorrect Quotes by ScatterPatter
 
