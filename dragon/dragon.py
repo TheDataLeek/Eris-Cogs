@@ -239,15 +239,16 @@ class Dragon(BaseCog, ErisEventMixin):
             if not allowed:
                 return
 
-            dragon = f"```\n{random.choice(dragonart)}\n```"
+            dragon = random.choice(dragonart)
             chunk = 1800
             if len(dragon) > chunk:
                 n_splits = len(dragon) // chunk
                 dragon = dragon.split('\n')
                 for i in range(n_splits):
-                    await ctx.send('\n'.join(dragon[i * chunk:(i + 1) * chunk]))
+                    cdragon = '\n'.join(dragon[i * chunk:(i + 1) * chunk])
+                    await ctx.send(f"```\n{cdragon}\n```")
             else:
-                await ctx.send(dragon)
+                await ctx.send(f"```\n{dragon}\n```")
 
             await self.log_last_message(ctx, message)
 
