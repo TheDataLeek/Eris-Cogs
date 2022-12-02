@@ -1,0 +1,10 @@
+{
+  "author" : ["Eris"],
+  "description" : "Replies with giant ascii dragons",
+  "name" : "Dragons!",
+  "short": "Dragons!",
+  "required_cogs": {
+    "event_config": "http://github.com/TheDataLeek/Eris-Cogs"
+  },
+  "ready": true
+}
