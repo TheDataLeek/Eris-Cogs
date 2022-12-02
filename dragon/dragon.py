@@ -249,7 +249,7 @@ class Dragon(BaseCog, ErisEventMixin):
                 for i in range(n_splits):
                     cdragon = '\n'.join(dragon_lines[i * chunk:(i + 1) * chunk])
                     formatted_dragon = f"```\n{cdragon}\n```"
-                    print(f"\t({i}) - {len(formatted_dragon}")
+                    print(f"\t({i}) - {len(formatted_dragon)}")
                     await ctx.send(formatted_dragon)
             else:
                 await ctx.send(f"```\n{dragon}\n```")
