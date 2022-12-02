@@ -241,12 +241,12 @@ class Dragon(BaseCog, ErisEventMixin):
 
             dragon = random.choice(dragonart)
             dragon = dragonart[-1]
-            chunk = 1800
+            chunk = 1500
             if len(dragon) > chunk:
                 n_splits = len(dragon) // chunk
-                dragon = dragon.split('\n')
+                dragon_lines = dragon.split('\n')
                 for i in range(n_splits):
-                    cdragon = '\n'.join(dragon[i * chunk:(i + 1) * chunk])
+                    cdragon = '\n'.join(dragon_lines[i * chunk:(i + 1) * chunk])
                     await ctx.send(f"```\n{cdragon}\n```")
             else:
                 await ctx.send(f"```\n{dragon}\n```")
