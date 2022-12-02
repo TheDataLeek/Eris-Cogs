@@ -240,7 +240,6 @@ class Dragon(BaseCog, ErisEventMixin):
                 return
 
             dragon = random.choice(dragonart)
-            dragon = dragonart[-1]
             chunk = 1000
             if len(dragon) > chunk:
                 n_splits = len(dragon) // chunk
