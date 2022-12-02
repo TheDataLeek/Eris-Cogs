@@ -244,13 +244,13 @@ class Dragon(BaseCog, ErisEventMixin):
             chunk = 1000
             if len(dragon) > chunk:
                 n_splits = len(dragon) // chunk
-                print(f"Dragon too big! Sending in {n_splits} chunks")
+                # print(f"Dragon too big! Sending in {n_splits} chunks")
                 dragon_lines = dragon.split('\n')
                 chunk_size = (len(dragon_lines) // n_splits) + 1
                 for i in range(n_splits):
                     cdragon = '\n'.join(dragon_lines[i * chunk_size:(i + 1) * chunk_size])
                     formatted_dragon = f"```\n{cdragon}\n```"
-                    print(f"\t({i}) - {len(formatted_dragon)}")
+                    # print(f"\t({i}) - {len(formatted_dragon)}")
                     await ctx.send(formatted_dragon)
             else:
                 await ctx.send(f"```\n{dragon}\n```")
