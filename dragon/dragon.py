@@ -12,7 +12,6 @@ RETYPE = type(re.compile("a"))
 # from https://www.asciiart.eu/mythology/dragons
 dragonart = [
     r"""
-```
                                                 /===-_---~~~~~~~~~------____
                                                 |===-~___                _,-'
                 -==\                         `//~\   ~~~~`---.___.-~~
@@ -41,10 +40,8 @@ dragonart = [
 ;'( ')/ ,)(                              ~~~~~~~~~~
 ' ') '( (/
     '   '  `
-```
     """,
     r"""
-```
 \****__              ____                                              
     |    *****\_      --/ *\-__                                          
     /_          (_    ./ ,/----'                                         
@@ -54,7 +51,6 @@ dragonart = [
 |    _/  __/ )\"\ _____         *\                                    
 |\__/   /    ^ ^       \____      )                                   
     \___--"                    \_____ )                                  
-```
     """,
     r"""
                 ______________                               
@@ -243,7 +239,7 @@ class Dragon(BaseCog, ErisEventMixin):
             if not allowed:
                 return
 
-            dragon = random.choice(dragonart)
+            dragon = f"```\n{random.choice(dragonart)}\n```"
             await ctx.send(dragon)
 
             await self.log_last_message(ctx, message)
