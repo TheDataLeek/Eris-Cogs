@@ -22,15 +22,15 @@ class EmojSplosion(BaseCog):
 
         self.emojis = {}
 
-    async def get_emojis(self):
-        self.emojis = [e for e in self.bot.emojis]
+    async def get_emojis(self, must_contain: str=''):
+        self.emojis = [e for e in self.bot.emojis if must_contain in e.name]
 
     @commands.command(aliases=['emojsploj'])
     async def emojsplosion(
-        self, ctx: commands.Context
+        self, ctx: commands.Context, must_contain: str=''
     ):
         message: discord.Message = ctx.message
-        await self.get_emojis()
+        await self.get_emojis(must_contain=must_contain)
 
         if not message.reference:
             await ctx.send("Need to reply to a message!")
