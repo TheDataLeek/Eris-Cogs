@@ -40,7 +40,7 @@ class EmojSplosion(BaseCog):
         referenced_message: discord.Message = await channel.fetch_message(referenced.message_id)
 
         if len(emojis) > 20:
-            emojis = random.sample(self.emojis, 20)
+            emojis = random.sample(emojis, 20)
 
         for e in emojis:
             try:
