@@ -137,7 +137,7 @@ class HotelCalifornia(BaseCog):
             last_message_examined: discord.Message = None
             newer_than_a_year = True
             while newer_than_a_year:
-                chunk = await channel.history(limit=1000, before=last_message_examined).flatten()
+                chunk = await channel.history(limit=10_000, before=last_message_examined).flatten()
                 # if we run out of messages, stop
                 if len(chunk) == 0:
                     break
