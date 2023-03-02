@@ -160,18 +160,18 @@ class HotelCalifornia(BaseCog):
             if last_message_dt <= dt.datetime.now() - dt.timedelta(days=365):
                 users_to_purge.append(userid)
 
+        users_to_purge = [
+            guild.get_member(uid)
+            for uid in users_to_purge
+        ]
+        users_to_purge = ', '.join([m.name for m in users_to_purge if m])
+
         message_to_send = (
             f"Done. Processed {message_count} messages, found {len(userlog)} users. \n"
             f"{len(users_to_purge)} must be purged. \n"
             f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds."
         )
         await ctx.send(message_to_send)
-
-        users_to_purge = [
-            guild.get_member(uid)
-            for uid in users_to_purge
-        ]
-        users_to_purge = ', '.join([m.name for m in users_to_purge])
         await ctx.send(users_to_purge)
 
 
