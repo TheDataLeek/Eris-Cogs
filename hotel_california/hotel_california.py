@@ -126,28 +126,26 @@ class HotelCalifornia(BaseCog):
         guild: discord.Guild = ctx.guild
         channels: List[discord.TextChannel] = guild.text_channels
 
-        userlog = {
-            m.id: dt.datetime(1900, 1, 1)
-            for m in guild.members
-        }
+        userlog = {}
         threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=30)
 
         stime = time.time()
         message_count = 0
         N = len(channels)
+
         for i, channel in enumerate(channels):
             await ctx.send(f"Searching {channel} for users to PURGE. ({i / N:0.01%})")
             last_message_examined: discord.Message = None
             newer_than_a_year = True
             while newer_than_a_year:
-                chunk = await channel.history(limit=1_000, before=last_message_examined).flatten()
+                chunk = await channel.history(limit=2_000, before=last_message_examined).flatten()
                 # if we run out of messages, stop
                 if len(chunk) == 0:
                     break
                 message_count += len(chunk)
                 message: discord.Message
                 for message in chunk:
-                    userlog[message.author.id] = max(userlog[message.author.id], message.created_at)
+                    userlog[message.author.id] = max(userlog.get(message.author.id, dt.datetime(1990, 1, 1)), message.created_at)
                     # if the messages are older than a year, stop
                     if message.created_at <= threshold:
                         newer_than_a_year = False
