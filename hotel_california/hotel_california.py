@@ -144,13 +144,15 @@ class HotelCalifornia(BaseCog):
                     break
                 message_count += len(chunk)
                 message: discord.Message
+
                 for message in chunk:
-                    userlog[message.author.id] = max(userlog.get(message.author.id, dt.datetime(1990, 1, 1)), message.created_at)
+                    userlog[message.author.id] = max(userlog.get(message.author.id, dt.datetime(1900, 1, 1)), message.created_at)
                     # if the messages are older than a year, stop
                     if message.created_at <= threshold:
                         newer_than_a_year = False
+                        break
 
-                last_message_examined = message
+                last_message_examined = chunk[-1]
 
         delta = time.time() - stime
         minutes = delta // 60
