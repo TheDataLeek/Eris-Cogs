@@ -131,7 +131,9 @@ class HotelCalifornia(BaseCog):
 
         stime = time.time()
         message_count = 0
-        for channel in channels:
+        N = len(channels)
+        for i, channel in enumerate(channels):
+            await ctx.send(f"Searching {channel} for users to PURGE. ({i / N:0.01%})")
             last_message_examined: discord.Message = None
             newer_than_a_year = True
             while newer_than_a_year:
