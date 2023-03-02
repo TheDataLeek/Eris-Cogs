@@ -108,6 +108,16 @@ class HotelCalifornia(BaseCog):
 
     @commands.command(pass_context=True)
     @checks.mod()
+    async def mass_remove(self, ctx: commands.Context, base: discord.Role, new_role: discord.Role):
+        """
+        Mass assigns a role to users based on a current role.
+        """
+        for user in base.members:
+            if not user.bot:
+                await user.remove_roles(new_role)
+
+    @commands.command(pass_context=True)
+    @checks.mod()
     async def purge(self, ctx: commands.Context):
         """
         Mass removes roles from users if they haven't talked in too long
