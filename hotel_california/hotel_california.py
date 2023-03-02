@@ -93,3 +93,13 @@ class HotelCalifornia(BaseCog):
         if not user.bot:
             await user.remove_roles(role)
             await ctx.send("Success - user freed")
+
+    @commands.command(pass_context=True)
+    @checks.mod()
+    async def mass_assign(self, ctx: commands.Context, new_role: discord.Role, base: discord.Role):
+        """
+        Mass assigns a role to users based on a current role.
+        """
+        for user in base.members:
+            if not user.bot:
+                await user.add_roles(new_role)
