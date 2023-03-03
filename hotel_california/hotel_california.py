@@ -174,15 +174,16 @@ class HotelCalifornia(BaseCog):
             f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds."
         )
         await ctx.send(message_to_send)
+
         if users_to_purge:
             await ctx.send(', '.join([m.name for m in users_to_purge if m]))
 
-        # user: discord.Member
-        # for user in users_to_purge:
-        #     if user:
-        #         roles = user.roles
-        #         await user.remove_roles(roles)
-        #
-        # await ctx.send(f"Users 💀PURGED💀")
+        user: discord.Member
+        for user in users_to_purge:
+            if user:
+                roles = user.roles
+                await user.remove_roles(roles)
+
+        await ctx.send(f"Users 💀PURGED💀")
 
 
