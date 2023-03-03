@@ -127,7 +127,7 @@ class HotelCalifornia(BaseCog):
         channels: List[discord.TextChannel] = guild.text_channels
 
         userlog = {m.id: dt.datetime(1900, 1, 1) for m in guild.members}
-        threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=180)
+        threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=365)
 
         stime = time.time()
         message_count = 0
