@@ -182,7 +182,10 @@ class HotelCalifornia(BaseCog):
         for user in users_to_purge:
             if user:
                 roles = user.roles
-                await user.remove_roles(*roles[1:])  # the first role is @everyone
+                try:
+                    await user.remove_roles(*roles[1:])  # the first role is @everyone
+                except:
+                    continue
 
         await ctx.send(f"Users 💀PURGED💀")
 
