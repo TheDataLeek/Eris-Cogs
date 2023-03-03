@@ -127,14 +127,14 @@ class HotelCalifornia(BaseCog):
         channels: List[discord.TextChannel] = guild.text_channels
 
         userlog = {}
-        threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=30)
+        threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=90)
 
         stime = time.time()
         message_count = 0
         N = len(channels)
 
         for i, channel in enumerate(channels):
-            await ctx.send(f"Searching {channel} for users to PURGE. ({i / N:0.01%})")
+            await ctx.send(f"Searching 🔴{channel}🔴 for users to 💀PURGE💀 ({i / N:0.01%})")
             last_message_examined: discord.Message = None
             newer_than_a_year = True
             while newer_than_a_year:
@@ -160,21 +160,29 @@ class HotelCalifornia(BaseCog):
 
         users_to_purge = []
         for userid, last_message_dt in userlog.items():
-            if last_message_dt <= dt.datetime.now() - dt.timedelta(days=365):
+            if last_message_dt <= threshold:
                 users_to_purge.append(userid)
 
         users_to_purge = [
             guild.get_member(uid)
             for uid in users_to_purge
         ]
-        users_to_purge = ', '.join([m.name for m in users_to_purge if m])
 
         message_to_send = (
             f"Done. Processed {message_count} messages, found {len(userlog)} users. \n"
-            f"{len(users_to_purge)} must be purged. \n"
+            f"{len(users_to_purge)} must be 💀PURGED💀. \n"
             f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds."
         )
         await ctx.send(message_to_send)
-        await ctx.send(users_to_purge)
+        if users_to_purge:
+            await ctx.send(', '.join([m.name for m in users_to_purge if m]))
+
+        # user: discord.Member
+        # for user in users_to_purge:
+        #     if user:
+        #         roles = user.roles
+        #         await user.remove_roles(roles)
+        #
+        # await ctx.send(f"Users 💀PURGED💀")
 
 
