@@ -126,7 +126,7 @@ class HotelCalifornia(BaseCog):
         guild: discord.Guild = ctx.guild
         channels: List[discord.TextChannel] = guild.text_channels
 
-        userlog = {}
+        userlog = {m.id: dt.datetime(1900, 1, 1) for m in guild.members}
         threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=90)
 
         stime = time.time()
