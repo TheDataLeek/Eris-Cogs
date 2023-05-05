@@ -1,5 +1,5 @@
 from .nick_prefix import NickPrefix
 
 
-def setup(bot):
-    bot.add_cog(NickPrefix(bot))
+async def setup(bot):
+    await bot.add_cog(NickPrefix(bot))

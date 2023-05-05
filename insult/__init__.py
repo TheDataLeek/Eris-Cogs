@@ -1,5 +1,5 @@
 from .insult import Insult
 
 
-def setup(bot):
-    bot.add_cog(Insult(bot))
+async def setup(bot):
+    await bot.add_cog(Insult(bot))

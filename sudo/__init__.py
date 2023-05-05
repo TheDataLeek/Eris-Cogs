@@ -1,5 +1,5 @@
 from .sudo import Sudo
 
 
-def setup(bot):
-    bot.add_cog(Sudo(bot))
+async def setup(bot):
+    await bot.add_cog(Sudo(bot))

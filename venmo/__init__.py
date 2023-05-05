@@ -1,5 +1,5 @@
 from .venmo import Venmo
 
 
-def setup(bot):
-    bot.add_cog(Venmo(bot))
+async def setup(bot):
+    await bot.add_cog(Venmo(bot))

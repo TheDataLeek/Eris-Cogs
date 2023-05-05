@@ -1,5 +1,5 @@
 from .steve import Steve
 
 
-def setup(bot):
-    bot.add_cog(Steve(bot))
+async def setup(bot):
+    await bot.add_cog(Steve(bot))

@@ -1,5 +1,5 @@
 from .rolerequest import RoleRequest
 
 
-def setup(bot):
-    bot.add_cog(RoleRequest(bot))
+async def setup(bot):
+    await bot.add_cog(RoleRequest(bot))

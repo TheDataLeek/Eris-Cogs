@@ -1,5 +1,5 @@
 from .facts import Fact
 
 
-def setup(bot):
-    bot.add_cog(Fact(bot))
+async def setup(bot):
+    await bot.add_cog(Fact(bot))

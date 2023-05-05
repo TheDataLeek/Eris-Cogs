@@ -1,5 +1,5 @@
 from .imdad import ImDad
 
 
-def setup(bot):
-    bot.add_cog(ImDad(bot))
+async def setup(bot):
+    await bot.add_cog(ImDad(bot))

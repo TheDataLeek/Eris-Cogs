@@ -1,5 +1,5 @@
 from .suggest import Suggest
 
 
-def setup(bot):
-    bot.add_cog(Suggest(bot))
+async def setup(bot):
+    await bot.add_cog(Suggest(bot))
