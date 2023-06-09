@@ -1,5 +1,5 @@
 from .stonks import Stonks
 
 
-def setup(bot):
-    bot.add_cog(Stonks(bot))
+async def setup(bot):
+    await bot.add_cog(Stonks(bot))

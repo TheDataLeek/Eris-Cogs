@@ -1,5 +1,5 @@
 from .emojsplosion import EmojSplosion
 
 
-def setup(bot):
-    bot.add_cog(EmojSplosion(bot))
+async def setup(bot):
+    await bot.add_cog(EmojSplosion(bot))

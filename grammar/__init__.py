@@ -1,5 +1,5 @@
 from .grammar import Grammar
 
 
-def setup(bot):
-    bot.add_cog(Grammar(bot))
+async def setup(bot):
+    await bot.add_cog(Grammar(bot))

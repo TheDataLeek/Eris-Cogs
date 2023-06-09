@@ -1,5 +1,5 @@
 from .outofcontext import OutOfContext
 
 
-def setup(bot):
-    bot.add_cog(OutOfContext(bot))
+async def setup(bot):
+    await bot.add_cog(OutOfContext(bot))

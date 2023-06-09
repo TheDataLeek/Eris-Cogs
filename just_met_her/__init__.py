@@ -1,5 +1,5 @@
 from .justmether import JustMetHer
 
 
-def setup(bot):
-    bot.add_cog(JustMetHer(bot))
+async def setup(bot):
+    await bot.add_cog(JustMetHer(bot))
