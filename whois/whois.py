@@ -178,7 +178,16 @@ class WhoIs(BaseCog):
         """
         if user is None:
             user = ctx.message.author
-        await ctx.send(user.avatar_url)
+        await ctx.send(user.avatar.url)
+
+    @commands.command()
+    async def display_avatar(self, ctx, user: discord.Member = None):
+        """
+        Show user avatar. Defaults to author if none specified
+        """
+        if user is None:
+            user = ctx.message.author
+        await ctx.send(user.display_avatar.url)
 
     @commands.command()
     async def emoji(self, ctx, *args: Union[discord.PartialEmoji, discord.Emoji]):
