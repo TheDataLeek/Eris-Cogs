@@ -25,9 +25,9 @@ class GoodBot(BaseCog):
         self.whois = self.bot.get_cog("WhoIs")
 
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
-        self.names = [s for s in (data_dir / "names.txt").read_text().split("\n") if s]
-        self.good = [s for s in (data_dir / "good.txt").read_text().split("\n") if s]
-        self.bad = [s for s in (data_dir / "bad.txt").read_text().split("\n") if s]
+        self.names = [s for s in (data_dir / "names.txt").read_text(encoding='utf-8').split("\n") if s]
+        self.good = [s for s in (data_dir / "good.txt").read_text(encoding='utf-8').split("\n") if s]
+        self.bad = [s for s in (data_dir / "bad.txt").read_text(encoding='utf-8').split("\n") if s]
 
         self.config = Config.get_conf(
             self,

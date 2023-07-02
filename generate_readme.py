@@ -35,7 +35,7 @@ all_entries = []
 table = []
 for d in all_dirs:
     name = d.name.capitalize()
-    meta = json.loads((d / "info.json").read_text())
+    meta = json.loads((d / "info.json").read_text(encoding='utf-8'))
 
     ready = meta.get("ready", False)
 

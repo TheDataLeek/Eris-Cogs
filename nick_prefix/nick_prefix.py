@@ -15,10 +15,10 @@ class NickPrefix(BaseCog):
         self.bot = bot_instance
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
         self.halloween_prefixes: List[str] = (
-            (data_dir / "halloween_prefixes.txt").read_text().split("\n")
+            (data_dir / "halloween_prefixes.txt").read_text(encoding='utf-8').split("\n")
         )
         self.thanksgiving_prefixes: List[str] = (
-            (data_dir / "thanksgiving_prefixes.txt").read_text().split("\n")
+            (data_dir / "thanksgiving_prefixes.txt").read_text(encoding='utf-8').split("\n")
         )
 
     def prefix_nick(self, nick: str, wordlist: List[str]):

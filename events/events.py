@@ -18,9 +18,9 @@ BaseCog = getattr(commands, "Cog", object)
 
 
 DICKFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "dickwords.txt"))
-dickwords = list(set(DICKFILE.read_text().split("\n")))
+dickwords = list(set(DICKFILE.read_text(encoding='utf-8').split("\n")))
 VAFILE = pathlib.Path(os.path.join(str(pathlib.Path.home()), "vawords.txt"))
-vag_words = list(set(VAFILE.read_text().split("\n")))
+vag_words = list(set(VAFILE.read_text(encoding='utf-8').split("\n")))
 
 dragonart = """
 ```

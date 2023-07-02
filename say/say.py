@@ -22,10 +22,13 @@ class Say(BaseCog):
 
         guilds: List[discord.Guild] = self.bot.guilds
         guilds: Dict[str, discord.Guild] = {g.name: g for g in guilds}
-        guild: discord.Guild = guilds.get(
-            process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5)[0]
-        )
-        if guild is None:
+        if len(guilds) == 0:
+            await ctx.send("No guilds found!")
+            return
+
+        try:
+            guild: discord.Guild = guilds.get(process.extractOne(guildname, list(guilds.keys()), score_cutoff=0.5)[0])
+        except:
             await ctx.send("Couldn't find guild!")
             return
 
