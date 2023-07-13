@@ -110,7 +110,7 @@ class EventConfig(BaseCog):
         Permissions: >=Mod
         Usage: [p]econf reset
         """
-        await self.config.guild(ctx.guild).channel_whitelist.set(["general"])
+        await self.config.guild(ctx.guild).channel_whitelist.set([])
         await self.config.guild(ctx.guild).channel_blacklist.set([])
         await ctx.send("Done")
 
