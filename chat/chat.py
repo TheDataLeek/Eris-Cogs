@@ -41,6 +41,8 @@ class Chat(BaseCog):
         #     "Given these logs, please provide an appropriate response as your Snek persona."
         #     f"\n{formatted_chunk}"
         # )
+        if not query:
+            return
         openai_query = " ".join(query)
         openai.api_key = await self.get_openai_token()
         chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
