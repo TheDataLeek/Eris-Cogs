@@ -29,8 +29,8 @@ class Chat(BaseCog):
     @commands.command()
     async def chat(self, ctx: commands.Context):
         channel: discord.TextChannel = ctx.channel
-        chunk: List[discord.Message] = [message async for message in channel.history(limit=10)]
-        formatted_chunk = '\n\n'.join([
+        chunk: List[discord.Message] = [message async for message in channel.history(limit=50)]
+        formatted_chunk = '\n'.join([
             f"{message.author.display_name}: {message.clean_content}"
             for message in chunk
         ])
@@ -38,8 +38,9 @@ class Chat(BaseCog):
         openai_query = (
             "You are the robot user named Snek. "
             "Given the following chat logs, please provide an appropriate response and "
-            "answer any questions that might have been asked."
-            f"\n\n{formatted_chunk}"
+            "answer any questions that might have been asked. Please don't format your response as part of the logs, "
+            "just say the next thing that should be said."
+            f"\n{formatted_chunk}"
         )
         openai.api_key = await self.get_openai_token()
         chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
