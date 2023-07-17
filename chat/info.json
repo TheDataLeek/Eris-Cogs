@@ -1,0 +1,7 @@
+{
+  "author" : ["Eris"],
+  "description" : "Usage: [p]chat",
+  "name": "Chat",
+  "short" : "Use OpenAI's ChatGPT to respond to the conversation",
+  "ready": true
+}
