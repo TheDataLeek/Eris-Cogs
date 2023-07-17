@@ -45,7 +45,7 @@ class Chat(BaseCog):
         chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
                                                              messages=[{"role": "user", "content": openai_query}])
         try:
-            response = chat_completion['choices'][0]['message']
+            response = chat_completion['choices'][0]['message']['content']
             await ctx.channel.send(response)
         except Exception as e:
             await ctx.channel.send("Something went wrong!")
