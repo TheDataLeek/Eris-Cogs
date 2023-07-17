@@ -31,20 +31,22 @@ class Chat(BaseCog):
         channel: discord.TextChannel = ctx.channel
         chunk: List[discord.Message] = [message async for message in channel.history(limit=50)]
         formatted_chunk = '\n'.join([
-            f"{message.author.display_name}: {message.clean_content}"
+            f"@{message.author.display_name}: {message.clean_content}"
             for message in chunk
         ])
         # todo: dynamically find bot's name
         openai_query = (
-            "You are the robot user named Snek. "
-            "Given the following chat logs, please provide an appropriate response and "
-            "answer any questions that might have been asked. Please don't format your response as part of the logs, "
-            "just say the next thing that should be said."
+            "You are the robot user named Snek who is mischievous and naughty. "
+            "You have a long history of playing pranks on everyone mentioned in the following chat logs. "
+            "Given these logs, please provide an appropriate response as your Snek persona."
             f"\n{formatted_chunk}"
         )
         openai.api_key = await self.get_openai_token()
         chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
-                                                             messages=[{"role": "user", "content": openai_query}])
+                                                             messages=[{"role": "user", "content": openai_query}],
+                                                             temperature=1.5,
+                                                             max_tokens=200,
+                                                             )
         try:
             response = chat_completion['choices'][0]['message']['content']
             await ctx.channel.send(response)
