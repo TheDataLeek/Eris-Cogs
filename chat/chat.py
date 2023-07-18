@@ -26,15 +26,19 @@ class Chat(BaseCog):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
+        thread_name = None
         if isinstance(channel, discord.TextChannel):
-            openai_query = [{"role": "user", "content": " ".join(query)}]
+            formatted_query = " ".join(query)
+            openai_query = [{"role": "user", "content": formatted_query}]
+            thread_name = formatted_query[:15] + '...'
         elif isinstance(channel, discord.Thread):
             history = [message async for message in channel.history(limit=100)]
             history = [
                 {
-                    "role": 'system' if message.author.bot else 'user',
-                    'content': ' '.join(w for w in message.clean_content.split(' ') if w != '.chat')  # todo: prefix
+                    "role": 'system' if thread_message.author.bot else 'user',
+                    'content': ' '.join(w for w in thread_message.clean_content.split(' ') if w != '.chat')  # todo: prefix
                 }
+                for thread_message in history
             ]
             openai_query = history
         else:
@@ -44,9 +48,17 @@ class Chat(BaseCog):
         chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
                                                              messages=openai_query,
                                                              temperature=1.5)
-        try:
-            response = chat_completion['choices'][0]['message']['content']
-            thread: discord.Thread = await message.create_thread(name=openai_query[:15] + '...')
-            await thread.send(response)
-        except Exception as e:
-            raise
+
+        if isinstance(channel, discord.TextChannel):
+            try:
+                response = chat_completion['choices'][0]['message']['content']
+                thread: discord.Thread = await message.create_thread(name=thread_name)
+                await thread.send(response)
+            except Exception as e:
+                raise
+        elif isinstance(channel, discord.Thread):
+            try:
+                response = chat_completion['choices'][0]['message']['content']
+                await channel.send(response)
+            except Exception as e:
+                raise
