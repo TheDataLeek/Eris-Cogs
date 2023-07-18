@@ -1,6 +1,7 @@
 from typing import List, Dict, Union
 
 from redbot.core import commands
+from redbot.core.utils import chat_formatting
 import discord
 import openai
 
@@ -47,19 +48,26 @@ class Chat(BaseCog):
         openai.api_key = await self.get_openai_token()
         chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
                                                              messages=openai_query,
-                                                             temperature=1.5,
-                                                             max_tokens=1000)
+                                                             temperature=1.5)
 
         if isinstance(channel, discord.TextChannel):
             try:
                 response = chat_completion['choices'][0]['message']['content']
                 thread: discord.Thread = await message.create_thread(name=thread_name)
-                await thread.send(response)
+                if len(response) < 1999:
+                    await thread.send(response)
+                else:
+                    for page in chat_formatting.pagify(response, delims=[' ', '\n'], page_length=1500):
+                        await thread.send(page)
             except Exception as e:
                 raise
         elif isinstance(channel, discord.Thread):
             try:
                 response = chat_completion['choices'][0]['message']['content']
-                await channel.send(response)
+                if len(response) < 1999:
+                    await channel.send(response)
+                else:
+                    for page in chat_formatting.pagify(response, delims=[' ', '\n'], page_length=1500):
+                        await channel.send(page)
             except Exception as e:
                 raise
