@@ -42,7 +42,7 @@ class Chat(BaseCog):
 
         openai.api_key = await self.get_openai_token()
         chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
-                                                             messages=openai_query
+                                                             messages=openai_query,
                                                              temperature=1.5)
         try:
             response = chat_completion['choices'][0]['message']['content']
