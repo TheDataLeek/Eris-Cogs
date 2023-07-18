@@ -37,7 +37,8 @@ class Chat(BaseCog):
             history = [
                 {
                     "role": 'system' if thread_message.author.bot else 'user',
-                    'content': ' '.join(w for w in thread_message.clean_content.split(' ') if w != '.chat')  # todo: prefix
+                    'content': ' '.join(w for w in thread_message.clean_content.split(' ') if w != '.chat')
+                    # todo: prefix
                 }
                 for thread_message in history
             ]
@@ -46,10 +47,13 @@ class Chat(BaseCog):
             return
 
         openai.api_key = await self.get_openai_token()
-        chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
-                                                             messages=openai_query,
-                                                             temperature=1.25,
-                                                             max_tokens=2000)
+        chat_completion: Dict = openai.ChatCompletion.create(
+            # model="gpt-3.5-turbo",
+            model="gpt-4",
+            messages=openai_query,
+            temperature=1.25,
+            max_tokens=2000
+        )
 
         if isinstance(channel, discord.TextChannel):
             try:
