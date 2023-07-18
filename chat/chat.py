@@ -1,4 +1,5 @@
 import io
+import base64
 from typing import List, Dict, Union
 
 from redbot.core import commands
@@ -36,9 +37,9 @@ class Chat(BaseCog):
             size='1024x1024',
             response_format='b64_json'
         )
-        image = response['data'][0]['b64_json']
+        image = response['data'][0]['b64_json'].encode()
         buf = io.BytesIO()
-        buf.write(image)
+        buf.write(base64.b64decode(image))
         buf.seek(0)
         if isinstance(channel, discord.TextChannel):
             thread: discord.Thread = await message.create_thread(name=filename)
