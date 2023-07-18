@@ -48,8 +48,8 @@ class Chat(BaseCog):
 
         openai.api_key = await self.get_openai_token()
         chat_completion: Dict = openai.ChatCompletion.create(
-            # model="gpt-3.5-turbo",
-            model="gpt-4",
+            model="gpt-3.5-turbo",
+            # model="gpt-4",
             messages=openai_query,
             temperature=1.25,
             max_tokens=2000
