@@ -58,18 +58,28 @@ class GoodBot(BaseCog):
 
     @commands.command()
     @checks.mod()
-    async def set_rating_threshold(self, ctx, thresh: int):
+    async def set_rating_threshold(self, ctx, which: str, thresh: int):
         """
         Sets the threshold for the goodbot compliment
+
+        which: `good` or `bad` to determine which threshold you're setting
+        thresh: the number of emoji it requires
         """
         if thresh < 1:
             await ctx.send("Please set a reasonable bound")
             return
 
-        async with self.config.settings() as settings:
-            settings["thresh"] = thresh
+        if which not in ['good', 'bad']:
+            await ctx.send("Please provide `good` or `bad` as input!")
+            return
 
-        await ctx.send(f"Success, new threshold has been set to {thresh}")
+        async with self.config.settings() as settings:
+            if which == 'good':
+                settings["good_thresh"] = thresh
+            else:
+                settings["bad_thresh"] = thresh
+
+        await ctx.send(f"Success, new {which} threshold has been set to {thresh}")
 
     def generate_message(self, author: discord.Member, good=True) -> str:
         phrase = "{} IS A {} {}".format(
@@ -127,14 +137,15 @@ class GoodBot(BaseCog):
         async with self.config.settings() as settings, self.config.guild(
             ctx.guild
         ).messages() as messagetracking:
-            thresh = int(settings["thresh"])
             has_been_noticed = messagetracking.get(str(msg.id), False)
-            if not has_been_noticed and reaction.count >= thresh:
-                if reaction.emoji == "👍":
+            good_thresh = int(settings["good_thresh"])
+            bad_thresh = int(settings["bad_thresh"])
+            if not has_been_noticed:
+                if reaction.emoji == '👍' and reaction.count >= good_thresh:
                     phrase = self.generate_message(og_author, good=True)
-                elif reaction.emoji == "👎":
+                elif reaction.emoji == "👎" and reaction.count >= bad_thresh:
                     phrase = self.generate_message(og_author, good=False)
-                else:
+                elif reaction.count >= good_thresh:
                     phrase = f"{og_author.mention} has been {reaction.emoji}'d"
                 await ctx.send(phrase, reference=reaction.message)
 
