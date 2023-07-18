@@ -52,7 +52,7 @@ class Chat(BaseCog):
                                                              temperature=1.5)
         try:
             response = chat_completion['choices'][0]['message']['content']
-            thread: discord.Thread = await message.create_thread(openai_query[:15] + '...')
+            thread: discord.Thread = await message.create_thread(name=openai_query[:15] + '...')
             await thread.send(response)
         except Exception as e:
             raise
