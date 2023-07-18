@@ -55,4 +55,4 @@ class Chat(BaseCog):
             thread: discord.Thread = await message.create_thread(openai_query[:15] + '...')
             await thread.send(response)
         except Exception as e:
-            await ctx.channel.send("Something went wrong!")
+            raise
