@@ -1,3 +1,4 @@
+import io
 from typing import List, Dict, Union
 
 from redbot.core import commands
@@ -20,7 +21,33 @@ class Chat(BaseCog):
         return self.openai_token
 
     @commands.command()
-    async def chat(self, ctx: commands.Context, *query: str):
+    async def image(self, ctx: commands.Context, *query: str):
+        if not query:
+            return
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
+        author: discord.Member = message.author
+        formatted_query = " ".join(query)
+        filename = "_".join(query[:5]) + ".png"
+        openai.api_key = await self.get_openai_token()
+        response: Dict = openai.Image.create(
+            prompt=formatted_query,
+            n=1,
+            size='1024x1024',
+            response_format='b64_json'
+        )
+        image = response['data'][0]['b64_json']
+        buf = io.BytesIO()
+        buf.write(image.decode('base64'))
+        buf.seek(0)
+        if isinstance(channel, discord.TextChannel):
+            thread: discord.Thread = await message.create_thread(name=filename)
+            await thread.send(file=discord.File(buf, filename=filename))
+        elif isinstance(channel, discord.Thread):
+            await channel.send(file=discord.File(buf, filename=filename))
+
+    @commands.command()
+    async def chat(self, ctx: commands.Context, *query: str) -> None:
         if not query:
             return
 
