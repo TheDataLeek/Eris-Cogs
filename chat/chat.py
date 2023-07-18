@@ -38,7 +38,7 @@ class Chat(BaseCog):
         )
         image = response['data'][0]['b64_json']
         buf = io.BytesIO()
-        buf.write(image.decode('base64'))
+        buf.write(image)
         buf.seek(0)
         if isinstance(channel, discord.TextChannel):
             thread: discord.Thread = await message.create_thread(name=filename)
