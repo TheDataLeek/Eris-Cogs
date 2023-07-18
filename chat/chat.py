@@ -47,7 +47,8 @@ class Chat(BaseCog):
         openai.api_key = await self.get_openai_token()
         chat_completion: Dict = openai.ChatCompletion.create(model="gpt-3.5-turbo",
                                                              messages=openai_query,
-                                                             temperature=1.5)
+                                                             temperature=1.5,
+                                                             max_tokens=2000)
 
         if isinstance(channel, discord.TextChannel):
             try:
