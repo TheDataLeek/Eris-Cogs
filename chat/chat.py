@@ -33,12 +33,27 @@ class Chat(BaseCog):
         filename = "_".join(query[:5]) + ".png"
         openai.api_key = await self.get_openai_token()
         loop = asyncio.get_running_loop()
-        response: Dict = await loop.run_in_executor(None, lambda: openai.Image.create(
-            prompt=formatted_query,
-            n=1,
-            size='1024x1024',
-            response_format='b64_json'
-        ))
+
+        time_to_sleep = 1
+        while True:
+            try:
+                response: Dict = await loop.run_in_executor(None, lambda: openai.Image.create(
+                    prompt=formatted_query,
+                    n=1,
+                    size='1024x1024',
+                    response_format='b64_json'
+                ))
+                break
+            except openai.error.InvalidRequestError as e:
+                await ctx.send(f"Oops, you did something wrong! {e}")
+                return
+            except openai.error.RateLimitError:
+                await asyncio.sleep(time_to_sleep**2)
+                time_to_sleep += 1
+            except openai.error.ServiceUnavailableError:
+                await asyncio.sleep(time_to_sleep**2)
+                time_to_sleep += 1
+
         image = response['data'][0]['b64_json'].encode()
         buf = io.BytesIO()
         buf.write(base64.b64decode(image))
@@ -58,6 +73,7 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         thread_name = None
+
         if isinstance(channel, discord.TextChannel):
             formatted_query = " ".join(query)
             openai_query = [{"role": "user", "content": formatted_query}]
@@ -78,12 +94,27 @@ class Chat(BaseCog):
 
         loop = asyncio.get_running_loop()
         openai.api_key = await self.get_openai_token()
-        chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=openai_query,
-            temperature=1.25,
-            max_tokens=2000
-        ))
+
+        time_to_sleep = 1
+        while True:
+            try:
+                chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=openai_query,
+                    temperature=1.25,
+                    max_tokens=2000
+                ))
+                break
+            except openai.error.InvalidRequestError as e:
+                await ctx.send(f"Oops, you did something wrong! {e}")
+                return
+            except openai.error.RateLimitError:
+                await asyncio.sleep(time_to_sleep**2)
+                time_to_sleep += 1
+            except openai.error.ServiceUnavailableError:
+                await asyncio.sleep(time_to_sleep**2)
+                time_to_sleep += 1
+
 
         if isinstance(channel, discord.TextChannel):
             try:
