@@ -1,9 +1,10 @@
 import io
 import base64
 from typing import List, Dict, Union
+import asyncio
 
 from redbot.core import commands
-from redbot.core.utils import chat_formatting
+from redbot.core.utils import chat_formatting, bounded_gather
 import discord
 import openai
 
@@ -74,14 +75,14 @@ class Chat(BaseCog):
         else:
             return
 
+        loop = asyncio.get_running_loop()
         openai.api_key = await self.get_openai_token()
-        chat_completion: Dict = openai.ChatCompletion.create(
+        chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            # model="gpt-4",
             messages=openai_query,
             temperature=1.25,
             max_tokens=2000
-        )
+        ))
 
         if isinstance(channel, discord.TextChannel):
             try:
