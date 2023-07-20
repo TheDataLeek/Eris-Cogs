@@ -32,12 +32,13 @@ class Chat(BaseCog):
         formatted_query = " ".join(query)
         filename = "_".join(query[:5]) + ".png"
         openai.api_key = await self.get_openai_token()
-        response: Dict = openai.Image.create(
+        loop = asyncio.get_running_loop()
+        response: Dict = await loop.run_in_executor(None, lambda: openai.Image.create(
             prompt=formatted_query,
             n=1,
             size='1024x1024',
             response_format='b64_json'
-        )
+        ))
         image = response['data'][0]['b64_json'].encode()
         buf = io.BytesIO()
         buf.write(base64.b64decode(image))
