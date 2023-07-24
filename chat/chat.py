@@ -23,9 +23,12 @@ class Chat(BaseCog):
         return self.openai_token
 
     @commands.command()
-    async def image(self, ctx: commands.Context, *query: str):
+    async def image(self, ctx: commands.Context):
+        query = ctx.message.clean_content.split(" ")[1:]
+
         if not query:
             return
+
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
@@ -65,7 +68,9 @@ class Chat(BaseCog):
             await channel.send(file=discord.File(buf, filename=filename))
 
     @commands.command()
-    async def chat(self, ctx: commands.Context, *query: str) -> None:
+    async def chat(self, ctx: commands.Context) -> None:
+        query = ctx.message.clean_content.split(" ")[1:]
+
         if not query:
             return
 
@@ -87,6 +92,7 @@ class Chat(BaseCog):
                     # todo: prefix
                 }
                 for thread_message in history
+                if thread_message.author.bot or thread_message.clean_content.startswith('.chat')
             ]
             openai_query = history
         else:
