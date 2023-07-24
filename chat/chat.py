@@ -47,15 +47,15 @@ class Chat(BaseCog):
                     response_format='b64_json'
                 ))
                 break
-            except openai.error.InvalidRequestError as e:
-                await ctx.send(f"Oops, you did something wrong! {e}")
-                return
             except openai.error.RateLimitError:
                 await asyncio.sleep(time_to_sleep**2)
                 time_to_sleep += 1
             except openai.error.ServiceUnavailableError:
                 await asyncio.sleep(time_to_sleep**2)
                 time_to_sleep += 1
+            except Exception as e:
+                await ctx.send(f"Oops, you did something wrong! {e}")
+                return
 
         image = response['data'][0]['b64_json'].encode()
         buf = io.BytesIO()
@@ -111,16 +111,15 @@ class Chat(BaseCog):
                     max_tokens=2000
                 ))
                 break
-            except openai.error.InvalidRequestError as e:
-                await ctx.send(f"Oops, you did something wrong! {e}")
-                return
             except openai.error.RateLimitError:
                 await asyncio.sleep(time_to_sleep**2)
                 time_to_sleep += 1
             except openai.error.ServiceUnavailableError:
                 await asyncio.sleep(time_to_sleep**2)
                 time_to_sleep += 1
-
+            except Exception as e:
+                await ctx.send(f"Oops, you did something wrong! {e}")
+                return
 
         if isinstance(channel, discord.TextChannel):
             try:
