@@ -128,7 +128,7 @@ class Chat(BaseCog):
                 if len(response) < 1999:
                     await thread.send(response)
                 else:
-                    for page in chat_formatting.pagify(response, delims=[' ', '\n'], page_length=1500):
+                    for page in chat_formatting.pagify(response, delims=['\n'], page_length=1250):
                         await thread.send(page)
             except Exception as e:
                 raise
