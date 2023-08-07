@@ -142,3 +142,48 @@ class Chat(BaseCog):
                         await channel.send(page)
             except Exception as e:
                 raise
+
+    @commands.command()
+    async def vibecheck(self, ctx: commands.Context) -> None:
+        query = ctx.message.clean_content.split(" ")[1:]
+
+        if not query:
+            query = "a random emoji".split(" ")
+
+        channel: discord.abc.Messageable = ctx.channel
+
+        formatted_query = " ".join(query)
+        openai_query = [{
+            "role": "user",
+            "content": ("Please provide a single random word or a single emoji response that summarizes the following "
+                        f"message in a loosely-defined vibe-based sort of way: {formatted_query}")
+        }]
+
+        loop = asyncio.get_running_loop()
+        openai.api_key = await self.get_openai_token()
+
+        time_to_sleep = 1
+        while True:
+            try:
+                chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=openai_query,
+                    temperature=1.25,
+                    max_tokens=2000
+                ))
+                break
+            except openai.error.RateLimitError:
+                await asyncio.sleep(time_to_sleep**2)
+                time_to_sleep += 1
+            except openai.error.ServiceUnavailableError:
+                await asyncio.sleep(time_to_sleep**2)
+                time_to_sleep += 1
+            except Exception as e:
+                await ctx.send(f"Oops, you did something wrong! {e}")
+                return
+
+        try:
+            response = chat_completion['choices'][0]['message']['content']
+            await channel.send(response)
+        except Exception as e:
+            raise
