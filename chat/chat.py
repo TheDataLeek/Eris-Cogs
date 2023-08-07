@@ -155,8 +155,9 @@ class Chat(BaseCog):
         formatted_query = " ".join(query)
         openai_query = [{
             "role": "user",
-            "content": ("Please provide a single random word or a single emoji response that summarizes the following "
-                        f"message in a loosely-defined vibe-based sort of way: {formatted_query}")
+            "content": ("Please provide a single random word or a single emoji response that summarizes the emotion, "
+                        "feeling, and overall happiness contained in the following message in a loosely-defined "
+                        f"vibe-based sort of way: {formatted_query}")
         }]
 
         loop = asyncio.get_running_loop()
