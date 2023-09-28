@@ -108,7 +108,7 @@ class Chat(BaseCog):
                     # model="gpt-3.5-turbo",
                     model="gpt-4",
                     messages=openai_query,
-                    temperature=1.25,
+                    temperature=1,
                     max_tokens=2000
                 ))
                 break
@@ -171,7 +171,7 @@ class Chat(BaseCog):
                     # model="gpt-3.5-turbo",
                     model="gpt-4",
                     messages=openai_query,
-                    temperature=1.25,
+                    temperature=1,
                     max_tokens=2000
                 ))
                 break
