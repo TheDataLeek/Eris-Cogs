@@ -105,7 +105,8 @@ class Chat(BaseCog):
         while True:
             try:
                 chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
+                    # model="gpt-3.5-turbo",
+                    model="gpt-4",
                     messages=openai_query,
                     temperature=1.25,
                     max_tokens=2000
