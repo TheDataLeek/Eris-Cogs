@@ -127,7 +127,7 @@ class HotelCalifornia(BaseCog):
         channels: List[discord.TextChannel] = guild.text_channels
 
         userlog = {m.id: dt.datetime(1900, 1, 1) for m in guild.members}
-        threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=365)
+        threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=90)
 
         stime = time.time()
         message_count = 0
@@ -138,7 +138,7 @@ class HotelCalifornia(BaseCog):
             last_message_examined: discord.Message = None
             newer_than_a_year = True
             while newer_than_a_year:
-                chunk = await channel.history(limit=2_000, before=last_message_examined).flatten()
+                chunk = [message async for message in channel.history(limit=2_000, before=last_message_examined)]
                 # if we run out of messages, stop
                 if len(chunk) == 0:
                     break
