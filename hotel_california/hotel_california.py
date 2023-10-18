@@ -136,8 +136,8 @@ class HotelCalifornia(BaseCog):
         for i, channel in enumerate(channels):
             await ctx.send(f"Searching 🔴{channel}🔴 for users to 💀PURGE💀 ({i / N:0.01%})")
             last_message_examined: discord.Message = None
-            newer_than_a_year = True
-            while newer_than_a_year:
+            new_enough = True
+            while new_enough:
                 chunk = [message async for message in channel.history(limit=2_000, before=last_message_examined)]
                 # if we run out of messages, stop
                 if len(chunk) == 0:
@@ -146,10 +146,13 @@ class HotelCalifornia(BaseCog):
                 message: discord.Message
 
                 for message in chunk:
-                    userlog[message.author.id] = max(userlog.get(message.author.id, dt.date(1900, 1, 1)), message.created_at)
+                    userlog[message.author.id] = max(
+                        userlog.get(message.author.id, dt.date(1900, 1, 1)),
+                        message.created_at.date()
+                    )
                     # if the messages are older than a year, stop
                     if message.created_at <= threshold:
-                        newer_than_a_year = False
+                        new_enough = False
                         break
 
                 last_message_examined = chunk[-1]
