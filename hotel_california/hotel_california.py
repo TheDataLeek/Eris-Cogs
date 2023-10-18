@@ -126,8 +126,8 @@ class HotelCalifornia(BaseCog):
         guild: discord.Guild = ctx.guild
         channels: List[discord.TextChannel] = guild.text_channels
 
-        userlog = {m.id: dt.datetime(1900, 1, 1) for m in guild.members}
-        threshold: dt.datetime = dt.datetime.now() - dt.timedelta(days=90)
+        userlog = {m.id: dt.date(1900, 1, 1) for m in guild.members}
+        threshold: dt.date = dt.date.today() - dt.timedelta(days=90)
 
         stime = time.time()
         message_count = 0
@@ -146,7 +146,7 @@ class HotelCalifornia(BaseCog):
                 message: discord.Message
 
                 for message in chunk:
-                    userlog[message.author.id] = max(userlog.get(message.author.id, dt.datetime(1900, 1, 1)), message.created_at)
+                    userlog[message.author.id] = max(userlog.get(message.author.id, dt.date(1900, 1, 1)), message.created_at)
                     # if the messages are older than a year, stop
                     if message.created_at <= threshold:
                         newer_than_a_year = False
