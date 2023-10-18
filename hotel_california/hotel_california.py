@@ -146,12 +146,13 @@ class HotelCalifornia(BaseCog):
                 message: discord.Message
 
                 for message in chunk:
+                    message_created_date = message.created_at.date()
                     userlog[message.author.id] = max(
                         userlog.get(message.author.id, dt.date(1900, 1, 1)),
-                        message.created_at.date()
+                        message_created_date
                     )
                     # if the messages are older than a year, stop
-                    if message.created_at <= threshold:
+                    if message_created_date <= threshold:
                         new_enough = False
                         break
 
