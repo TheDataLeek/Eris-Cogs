@@ -29,16 +29,15 @@ class ExportEmoji(BaseCog):
         messages = []
         images = []
         last_message_examined: discord.Message = None
-        message_count = 0
         stime = time.time()
         zipbuf = io.BytesIO()
-        count = 0
-        chunksize = 500
+        total_count = 0
+        chunksize = 1000
         with zipfile.ZipFile(zipbuf, "w", zipfile.ZIP_DEFLATED) as zf:
             while True:
                 counter = 0
                 message: discord.Message
-                async for message in channel.history(limit=chunksize, after=last_message_examined):
+                async for message in channel.history(limit=chunksize, oldest_first=True, after=last_message_examined):
                     author: discord.Member = message.author
                     attachments: List[discord.Attachment] = message.attachments
                     attachment_buffers = []
@@ -52,21 +51,21 @@ class ExportEmoji(BaseCog):
                     messages.append([message.created_at, author.display_name, message.clean_content])
                     counter += 1
 
-                count += counter
+                total_count += counter
+
+                # if we got very few messages, break!
+                if counter <= 5:
+                    break
 
                 # snag the last message examined
                 last_message_examined = message
-
-                # if we got less messages than our chunksize, break!
-                if counter < chunksize - 1:
-                    break
 
             # write the messages to the zipfile
             created_at: dt.datetime
             name: str
             content: str
             messages = [
-                f"{created_at.isoformat()} | {name} | {content}"
+                f"{created_at.isoformat()} | {name} | {content if content else '<attachment>'}"
                 for created_at, name, content in messages
             ]
             messages = '\n\n'.join(messages)
@@ -87,7 +86,7 @@ class ExportEmoji(BaseCog):
         seconds = delta - (minutes * 60)
 
         await ctx.send(
-            f"Done. Found {count:,} messages and {len(attachment_buffers):,} images. "
+            f"Done. Found {total_count:,} messages and {len(attachment_buffers):,} images. "
             f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds"
         )
         await ctx.send(
