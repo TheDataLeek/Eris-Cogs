@@ -1,17 +1,14 @@
 # stdlib
-import re
 import io
-import zipfile
-from zipfile import ZipFile
+import datetime as dt
+import re
 import time
-
+import zipfile
 from typing import Union, Tuple, List, Optional
 
 # third party
 import discord
-from redbot.core import commands, data_manager
-import aiohttp
-
+from redbot.core import commands
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -30,22 +27,72 @@ class ExportEmoji(BaseCog):
     async def create_archive(self, ctx):
         channel: discord.TextChannel = ctx.channel
         messages = []
-        message: discord.Message
+        images = []
         last_message_examined: discord.Message = None
         message_count = 0
         stime = time.time()
-        while True:
-            chunk = [message async for message in channel.history(limit=1000, before=last_message_examined)]
-            if len(chunk) == 0:
-                break
-            message_count += len(chunk)
-            for message in chunk:
-                messages.append(message.content)
-            last_message_examined = message
-        buf = io.StringIO()
-        buf.writelines(messages)
-        buf.seek(0)
-        await ctx.send(file=discord.File(buf, filename="archive.txt"))
+        zipbuf = io.BytesIO()
+        count = 0
+        chunksize = 500
+        with zipfile.ZipFile(zipbuf, "w", zipfile.ZIP_DEFLATED) as zf:
+            while True:
+                counter = 0
+                message: discord.Message
+                async for message in channel.history(limit=chunksize, after=last_message_examined):
+                    author: discord.Member = message.author
+                    attachments: List[discord.Attachment] = message.attachments
+                    attachment_buffers = []
+                    for attachment in attachments:
+                        if attachment.height and attachment.width:
+                            buf = io.BytesIO()
+                            await attachment.save(buf)
+                            attachment_buffers.append((attachment.filename, message.created_at, buf))
+                    images += attachment_buffers
+
+                    messages.append([message.created_at, author.display_name, message.clean_content])
+                    counter += 1
+
+                count += counter
+
+                # snag the last message examined
+                last_message_examined = message
+
+                # if we got less messages than our chunksize, break!
+                if counter < chunksize:
+                    break
+
+            # write the messages to the zipfile
+            created_at: dt.datetime
+            name: str
+            content: str
+            messages = [
+                f"{created_at.isoformat()} | {name} | {content}"
+                for created_at, name, content in messages
+            ]
+            messages = '\n\n\n\n'.join(messages)
+            zf.writestr('0_log.txt', messages)
+
+            # write the attachments
+            filename: str
+            created_at: str
+            buffer: io.BytesIO
+            for filename, created_at, buffer in attachment_buffers:
+                formatted_filename = f"{created_at.isoformat()}_{filename}"
+                zf.writestr(formatted_filename, buffer.getvalue())
+
+        zipbuf.seek(0)
+
+        delta = time.time() - stime
+        minutes = delta // 60
+        seconds = delta - (minutes * 60)
+
+        await ctx.send(
+            f"Done. Processed {message_count} messages, found {count:,} messages and "
+            f"{len(attachment_buffers):,} images. Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds"
+        )
+        await ctx.send(
+            file=discord.File(zipbuf, filename=f"archive.zip")
+        )
 
     @commands.command()
     async def export(
