@@ -26,6 +26,27 @@ class ExportEmoji(BaseCog):
         self.bot: commands.Bot = bot
 
     @commands.command()
+    async def create_archive(self, ctx):
+        channel: discord.TextChannel = ctx.channel
+        messages = []
+        message: discord.Message
+        last_message_examined: discord.Message = None
+        message_count = 0
+        stime = time.time()
+        while True:
+            chunk = [message async for message in channel.history(limit=1000, before=last_message_examined)]
+            if len(chunk) == 0:
+                break
+            message_count += len(chunk)
+            for message in chunk:
+                messages.append(message.content)
+            last_message_examined = message
+        buf = io.StringIO()
+        buf.writelines(messages)
+        buf.seek(0)
+        await ctx.send(file=discord.File(buf, filename="archive.txt"))
+
+    @commands.command()
     async def export(
         self, ctx, *emoji_list: Union[discord.PartialEmoji, discord.Emoji, int, str]
     ):
