@@ -58,7 +58,7 @@ class ExportEmoji(BaseCog):
                 last_message_examined = message
 
                 # if we got less messages than our chunksize, break!
-                if counter < chunksize:
+                if counter < chunksize - 1:
                     break
 
             # write the messages to the zipfile
@@ -69,7 +69,7 @@ class ExportEmoji(BaseCog):
                 f"{created_at.isoformat()} | {name} | {content}"
                 for created_at, name, content in messages
             ]
-            messages = '\n\n\n\n'.join(messages)
+            messages = '\n\n'.join(messages)
             zf.writestr('0_log.txt', messages)
 
             # write the attachments
@@ -87,8 +87,8 @@ class ExportEmoji(BaseCog):
         seconds = delta - (minutes * 60)
 
         await ctx.send(
-            f"Done. Processed {message_count} messages, found {count:,} messages and "
-            f"{len(attachment_buffers):,} images. Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds"
+            f"Done. Found {count:,} messages and {len(attachment_buffers):,} images. "
+            f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds"
         )
         await ctx.send(
             file=discord.File(zipbuf, filename=f"archive.zip")
