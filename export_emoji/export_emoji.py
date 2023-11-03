@@ -32,27 +32,32 @@ class ExportEmoji(BaseCog):
     async def create_archive(self, ctx):
         channel: discord.TextChannel = ctx.channel
         messages = []
-        images = []
         last_message_examined: discord.Message = None
         stime = time.time()
-        zipbuf = io.BytesIO()
         total_count = 0
         chunksize = 1000
-        with zipfile.ZipFile(zipbuf, "w", zipfile.ZIP_DEFLATED) as zf:
+
+        archive_dir = self.data_path / 'archives'
+        if not archive_dir.exists():
+            os.mkdir(archive_dir)
+        filepath = archive_dir / f"channel_archive_{dt.datetime.now().isoformat()}.zip"
+        filepath = str(filepath.absolute())
+
+        with zipfile.ZipFile(filepath, "w", zipfile.ZIP_DEFLATED) as zf:
             while True:
                 counter = 0
                 message: discord.Message
                 async for message in channel.history(limit=chunksize, oldest_first=True, after=last_message_examined):
                     author: discord.Member = message.author
-
-                    attachment_buffers = []
                     attachment: discord.Attachment
                     for attachment in message.attachments:
                         if attachment.height and attachment.width:
                             buf = io.BytesIO()
                             await attachment.save(buf)
-                            attachment_buffers.append((attachment.filename, message.created_at, buf))
-                    images += attachment_buffers
+                            buf.seek(0)
+                            # write the attachments
+                            formatted_filename = f"{message.created_at.isoformat()}_{attachment.filename}"
+                            zf.writestr(formatted_filename, buf.getvalue())
 
                     messages.append([message.created_at, author.display_name, message.clean_content])
                     counter += 1
@@ -66,26 +71,15 @@ class ExportEmoji(BaseCog):
                 # snag the last message examined
                 last_message_examined = message
 
-            # write the messages to the zipfile
-            created_at: dt.datetime
-            name: str
-            content: str
-            messages = [
-                f"{created_at.isoformat()} | {name} | {content if content else '<attachment>'}"
-                for created_at, name, content in messages
-            ]
-            messages = '\n\n'.join(messages)
-            zf.writestr('log.txt', messages)
-
-            # write the attachments
-            filename: str
-            created_at: str
-            buffer: io.BytesIO
-            for filename, created_at, buffer in images:
-                formatted_filename = f"{created_at.isoformat()}_{filename}"
-                zf.writestr(formatted_filename, buffer.getvalue())
-
-        zipbuf.seek(0)
+        # write the messages to the zipfile
+        created_at: dt.datetime
+        name: str
+        content: str
+        messages = [
+            f"{created_at.isoformat()} | {name} | {content if content else '<attachment>'}"
+            for created_at, name, content in messages
+        ]
+        messages = '\n\n'.join(messages)
 
         delta = time.time() - stime
         minutes = delta // 60
@@ -93,31 +87,20 @@ class ExportEmoji(BaseCog):
 
         await ctx.send(
             f"Done. Found {total_count:,} messages and {len(images):,} images. "
-            f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds"
+            f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds\n"
+            "Contact the bot owner for the zipfile (saved to data directory)"
         )
-        try:
-            await ctx.send(
-                file=discord.File(zipbuf, filename=f"archive.zip")
-            )
-        except Exception as e:
-            await ctx.send("Too much data! Here's the text log. "
-                           "Contact the bot owner for the zipfile (saved to data directory")
-            buf = io.BytesIO()
-            buf.write(messages.encode('utf-8'))
-            buf.seek(0)
-            await ctx.send(
-                file=discord.File(buf, filename=f"log.txt")
-            )
 
-            archive_dir = self.data_path / 'archives'
-            if not archive_dir.exists():
-                os.mkdir(archive_dir)
-            filepath = archive_dir / f"channel_archive_{dt.datetime.now().isoformat()}.zip"
-            zipbuf.seek(0)
-            filepath.write_bytes(zipbuf.getvalue())
-            filepath = str(filepath.absolute())
-            jump_url = ctx.message.jump_url
-            await self.bot.send_to_owners(f'Archive saved to the data directory!\n{filepath}\n{jump_url}')
+        buf = io.BytesIO()
+        buf.write(messages.encode('utf-8'))
+        buf.seek(0)
+        await ctx.send(
+            file=discord.File(buf, filename=f"log.txt")
+        )
+
+        jump_url = ctx.message.jump_url
+        await self.bot.send_to_owners(f'Archive saved to the data directory!\n{filepath}\n{jump_url}')
+
 
     @commands.command()
     async def export(
