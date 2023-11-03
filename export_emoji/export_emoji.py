@@ -28,7 +28,7 @@ class ExportEmoji(BaseCog):
         self.data_path: pathlib.Path = data_manager.cog_data_path(self)
 
     @commands.command()
-    @checks.is_mod_or_superior
+    @checks.mod()
     async def create_archive(self, ctx):
         channel: discord.TextChannel = ctx.channel
         messages = []
@@ -118,7 +118,6 @@ class ExportEmoji(BaseCog):
             filepath = str(filepath.absolute())
             jump_url = ctx.message.jump_url
             await self.bot.send_to_owners(f'Archive saved to the data directory!\n{filepath}\n{jump_url}')
-
 
     @commands.command()
     async def export(
