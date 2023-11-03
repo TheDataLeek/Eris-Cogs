@@ -1,5 +1,7 @@
 # stdlib
 import io
+import os
+import pathlib
 import datetime as dt
 import re
 import time
@@ -8,7 +10,8 @@ from typing import Union, Tuple, List, Optional
 
 # third party
 import discord
-from redbot.core import commands
+from redbot.core import commands, data_manager, checks
+from redbot.core.bot import Red
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -21,9 +24,11 @@ _CUSTOM_EMOJI_RE = re.compile(
 
 class ExportEmoji(BaseCog):
     def __init__(self, bot):
-        self.bot: commands.Bot = bot
+        self.bot: Red = bot
+        self.data_path: pathlib.Path = data_manager.cog_data_path(self)
 
     @commands.command()
+    @checks.is_mod_or_superior
     async def create_archive(self, ctx):
         channel: discord.TextChannel = ctx.channel
         messages = []
@@ -70,7 +75,7 @@ class ExportEmoji(BaseCog):
                 for created_at, name, content in messages
             ]
             messages = '\n\n'.join(messages)
-            zf.writestr('0_log.txt', messages)
+            zf.writestr('log.txt', messages)
 
             # write the attachments
             filename: str
@@ -90,9 +95,30 @@ class ExportEmoji(BaseCog):
             f"Done. Found {total_count:,} messages and {len(images):,} images. "
             f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds"
         )
-        await ctx.send(
-            file=discord.File(zipbuf, filename=f"archive.zip")
-        )
+        try:
+            await ctx.send(
+                file=discord.File(zipbuf, filename=f"archive.zip")
+            )
+        except Exception as e:
+            await ctx.send("Too much data! Here's the text log. "
+                           "Contact the bot owner for the zipfile (saved to data directory")
+            buf = io.BytesIO()
+            buf.write(messages.encode('utf-8'))
+            buf.seek(0)
+            await ctx.send(
+                file=discord.File(buf, filename=f"log.txt")
+            )
+
+            archive_dir = self.data_path / 'archives'
+            if not archive_dir.exists():
+                os.mkdir(archive_dir)
+            filepath = archive_dir / f"channel_archive_{dt.datetime.now().isoformat()}.zip"
+            zipbuf.seek(0)
+            filepath.write_bytes(zipbuf.getvalue())
+            filepath = str(filepath.absolute())
+            jump_url = ctx.message.jump_url
+            await self.bot.send_to_owners(f'Archive saved to the data directory!\n{filepath}\n{jump_url}')
+
 
     @commands.command()
     async def export(
