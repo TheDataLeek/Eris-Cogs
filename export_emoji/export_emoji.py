@@ -35,6 +35,7 @@ class ExportEmoji(BaseCog):
         last_message_examined: discord.Message = None
         stime = time.time()
         total_count = 0
+        image_count = 0
         chunksize = 1000
 
         archive_dir = self.data_path / 'archives'
@@ -58,6 +59,7 @@ class ExportEmoji(BaseCog):
                             # write the attachments
                             formatted_filename = f"{message.created_at.isoformat()}_{attachment.filename}"
                             zf.writestr(formatted_filename, buf.getvalue())
+                            image_count += 1
 
                     messages.append([message.created_at, author.display_name, message.clean_content])
                     counter += 1
@@ -86,7 +88,7 @@ class ExportEmoji(BaseCog):
         seconds = delta - (minutes * 60)
 
         await ctx.send(
-            f"Done. Found {total_count:,} messages and {len(images):,} images. "
+            f"Done. Found {total_count:,} messages and {image_count:,} images. "
             f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds\n"
             "Contact the bot owner for the zipfile (saved to data directory)"
         )
