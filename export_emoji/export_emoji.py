@@ -39,9 +39,10 @@ class ExportEmoji(BaseCog):
                 message: discord.Message
                 async for message in channel.history(limit=chunksize, oldest_first=True, after=last_message_examined):
                     author: discord.Member = message.author
-                    attachments: List[discord.Attachment] = message.attachments
+
                     attachment_buffers = []
-                    for attachment in attachments:
+                    attachment: discord.Attachment
+                    for attachment in message.attachments:
                         if attachment.height and attachment.width:
                             buf = io.BytesIO()
                             await attachment.save(buf)
@@ -75,7 +76,7 @@ class ExportEmoji(BaseCog):
             filename: str
             created_at: str
             buffer: io.BytesIO
-            for filename, created_at, buffer in attachment_buffers:
+            for filename, created_at, buffer in images:
                 formatted_filename = f"{created_at.isoformat()}_{filename}"
                 zf.writestr(formatted_filename, buffer.getvalue())
 
@@ -86,7 +87,7 @@ class ExportEmoji(BaseCog):
         seconds = delta - (minutes * 60)
 
         await ctx.send(
-            f"Done. Found {total_count:,} messages and {len(attachment_buffers):,} images. "
+            f"Done. Found {total_count:,} messages and {len(images):,} images. "
             f"Duration of {minutes:0.0f} minutes, {seconds:0.03f} seconds"
         )
         await ctx.send(
