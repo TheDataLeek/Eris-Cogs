@@ -43,6 +43,7 @@ class Chat(BaseCog):
             try:
                 response: Dict = await loop.run_in_executor(None, lambda: openai.Image.create(
                     prompt=formatted_query,
+                    model='dall-e-3',
                     n=1,
                     size='1024x1024',
                     response_format='b64_json'
@@ -145,7 +146,8 @@ class Chat(BaseCog):
             try:
                 chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
                     # model="gpt-3.5-turbo",
-                    model="gpt-4",
+                    # model="gpt-4",
+                    model="gpt-4-vision-preview",
                     messages=openai_query,
                     temperature=1,
                     max_tokens=2000
