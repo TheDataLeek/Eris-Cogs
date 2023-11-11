@@ -88,28 +88,34 @@ class Chat(BaseCog):
         if isinstance(channel, discord.TextChannel):
             formatted_query = " ".join(query)
             attachments: list[discord.Attachment] = message.attachments
-            openai_query = [{"role": "user", "content": [
+            openai_query = [
                 {
-                    'type': 'text',
-                    'text': formatted_query
-                },
-                *[
-                    {
-                        'type': 'image_url',
-                        'image_url': {
-                            'url': attachment.url
-                        }
-                    }
-                    for attachment in attachments
-                    if attachment.width and attachment.height   # only image media  (and videos but will probs break)
-                ]
-            ]}]
+                    "role": "user",
+                    "name": author.display_name,
+                    "content": [
+                        {
+                            'type': 'text',
+                            'text': formatted_query
+                        },
+                        *[
+                            {
+                                'type': 'image_url',
+                                'image_url': {
+                                    'url': attachment.url
+                                }
+                            }
+                            for attachment in attachments
+                            if attachment.width and attachment.height   # only image media  (and videos but will probs break)
+                        ]
+                    ]
+                }
+            ]
             thread_name = formatted_query[:15] + '...'
         elif isinstance(channel, discord.Thread):
-            history = [message async for message in channel.history(limit=100)]
-            history = [
+            openai_query = [
                 {
                     "role": 'system' if thread_message.author.bot else 'user',
+                    "name": thread_message.author.display_name,
                     'content': [
                         {
                             'type': 'text',
@@ -131,10 +137,9 @@ class Chat(BaseCog):
                         ]
                     ]
                 }
-                for thread_message in history
+                async for thread_message in channel.history(limit=100)
                 if thread_message.author.bot or thread_message.clean_content.startswith(f'{prefix}chat')
-            ]
-            openai_query = history
+            ][::-1]
         else:
             return
 
@@ -145,12 +150,8 @@ class Chat(BaseCog):
         while True:
             try:
                 chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
-                    # model="gpt-3.5-turbo",
-                    # model="gpt-4",
                     model="gpt-4-vision-preview",
                     messages=openai_query,
-                    # temperature=1,
-                    max_tokens=2000
                 ))
                 break
             except openai.error.RateLimitError:
