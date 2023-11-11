@@ -2,6 +2,7 @@ import io
 import base64
 from typing import List, Dict, Union
 import asyncio
+from pprint import pprint
 
 from redbot.core import commands
 from redbot.core.bot import Red
@@ -139,7 +140,8 @@ class Chat(BaseCog):
         else:
             return
 
-        print(openai_query)
+        pprint(prefix)
+        pprint(openai_query)
 
         loop = asyncio.get_running_loop()
         openai.api_key = await self.get_openai_token()
