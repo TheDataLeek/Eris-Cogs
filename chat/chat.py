@@ -149,7 +149,7 @@ class Chat(BaseCog):
                     # model="gpt-4",
                     model="gpt-4-vision-preview",
                     messages=openai_query,
-                    temperature=1,
+                    # temperature=1,
                     max_tokens=2000
                 ))
                 break
