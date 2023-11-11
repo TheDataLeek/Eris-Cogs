@@ -72,7 +72,7 @@ class Chat(BaseCog):
 
     @commands.command()
     async def chat(self, ctx: commands.Context) -> None:
-        prefix = self.bot.get_prefix(ctx.message)
+        prefix = await self.bot.get_prefix(ctx.message)
         if isinstance(prefix, list):
             prefix = prefix[0]
 
