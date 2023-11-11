@@ -140,7 +140,6 @@ class Chat(BaseCog):
         else:
             return
 
-        pprint(prefix)
         pprint(openai_query)
 
         loop = asyncio.get_running_loop()
@@ -151,7 +150,9 @@ class Chat(BaseCog):
             try:
                 chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
                     model="gpt-4-vision-preview",
+                    temperature=1,
                     messages=openai_query,
+                    max_tokens=2000,
                 ))
                 break
             except openai.error.RateLimitError:
