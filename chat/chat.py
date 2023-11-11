@@ -87,7 +87,6 @@ class Chat(BaseCog):
 
         if isinstance(channel, discord.TextChannel):
             formatted_query = " ".join(query)
-            attachments: list[discord.Attachment] = message.attachments
             openai_query = [
                 {
                     "role": "user",
@@ -104,7 +103,7 @@ class Chat(BaseCog):
                                     'url': attachment.url
                                 }
                             }
-                            for attachment in attachments
+                            for attachment in message.attachments
                         ]
                     ]
                 }
@@ -139,6 +138,8 @@ class Chat(BaseCog):
             ]
         else:
             return
+
+        print(openai_query)
 
         loop = asyncio.get_running_loop()
         openai.api_key = await self.get_openai_token()
