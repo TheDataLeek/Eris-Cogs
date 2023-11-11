@@ -4,6 +4,7 @@ from typing import List, Dict, Union
 import asyncio
 
 from redbot.core import commands
+from redbot.core.bot import Red
 from redbot.core.utils import chat_formatting, bounded_gather
 import discord
 import openai
@@ -13,7 +14,7 @@ BaseCog = getattr(commands, "Cog", object)
 
 class Chat(BaseCog):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: Red = bot
         self.openai_settings = None
         self.openai_token = None
 
@@ -69,6 +70,10 @@ class Chat(BaseCog):
 
     @commands.command()
     async def chat(self, ctx: commands.Context) -> None:
+        prefix = self.bot.get_prefix(ctx.message)
+        if isinstance(prefix, list):
+            prefix = prefix[0]
+
         query = ctx.message.clean_content.split(" ")[1:]
 
         if not query:
@@ -81,18 +86,52 @@ class Chat(BaseCog):
 
         if isinstance(channel, discord.TextChannel):
             formatted_query = " ".join(query)
-            openai_query = [{"role": "user", "content": formatted_query}]
+            attachments: list[discord.Attachment] = message.attachments
+            openai_query = [{"role": "user", "content": [
+                {
+                    'type': 'text',
+                    'text': formatted_query
+                },
+                *[
+                    {
+                        'type': 'image_url',
+                        'image_url': {
+                            'url': attachment.url
+                        }
+                    }
+                    for attachment in attachments
+                    if attachment.width and attachment.height   # only image media  (and videos but will probs break)
+                ]
+            ]}]
             thread_name = formatted_query[:15] + '...'
         elif isinstance(channel, discord.Thread):
             history = [message async for message in channel.history(limit=100)]
             history = [
                 {
                     "role": 'system' if thread_message.author.bot else 'user',
-                    'content': ' '.join(w for w in thread_message.clean_content.split(' ') if w != '.chat')
-                    # todo: prefix
+                    'content': [
+                        {
+                            'type': 'text',
+                            'text': ' '.join(
+                                w for w in thread_message.clean_content.split(' ')
+                                if w != f'{prefix}chat'
+                            ),
+                        },
+                        *[
+                            {
+                                'type': 'image_url',
+                                'image_url': {
+                                    'url': attachment.url
+                                }
+                            }
+                            for attachment in thread_message.attachments
+                            if attachment.width and attachment.height
+                            # only image media  (and videos but will probs break)
+                        ]
+                    ]
                 }
                 for thread_message in history
-                if thread_message.author.bot or thread_message.clean_content.startswith('.chat')
+                if thread_message.author.bot or thread_message.clean_content.startswith(f'{prefix}chat')
             ]
             openai_query = history
         else:
