@@ -109,7 +109,7 @@ class Chat(BaseCog):
                     ]
                 }
             ]
-            thread_name = formatted_query[:15] + '...'
+            thread_name = ' '.join(formatted_query.split(' ')[:5]) + '...'
         elif isinstance(channel, discord.Thread):
             openai_query = [
                 {
