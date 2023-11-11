@@ -105,7 +105,6 @@ class Chat(BaseCog):
                                 }
                             }
                             for attachment in attachments
-                            if attachment.width and attachment.height   # only image media  (and videos but will probs break)
                         ]
                     ]
                 }
@@ -114,7 +113,7 @@ class Chat(BaseCog):
         elif isinstance(channel, discord.Thread):
             openai_query = [
                 {
-                    "role": 'system' if thread_message.author.bot else 'user',
+                    "role": 'assistant' if thread_message.author.bot else 'user',
                     "name": thread_message.author.display_name,
                     'content': [
                         {
@@ -132,14 +131,12 @@ class Chat(BaseCog):
                                 }
                             }
                             for attachment in thread_message.attachments
-                            if attachment.width and attachment.height
-                            # only image media  (and videos but will probs break)
                         ]
                     ]
                 }
-                async for thread_message in channel.history(limit=100)
+                async for thread_message in channel.history(limit=100, oldest_first=True)
                 if thread_message.author.bot or thread_message.clean_content.startswith(f'{prefix}chat')
-            ][::-1]
+            ]
         else:
             return
 
