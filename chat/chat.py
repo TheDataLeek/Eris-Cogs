@@ -168,7 +168,7 @@ class Chat(BaseCog):
         ]
         try:
             token = await self.get_openai_token()
-            response = await openai_query(formatted_query, token, model="gpt4", max_tokens=50)
+            response = await openai_query(formatted_query, token, model="gpt-4", max_tokens=50)
             await channel.send(response[0])
         except Exception as e:
             await channel.send(f"Something went wrong: {e}")
