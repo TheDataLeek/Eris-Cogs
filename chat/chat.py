@@ -2,7 +2,7 @@ import asyncio
 import base64
 import io
 from pprint import pprint
-from typing import Dict
+from typing import Dict, List
 
 import discord
 import openai
@@ -189,7 +189,7 @@ class Chat(BaseCog):
             await channel.send(f"Something went wrong: {e}")
 
 
-async def openai_query(query: list[dict], token: str, model='gpt-4-vision-preview', temperature=1, max_tokens=2000) -> list[str]:
+async def openai_query(query: List[Dict], token: str, model='gpt-4-vision-preview', temperature=1, max_tokens=2000) -> List[Dict]:
     loop = asyncio.get_running_loop()
     openai.api_key = token
 
