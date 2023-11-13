@@ -146,6 +146,7 @@ class Chat(BaseCog):
             response = await openai_query(formatted_query, token, model = "gpt-4-vision-preview")
         except Exception as e:
             await channel.send(f"Something went wrong: {e}")
+            return
 
         destination = channel
         if isinstance(channel, discord.TextChannel):
@@ -205,10 +206,10 @@ async def openai_query(query: List[Dict], token: str, model='gpt-4-vision-previe
                 max_tokens=max_tokens,
             ))
             break
-        except openai.error.RateLimitError:
+        except openai.RateLimitError:
             await asyncio.sleep(time_to_sleep**2)
             time_to_sleep += 1
-        except openai.error.ServiceUnavailableError:
+        except openai.ServiceUnavailableError:
             await asyncio.sleep(time_to_sleep**2)
             time_to_sleep += 1
         except Exception as e:
