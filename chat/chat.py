@@ -180,7 +180,7 @@ async def openai_query(
     loop = asyncio.get_running_loop()
     time_to_sleep = 1
     while True:
-        if time_to_sleep > 3:
+        if time_to_sleep > 1:
             raise TimeoutError("Tried too many times!")
         try:
             response: Dict = await loop.run_in_executor(
@@ -203,7 +203,7 @@ async def openai_query(
 
 def openai_client_and_query(token: str, messages: List[Dict], model: str, temperature: int, max_tokens: int):
     client = openai.OpenAI(api_key=token)
-    chat_completion = client.completions.create(
+    chat_completion = client.chat.completions.create(
         prompt=messages,
         model=model,
         temperature=temperature,
