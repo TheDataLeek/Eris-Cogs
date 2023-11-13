@@ -178,21 +178,14 @@ async def openai_query(
     query: List[Dict], token: str, model="gpt-4-vision-preview", temperature=1, max_tokens=2000
 ) -> List[Dict]:
     loop = asyncio.get_running_loop()
-    openai.api_key = token
-
     time_to_sleep = 1
     while True:
         if time_to_sleep > 3:
             raise TimeoutError("Tried too many times!")
         try:
-            chat_completion: Dict = await loop.run_in_executor(
+            response: Dict = await loop.run_in_executor(
                 None,
-                lambda: openai.completions.create(
-                    model=model,
-                    temperature=temperature,
-                    messages=query,
-                    max_tokens=max_tokens,
-                ),
+                lambda: openai_client_and_query(token, query, model, temperature, max_tokens),
             )
             break
         except Exception as e:
@@ -200,10 +193,21 @@ async def openai_query(
             await asyncio.sleep(time_to_sleep ** 2)
             time_to_sleep += 1
 
-    response = chat_completion.choices[0].text
     if len(response) < 1999:
         response_list = [response]
     else:
         response_list = [page for page in chat_formatting.pagify(response, delims=["\n"], page_length=1250)]
 
     return response_list
+
+
+def openai_client_and_query(token: str, messages: List[Dict], model: str, temperature: int, max_tokens: int):
+    client = openai.OpenAI(api_key=token)
+    chat_completion = client.completions.create(
+        model=model,
+        temperature=temperature,
+        messages=messages,
+        max_tokens=max_tokens,
+    )
+    response = chat_completion.choices[0].text
+    return response
