@@ -209,5 +209,5 @@ def openai_client_and_query(token: str, messages: List[Dict], model: str, temper
         temperature=temperature,
         max_tokens=max_tokens,
     )
-    response = chat_completion.choices[0].text
+    response = chat_completion.choices[0].message.content
     return response
