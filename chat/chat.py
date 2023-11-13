@@ -206,14 +206,9 @@ async def openai_query(query: List[Dict], token: str, model='gpt-4-vision-previe
                 max_tokens=max_tokens,
             ))
             break
-        except openai.RateLimitError:
-            await asyncio.sleep(time_to_sleep**2)
-            time_to_sleep += 1
-        except openai.ServiceUnavailableError:
-            await asyncio.sleep(time_to_sleep**2)
-            time_to_sleep += 1
         except Exception as e:
-            raise
+            await asyncio.sleep(time_to_sleep**2)
+            time_to_sleep += 1
 
     response = chat_completion['choices'][0]['message']['content']
     if len(response) < 1999:
