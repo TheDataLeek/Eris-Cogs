@@ -42,25 +42,24 @@ class Chat(BaseCog):
         time_to_sleep = 1
         while True:
             try:
-                response: Dict = await loop.run_in_executor(None, lambda: openai.Image.create(
-                    prompt=formatted_query,
-                    model='dall-e-3',
-                    n=1,
-                    size='1024x1024',
-                    response_format='b64_json'
-                ))
+                response: Dict = await loop.run_in_executor(
+                    None,
+                    lambda: openai.Image.create(
+                        prompt=formatted_query, model="dall-e-3", n=1, size="1024x1024", response_format="b64_json"
+                    ),
+                )
                 break
             except openai.error.RateLimitError:
-                await asyncio.sleep(time_to_sleep**2)
+                await asyncio.sleep(time_to_sleep ** 2)
                 time_to_sleep += 1
             except openai.error.ServiceUnavailableError:
-                await asyncio.sleep(time_to_sleep**2)
+                await asyncio.sleep(time_to_sleep ** 2)
                 time_to_sleep += 1
             except Exception as e:
                 await ctx.send(f"Oops, you did something wrong! {e}")
                 return
 
-        image = response['data'][0]['b64_json'].encode()
+        image = response["data"][0]["b64_json"].encode()
         buf = io.BytesIO()
         buf.write(base64.b64decode(image))
         buf.seek(0)
@@ -88,54 +87,40 @@ class Chat(BaseCog):
 
         if isinstance(channel, discord.TextChannel):
             formatted_query = " ".join(query)
-            thread_name = ' '.join(formatted_query.split(' ')[:5]) + '...'
+            thread_name = " ".join(formatted_query.split(" ")[:5]) + "..."
             formatted_query = [
                 {
                     "role": "user",
                     "name": author.display_name,
                     "content": [
-                        {
-                            'type': 'text',
-                            'text': formatted_query
-                        },
+                        {"type": "text", "text": formatted_query},
                         *[
-                            {
-                                'type': 'image_url',
-                                'image_url': {
-                                    'url': attachment.url
-                                }
-                            }
+                            {"type": "image_url", "image_url": {"url": attachment.url}}
                             for attachment in message.attachments
-                        ]
-                    ]
+                        ],
+                    ],
                 }
             ]
         elif isinstance(channel, discord.Thread):
             formatted_query = [
                 {
-                    "role": 'assistant' if thread_message.author.bot else 'user',
+                    "role": "assistant" if thread_message.author.bot else "user",
                     "name": thread_message.author.display_name,
-                    'content': [
+                    "content": [
                         {
-                            'type': 'text',
-                            'text': ' '.join(
-                                w for w in thread_message.clean_content.split(' ')
-                                if w != f'{prefix}chat'
+                            "type": "text",
+                            "text": " ".join(
+                                w for w in thread_message.clean_content.split(" ") if w != f"{prefix}chat"
                             ),
                         },
                         *[
-                            {
-                                'type': 'image_url',
-                                'image_url': {
-                                    'url': attachment.url
-                                }
-                            }
+                            {"type": "image_url", "image_url": {"url": attachment.url}}
                             for attachment in thread_message.attachments
-                        ]
-                    ]
+                        ],
+                    ],
                 }
                 async for thread_message in channel.history(limit=100, oldest_first=True)
-                if thread_message.author.bot or thread_message.clean_content.startswith(f'{prefix}chat')
+                if thread_message.author.bot or thread_message.clean_content.startswith(f"{prefix}chat")
             ]
         else:
             return
@@ -143,7 +128,7 @@ class Chat(BaseCog):
         token = await self.get_openai_token()
 
         try:
-            response = await openai_query(formatted_query, token, model = "gpt-4-vision-preview")
+            response = await openai_query(formatted_query, token, model="gpt-4-vision-preview")
         except Exception as e:
             await channel.send(f"Something went wrong: {e}")
             return
@@ -166,57 +151,58 @@ class Chat(BaseCog):
         channel: discord.abc.Messageable = ctx.channel
 
         formatted_query = " ".join(raw_query)
-        formatted_query = [{
-            "role": "system",
-            "content": (
-                            "You are a summarizing machine that accepts many types of input and provides back short output."
-                            " You will be provided some input in the following user message and you will identify a"
-                            " single emoji or a short phrase with heavy usage of emoji to capture the overall"
-                            " feeling, emotion, and overall concept contained. This captured feeling should loosely align"
-                            " with the input and your summation should be whimsical in a Gen-Z, Zillenial, 'Vibe-Based'"
-                            " sort of way."
-                        )
-            },
+        formatted_query = [
             {
-                "role": "user",
-                "content": formatted_query
-            }
+                "role": "system",
+                "content": (
+                    "You are a summarizing machine that accepts many types of input and provides back short output."
+                    " You will be provided some input in the following user message and you will identify a"
+                    " single emoji or a short phrase with heavy usage of emoji to capture the overall"
+                    " feeling, emotion, and overall concept contained. This captured feeling should loosely align"
+                    " with the input and your summation should be whimsical in a Gen-Z, Zillenial, 'Vibe-Based'"
+                    " sort of way."
+                ),
+            },
+            {"role": "user", "content": formatted_query},
         ]
         try:
             token = await self.get_openai_token()
-            response = await openai_query(formatted_query, token, model='gpt4', max_tokens=50)
+            response = await openai_query(formatted_query, token, model="gpt4", max_tokens=50)
             await channel.send(response[0])
         except Exception as e:
             await channel.send(f"Something went wrong: {e}")
 
 
-async def openai_query(query: List[Dict], token: str, model='gpt-4-vision-preview', temperature=1, max_tokens=2000) -> List[Dict]:
+async def openai_query(
+    query: List[Dict], token: str, model="gpt-4-vision-preview", temperature=1, max_tokens=2000
+) -> List[Dict]:
     loop = asyncio.get_running_loop()
     openai.api_key = token
 
     time_to_sleep = 1
     while True:
-        if time_to_sleep > 4:
+        if time_to_sleep > 3:
             raise TimeoutError("Tried too many times!")
         try:
-            chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
-                model=model,
-                temperature=temperature,
-                messages=query,
-                max_tokens=max_tokens,
-            ))
+            chat_completion: Dict = await loop.run_in_executor(
+                None,
+                lambda: openai.ChatCompletion.create(
+                    model=model,
+                    temperature=temperature,
+                    messages=query,
+                    max_tokens=max_tokens,
+                ),
+            )
             break
         except Exception as e:
-            await asyncio.sleep(time_to_sleep**2)
+            print(e)
+            await asyncio.sleep(time_to_sleep ** 2)
             time_to_sleep += 1
 
-    response = chat_completion['choices'][0]['message']['content']
+    response = chat_completion["choices"][0]["message"]["content"]
     if len(response) < 1999:
         response_list = [response]
     else:
-        response_list = [
-            page
-            for page in chat_formatting.pagify(response, delims=['\n'], page_length=1250)
-        ]
+        response_list = [page for page in chat_formatting.pagify(response, delims=["\n"], page_length=1250)]
 
     return response_list
