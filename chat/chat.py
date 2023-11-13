@@ -204,9 +204,9 @@ async def openai_query(
 def openai_client_and_query(token: str, messages: List[Dict], model: str, temperature: int, max_tokens: int):
     client = openai.OpenAI(api_key=token)
     chat_completion = client.completions.create(
+        prompt=messages,
         model=model,
         temperature=temperature,
-        messages=messages,
         max_tokens=max_tokens,
     )
     response = chat_completion.choices[0].text
