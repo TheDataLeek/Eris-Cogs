@@ -1,14 +1,14 @@
-import io
-import base64
-from typing import List, Dict, Union
 import asyncio
+import base64
+import io
 from pprint import pprint
+from typing import Dict
 
-from redbot.core import commands
-from redbot.core.bot import Red
-from redbot.core.utils import chat_formatting, bounded_gather
 import discord
 import openai
+from redbot.core import commands
+from redbot.core.bot import Red
+from redbot.core.utils import chat_formatting
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -88,7 +88,7 @@ class Chat(BaseCog):
 
         if isinstance(channel, discord.TextChannel):
             formatted_query = " ".join(query)
-            openai_query = [
+            formatted_query = [
                 {
                     "role": "user",
                     "name": author.display_name,
@@ -111,7 +111,7 @@ class Chat(BaseCog):
             ]
             thread_name = ' '.join(formatted_query.split(' ')[:5]) + '...'
         elif isinstance(channel, discord.Thread):
-            openai_query = [
+            formatted_query = [
                 {
                     "role": 'assistant' if thread_message.author.bot else 'user',
                     "name": thread_message.author.display_name,
@@ -140,96 +140,87 @@ class Chat(BaseCog):
         else:
             return
 
-        pprint(openai_query)
+        token = await self.get_openai_token()
 
-        loop = asyncio.get_running_loop()
-        openai.api_key = await self.get_openai_token()
+        try:
+            response = await openai_query(formatted_query, token, model = "gpt-4-vision-preview")
+        except Exception as e:
+            await channel.send(f"Something went wrong: {e}")
 
-        time_to_sleep = 1
-        while True:
-            try:
-                chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
-                    model="gpt-4-vision-preview",
-                    temperature=1,
-                    messages=openai_query,
-                    max_tokens=2000,
-                ))
-                break
-            except openai.error.RateLimitError:
-                await asyncio.sleep(time_to_sleep**2)
-                time_to_sleep += 1
-            except openai.error.ServiceUnavailableError:
-                await asyncio.sleep(time_to_sleep**2)
-                time_to_sleep += 1
-            except Exception as e:
-                await ctx.send(f"Oops, you did something wrong! {e}")
-                return
-
+        destination = channel
         if isinstance(channel, discord.TextChannel):
-            try:
-                response = chat_completion['choices'][0]['message']['content']
-                thread: discord.Thread = await message.create_thread(name=thread_name)
-                if len(response) < 1999:
-                    await thread.send(response)
-                else:
-                    for page in chat_formatting.pagify(response, delims=['\n'], page_length=1250):
-                        await thread.send(page)
-            except Exception as e:
-                raise
-        elif isinstance(channel, discord.Thread):
-            try:
-                response = chat_completion['choices'][0]['message']['content']
-                if len(response) < 1999:
-                    await channel.send(response)
-                else:
-                    for page in chat_formatting.pagify(response, delims=[' ', '\n'], page_length=1500):
-                        await channel.send(page)
-            except Exception as e:
-                raise
+            thread: discord.Thread = await message.create_thread(name=thread_name)
+            destination = thread
+
+        for page in response:
+            await destination.send(page)
 
     @commands.command()
     async def vibecheck(self, ctx: commands.Context) -> None:
-        query = ctx.message.clean_content.split(" ")[1:]
+        raw_query = ctx.message.clean_content.split(" ")[1:]
 
-        if not query:
-            query = "a random emoji".split(" ")
+        if not raw_query:
+            raw_query = "a random emoji".split(" ")
 
         channel: discord.abc.Messageable = ctx.channel
 
-        formatted_query = " ".join(query)
-        openai_query = [{
-            "role": "user",
-            "content": ("Please provide a single word or a single emoji response that summarizes the emotion, "
-                        "feeling, and overall happiness contained in the following message in a loosely-defined "
-                        f"vibe-based sort of way: {formatted_query}")
-        }]
-
-        loop = asyncio.get_running_loop()
-        openai.api_key = await self.get_openai_token()
-
-        time_to_sleep = 1
-        while True:
-            try:
-                chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
-                    # model="gpt-3.5-turbo",
-                    model="gpt-4",
-                    messages=openai_query,
-                    temperature=1,
-                    max_tokens=2000
-                ))
-                break
-            except openai.error.RateLimitError:
-                await asyncio.sleep(time_to_sleep**2)
-                time_to_sleep += 1
-            except openai.error.ServiceUnavailableError:
-                await asyncio.sleep(time_to_sleep**2)
-                time_to_sleep += 1
-            except Exception as e:
-                await ctx.send(f"Oops, you did something wrong! {e}")
-                return
-
+        formatted_query = " ".join(raw_query)
+        formatted_query = [{
+            "role": "system",
+            "content": (
+                            "You are a summarizing machine that accepts many types of input and provides back short output."
+                            " You will be provided some input in the following user message and you will identify a"
+                            " single emoji or a short phrase with heavy usage of emoji to capture the overall"
+                            " feeling, emotion, and overall concept contained. This captured feeling should loosely align"
+                            " with the input and your summation should be whimsical in a Gen-Z, Zillenial, 'Vibe-Based'"
+                            " sort of way."
+                        )
+            },
+            {
+                "role": "user",
+                "content": formatted_query
+            }
+        ]
         try:
-            response = chat_completion['choices'][0]['message']['content']
-            await channel.send(response)
+            token = await self.get_openai_token()
+            response = await openai_query(formatted_query, token, model='gpt4', max_tokens=50)
+            await channel.send(response[0])
+        except Exception as e:
+            await channel.send(f"Something went wrong: {e}")
+
+
+async def openai_query(query: list[dict], token: str, model='gpt-4-vision-preview', temperature=1, max_tokens=2000) -> list[str]:
+    loop = asyncio.get_running_loop()
+    openai.api_key = token
+
+    time_to_sleep = 1
+    while True:
+        if time_to_sleep > 4:
+            raise TimeoutError("Tried too many times!")
+        try:
+            chat_completion: Dict = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create(
+                model=model,
+                temperature=temperature,
+                messages=query,
+                max_tokens=max_tokens,
+            ))
+            break
+        except openai.error.RateLimitError:
+            await asyncio.sleep(time_to_sleep**2)
+            time_to_sleep += 1
+        except openai.error.ServiceUnavailableError:
+            await asyncio.sleep(time_to_sleep**2)
+            time_to_sleep += 1
         except Exception as e:
             raise
+
+    response = chat_completion['choices'][0]['message']['content']
+    if len(response) < 1999:
+        response_list = [response]
+    else:
+        response_list = [
+            page
+            for page in chat_formatting.pagify(response, delims=['\n'], page_length=1250)
+        ]
+
+    return response_list
