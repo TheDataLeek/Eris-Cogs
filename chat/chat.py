@@ -26,6 +26,7 @@ class Chat(BaseCog):
 
     @commands.command()
     async def image(self, ctx: commands.Context):
+        return
         query = ctx.message.clean_content.split(" ")[1:]
 
         if not query:
@@ -186,7 +187,7 @@ async def openai_query(
         try:
             chat_completion: Dict = await loop.run_in_executor(
                 None,
-                lambda: openai.ChatCompletion.create(
+                lambda: openai.completions.create(
                     model=model,
                     temperature=temperature,
                     messages=query,
@@ -199,7 +200,7 @@ async def openai_query(
             await asyncio.sleep(time_to_sleep ** 2)
             time_to_sleep += 1
 
-    response = chat_completion["choices"][0]["message"]["content"]
+    response = chat_completion.choices[0].text
     if len(response) < 1999:
         response_list = [response]
     else:
