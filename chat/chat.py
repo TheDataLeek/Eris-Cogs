@@ -88,6 +88,7 @@ class Chat(BaseCog):
 
         if isinstance(channel, discord.TextChannel):
             formatted_query = " ".join(query)
+            thread_name = ' '.join(formatted_query.split(' ')[:5]) + '...'
             formatted_query = [
                 {
                     "role": "user",
@@ -109,7 +110,6 @@ class Chat(BaseCog):
                     ]
                 }
             ]
-            thread_name = ' '.join(formatted_query.split(' ')[:5]) + '...'
         elif isinstance(channel, discord.Thread):
             formatted_query = [
                 {
