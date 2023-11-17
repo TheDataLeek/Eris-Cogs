@@ -83,7 +83,7 @@ class Chat(BaseCog):
                         ],
                     })
                 elif thread_message.clean_content.startswith(f"{prefix}chat"):
-                    query, system_messages = extract_system_messages_from_message(thread_message)
+                    query, system_messages = extract_system_messages_from_message(thread_message.clean_content)
                     # first, hoist all system messages to top of current message block
                     formatted_query += [
                         {
@@ -112,6 +112,8 @@ class Chat(BaseCog):
                     })
         else:
             return
+
+        print(formatted_query)
 
         await self.query_openai(message, channel, thread_name, formatted_query)
 
