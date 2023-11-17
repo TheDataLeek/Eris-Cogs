@@ -1,8 +1,9 @@
 import asyncio
+import re
 import base64
 import io
 from pprint import pprint
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import discord
 import openai
@@ -25,50 +26,94 @@ class Chat(BaseCog):
         return self.openai_token
 
     @commands.command()
-    async def image(self, ctx: commands.Context):
-        return
-        query = ctx.message.clean_content.split(" ")[1:]
-
-        if not query:
-            return
+    async def chatas(self, ctx: commands.Context) -> None:
+        """
+        Very similar to [p]chat except anything encoded in backticks is treated as a system message. System messages
+        are hoisted.
+        """
+        prefix = await self.bot.get_prefix(ctx.message)
+        if isinstance(prefix, list):
+            prefix = prefix[0]
 
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
-        formatted_query = " ".join(query)
-        filename = "_".join(query[:5]) + ".png"
-        openai.api_key = await self.get_openai_token()
-        loop = asyncio.get_running_loop()
+        thread_name = None
 
-        time_to_sleep = 1
-        while True:
-            try:
-                response: Dict = await loop.run_in_executor(
-                    None,
-                    lambda: openai.Image.create(
-                        prompt=formatted_query, model="dall-e-3", n=1, size="1024x1024", response_format="b64_json"
-                    ),
-                )
-                break
-            except openai.error.RateLimitError:
-                await asyncio.sleep(time_to_sleep ** 2)
-                time_to_sleep += 1
-            except openai.error.ServiceUnavailableError:
-                await asyncio.sleep(time_to_sleep ** 2)
-                time_to_sleep += 1
-            except Exception as e:
-                await ctx.send(f"Oops, you did something wrong! {e}")
-                return
+        message_without_command = ' '.join(message.clean_content.split(' ')[1:])
 
-        image = response["data"][0]["b64_json"].encode()
-        buf = io.BytesIO()
-        buf.write(base64.b64decode(image))
-        buf.seek(0)
+        if not message_without_command:
+            return
+
         if isinstance(channel, discord.TextChannel):
-            thread: discord.Thread = await message.create_thread(name=filename)
-            await thread.send(file=discord.File(buf, filename=filename))
+            query, system_messages = extract_system_messages_from_message(message_without_command)
+            thread_name = " ".join(query.split(" ")[:5]) + "..."
+            formatted_query = [
+                *[
+                    {
+                        "role": "system",
+                        "content": msg
+                    }
+                    for msg in system_messages
+                ],
+                {
+                    "role": "user",
+                    "name": author.display_name,
+                    "content": [
+                        {"type": "text", "text": query},
+                        *[
+                            {"type": "image_url", "image_url": {"url": attachment.url}}
+                            for attachment in message.attachments
+                        ],
+                    ],
+                }
+            ]
         elif isinstance(channel, discord.Thread):
-            await channel.send(file=discord.File(buf, filename=filename))
+            formatted_query = []
+            async for thread_message in channel.history(limit=100, oldest_first=True):
+                if thread_message.author.bot:
+                    formatted_query.append({
+                        "role": "assistant",
+                        "name": thread_message.author.display_name,
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": thread_message.clean_content,
+                            },
+                        ],
+                    })
+                elif thread_message.clean_content.startswith(f"{prefix}chat"):
+                    query, system_messages = extract_system_messages_from_message(thread_message)
+                    # first, hoist all system messages to top of current message block
+                    formatted_query += [
+                        {
+                            "role": "system",
+                            "content": msg
+                        }
+                        for msg in system_messages
+                    ]
+
+                    # then we can add the current message
+                    formatted_query.append({
+                        "role": "user",
+                        "name": thread_message.author.display_name,
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": " ".join(
+                                    w for w in thread_message.clean_content.split(" ") if w != f"{prefix}chat"
+                                ),
+                            },
+                            *[
+                                {"type": "image_url", "image_url": {"url": attachment.url}}
+                                for attachment in thread_message.attachments
+                            ],
+                        ],
+                    })
+        else:
+            return
+
+        await self.query_openai(message, channel, thread_name, formatted_query)
 
     @commands.command()
     async def chat(self, ctx: commands.Context) -> None:
@@ -76,18 +121,19 @@ class Chat(BaseCog):
         if isinstance(prefix, list):
             prefix = prefix[0]
 
-        query = ctx.message.clean_content.split(" ")[1:]
-
-        if not query:
-            return
-
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         thread_name = None
 
+        query = message.clean_content.split(' ')[1:]
+
+        if not query:
+            return
+
         if isinstance(channel, discord.TextChannel):
             formatted_query = " ".join(query)
+
             thread_name = " ".join(formatted_query.split(" ")[:5]) + "..."
             formatted_query = [
                 {
@@ -126,8 +172,15 @@ class Chat(BaseCog):
         else:
             return
 
-        token = await self.get_openai_token()
+        await self.query_openai(message, channel, thread_name, formatted_query)
 
+    async def query_openai(self,
+                           message: discord.Message,
+                           channel: discord.channel,
+                           thread_name: str,
+                           formatted_query: List[Dict]
+                           ):
+        token = await self.get_openai_token()
         try:
             response = await openai_query(formatted_query, token, model="gpt-4-vision-preview")
         except Exception as e:
@@ -175,7 +228,7 @@ class Chat(BaseCog):
 
 
 async def openai_query(
-    query: List[Dict], token: str, model="gpt-4-vision-preview", temperature=1, max_tokens=2000
+        query: List[Dict], token: str, model="gpt-4-vision-preview", temperature=1, max_tokens=2000
 ) -> List[Dict]:
     loop = asyncio.get_running_loop()
     time_to_sleep = 1
@@ -211,3 +264,15 @@ def openai_client_and_query(token: str, messages: List[Dict], model: str, temper
     )
     response = chat_completion.choices[0].message.content
     return response
+
+
+def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
+    # extract the system messages
+    # https://regex101.com/r/5VTsQ7/1
+    system_message_expression = re.compile(r'(`+)[^`]+\1')
+    system_messages = [msg for tick, msg in
+                       system_message_expression.findall(message, re.IGNORECASE)]
+
+    # now remove them
+    message_without_system, _ = system_message_expression.subn('', message)
+    return message_without_system, system_messages
