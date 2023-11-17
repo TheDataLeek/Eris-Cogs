@@ -40,7 +40,7 @@ class Chat(BaseCog):
         author: discord.Member = message.author
         thread_name = None
 
-        message_without_command = ' '.join(message.clean_content.split(' ')[1:])
+        message_without_command = ' '.join(message.content.split(' ')[1:])
 
         if not message_without_command:
             return
@@ -83,7 +83,7 @@ class Chat(BaseCog):
                         ],
                     })
                 elif thread_message.clean_content.startswith(f"{prefix}chat"):
-                    query, system_messages = extract_system_messages_from_message(thread_message.clean_content)
+                    query, system_messages = extract_system_messages_from_message(thread_message.content)
                     # first, hoist all system messages to top of current message block
                     formatted_query += [
                         {
@@ -272,9 +272,14 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
     # extract the system messages
     # https://regex101.com/r/5VTsQ7/1
     system_message_expression = re.compile(r'(`+)[^`]+\1')
+
+    print(system_message_expression.findall(message, re.IGNORECASE))
     system_messages = [msg for tick, msg in
                        system_message_expression.findall(message, re.IGNORECASE)]
+    print(system_messages)
 
     # now remove them
     message_without_system, _ = system_message_expression.subn('', message)
+    print(message_without_system)
+
     return message_without_system, system_messages
