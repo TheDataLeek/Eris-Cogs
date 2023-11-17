@@ -271,15 +271,15 @@ def openai_client_and_query(token: str, messages: List[Dict], model: str, temper
 def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
     # extract the system messages
     # https://regex101.com/r/5VTsQ7/1
-    system_message_expression = re.compile(r'(`+)[^`]+\1')
+    system_message_expression = re.compile(r"(`+)([^`]+)\1", re.IGNORECASE)
 
-    print(system_message_expression.findall(message, re.IGNORECASE))
+    print(system_message_expression.findall(message))
     system_messages = [msg for tick, msg in
-                       system_message_expression.findall(message, re.IGNORECASE)]
+                       system_message_expression.findall(message)]
     print(system_messages)
 
     # now remove them
     message_without_system, _ = system_message_expression.subn('', message)
-    print(message_without_system)
+    query = message_without_system.strip()
 
-    return message_without_system, system_messages
+    return query, system_messages
