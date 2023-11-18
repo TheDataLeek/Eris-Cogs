@@ -3,7 +3,7 @@ import re
 import base64
 import io
 from pprint import pprint
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import discord
 import openai
@@ -70,6 +70,30 @@ class Chat(BaseCog):
             ]
         elif isinstance(channel, discord.Thread):
             formatted_query = []
+            starter_message = channel.starter_message
+            if starter_message is not None:
+                starter_message_content_without_command = ' '.join(starter_message.content.split(' ')[1:])
+                query, system_messages = extract_system_messages_from_message(starter_message_content_without_command)
+                formatted_query = [
+                    *[
+                        {
+                            "role": "system",
+                            "content": msg
+                        }
+                        for msg in system_messages
+                    ],
+                    {
+                        "role": "user",
+                        "name": author.display_name,
+                        "content": [
+                            {"type": "text", "text": query},
+                            *[
+                                {"type": "image_url", "image_url": {"url": attachment.url}}
+                                for attachment in message.attachments
+                            ],
+                        ],
+                    }
+                ]
             async for thread_message in channel.history(limit=100, oldest_first=True):
                 if thread_message.author.bot:
                     formatted_query.append({
@@ -151,7 +175,24 @@ class Chat(BaseCog):
                 }
             ]
         elif isinstance(channel, discord.Thread):
-            formatted_query = [
+            formatted_query = []
+            starter_message = channel.starter_message
+            if starter_message is not None:
+                message_without_command = ' '.join(starter_message.content.split(' ')[1:])
+                formatted_query = [
+                    {
+                        "role": "user",
+                        "name": author.display_name,
+                        "content": [
+                            {"type": "text", "text": message_without_command},
+                            *[
+                                {"type": "image_url", "image_url": {"url": attachment.url}}
+                                for attachment in starter_message.attachments
+                            ],
+                        ],
+                    }
+                ]
+            formatted_query += [
                 {
                     "role": "assistant" if thread_message.author.bot else "user",
                     "name": thread_message.author.display_name,
@@ -174,11 +215,13 @@ class Chat(BaseCog):
         else:
             return
 
+        print(formatted_query)
+
         await self.query_openai(message, channel, thread_name, formatted_query)
 
     async def query_openai(self,
                            message: discord.Message,
-                           channel: discord.channel,
+                           channel: Union[discord.TextChannel, discord.Thread],
                            thread_name: str,
                            formatted_query: List[Dict]
                            ):
@@ -273,10 +316,8 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
     # https://regex101.com/r/5VTsQ7/1
     system_message_expression = re.compile(r"(`+)([^`]+)\1", re.IGNORECASE)
 
-    print(system_message_expression.findall(message))
     system_messages = [msg for tick, msg in
                        system_message_expression.findall(message)]
-    print(system_messages)
 
     # now remove them
     message_without_system, _ = system_message_expression.subn('', message)
