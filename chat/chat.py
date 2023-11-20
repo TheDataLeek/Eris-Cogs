@@ -274,14 +274,14 @@ class Chat(BaseCog):
 
 async def openai_query(
         query: List[Dict], token: str, model="gpt-4-vision-preview", temperature=1, max_tokens=2000
-) -> List[Dict]:
+) -> List[str]:
     loop = asyncio.get_running_loop()
     time_to_sleep = 1
     while True:
         if time_to_sleep > 1:
             raise TimeoutError("Tried too many times!")
         try:
-            response: Dict = await loop.run_in_executor(
+            response: str = await loop.run_in_executor(
                 None,
                 lambda: openai_client_and_query(token, query, model, temperature, max_tokens),
             )
@@ -294,7 +294,11 @@ async def openai_query(
     if len(response) < 1999:
         response_list = [response]
     else:
-        response_list = [page for page in chat_formatting.pagify(response, delims=["\n"], page_length=1250)]
+        response_list = [
+            page
+            for page
+            in chat_formatting.pagify(response, delims=["```", "\n"], page_length=1250, priority=True)
+        ]
 
     return response_list
 
