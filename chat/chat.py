@@ -291,16 +291,38 @@ async def openai_query(
             await asyncio.sleep(time_to_sleep ** 2)
             time_to_sleep += 1
 
-    if len(response) < 1999:
-        response_list = [response]
-    else:
-        response_list = [
-            page
-            for page
-            in chat_formatting.pagify(response, delims=["```", "\n"], page_length=1250, priority=True)
-        ]
+    response_lines = pagify_chat_result(response)
 
-    return response_list
+    return response_lines
+
+
+def pagify_chat_result(response: str) -> List[str]:
+    if len(response) <= 2000:
+        return [response]
+
+    # split on code
+    code_expression = re.compile(r"(```(?:[^`]+)```)", re.IGNORECASE)
+    split_by_code = code_expression.split(response)
+    lines = []
+    for line in split_by_code:
+        if line.startswith('```'):
+            if len(line) <= 2000:
+                lines.append(line)
+            else:
+                codelines = list(chat_formatting.pagify(line))
+                for i, subline in enumerate(codelines):
+                    if i == 0:
+                        lines.append(subline + '```')
+                    elif i == len(codelines) - 1:
+                        lines.append('```' + subline)
+                    else:
+                        lines.append('```' + subline + '```')
+        else:
+            lines += chat_formatting.pagify(line)
+
+    return lines
+
+
 
 
 def openai_client_and_query(token: str, messages: List[Dict], model: str, temperature: int, max_tokens: int):
