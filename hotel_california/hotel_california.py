@@ -1,6 +1,7 @@
 # stdlib
 from pprint import pprint as pp
 import datetime as dt
+import random
 import time
 
 # third party
@@ -20,7 +21,7 @@ class HotelCalifornia(BaseCog):
 
         self.config = Config.get_conf(
             self,
-            identifier=123458687089708978970987566,
+            identifier=123458687089708978970987566,   # random unique number
             force_registration=True,
             cog_name="hotel_cali",
         )
@@ -30,6 +31,31 @@ class HotelCalifornia(BaseCog):
             "mod_role": None,
         }
         self.config.register_guild(**default_guild)
+
+        self.bot.add_listener(self.watch_the_punished, "on_message")
+
+    def watch_the_punished(self, message: discord.Message):
+        ctx = await self.bot.get_context(message)
+        author: discord.Member = message.author
+
+        if author.bot:
+            return
+
+        userroles: List[discord.Role] = author.roles
+        ismod: bool = any(r.permissions.administrator for r in userroles)
+        if ismod:
+            role_id = await self.config.guild(ctx.guild).mod_role()
+        else:
+            role_id = await self.config.guild(ctx.guild).member_role()
+
+        if role_id is None:
+            return
+
+        role = ctx.guild.get_role(int(role_id))
+        is_punished = role in userroles
+
+        if is_punished and random.random() <= 0.01:
+            await ctx.send("Hey you're still punished! Please put something in the box!")
 
     @commands.group()
     async def hotel(self, ctx):
@@ -70,6 +96,7 @@ class HotelCalifornia(BaseCog):
             role_id = await self.config.guild(ctx.guild).mod_role()
         else:
             role_id = await self.config.guild(ctx.guild).member_role()
+
         if role_id is None:
             await ctx.send("Error: Need to set member/moderator roles first!")
             return
