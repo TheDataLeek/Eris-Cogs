@@ -1,5 +1,6 @@
 import re
 import discord
+import random
 from redbot.core import commands, data_manager, Config, checks, bot
 
 from .eris_event_lib import ErisEventMixin
@@ -31,6 +32,9 @@ class NoFuckYou(BaseCog, ErisEventMixin):
         async with self.lock_config.channel(message.channel).get_lock():
             allowed: bool = await self.allowed(ctx, message)
             if not allowed:
+                return
+
+            if random.random() <= 0.5:
                 return
 
             await ctx.send("No fuck you")

@@ -1,14 +1,12 @@
-import sys
 import re
+from typing import List, Optional
 
 import discord
-from redbot.core import commands, bot, Config
-from redbot.core.utils import embed
 import nltk
-from nltk.corpus import cmudict
 import syllables
-
-from typing import List, Optional
+from nltk.corpus import cmudict
+from redbot.core import commands, bot
+from redbot.core.utils import embed
 
 nltk.download("cmudict")
 
