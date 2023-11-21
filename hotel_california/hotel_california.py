@@ -34,7 +34,7 @@ class HotelCalifornia(BaseCog):
 
         self.bot.add_listener(self.watch_the_punished, "on_message")
 
-    def watch_the_punished(self, message: discord.Message):
+    async def watch_the_punished(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
         author: discord.Member = message.author
 
