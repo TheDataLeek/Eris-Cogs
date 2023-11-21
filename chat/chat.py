@@ -26,6 +26,32 @@ class Chat(BaseCog):
         return self.openai_token
 
     @commands.command()
+    async def rewind(self, ctx: commands.Context) -> None:
+        prefix = await self.bot.get_prefix(ctx.message)
+        if isinstance(prefix, list):
+            prefix = prefix[0]
+
+        channel: discord.abc.Messageable = ctx.channel
+        if not isinstance(channel, discord.Thread):
+            await ctx.send("Chat command can only be used in an active thread! Please ask a question first.")
+            return
+
+        found_bot_response = False
+        found_chat_input = False
+        async for thread_message in channel.history(limit=100, oldest_first=False):
+            if thread_message.author.bot:
+                await thread_message.delete()
+                found_bot_response = True
+
+            if thread_message.clean_content.startswith(f"{prefix}chat"):
+                await thread_message.delete()
+                found_chat_input = True
+
+            if found_chat_input and found_bot_response:
+                break
+
+
+    @commands.command()
     async def chatas(self, ctx: commands.Context) -> None:
         """
         Very similar to [p]chat except anything encoded in backticks is treated as a system message. System messages
