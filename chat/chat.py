@@ -32,23 +32,32 @@ class Chat(BaseCog):
             prefix = prefix[0]
 
         channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
         if not isinstance(channel, discord.Thread):
             await ctx.send("Chat command can only be used in an active thread! Please ask a question first.")
             return
 
         found_bot_response = False
+        found_last_bot_response = False
         found_chat_input = False
         async for thread_message in channel.history(limit=100, oldest_first=False):
-            if thread_message.author.bot:
-                await thread_message.delete()
-                found_bot_response = True
+            try:
+                if thread_message.author.bot:
+                    await thread_message.delete()
+                    found_bot_response = True
+                elif found_bot_response:
+                    found_last_bot_response = True
 
-            if thread_message.clean_content.startswith(f"{prefix}chat"):
-                await thread_message.delete()
-                found_chat_input = True
+                if thread_message.clean_content.startswith(f"{prefix}chat"):
+                    await thread_message.delete()
+                    found_chat_input = True
 
-            if found_chat_input and found_bot_response:
+                if found_chat_input and found_bot_response and found_last_bot_response:
+                    break
+            except Exception as e:
                 break
+
+        await message.delete()
 
 
     @commands.command()
