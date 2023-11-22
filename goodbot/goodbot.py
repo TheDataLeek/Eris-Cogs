@@ -141,15 +141,17 @@ class GoodBot(BaseCog):
             good_thresh = int(settings["good_thresh"])
             bad_thresh = int(settings["bad_thresh"])
             if not has_been_noticed:
+                phrase = None
                 if reaction.emoji == '👍' and reaction.count >= good_thresh:
                     phrase = self.generate_message(og_author, good=True)
                 elif reaction.emoji == "👎" and reaction.count >= bad_thresh:
                     phrase = self.generate_message(og_author, good=False)
                 elif reaction.count >= good_thresh:
                     phrase = f"{og_author.mention} has been {reaction.emoji}'d"
-                await ctx.send(phrase, reference=reaction.message)
 
-                messagetracking[str(msg.id)] = True
+                if phrase is not None:
+                    await ctx.send(phrase, reference=reaction.message)
+                    messagetracking[str(msg.id)] = True
 
         await self.track_user(ctx, og_author, reaction)
 
