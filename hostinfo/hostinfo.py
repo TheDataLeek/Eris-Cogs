@@ -15,7 +15,7 @@ class HostInfo(BaseCog):
 
 
     @commands.command()
-    def hostinfo(self, ctx: commands.Context):
+    async def hostinfo(self, ctx: commands.Context):
         hostname = socket.gethostname()
         ip_addr = socket.gethostbyname(hostname)
 
