@@ -36,9 +36,9 @@ class HotelCalifornia(BaseCog):
 
     async def watch_the_punished(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
-        author: discord.Member = message.author
+        author: Union[discord.User, discord.Member] = message.author
 
-        if author.bot:
+        if author.bot or not isinstance(author, discord.Member):
             return
 
         userroles: List[discord.Role] = author.roles
