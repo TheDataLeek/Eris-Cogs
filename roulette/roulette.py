@@ -58,18 +58,18 @@ class Roulette(BaseCog):
     async def hitme(self, ctx: commands.Context):
         original_message: discord.Message = ctx.message
         channel_list: list[str] = await self._config.guild(ctx.guild).roulette_channels()
-        channel_to_use_id = int(random.choice(channel_list))
+        channel_to_use_id = random.choice(channel_list)
 
         async with self._config.guild(ctx.guild).roulette_channel_info() as roulette_channel_info:
-            channel_info = roulette_channel_info[channel_to_use_id]
-            channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(channel_to_use_id)
+            channel_info = roulette_channel_info[str(channel_to_use_id)]
+            channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(int(channel_to_use_id))
 
             if channel_info['last_fetched'] is None or (dt.datetime.now() - channel_info['last_fetched']) > dt.timedelta(days=7):
                 media_messages: list[discord.Message] = await self.find_media_messages(channel_to_use)
                 fetched_at = dt.datetime.now()
                 message_ids = [m.id for m in media_messages]
-                roulette_channel_info[channel_to_use_id]['last_fetched'] = fetched_at
-                roulette_channel_info[channel_to_use_id]['messages'] = message_ids
+                roulette_channel_info[str(channel_to_use_id)]['last_fetched'] = fetched_at
+                roulette_channel_info[str(channel_to_use_id)]['messages'] = message_ids
             else:
                 media_messages = [
                     await channel_to_use.fetch_message(cid)
