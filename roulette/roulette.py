@@ -77,7 +77,7 @@ class Roulette(BaseCog):
 
     async def find_media_from_day(self, channel: discord.TextChannel, day: dt.date) -> list[discord.Attachment]:
         media: list[discord.Attachment] = []
-        chunk = [message async for message in channel.history(limit=100, around=day)]
+        chunk = [message async for message in channel.history(limit=100, around=dt.datetime(day.year, day.month, day.day))]
         for message in chunk:
             for attachment in message.attachments:
                 if attachment.width:
