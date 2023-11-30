@@ -16,7 +16,7 @@ class Roulette(BaseCog):
             force_registration=True,
             cog_name='roulette'
         )
-        self._config.register_guild(channels=[])
+        self._config.register_guild(roulette_channels=[])
 
     @commands.group()
     async def roulette(self, ctx: commands.Context):
@@ -25,12 +25,12 @@ class Roulette(BaseCog):
     @roulette.command()
     @checks.mod()
     async def channels(self, ctx: commands.Context, *channels: discord.TextChannel):
-        await self._config.guild(ctx.guild).channels.set(channels)
+        await self._config.guild(ctx.guild).roulette_channels.set(channels)
 
     @commands.command()
     async def hitme(self, ctx: commands.Context):
         original_message: discord.Message = ctx.message
-        channel_list: list[discord.TextChannel] = await self._config.guild(ctx.guild).channels()
+        channel_list: list[discord.TextChannel] = await self._config.guild(ctx.guild).roulette_channels()
         channel_to_use = random.choice(channel_list)
         media: list[discord.Attachment] = await self.find_media(channel_to_use)
         media_to_use = random.choice(media)
