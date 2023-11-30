@@ -31,19 +31,9 @@ class Roulette(BaseCog):
     @checks.mod()
     async def channels(self, ctx: commands.Context, *channels: discord.TextChannel):
         channel_ids = [str(c.id) for c in channels]
-        await self._config.guild(ctx.guild).roulette_channels.set(channel_ids)
-        channel_info = {
-            cid: {
-                'last_fetched': None,
-                'messages': list(),
-            }
-            for cid in channel_ids
-        }
-        await self._config.guild(ctx.guild).roulette_channel_info.set(channel_info)
         formatted = (
             f"{ctx.guild.name}\n"
             f"Channel IDs: {', '.join(channel_ids)}\n"
-            f"Channel Info: {pprint.pformat(channel_info)}"
         )
         embedded_response = discord.Embed(
             title=f"Roulette Channels Set",
@@ -54,37 +44,21 @@ class Roulette(BaseCog):
 
         await ctx.send(embed=embedded_response)
 
+        await self._config.guild(ctx.guild).roulette_channels.set(channel_ids)
+
     @commands.command()
     async def hitme(self, ctx: commands.Context):
         original_message: discord.Message = ctx.message
         channel_list: list[str] = await self._config.guild(ctx.guild).roulette_channels()
         channel_to_use_id = random.choice(channel_list)
+        channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(int(channel_to_use_id))
 
-        async with self._config.guild(ctx.guild).roulette_channel_info() as roulette_channel_info:
-            channel_info = roulette_channel_info[str(channel_to_use_id)]
-            channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(int(channel_to_use_id))
-
-            last_fetched = channel_info['last_fetched'] or 100   # in epoch time
-            last_fetched = dt.datetime.fromtimestamp(int(last_fetched))
-            if (dt.datetime.now() - last_fetched) > dt.timedelta(days=7):
-                media_messages: list[discord.Message] = await self.find_media_messages(channel_to_use)
-                fetched_at = dt.datetime.now().strftime('%s')   # need epoch time :/
-                message_ids = [m.id for m in media_messages]
-                roulette_channel_info[str(channel_to_use_id)]['last_fetched'] = fetched_at
-                roulette_channel_info[str(channel_to_use_id)]['messages'] = message_ids
-            else:
-                media_messages = [
-                    await channel_to_use.fetch_message(cid)
-                    for cid in channel_info['messages']
-                ]
-
-        media: list[discord.Attachment] = [
-            attachment
-            for message in media_messages
-            for attachment in message.attachments
-            if attachment.width
-        ]
-
+        first_day_in_channel: dt.datetime = await self.find_first_message(channel_to_use)
+        today = dt.datetime.now()
+        time_since: dt.timedelta = (today - first_day_in_channel)
+        days_since = time_since.days
+        random_day = (first_day_in_channel + dt.timedelta(days=random.randint(0, days_since))).date()
+        media = await self.find_media_from_day(channel_to_use, random_day)
         media_to_use = random.choice(media)
         extension = media_to_use.filename.split('.')[-1]
         buf = io.BytesIO()
@@ -95,18 +69,17 @@ class Roulette(BaseCog):
             file=discord.File(buf, filename=f'roulette.{extension}', spoiler=True)
         )
 
-    async def find_media_messages(self, channel: discord.TextChannel) -> list[discord.Message]:
-        # let's start with just the latest 500
-        media_messages: list[discord.Messaeg] = []
-        message: discord.Message = None
-        last_message_examined: discord.Message = None
-        while True:
-            chunk = [message async for message in channel.history(limit=1000, before=last_message_examined)]
-            if len(chunk) == 0:
-                break
-            for message in chunk:
-                if len(message.attachments) and any(a.width for a in message.attachments):
-                    media_messages.append(message)
-            last_message_examined = message
+    async def find_first_message(self, channel: discord.TextChannel) -> dt.datetime:
+        first_timestamps = []
+        async for message in channel.history(limit=5, oldest_first=True):
+            first_timestamps.append(message.created_at)
+        return min(first_timestamps)
 
-        return media_messages
+    async def find_media_from_day(self, channel: discord.TextChannel, day: dt.date) -> list[discord.Attachment]:
+        media: list[discord.Attachment] = []
+        chunk = [message async for message in channel.history(limit=100, around=day)]
+        for message in chunk:
+            for attachment in message.attachments:
+                if attachment.width:
+                    media.append(attachment)
+        return media
