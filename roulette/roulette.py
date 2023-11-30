@@ -1,8 +1,10 @@
 import io
 import datetime as dt
+import pprint
 import discord
 import random
 from redbot.core import commands, bot, checks, data_manager, Config
+from redbot.core.utils import embed
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -28,14 +30,29 @@ class Roulette(BaseCog):
     @roulette.command()
     @checks.mod()
     async def channels(self, ctx: commands.Context, *channels: discord.TextChannel):
-        await self._config.guild(ctx.guild).roulette_channels.set([c.id for c in channels])
-        await self._config.guild(ctx.guild).roulette_channel_info.set({
-            c.id: {
+        channel_ids = [c.id for c in channels]
+        await self._config.guild(ctx.guild).roulette_channels.set(channel_ids)
+        channel_info = {
+            cid: {
                 'last_fetched': None,
                 'messages': list(),
             }
-            for c in channels
-        })
+            for cid in channel_ids
+        }
+        await self._config.guild(ctx.guild).roulette_channel_info.set(channel_info)
+        formatted = (
+            f"{ctx.guild.name}\n"
+            f"Channel IDs: {', '.join(channel_ids)}\n"
+            f"Channel Info: {pprint.pformat(channel_info)}"
+        )
+        embedded_response = discord.Embed(
+            title=f"Roulette Channels Set",
+            type="rich",
+            description=formatted,
+        )
+        embedded_response = embed.randomize_colour(embedded_response)
+
+        await ctx.send(embed=embedded_response)
 
     @commands.command()
     async def hitme(self, ctx: commands.Context):
