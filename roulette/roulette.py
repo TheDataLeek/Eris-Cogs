@@ -53,11 +53,11 @@ class Roulette(BaseCog):
         channel_to_use_id = random.choice(channel_list)
         channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(int(channel_to_use_id))
 
-        first_day_in_channel: dt.datetime = await self.find_first_message(channel_to_use)
-        today = dt.datetime.now()
+        first_day_in_channel: dt.date = await self.find_first_message(channel_to_use)
+        today = dt.date.today()
         time_since: dt.timedelta = (today - first_day_in_channel)
         days_since = time_since.days
-        random_day = (first_day_in_channel + dt.timedelta(days=random.randint(0, days_since))).date()
+        random_day = (first_day_in_channel + dt.timedelta(days=random.randint(0, days_since)))
         media = await self.find_media_from_day(channel_to_use, random_day)
         media_to_use = random.choice(media)
         extension = media_to_use.filename.split('.')[-1]
@@ -72,7 +72,7 @@ class Roulette(BaseCog):
     async def find_first_message(self, channel: discord.TextChannel) -> dt.datetime:
         first_timestamps = []
         async for message in channel.history(limit=5, oldest_first=True):
-            first_timestamps.append(message.created_at)
+            first_timestamps.append(message.created_at.date())
         return min(first_timestamps)
 
     async def find_media_from_day(self, channel: discord.TextChannel, day: dt.date) -> list[discord.Attachment]:
