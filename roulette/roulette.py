@@ -30,7 +30,7 @@ class Roulette(BaseCog):
     @roulette.command()
     @checks.mod()
     async def channels(self, ctx: commands.Context, *channels: discord.TextChannel):
-        channel_ids = [c.id for c in channels]
+        channel_ids = [str(c.id) for c in channels]
         await self._config.guild(ctx.guild).roulette_channels.set(channel_ids)
         channel_info = {
             cid: {
@@ -42,7 +42,7 @@ class Roulette(BaseCog):
         await self._config.guild(ctx.guild).roulette_channel_info.set(channel_info)
         formatted = (
             f"{ctx.guild.name}\n"
-            f"Channel IDs: {', '.join(str(c) for c in channel_ids)}\n"
+            f"Channel IDs: {', '.join(channel_ids)}\n"
             f"Channel Info: {pprint.pformat(channel_info)}"
         )
         embedded_response = discord.Embed(
@@ -57,8 +57,8 @@ class Roulette(BaseCog):
     @commands.command()
     async def hitme(self, ctx: commands.Context):
         original_message: discord.Message = ctx.message
-        channel_list: list[int] = await self._config.guild(ctx.guild).roulette_channels()
-        channel_to_use_id = random.choice(channel_list)
+        channel_list: list[str] = await self._config.guild(ctx.guild).roulette_channels()
+        channel_to_use_id = int(random.choice(channel_list))
 
         async with self._config.guild(ctx.guild).roulette_channel_info() as roulette_channel_info:
             channel_info = roulette_channel_info[channel_to_use_id]
