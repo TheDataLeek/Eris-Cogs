@@ -1,5 +1,5 @@
 import io
-
+import datetime as dt
 import discord
 import random
 from redbot.core import commands, bot, checks, data_manager, Config
@@ -16,7 +16,10 @@ class Roulette(BaseCog):
             force_registration=True,
             cog_name='roulette'
         )
-        self._config.register_guild(roulette_channels=[])
+        self._config.register_guild(
+            roulette_channels=list(),
+            roulette_channel_info=dict(),
+        )
 
     @commands.group()
     async def roulette(self, ctx: commands.Context):
@@ -26,14 +29,43 @@ class Roulette(BaseCog):
     @checks.mod()
     async def channels(self, ctx: commands.Context, *channels: discord.TextChannel):
         await self._config.guild(ctx.guild).roulette_channels.set([c.id for c in channels])
+        await self._config.guild(ctx.guild).roulette_channel_info.set({
+            c.id: {
+                'last_fetched': None,
+                'messages': list(),
+            }
+            for c in channels
+        })
 
     @commands.command()
     async def hitme(self, ctx: commands.Context):
         original_message: discord.Message = ctx.message
         channel_list: list[int] = await self._config.guild(ctx.guild).roulette_channels()
-        channel_to_use = random.choice(channel_list)
-        channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(channel_to_use)
-        media: list[discord.Attachment] = await self.find_media(channel_to_use)
+        channel_to_use_id = random.choice(channel_list)
+
+        async with self._config.guild(ctx.guild).roulette_channel_info() as roulette_channel_info:
+            channel_info = roulette_channel_info[channel_to_use_id]
+            channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(channel_to_use_id)
+
+            if channel_info['last_fetched'] is None or (dt.datetime.now() - channel_info['last_fetched']) > dt.timedelta(days=7):
+                media_messages: list[discord.Message] = await self.find_media_messages(channel_to_use)
+                fetched_at = dt.datetime.now()
+                message_ids = [m.id for m in media_messages]
+                roulette_channel_info[channel_to_use_id]['last_fetched'] = fetched_at
+                roulette_channel_info[channel_to_use_id]['messages'] = message_ids
+            else:
+                media_messages = [
+                    await channel_to_use.fetch_message(cid)
+                    for cid in channel_info['messages']
+                ]
+
+        media: list[discord.Attachment] = [
+            attachment
+            for message in media_messages
+            for attachment in message.attachments
+            if attachment.width
+        ]
+
         media_to_use = random.choice(media)
         extension = media_to_use.filename.split('.')[-1]
         buf = io.BytesIO()
@@ -44,9 +76,9 @@ class Roulette(BaseCog):
             file=discord.File(buf, filename=f'roulette.{extension}', spoiler=True)
         )
 
-    async def find_media(self, channel: discord.TextChannel) -> list[discord.Attachment]:
+    async def find_media_messages(self, channel: discord.TextChannel) -> list[discord.Message]:
         # let's start with just the latest 500
-        media: list[discord.Attachment] = []
+        media_messages: list[discord.Messaeg] = []
         message: discord.Message = None
         last_message_examined: discord.Message = None
         while True:
@@ -54,11 +86,8 @@ class Roulette(BaseCog):
             if len(chunk) == 0:
                 break
             for message in chunk:
-                media += [
-                    attachment
-                    for attachment in message.attachments
-                    if attachment.width
-                ]
+                if len(message.attachments) and any(a.width for a in message.attachments):
+                    media_messages.append(message)
             last_message_examined = message
 
-        return media
+        return media_messages
