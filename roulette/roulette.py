@@ -42,7 +42,7 @@ class Roulette(BaseCog):
         await self._config.guild(ctx.guild).roulette_channel_info.set(channel_info)
         formatted = (
             f"{ctx.guild.name}\n"
-            f"Channel IDs: {', '.join(channel_ids)}\n"
+            f"Channel IDs: {', '.join(str(c) for c in channel_ids)}\n"
             f"Channel Info: {pprint.pformat(channel_info)}"
         )
         embedded_response = discord.Embed(
