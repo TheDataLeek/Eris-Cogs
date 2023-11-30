@@ -64,9 +64,11 @@ class Roulette(BaseCog):
             channel_info = roulette_channel_info[str(channel_to_use_id)]
             channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(int(channel_to_use_id))
 
-            if channel_info['last_fetched'] is None or (dt.datetime.now() - channel_info['last_fetched']) > dt.timedelta(days=7):
+            last_fetched = channel_info['last_fetched'] or 100   # in epoch time
+            last_fetched = dt.datetime.fromtimestamp(int(last_fetched))
+            if (dt.datetime.now() - last_fetched) > dt.timedelta(days=7):
                 media_messages: list[discord.Message] = await self.find_media_messages(channel_to_use)
-                fetched_at = dt.datetime.now()
+                fetched_at = dt.datetime.now().strftime('%s')   # need epoch time :/
                 message_ids = [m.id for m in media_messages]
                 roulette_channel_info[str(channel_to_use_id)]['last_fetched'] = fetched_at
                 roulette_channel_info[str(channel_to_use_id)]['messages'] = message_ids
