@@ -16,7 +16,7 @@ class Roulette(BaseCog):
             force_registration=True,
             cog_name='roulette'
         )
-        self._config.register_guild(channels={})
+        self._config.register_guild(channels=set())
 
     @commands.group()
     async def roulette(self, ctx: commands.Context):
