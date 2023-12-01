@@ -303,7 +303,7 @@ class Chat(BaseCog):
                     'response_format': 'b64_json',
                     'size': '1024x1024',
                 }
-                if attachment is not None:  # then it's a new image
+                if attachment is not None:  # then it's an edit
                     buf = io.BytesIO()
                     await attachment.save(buf)
                     buf.seek(0)
@@ -314,11 +314,11 @@ class Chat(BaseCog):
                     input_image_buffer.seek(0)
                     kwargs['image'] = input_image_buffer.read()
 
-                    mask = io.BytesIO()
-                    mask_image = Image.new('RGBA', (1024, 1024))
-                    mask_image.save(mask, format='png')
-                    mask.seek(0)
-                    kwargs['mask'] = mask.read()
+                    # mask = io.BytesIO()
+                    # mask_image = Image.new('RGBA', (1024, 1024))
+                    # mask_image.save(mask, format='png')
+                    # mask.seek(0)
+                    # kwargs['mask'] = mask.read()
                 else:
                     style = None
                     if 'vivid' in formatted_query:
@@ -412,10 +412,7 @@ def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) ->
     }
     if kwargs['model'].startswith('dall'):
         if 'image' in kwargs:
-            images = client.images.edit(
-                prompt=messages,
-                **kwargs
-            )
+            images = client.images.create_variation(**kwargs)
         else:
             images = client.images.generate(
                 prompt=messages,
