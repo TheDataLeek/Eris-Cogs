@@ -264,13 +264,13 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         prompt_words = [w for i, w in enumerate(message.content.split(' ')) if i != 0]
         prompt: str = ' '.join(prompt_words)
-        if prompt == '':
-            return
         thread_name = ' '.join(prompt_words[:5])
         attachment = None
         attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
         if len(attachments) > 0:
             attachment: discord.Attachment = attachments[0]
+        elif prompt == '':
+            return
 
         await self.query_openai(
             message,
