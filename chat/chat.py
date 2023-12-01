@@ -264,7 +264,7 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         prompt_words = [w for i, w in enumerate(message.content.split(' ')) if i != 0]
         prompt: str = ' '.join(prompt_words)
-        thread_name = ' '.join(prompt_words[:5])
+        thread_name = ' '.join(prompt_words[:5]) + '...'
         attachment = None
         attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
         if len(attachments) > 0:
