@@ -308,6 +308,7 @@ class Chat(BaseCog):
                     await attachment.save(buf)
                     buf.seek(0)
                     input_image = Image.open(buf)
+                    input_image = input_image.resize((1024, 1024))
                     input_image_buffer = io.BytesIO()
                     input_image.save(input_image_buffer, format='png')
                     input_image_buffer.seek(0)
