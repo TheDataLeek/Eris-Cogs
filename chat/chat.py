@@ -391,6 +391,9 @@ def pagify_chat_result(response: str) -> list[str]:
 
 def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) -> str | io.BytesIO:
     client = openai.OpenAI(api_key=token)
+    kwargs = {
+        k: v for k, v in kwargs.items() if v is not None
+    }
     if kwargs['model'].startswith('dall'):
         if 'image' in kwargs:
             images = client.images.edit(
