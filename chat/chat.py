@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from PIL import Image
 import re
 import base64
 import io
@@ -307,6 +308,7 @@ class Chat(BaseCog):
                     await attachment.save(buf)
                     buf.seek(0)
                     kwargs['image'] = buf.read()
+                    kwargs['mask'] = Image.new('RGBA', (1024, 1024)).tobytes()
                 else:
                     style = None
                     if 'vivid' in formatted_query:

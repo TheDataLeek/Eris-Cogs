@@ -1,7 +1,13 @@
 {
-  "author" : ["Eris"],
-  "description" : "Usage: [p]chat",
+  "author": [
+    "Eris"
+  ],
+  "description": "Usage: [p]chat",
   "name": "Chat",
-  "short" : "Use OpenAI's ChatGPT to respond to the conversation",
+  "short": "Use OpenAI's ChatGPT to respond to the conversation",
+  "requirements": [
+    "openai",
+    "pillow"
+  ],
   "ready": true
 }
