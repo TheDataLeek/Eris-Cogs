@@ -307,7 +307,11 @@ class Chat(BaseCog):
                     buf = io.BytesIO()
                     await attachment.save(buf)
                     buf.seek(0)
-                    kwargs['image'] = buf.read()
+                    input_image = Image.open(buf)
+                    input_image_buffer = io.BytesIO()
+                    input_image.save(input_image_buffer, format='png')
+                    input_image_buffer.seek(0)
+                    kwargs['image'] = input_image_buffer.read()
 
                     mask = io.BytesIO()
                     mask_image = Image.new('RGBA', (1024, 1024))
