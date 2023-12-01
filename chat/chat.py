@@ -308,8 +308,12 @@ class Chat(BaseCog):
                     await attachment.save(buf)
                     buf.seek(0)
                     kwargs['image'] = buf.read()
-                    kwargs['mask'] = Image.new('RGBA', (1024, 1024)).tobytes()
 
+                    mask = io.BytesIO()
+                    mask_image = Image.new('RGBA', (1024, 1024))
+                    mask_image.save(mask, format='png')
+                    mask.seek(0)
+                    kwargs['mask'] = mask.read()
                 else:
                     style = None
                     if 'vivid' in formatted_query:
