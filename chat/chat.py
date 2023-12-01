@@ -306,7 +306,7 @@ class Chat(BaseCog):
                     buf = io.BytesIO()
                     await attachment.save(buf)
                     buf.seek(0)
-                    kwargs['image'] = buf
+                    kwargs['image'] = buf.read()
                 else:
                     style = None
                     if 'vivid' in formatted_query:
