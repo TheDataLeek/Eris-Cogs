@@ -263,6 +263,8 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         prompt_words = [w for i, w in enumerate(message.content.split(' ')) if i != 0]
         prompt: str = ' '.join(prompt_words)
+        if prompt == '':
+            return
         thread_name = ' '.join(prompt_words[:5])
         attachment = None
         attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
@@ -304,7 +306,7 @@ class Chat(BaseCog):
                     buf = io.BytesIO()
                     await attachment.save(buf)
                     buf.seek(0)
-                    kwargs['image'] = buf.read()
+                    kwargs['image'] = base64.b64encode(buf)
                 else:
                     style = None
                     if 'vivid' in formatted_query:
@@ -342,9 +344,10 @@ class Chat(BaseCog):
 async def openai_query(query: List[Dict], token: str, **kwargs) -> list[str] | io.BytesIO:
     loop = asyncio.get_running_loop()
     time_to_sleep = 1
+    exception_string = None
     while True:
         if time_to_sleep > 1:
-            raise TimeoutError("Tried too many times!")
+            raise TimeoutError(exception_string)
         try:
             response: str | io.BytesIO = await loop.run_in_executor(
                 None,
@@ -352,7 +355,7 @@ async def openai_query(query: List[Dict], token: str, **kwargs) -> list[str] | i
             )
             break
         except Exception as e:
-            print(e)
+            exception_string = str(e)
             await asyncio.sleep(time_to_sleep ** 2)
             time_to_sleep += 1
 
