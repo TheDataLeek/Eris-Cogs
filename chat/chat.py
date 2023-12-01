@@ -309,6 +309,7 @@ class Chat(BaseCog):
                     buf.seek(0)
                     kwargs['image'] = buf.read()
                     kwargs['mask'] = Image.new('RGBA', (1024, 1024)).tobytes()
+
                 else:
                     style = None
                     if 'vivid' in formatted_query:
