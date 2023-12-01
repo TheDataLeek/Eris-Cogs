@@ -50,6 +50,11 @@ class Roulette(BaseCog):
     async def hitme(self, ctx: commands.Context):
         original_message: discord.Message = ctx.message
         channel_list: list[str] = await self._config.guild(ctx.guild).roulette_channels()
+        current_channel: discord.Message = ctx.channel
+        current_channel_id = str(current_channel.id)
+        if current_channel_id in channel_list:
+            return
+
         channel_to_use_id = random.choice(channel_list)
         channel_to_use: discord.TextChannel = await ctx.guild.fetch_channel(int(channel_to_use_id))
 

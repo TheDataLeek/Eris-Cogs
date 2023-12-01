@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import re
 import base64
@@ -25,11 +27,15 @@ class Chat(BaseCog):
         self.openai_token = self.openai_settings.get("key", None)
         return self.openai_token
 
-    @commands.command()
-    async def rewind(self, ctx: commands.Context) -> None:
+    async def get_prefix(self, ctx: commands.Context) -> str:
         prefix = await self.bot.get_prefix(ctx.message)
         if isinstance(prefix, list):
             prefix = prefix[0]
+        return prefix
+
+    @commands.command()
+    async def rewind(self, ctx: commands.Context) -> None:
+        prefix = await self.get_prefix(ctx)
 
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
@@ -59,16 +65,13 @@ class Chat(BaseCog):
 
         await message.delete()
 
-
     @commands.command()
     async def chatas(self, ctx: commands.Context) -> None:
         """
         Very similar to [p]chat except anything encoded in backticks is treated as a system message. System messages
         are hoisted.
         """
-        prefix = await self.bot.get_prefix(ctx.message)
-        if isinstance(prefix, list):
-            prefix = prefix[0]
+        prefix = await self.get_prefix(ctx)
 
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
@@ -172,15 +175,10 @@ class Chat(BaseCog):
         else:
             return
 
-        print(formatted_query)
-
         await self.query_openai(message, channel, thread_name, formatted_query)
 
-    @commands.command()
-    async def chat(self, ctx: commands.Context) -> None:
-        prefix = await self.bot.get_prefix(ctx.message)
-        if isinstance(prefix, list):
-            prefix = prefix[0]
+    async def extract_chat_history_and_format(self, ctx: commands.Context):
+        prefix = await self.get_prefix(ctx)
 
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
@@ -235,7 +233,7 @@ class Chat(BaseCog):
                         {
                             "type": "text",
                             "text": " ".join(
-                                w for w in thread_message.clean_content.split(" ") if w != f"{prefix}chat"
+                                w for w in thread_message.clean_content.split(" ") if not w.startswith('.')
                             ),
                         },
                         *[
@@ -245,24 +243,85 @@ class Chat(BaseCog):
                     ],
                 }
                 async for thread_message in channel.history(limit=100, oldest_first=True)
-                if thread_message.author.bot or thread_message.clean_content.startswith(f"{prefix}chat")
+                if thread_message.author.bot or thread_message.clean_content.startswith(".")
             ]
         else:
-            return
+            return None
 
-        print(formatted_query)
+        return thread_name, formatted_query
 
+    @commands.command()
+    async def chat(self, ctx: commands.Context) -> None:
+        thread_name, formatted_query = await self.extract_chat_history_and_format(ctx)
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
         await self.query_openai(message, channel, thread_name, formatted_query)
+
+    @commands.command()
+    async def image(self, ctx: commands.Context):
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
+        prompt_words = [w for i, w in enumerate(message.content.split(' ')) if i != 0]
+        prompt: str = ' '.join(prompt_words)
+        thread_name = ' '.join(prompt_words[5:])
+        attachment = None
+        attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
+        if len(attachments) > 0:
+            attachment: discord.Attachment = attachments[0]
+
+        await self.query_openai(
+            message,
+            channel,
+            thread_name,
+            prompt,
+            attachment=attachment,
+            image_api=True,
+        )
 
     async def query_openai(self,
                            message: discord.Message,
-                           channel: Union[discord.TextChannel, discord.Thread],
+                           channel: discord.TextChannel | discord.Thread,
                            thread_name: str,
-                           formatted_query: List[Dict]
+                           formatted_query: str | list[dict],
+                           attachment: discord.Attachment = None,
+                           image_api: bool = False,
                            ):
         token = await self.get_openai_token()
+        kwargs = {
+            'model': 'gpt-4-vision-preview',
+            'temperature': 1,
+            'max_tokens': 2000,
+        }
         try:
-            response = await openai_query(formatted_query, token, model="gpt-4-vision-preview")
+            if image_api:
+                kwargs = {
+                    'n': 1,
+                    'model': 'dall-e-2',
+                    'response_format': 'b64_json',
+                    'size': '1024x1024',
+                }
+                if attachment is not None:  # then it's a new image
+                    buf = io.BytesIO()
+                    await attachment.save(buf)
+                    buf.seek(0)
+                    kwargs['image'] = buf.read()
+                else:
+                    style = None
+                    if 'vivid' in formatted_query:
+                        style = 'vivid'
+                    elif 'natural' in formatted_query:
+                        style = 'natural'
+                    kwargs = {
+                        **kwargs,
+                        **{
+                            'model': 'dall-e-3',
+                            'quality': 'hd',
+                            'style': style,
+                        }
+                    }
+                response = await openai_query(formatted_query, token, **kwargs)
+            else:
+                response = await openai_query(formatted_query, token, **kwargs)
         except Exception as e:
             await channel.send(f"Something went wrong: {e}")
             return
@@ -272,53 +331,24 @@ class Chat(BaseCog):
             thread: discord.Thread = await message.create_thread(name=thread_name)
             destination = thread
 
-        for page in response:
-            await destination.send(page)
-
-    @commands.command()
-    async def vibecheck(self, ctx: commands.Context) -> None:
-        raw_query = ctx.message.clean_content.split(" ")[1:]
-
-        if not raw_query:
-            raw_query = "a random emoji".split(" ")
-
-        channel: discord.abc.Messageable = ctx.channel
-
-        formatted_query = " ".join(raw_query)
-        formatted_query = [
-            {
-                "role": "system",
-                "content": (
-                    "You are a summarizing machine that accepts many types of input and provides back short output."
-                    " You will be provided some input in the following user message and you will identify a"
-                    " single emoji and a short phrase with heavy usage of emoji to capture the overall"
-                    " feeling, emotion, and overall concept contained. This captured feeling should loosely align"
-                    " with the input and your summation should be whimsical in a Gen-Z, Zillenial, 'Vibe-Based'"
-                    " sort of way."
-                ),
-            },
-            {"role": "user", "content": formatted_query},
-        ]
-        try:
-            token = await self.get_openai_token()
-            response = await openai_query(formatted_query, token, model="gpt-4", max_tokens=50)
-            await channel.send(response[0])
-        except Exception as e:
-            await channel.send(f"Something went wrong: {e}")
+        if isinstance(response, list):
+            for page in response:
+                await destination.send(page)
+        else:
+            filename = thread_name.replace(' ', '_') + '.png'
+            await destination.send(file=discord.File(response, filename=filename))
 
 
-async def openai_query(
-        query: List[Dict], token: str, model="gpt-4-vision-preview", temperature=1, max_tokens=2000
-) -> List[str]:
+async def openai_query(query: List[Dict], token: str, **kwargs) -> list[str] | io.BytesIO:
     loop = asyncio.get_running_loop()
     time_to_sleep = 1
     while True:
         if time_to_sleep > 1:
             raise TimeoutError("Tried too many times!")
         try:
-            response: str = await loop.run_in_executor(
+            response: str | io.BytesIO = await loop.run_in_executor(
                 None,
-                lambda: openai_client_and_query(token, query, model, temperature, max_tokens),
+                lambda: openai_client_and_query(token, query, **kwargs)
             )
             break
         except Exception as e:
@@ -326,12 +356,13 @@ async def openai_query(
             await asyncio.sleep(time_to_sleep ** 2)
             time_to_sleep += 1
 
-    response_lines = pagify_chat_result(response)
+    if isinstance(response, str):
+        return pagify_chat_result(response)
 
-    return response_lines
+    return response
 
 
-def pagify_chat_result(response: str) -> List[str]:
+def pagify_chat_result(response: str) -> list[str]:
     if len(response) <= 2000:
         return [response]
 
@@ -358,17 +389,31 @@ def pagify_chat_result(response: str) -> List[str]:
     return lines
 
 
-
-
-def openai_client_and_query(token: str, messages: List[Dict], model: str, temperature: int, max_tokens: int):
+def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) -> str | io.BytesIO:
     client = openai.OpenAI(api_key=token)
-    chat_completion = client.chat.completions.create(
-        messages=messages,
-        model=model,
-        temperature=temperature,
-        max_tokens=max_tokens,
-    )
-    response = chat_completion.choices[0].message.content
+    if kwargs['model'].startswith('dall'):
+        if 'image' in kwargs:
+            images = client.images.edit(
+                prompt=messages,
+                **kwargs
+            )
+        else:
+            images = client.images.generate(
+                prompt=messages,
+                **kwargs
+            )
+        encoded_image = images.data[0].b64_json
+        image = base64.b64decode(encoded_image)
+        buf = io.BytesIO()
+        buf.write(image)
+        buf.seek(0)
+        response = buf
+    else:
+        chat_completion = client.chat.completions.create(
+            messages=messages,
+            **kwargs,
+        )
+        response = chat_completion.choices[0].message.content
     return response
 
 
