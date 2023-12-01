@@ -306,7 +306,7 @@ class Chat(BaseCog):
                     buf = io.BytesIO()
                     await attachment.save(buf)
                     buf.seek(0)
-                    kwargs['image'] = base64.b64encode(buf.read())
+                    kwargs['image'] = buf
                 else:
                     style = None
                     if 'vivid' in formatted_query:
@@ -347,6 +347,7 @@ async def openai_query(query: List[Dict], token: str, **kwargs) -> list[str] | i
     exception_string = None
     while True:
         if time_to_sleep > 1:
+            print(exception_string)
             raise TimeoutError(exception_string)
         try:
             response: str | io.BytesIO = await loop.run_in_executor(
