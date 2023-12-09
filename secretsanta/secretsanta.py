@@ -114,9 +114,14 @@ class SecretSanta(BaseCog):
         member: discord.Member
         for member in self.bot.get_all_members():
             for name in who_do_we_need_to_find:
-                if member.name == name.lower():
+                if member.name == name.lower().strip():
                     people[name] = member
                     break
+
+        for name in who_do_we_need_to_find:
+            if name not in people:
+                await ctx.send(f"Unable to find `{name}`!!!")
+                return
 
         for santa, matched, message in final_matches:
             discord_member = people[santa]
