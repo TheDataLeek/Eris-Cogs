@@ -74,7 +74,7 @@ class SecretSanta(BaseCog):
 
         print(f"Needed to shuffle {counter:,} times")
 
-        final_matches = {}
+        final_matches = []
         for i, person in enumerate(data):
             matched = data[i - 1]
             message_template = f"""
@@ -86,11 +86,23 @@ class SecretSanta(BaseCog):
             """
 
             for col in header[4:]:
+                # skip address
+                if 'address' in col.lower():
+                    continue
                 message_template += f"\n## {col}\n{matched[col]}"
 
             final_message = '\n'.join(line.strip() for line in message_template.splitlines())
-            final_matches[person['discord']] = final_message
+            final_matches.append([
+                person['discord'],
+                matched['discord'],
+                final_message
+            ])
 
-        for santa, match_message in final_matches.items():
-            await ctx.send(santa)
-            await ctx.send(match_message)
+        formatted_matches = io.StringIO()
+        writer = csv.writer(formatted_matches)
+        for row in final_matches:
+            writer.writerow(row)
+
+        formatted_matches.seek(0)
+        await self.bot.send_to_owners('Here are this year\'s matches for debugging purposes!',
+                                      file=discord.File(formatted_matches, filename='matches.csv'))
