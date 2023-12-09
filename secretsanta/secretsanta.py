@@ -14,6 +14,8 @@ class SecretSanta(BaseCog):
         self.bot = bot_instance
 
     @commands.command()
+    @commands.dm_only()
+    @checks.is_owner()
     async def secretsanta(self, ctx: commands.Context):
         """
         CSV assumes these columns, anything else is included in the message.
@@ -91,7 +93,7 @@ class SecretSanta(BaseCog):
                     continue
                 message_template += f"\n## {col}\n{matched[col]}"
 
-            final_message = '\n'.join(line.strip() for line in message_template.splitlines())
+            final_message = '\n'.join(line.strip() for line in message_template.splitlines() if line)
             final_matches.append([
                 person['discord'],
                 matched['discord'],
@@ -106,3 +108,21 @@ class SecretSanta(BaseCog):
         formatted_matches.seek(0)
         await self.bot.send_to_owners('Here are this year\'s matches for debugging purposes!',
                                       file=discord.File(formatted_matches, filename='matches.csv'))
+
+        who_do_we_need_to_find = [row[0] for row in final_matches]
+        people = {}
+        member: discord.Member
+        for member in self.bot.get_all_members():
+            for name in who_do_we_need_to_find:
+                if member.name == name:
+                    people[name] = member
+                    break
+
+        for santa, matched, message in final_matches:
+            if santa == 'erisaurus':
+                discord_member = people[santa]
+                channel = discord_member.dm_channel
+                if channel is None:
+                    channel = await discord_member.create_dm()
+
+                await channel.send(message)
