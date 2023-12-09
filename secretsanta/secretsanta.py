@@ -114,7 +114,7 @@ class SecretSanta(BaseCog):
         member: discord.Member
         for member in self.bot.get_all_members():
             for name in who_do_we_need_to_find:
-                if member.name == name:
+                if member.name == name.lower():
                     people[name] = member
                     break
 
