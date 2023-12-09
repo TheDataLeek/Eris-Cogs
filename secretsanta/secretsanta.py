@@ -36,7 +36,7 @@ class SecretSanta(BaseCog):
             return
 
         # snag first attachment
-        buf = io.StringIO()
+        buf = io.BytesIO()
         await csv_file.save(buf)
         buf.seek(0)
 
