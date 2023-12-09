@@ -84,7 +84,7 @@ class SecretSanta(BaseCog):
                 
                 Thanks for signing up for the Secret Santa, Snek by Praised!
                 
-                Your match is {matched['discord']}. Here's what they filled out in the form,
+                Your match is `@{matched['discord']}`. Here's what they filled out in the form,
             """
 
             for col in header[4:]:
@@ -119,10 +119,9 @@ class SecretSanta(BaseCog):
                     break
 
         for santa, matched, message in final_matches:
-            if santa == 'erisaurus':
-                discord_member = people[santa]
-                channel = discord_member.dm_channel
-                if channel is None:
-                    channel = await discord_member.create_dm()
+            discord_member = people[santa]
+            channel = discord_member.dm_channel
+            if channel is None:
+                channel = await discord_member.create_dm()
 
-                await channel.send(message)
+            await channel.send(message)
