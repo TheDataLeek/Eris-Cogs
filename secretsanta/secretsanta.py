@@ -40,7 +40,12 @@ class SecretSanta(BaseCog):
         await csv_file.save(buf)
         buf.seek(0)
 
-        reader = csv.reader(buf)
+        # convert to text-based buffer so csv can handle it
+        stringbuf = io.StringIO()
+        stringbuf.write(buf.read().decode('utf-8'))
+        stringbuf.seek(0)
+
+        reader = csv.reader(stringbuf)
         data = [row for row in reader]
         header = data[0]
         header[1] = 'email'
@@ -52,7 +57,9 @@ class SecretSanta(BaseCog):
         # we could be clever and solve this the right way
         # OR
         # we just keep shuffling until we're happy with it
+        counter = 0
         while True:
+            counter += 1
             random.shuffle(data)
 
             bad_pairings = False
@@ -64,6 +71,8 @@ class SecretSanta(BaseCog):
 
             if not bad_pairings:
                 break
+
+        print(f"Needed to shuffle {counter:,} times")
 
         final_matches = {}
         for i, person in enumerate(data):
