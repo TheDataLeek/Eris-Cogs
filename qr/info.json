@@ -1,0 +1,11 @@
+{
+  "author": [
+    "Eris"
+  ],
+  "description": "Generate QR codes on demand",
+  "name": "QRCode",
+  "requirements": [
+    "qrcode[pil]"
+  ],
+  "ready": true
+}
