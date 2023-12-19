@@ -466,24 +466,30 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
 async def format_attachment(attachment: discord.Attachment) -> dict:
     mimetype: str = attachment.content_type.lower()
     filename: str = attachment.filename.lower()
+    formatted_attachment = {
+        "type": "text",
+        "text": "<MISSING ATTACHMENT>"
+    }
+    text = None
     if filename.endswith('.txt') or 'text' in mimetype:  # if it's text
         buf = io.BytesIO()
         await attachment.save(buf)
         buf.seek(0)
         text = buf.read().decode('utf-8')
-        return {
+        formatted_attachment = {
             "type": "text",
             "text": text
         }
     elif attachment.width:  # then it's an image
-        return {
+        formatted_attachment = {
             "type": "image_url",
             "image_url": {
                 "url": attachment.url
             }
         }
+    if text is None:
+        print(formatted_attachment)
     else:
-        return {
-            "type": "text",
-            "text": "<MISSING ATTACHMENT>"
-        }
+        print(text[:500])
+    # otherwise it's not supported
+    return formatted_attachment
