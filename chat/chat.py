@@ -101,8 +101,8 @@ class Chat(BaseCog):
                     "content": [
                         {"type": "text", "text": query},
                         *[
-                            format_attachment(attachment)
-                            for attachment in message.attachments
+                            await format_attachment(attachment)
+                            async for attachment in message.attachments
                         ],
                     ],
                 }
@@ -127,8 +127,8 @@ class Chat(BaseCog):
                         "content": [
                             {"type": "text", "text": query},
                             *[
-                                format_attachment(attachment)
-                                for attachment in message.attachments
+                                await format_attachment(attachment)
+                                async for attachment in message.attachments
                             ],
                         ],
                     }
@@ -168,8 +168,8 @@ class Chat(BaseCog):
                                 ),
                             },
                             *[
-                                format_attachment(attachment)
-                                for attachment in thread_message.attachments
+                                await format_attachment(attachment)
+                                async for attachment in thread_message.attachments
                             ],
                         ],
                     })
@@ -202,8 +202,8 @@ class Chat(BaseCog):
                     "content": [
                         {"type": "text", "text": formatted_query},
                         *[
-                            format_attachment(attachment)
-                            for attachment in message.attachments
+                            await format_attachment(attachment)
+                            async for attachment in message.attachments
                         ],
                     ],
                 }
@@ -220,8 +220,8 @@ class Chat(BaseCog):
                         "content": [
                             {"type": "text", "text": message_without_command},
                             *[
-                                format_attachment(attachment)
-                                for attachment in starter_message.attachments
+                                await format_attachment(attachment)
+                                async for attachment in starter_message.attachments
                             ],
                         ],
                     }
@@ -238,8 +238,8 @@ class Chat(BaseCog):
                             ),
                         },
                         *[
-                            format_attachment(attachment)
-                            for attachment in thread_message.attachments
+                            await format_attachment(attachment)
+                            async for attachment in thread_message.attachments
                         ],
                     ],
                 }
@@ -463,7 +463,7 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
     return query, system_messages
 
 
-def format_attachment(attachment: discord.Attachment) -> dict:
+async def format_attachment(attachment: discord.Attachment) -> dict:
     mimetype = attachment.content_type
     if 'text' in mimetype.lower():  # if it's text
         buf = io.BytesIO()
