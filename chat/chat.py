@@ -464,8 +464,9 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
 
 
 async def format_attachment(attachment: discord.Attachment) -> dict:
-    mimetype = attachment.content_type
-    if 'text' in mimetype.lower():  # if it's text
+    mimetype: str = attachment.content_type.lower()
+    filename: str = attachment.filename.lower()
+    if filename.endswith('.txt') or 'text' in mimetype:  # if it's text
         buf = io.BytesIO()
         await attachment.save(buf)
         buf.seek(0)
