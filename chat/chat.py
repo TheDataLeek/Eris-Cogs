@@ -101,7 +101,7 @@ class Chat(BaseCog):
                     "content": [
                         {"type": "text", "text": query},
                         *[
-                            {"type": "image_url", "image_url": {"url": attachment.url}}
+                            format_attachment(attachment)
                             for attachment in message.attachments
                         ],
                     ],
@@ -127,7 +127,7 @@ class Chat(BaseCog):
                         "content": [
                             {"type": "text", "text": query},
                             *[
-                                {"type": "image_url", "image_url": {"url": attachment.url}}
+                                format_attachment(attachment)
                                 for attachment in message.attachments
                             ],
                         ],
@@ -168,7 +168,7 @@ class Chat(BaseCog):
                                 ),
                             },
                             *[
-                                {"type": "image_url", "image_url": {"url": attachment.url}}
+                                format_attachment(attachment)
                                 for attachment in thread_message.attachments
                             ],
                         ],
@@ -202,7 +202,7 @@ class Chat(BaseCog):
                     "content": [
                         {"type": "text", "text": formatted_query},
                         *[
-                            {"type": "image_url", "image_url": {"url": attachment.url}}
+                            format_attachment(attachment)
                             for attachment in message.attachments
                         ],
                     ],
@@ -220,7 +220,7 @@ class Chat(BaseCog):
                         "content": [
                             {"type": "text", "text": message_without_command},
                             *[
-                                {"type": "image_url", "image_url": {"url": attachment.url}}
+                                format_attachment(attachment)
                                 for attachment in starter_message.attachments
                             ],
                         ],
@@ -238,7 +238,7 @@ class Chat(BaseCog):
                             ),
                         },
                         *[
-                            {"type": "image_url", "image_url": {"url": attachment.url}}
+                            format_attachment(attachment)
                             for attachment in thread_message.attachments
                         ],
                     ],
@@ -290,6 +290,21 @@ class Chat(BaseCog):
                            image_api: bool = False,
                            ):
         token = await self.get_openai_token()
+        system_prefix = [
+            {
+                "role": "system",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": (
+                            "You are a helpful robot user named Snek. If a user submits a `<MISSING ATTACHMENT>` "
+                            "please inform them that that format isn't supported and that they should try something "
+                            "else."
+                        )
+                    }
+                ]
+            }
+        ]
         kwargs = {
             'model': 'gpt-4-vision-preview',
             'temperature': 1,
@@ -335,7 +350,7 @@ class Chat(BaseCog):
                     }
                 response = await openai_query(formatted_query, token, **kwargs)
             else:
-                response = await openai_query(formatted_query, token, **kwargs)
+                response = await openai_query(system_prefix + formatted_query, token, **kwargs)
         except Exception as e:
             await channel.send(f"Something went wrong: {e}")
             return
@@ -446,3 +461,28 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
     query = message_without_system.strip()
 
     return query, system_messages
+
+
+def format_attachment(attachment: discord.Attachment) -> dict:
+    mimetype = attachment.content_type
+    if 'text' in mimetype.lower():  # if it's text
+        buf = io.BytesIO()
+        await attachment.save(buf)
+        buf.seek(0)
+        text = buf.read().decode('utf-8')
+        return {
+            "type": "text",
+            "text": text
+        }
+    elif attachment.width:  # then it's an image
+        return {
+            "type": "image_url",
+            "image_url": {
+                "url": attachment.url
+            }
+        }
+    else:
+        return {
+            "type": "text",
+            "text": "<MISSING ATTACHMENT>"
+        }
