@@ -102,7 +102,7 @@ class Chat(BaseCog):
                         {"type": "text", "text": query},
                         *[
                             await format_attachment(attachment)
-                            async for attachment in message.attachments
+                            for attachment in message.attachments
                         ],
                     ],
                 }
@@ -128,7 +128,7 @@ class Chat(BaseCog):
                             {"type": "text", "text": query},
                             *[
                                 await format_attachment(attachment)
-                                async for attachment in message.attachments
+                                for attachment in message.attachments
                             ],
                         ],
                     }
@@ -169,7 +169,7 @@ class Chat(BaseCog):
                             },
                             *[
                                 await format_attachment(attachment)
-                                async for attachment in thread_message.attachments
+                                for attachment in thread_message.attachments
                             ],
                         ],
                     })
@@ -203,7 +203,7 @@ class Chat(BaseCog):
                         {"type": "text", "text": formatted_query},
                         *[
                             await format_attachment(attachment)
-                            async for attachment in message.attachments
+                            for attachment in message.attachments
                         ],
                     ],
                 }
@@ -221,7 +221,7 @@ class Chat(BaseCog):
                             {"type": "text", "text": message_without_command},
                             *[
                                 await format_attachment(attachment)
-                                async for attachment in starter_message.attachments
+                                for attachment in starter_message.attachments
                             ],
                         ],
                     }
@@ -239,7 +239,7 @@ class Chat(BaseCog):
                         },
                         *[
                             await format_attachment(attachment)
-                            async for attachment in thread_message.attachments
+                            for attachment in thread_message.attachments
                         ],
                     ],
                 }
