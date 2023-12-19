@@ -290,6 +290,9 @@ class Chat(BaseCog):
                            image_api: bool = False,
                            ):
         token = await self.get_openai_token()
+        channel_name = ''
+        if isinstance(channel, discord.TextChannel):
+            channel_name = channel.name
         system_prefix = [
             {
                 "role": "system",
@@ -297,9 +300,12 @@ class Chat(BaseCog):
                     {
                         "type": "text",
                         "text": (
-                            "You are a helpful robot user named Snek. If a user submits a `<MISSING ATTACHMENT>` "
-                            "please inform them that that format isn't supported and that they should try something "
-                            "else."
+                            "You are a helpful robot user named Snek. "
+                            "Users interact with you on the Discord messaging platform through messages "
+                            "prefixed by `.`. To call ChatGPT, users prefix their messages with `.chat` and then "
+                            "provide a query. Users should be using the #bot-chat channel or a thread for all "
+                            "messages. If the current channel is not either of those, please remind the user that "
+                            f"their queries should be redirected to those locations. Our current location is {channel_name}."
                         )
                     }
                 ]
@@ -490,6 +496,6 @@ async def format_attachment(attachment: discord.Attachment) -> dict:
     if text is None:
         print(formatted_attachment)
     else:
-        print(text[:500])
+        print(text[:25] + '...' + text[-25:])
     # otherwise it's not supported
     return formatted_attachment
