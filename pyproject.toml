@@ -5,7 +5,7 @@ description = ""
 authors = ["Zoe Farmer <zoe@dataleek.io>"]
 
 [tool.poetry.dependencies]
-python = ">=3.8.2,<3.10"
+python = ">=3.9,<3.12"
 discord = "^1.0.1"
 yfinance = "^0.1.55"
 matplotlib = "^3.3.3"
