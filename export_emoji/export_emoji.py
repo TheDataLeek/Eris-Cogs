@@ -103,10 +103,9 @@ class ExportEmoji(BaseCog):
         jump_url = ctx.message.jump_url
         await self.bot.send_to_owners(f'Archive saved to the data directory!\n{filepath}\n{jump_url}')
 
-
     @commands.command()
     async def export(
-        self, ctx, *emoji_list: Union[discord.PartialEmoji, discord.Emoji, int, str]
+            self, ctx, *emoji_list: Union[discord.PartialEmoji, discord.Emoji, int, str]
     ):
         """
         Export emoji to zipfile.
@@ -121,7 +120,7 @@ class ExportEmoji(BaseCog):
         with zipfile.ZipFile(zipbuf, "w") as zf:
             for emoji_to_export in emoji_list:
                 if isinstance(emoji_to_export, discord.PartialEmoji) or isinstance(
-                    emoji_to_export, discord.Emoji
+                        emoji_to_export, discord.Emoji
                 ):
                     name, buf = await self._export_emoji(emoji_to_export)
                     zf.writestr(name, buf.getvalue())
@@ -155,16 +154,15 @@ class ExportEmoji(BaseCog):
         )
 
     async def _export_emoji(
-        self, emoji: Union[discord.Emoji, discord.PartialEmoji]
+            self, emoji: Union[discord.Emoji, discord.PartialEmoji]
     ) -> Tuple[str, io.BytesIO]:
-        asset: discord.Asset = emoji.url
-        url = str(asset)
         suffix = "png"
         if emoji.animated:
             suffix = "gif"
         name = f"{emoji.name}.{suffix}"
         new_buf = io.BytesIO()
-        num_bytes: int = await asset.save(new_buf)
+        num_bytes: int = await emoji.save(new_buf)
+        new_buf.seek(0)
         return name, new_buf
 
     async def _export_sticker(self, sticker: discord.Sticker) -> Tuple[str, io.BytesIO]:
@@ -176,7 +174,7 @@ class ExportEmoji(BaseCog):
             return name, new_buf
 
     async def _export_from_message(
-        self, message: discord.Message
+            self, message: discord.Message
     ) -> List[Tuple[str, io.BytesIO]]:
         reactions = message.reactions
         results = []
