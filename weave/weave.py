@@ -13,7 +13,7 @@ class Weave(BaseCog):
         Weaves provided emojis in a grid of specified dimensions. Will error if too large.
         """
         # <a:name:id>
-        guilds = await self.bot.fetch_guilds(limit=150).flatten()
+        guilds = [guild async for guild in self.bot.fetch_guilds(limit=150)]
         all_emoji = dict()
         for guild in guilds:
             actual_guild = await self.bot.fetch_guild(guild.id)
