@@ -290,7 +290,7 @@ class Chat(BaseCog):
                            image_api: bool = False,
                            ):
         token = await self.get_openai_token()
-        channel_name = ''
+        channel_name = 'a thread and no further warnings are needed'
         if isinstance(channel, discord.TextChannel):
             channel_name = channel.name
         system_prefix = [
