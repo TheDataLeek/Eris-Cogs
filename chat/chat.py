@@ -292,7 +292,7 @@ class Chat(BaseCog):
         token = await self.get_openai_token()
         channel_name = 'a thread and no further warnings are needed'
         if isinstance(channel, discord.TextChannel):
-            channel_name = channel.name
+            channel_name = f"#{channel.name}"
         system_prefix = [
             {
                 "role": "system",
@@ -303,9 +303,10 @@ class Chat(BaseCog):
                             "You are a helpful robot user named Snek. "
                             "Users interact with you on the Discord messaging platform through messages "
                             "prefixed by `.`. To call ChatGPT, users prefix their messages with `.chat` and then "
-                            "provide a query. Users should be using the #bot-chat channel or a thread for all "
-                            "messages. If the current channel is not either of those, please remind the user that "
-                            f"their queries should be redirected to those locations. Our current location is {channel_name}."
+                            "provide a query. Users should be using the #bot, #bots, or any similarly named channel or "
+                            "a thread for all messages. If the current channel is not any of those, or in a thread, "
+                            "please remind the user that their queries should be redirected to those locations. "
+                            f"Our current location is {channel_name}."
                         )
                     }
                 ]
