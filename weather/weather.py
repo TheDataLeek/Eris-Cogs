@@ -81,16 +81,17 @@ class Weather(BaseCog):
         city = weather_metadata['properties']['relativeLocation']['properties']['city']
         state = weather_metadata['properties']['relativeLocation']['properties']['state']
 
+        weblink = f"https://forecast.weather.gov/MapClick.php?lat={lat}&lon={lon}"
         embedded_response = discord.Embed(
             title=f"Weather Forecast for {city}, {state}",
             type="rich",
             description=forecast_text,
+            url=weblink
         )
-        embedded_response.set_thumbnail(url=forecast_periods[0]['icon'])
+        embedded_response.set_image(url=forecast_periods[0]['icon'])
 
-        weblink = f"https://forecast.weather.gov/MapClick.php?lat={lat}&lon={lon}"
         embedded_response.set_footer(text=weblink,
-                                     icon_url="https://www.noaa.gov/themes/custom/noaa/images/noaa_digital_logo.svg")
+                                     icon_url="Forecast provided by NWS & NOAA")
 
         await ctx.send(embed=embedded_response)
 
