@@ -28,7 +28,7 @@ class Weather(BaseCog):
             zip_code=None,
         )
         self._config.register_global(
-            users_to_alert=set(),
+            users_to_alert=list(),
         )
 
         data_dir = data_manager.bundled_data_path(self)
@@ -83,10 +83,13 @@ class Weather(BaseCog):
                 "You need to save your zipcode first! Please use [p]myzip to save!"
             )
             return
-        users: set
+        users: list
         async with self._config.users_to_alert() as users:
-            users.add(user.id)
-            await ctx.send("Weather alerts enabled!")
+            if user.id in users:
+                await ctx.send("Weather alerts already enabled!")
+            else:
+                users.append(user.id)
+                await ctx.send("Weather alerts enabled!")
 
     @commands.command()
     async def disable_weather_alerts(self, ctx: commands.Context):
@@ -98,10 +101,13 @@ class Weather(BaseCog):
             )
             return
 
-        users: set
+        users: list
         async with self._config.users_to_alert() as users:
-            users.remove(user.id)
-            await ctx.send("Weather alerts enabled!")
+            if user.id in users:
+                users.remove(user.id)
+                await ctx.send("Weather alerts disabled!")
+            else:
+                await ctx.send("Weather alerts already disabled!")
 
     @commands.command()
     async def weather(self, ctx: commands.Context, zipcode: str = None):
