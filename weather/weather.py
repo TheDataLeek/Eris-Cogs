@@ -53,7 +53,7 @@ class Weather(BaseCog):
         await ctx.send(f"Your lat/lon is `{lat}`, `{lon}`")
 
         async with aiohttp.ClientSession() as session:
-            metadata_url = f"https://api.weather.gov/points/{lat},{lon}/forecast"
+            metadata_url = f"https://api.weather.gov/points/{lat},{lon}"
             await ctx.send(metadata_url)
             async with session.get(metadata_url) as resp:
                 if resp.status != 200:
