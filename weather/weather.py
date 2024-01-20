@@ -8,6 +8,7 @@ import aiohttp
 import apscheduler
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from apscheduler.jobstores.memory import MemoryJobStore
 from concurrent.futures import ThreadPoolExecutor
 
 BaseCog = getattr(commands, "Cog", object)
@@ -40,9 +41,9 @@ class Weather(BaseCog):
             if i != 0  # skip header
         }
 
-        self.scheduler = AsyncIOScheduler()
-        self.scheduler.configure(
+        self.scheduler = AsyncIOScheduler(
             executors={"default": ThreadPoolExecutor(max_workers=2)},
+            jobstores={"default": MemoryJobStore()},
         )
         self.scheduler.start()
 
