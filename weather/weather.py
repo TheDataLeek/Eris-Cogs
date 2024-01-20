@@ -33,15 +33,20 @@ class Weather(BaseCog):
         }
 
     @commands.command()
-    async def weather(self, ctx: commands.Context):
+    async def weather(self, ctx: commands.Context, zipcode: str = None):
         """
         Get the weather for your saved zipcode, prompt to save zip if not saved
         """
-        user: discord.User = ctx.author
-        user_zip = await self._config.user(user).zip_code()
-        if user_zip is None:
-            await ctx.send("You need to save your zipcode first! Please use [p]myzip to save!")
-            return
+        if zipcode is None:
+            user: discord.User = ctx.author
+            user_zip = await self._config.user(user).zip_code()
+            if user_zip is None:
+                await ctx.send("You need to save your zipcode first! Please use [p]myzip to save!")
+                return
+        elif not self.check_zipcode(zipcode):
+            await ctx.send(f"Invalid zipcode {zipcode}!")
+        else:
+            user_zip = zipcode
 
         try:
             lat, lon = self.zip_codes[user_zip]
@@ -78,7 +83,10 @@ class Weather(BaseCog):
         """
         User command to save your zipcode for weather lookups
         """
-        if not re.match(r"^\d{5}$", zipcode):
+        if not self.check_zipcode(zipcode):
             await ctx.send(f"Invalid zipcode {zipcode}!")
             return
         await self._config.user(ctx.author).zip_code.set(zipcode)
+
+    def check_zipcode(self, zipcode: str) -> bool:
+        return bool(re.match(r"^\d{5}$", zipcode))
