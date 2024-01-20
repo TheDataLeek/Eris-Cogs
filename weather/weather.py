@@ -72,7 +72,7 @@ class Weather(BaseCog):
 
                 await dm_channel.send("Checked Weather")
 
-        self.scheduler.add_job(get_weather_alerts, trigger=IntervalTrigger(seconds=10))
+        self.scheduler.add_job(get_weather_alerts, trigger=IntervalTrigger(seconds=60))
 
     @commands.command()
     async def enable_weather_alerts(self, ctx: commands.Context):
