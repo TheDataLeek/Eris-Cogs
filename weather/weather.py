@@ -5,6 +5,10 @@ import discord
 from redbot.core import commands, data_manager, Config, checks, bot
 from redbot.core.utils import embed
 import aiohttp
+import apscheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+from concurrent.futures import ThreadPoolExecutor
 
 BaseCog = getattr(commands, "Cog", object)
 RETYPE = type(re.compile("a"))
@@ -18,14 +22,17 @@ class Weather(BaseCog):
             self,
             identifier=3245786348567891999,
             force_registration=True,
-            cog_name='weather',
+            cog_name="weather",
         )
         self._config.register_user(
             zip_code=None,
         )
+        self._config.register_global(
+            users_to_alert=set(),
+        )
 
         data_dir = data_manager.bundled_data_path(self)
-        zip_code_file = (data_dir / "zipcodes.csv").open(mode='r')
+        zip_code_file = (data_dir / "zipcodes.csv").open(mode="r")
         csv_reader = csv.reader(zip_code_file)
         self.zip_codes = {
             row[0]: (row[1], row[2])
@@ -33,16 +40,81 @@ class Weather(BaseCog):
             if i != 0  # skip header
         }
 
+        self.scheduler = AsyncIOScheduler()
+        self.scheduler.configure(
+            executors={"default": ThreadPoolExecutor(max_workers=2)},
+        )
+        self.scheduler.start()
+
+        async def get_weather_alerts():
+            users = await self._config.users_to_alert()
+            for userid in users:
+                user = self.bot.get_user(userid)
+                if user is None:
+                    continue
+                user_zip = await self._config.user(user).zip_code()
+                if user_zip is None:
+                    continue
+                try:
+                    lat, lon = self.zip_codes[user_zip]
+                except KeyError:
+                    continue
+                try:
+                    weather_metadata, forecast = await self.check_weather(lat, lon)
+                except Exception as e:
+                    print(e)
+                    continue
+                forecast_periods = forecast["properties"]["periods"]
+                dm_channel: discord.DMChannel = user.dm_channel
+                if dm_channel is None:
+                    await user.create_dm()
+                    dm_channel: discord.DMChannel = user.dm_channel
+
+                await dm_channel.send("Checked Weather")
+
+        self.scheduler.add_job(get_weather_alerts, trigger=IntervalTrigger(seconds=10))
+
+    @commands.command()
+    async def enable_weather_alerts(self, ctx: commands.Context):
+        user: discord.User = ctx.author
+        user_zip = await self._config.user(user).zip_code()
+        if user_zip is None:
+            await ctx.send(
+                "You need to save your zipcode first! Please use [p]myzip to save!"
+            )
+            return
+        users: set
+        async with self._config.users_to_alert() as users:
+            users.add(user.id)
+            await ctx.send("Weather alerts enabled!")
+
+    @commands.command()
+    async def disable_weather_alerts(self, ctx: commands.Context):
+        user: discord.User = ctx.author
+        user_zip = await self._config.user(user).zip_code()
+        if user_zip is None:
+            await ctx.send(
+                "You need to save your zipcode first! Please use [p]myzip to save!"
+            )
+            return
+
+        users: set
+        async with self._config.users_to_alert() as users:
+            users.remove(user.id)
+            await ctx.send("Weather alerts enabled!")
+
     @commands.command()
     async def weather(self, ctx: commands.Context, zipcode: str = None):
         """
         Get the weather for your saved zipcode, prompt to save zip if not saved
         """
+        user: discord.User = ctx.author
         if zipcode is None:
-            user: discord.User = ctx.author
             user_zip = await self._config.user(user).zip_code()
             if user_zip is None:
-                await ctx.send("You need to save your zipcode first! Please use [p]myzip to save!")
+                await ctx.send(
+                    "You need to save your zipcode first! Please use [p]myzip to save!"
+                )
                 return
         elif not self.check_zipcode(zipcode):
             await ctx.send(f"Invalid zipcode {zipcode}!")
@@ -56,40 +128,32 @@ class Weather(BaseCog):
             await ctx.send(f"Unable to find your zipcode {user_zip}!")
             return
 
-        async with aiohttp.ClientSession() as session:
-            metadata_url = f"https://api.weather.gov/points/{lat},{lon}"
-            async with session.get(metadata_url) as resp:
-                if resp.status != 200:
-                    await ctx.send(f"Unable to get weather! STATUS {resp.status}")
-                    return
-                weather_metadata = await resp.json()
+        try:
+            weather_metadata, forecast = await self.check_weather(lat, lon)
+        except Exception as e:
+            await ctx.send(f"Unable to get weather! {e}")
+            return
 
-            forecast_url = weather_metadata['properties']['forecast']
-
-            async with session.get(forecast_url) as resp:
-                if resp.status != 200:
-                    await ctx.send(f"Unable to get weather! STATUS {resp.status}")
-                    return
-                forecast = await resp.json()
-
-        forecast_periods = forecast['properties']['periods']
+        forecast_periods = forecast["properties"]["periods"]
         forecast_lines = [
             f"**{period['name']}**\n{period['detailedForecast']}"
             for i, period in enumerate(forecast_periods)
             if i <= 4
         ]
         forecast_text = "\n".join(forecast_lines)
-        city = weather_metadata['properties']['relativeLocation']['properties']['city']
-        state = weather_metadata['properties']['relativeLocation']['properties']['state']
+        city = weather_metadata["properties"]["relativeLocation"]["properties"]["city"]
+        state = weather_metadata["properties"]["relativeLocation"]["properties"][
+            "state"
+        ]
 
         weblink = f"https://forecast.weather.gov/MapClick.php?lat={lat}&lon={lon}"
         embedded_response = discord.Embed(
             title=f"Weather Forecast for {city}, {state}",
             type="rich",
             description=forecast_text,
-            url=weblink
+            url=weblink,
         )
-        embedded_response.set_thumbnail(url=forecast_periods[0]['icon'])
+        embedded_response.set_thumbnail(url=forecast_periods[0]["icon"])
 
         await ctx.send(embed=embedded_response)
 
@@ -106,3 +170,20 @@ class Weather(BaseCog):
 
     def check_zipcode(self, zipcode: str) -> bool:
         return bool(re.match(r"^\d{5}$", zipcode))
+
+    async def check_weather(self, lat: str, lon: str) -> tuple[dict, dict]:
+        async with aiohttp.ClientSession() as session:
+            metadata_url = f"https://api.weather.gov/points/{lat},{lon}"
+            async with session.get(metadata_url) as resp:
+                if resp.status != 200:
+                    raise RuntimeError(f"Unable to get weather! STATUS {resp.status}")
+                weather_metadata = await resp.json()
+
+            forecast_url = weather_metadata["properties"]["forecast"]
+
+            async with session.get(forecast_url) as resp:
+                if resp.status != 200:
+                    raise RuntimeError(f"Unable to get weather! STATUS {resp.status}")
+                forecast = await resp.json()
+
+        return weather_metadata, forecast
