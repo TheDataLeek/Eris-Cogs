@@ -52,7 +52,7 @@ class Weather(BaseCog):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.weather.gov/points/{lat},{lon}/forecast") as resp:
                 if resp.status != 200:
-                    await ctx.send(f"Unable to get weather!")
+                    await ctx.send(f"Unable to get weather! STATUS {resp.status}")
                     return
                 weather_metadata = await resp.json()
 
@@ -60,8 +60,8 @@ class Weather(BaseCog):
 
             async with session.get(forecast_url) as resp:
                 if resp.status != 200:
-                    await ctx.send(f"Unable to get weather!")
-                    return
+                    await ctx.send(f"Unable to get weather! STATUS {resp.status}")
+                    # return
                 forecast = await resp.json()
                 await ctx.send(f"""```\n{json.dumps(forecast)}\n```""")
 
