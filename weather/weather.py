@@ -42,14 +42,13 @@ class Weather(BaseCog):
         }
 
         self.scheduler = AsyncIOScheduler(
-            executors={"default": ThreadPoolExecutor(max_workers=2)},
+            # executors={"default": ThreadPoolExecutor(max_workers=2)},
             jobstores={"default": MemoryJobStore()},
         )
         self.scheduler.start()
 
         async def get_weather_alerts():
             users = await self._config.users_to_alert()
-            print(users)
             for userid in users:
                 user = self.bot.get_user(userid)
                 if user is None:
