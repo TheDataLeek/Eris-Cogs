@@ -74,7 +74,7 @@ class Weather(BaseCog):
 
         forecast_periods = forecast['properties']['periods']
         forecast_lines = [
-            f"* {period['name']}: {period['detailedForecast']}"
+            f"*{period['name']}*\n{period['detailedForecast']}"
             for period in forecast_periods
         ]
         forecast_text = "\n".join(forecast_lines)
@@ -88,11 +88,11 @@ class Weather(BaseCog):
             description=forecast_text,
             url=weblink
         )
-        embedded_response.set_image(url=forecast_periods[0]['icon'])
+        embedded_response.set_thumbnail(url=forecast_periods[0]['icon'])
 
         embedded_response.set_footer(
             text="Forecast provided by NWS & NOAA",
-            icon_url="https://www.noaa.gov/themes/custom/noaa/images/noaa_digital_logo.svg"
+            icon_url="https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2022-11/NOAAlogoWhiteBG16x9.jpg"
         )
 
         await ctx.send(embed=embedded_response)
