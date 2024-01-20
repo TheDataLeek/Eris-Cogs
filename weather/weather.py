@@ -56,7 +56,11 @@ class Weather(BaseCog):
                     return
                 weather_metadata = await resp.json()
 
+            await ctx.send(f"""```\n{json.dumps(weather_metadata)}\n```""")
+
             forecast_url = weather_metadata['properties']['forecast']
+
+            await ctx.send(forecast_url)
 
             async with session.get(forecast_url) as resp:
                 if resp.status != 200:
