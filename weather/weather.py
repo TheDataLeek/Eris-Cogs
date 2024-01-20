@@ -39,6 +39,7 @@ class Weather(BaseCog):
         """
         user: discord.User = ctx.author
         user_zip = await self._config.user(user).zip_code()
+        await ctx.send(f"Your zipcode is `{user_zip}`")
         if user_zip is None:
             await ctx.send("You need to save your zipcode first! Please use [p]myzip to save!")
             return
@@ -48,6 +49,8 @@ class Weather(BaseCog):
         except KeyError:
             await ctx.send(f"Unable to find your zipcode {user_zip}!")
             return
+
+        await ctx.send(f"Your lat/lon is `{lat}`, `{lon}`")
 
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.weather.gov/points/{lat},{lon}/forecast") as resp:
