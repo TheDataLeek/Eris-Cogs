@@ -44,6 +44,8 @@ class Weather(BaseCog):
         self.scheduler = AsyncIOScheduler(
             jobstores={"default": MemoryJobStore()},
         )
+        for job in self.scheduler.get_jobs():
+            job.remove()
         self.scheduler.start()
 
         async def get_weather_alerts():
