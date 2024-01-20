@@ -321,7 +321,8 @@ class Chat(BaseCog):
                             "provide a query. Users should be using the #bot, #bots, or any similarly named channel or "
                             "a thread for all messages. If the current channel is not any of those, or in a thread, "
                             "please remind the user that their queries should be redirected to those locations. "
-                            f"Our current location is {channel_name}."
+                            f"Our current location is {channel_name}. If we're in an appropriate channel, please don't "
+                            "restate this policy and instead just remind the user to prefix their message with `.chat`."
                         ),
                     }
                 ],
@@ -488,8 +489,28 @@ async def format_attachment(attachment: discord.Attachment) -> dict:
     mimetype: str = attachment.content_type.lower()
     filename: str = attachment.filename.lower()
     formatted_attachment = {"type": "text", "text": "<MISSING ATTACHMENT>"}
+    permitted_extensions = [
+        "txt",
+        "text",
+        "json",
+        "py",
+        "md",
+        "c",
+        "h",
+        "cpp",
+        "hpp",
+        "java",
+        "js",
+        "ts",
+        "tsx",
+        "html",
+        "css",
+        "scss",
+        "xml",
+    ]
+    has_valid_extension = any([filename.endswith(ext) for ext in permitted_extensions])
     text = None
-    if filename.endswith(".txt") or "text" in mimetype:  # if it's text
+    if has_valid_extension or "text" in mimetype:  # if it's text
         buf = io.BytesIO()
         await attachment.save(buf)
         buf.seek(0)
