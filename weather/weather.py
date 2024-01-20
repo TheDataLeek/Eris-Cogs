@@ -74,8 +74,9 @@ class Weather(BaseCog):
 
         forecast_periods = forecast['properties']['periods']
         forecast_lines = [
-            f"*{period['name']}*\n{period['detailedForecast']}"
-            for period in forecast_periods
+            f"**{period['name']}**\n{period['detailedForecast']}"
+            for i, period in enumerate(forecast_periods)
+            if i <= 4
         ]
         forecast_text = "\n".join(forecast_lines)
         city = weather_metadata['properties']['relativeLocation']['properties']['city']
