@@ -49,6 +49,7 @@ class Weather(BaseCog):
 
         async def get_weather_alerts():
             users = await self._config.users_to_alert()
+            print(users)
             for userid in users:
                 user = self.bot.get_user(userid)
                 if user is None:
@@ -65,12 +66,12 @@ class Weather(BaseCog):
                 except Exception as e:
                     print(e)
                     continue
-                forecast_periods = forecast["properties"]["periods"]
                 dm_channel: discord.DMChannel = user.dm_channel
                 if dm_channel is None:
                     await user.create_dm()
                     dm_channel: discord.DMChannel = user.dm_channel
 
+                forecast_periods = forecast["properties"]["periods"]
                 await dm_channel.send("Checked Weather")
 
         self.scheduler.add_job(get_weather_alerts, trigger=IntervalTrigger(seconds=60))
