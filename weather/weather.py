@@ -3,6 +3,7 @@ import json
 import csv
 import discord
 from redbot.core import commands, data_manager, Config, checks, bot
+from redbot.core.utils import embed
 import aiohttp
 
 BaseCog = getattr(commands, "Cog", object)
@@ -45,6 +46,7 @@ class Weather(BaseCog):
                 return
         elif not self.check_zipcode(zipcode):
             await ctx.send(f"Invalid zipcode {zipcode}!")
+            return
         else:
             user_zip = zipcode
 
@@ -78,9 +80,19 @@ class Weather(BaseCog):
         forecast_text = "\n".join(forecast_lines)
         city = weather_metadata['properties']['relativeLocation']['properties']['city']
         state = weather_metadata['properties']['relativeLocation']['properties']['state']
-        weather_report = f"# Weather Forecast for {city}, {state}\n{forecast_text}"
 
-        await ctx.send(weather_report)
+        embedded_response = discord.Embed(
+            title=f"Weather Forecast for {city}, {state}",
+            type="rich",
+            description=forecast_text,
+        )
+        embedded_response.set_thumbnail(url=forecast_periods[0]['icon'])
+
+        weblink = f"https://forecast.weather.gov/MapClick.php?lat={lat}&lon={lon}"
+        embedded_response.set_footer(text=weblink,
+                                     icon_url="https://www.noaa.gov/themes/custom/noaa/images/noaa_digital_logo.svg")
+
+        await ctx.send(embed=embedded_response)
 
     @commands.command()
     async def myzip(self, ctx: commands.Context, zipcode: str):
@@ -91,6 +103,7 @@ class Weather(BaseCog):
             await ctx.send(f"Invalid zipcode {zipcode}!")
             return
         await self._config.user(ctx.author).zip_code.set(zipcode)
+        await ctx.send("Zipcode saved!")
 
     def check_zipcode(self, zipcode: str) -> bool:
         return bool(re.match(r"^\d{5}$", zipcode))
