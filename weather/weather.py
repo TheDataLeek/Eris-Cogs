@@ -37,7 +37,7 @@ class Weather(BaseCog):
         Get the weather for your saved zipcode, prompt to save zip if not saved
         """
         user: discord.User = ctx.author
-        user_zip = self._config.user(user).zip_code()
+        user_zip = await self._config.user(user).zip_code()
         if user_zip is None:
             await ctx.send("You need to save your zipcode first! Please use [p]myzip to save!")
             return
