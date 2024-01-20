@@ -90,8 +90,10 @@ class Weather(BaseCog):
         )
         embedded_response.set_image(url=forecast_periods[0]['icon'])
 
-        embedded_response.set_footer(text=weblink,
-                                     icon_url="Forecast provided by NWS & NOAA")
+        embedded_response.set_footer(
+            text="Forecast provided by NWS & NOAA",
+            icon_url="https://www.noaa.gov/themes/custom/noaa/images/noaa_digital_logo.svg"
+        )
 
         await ctx.send(embed=embedded_response)
 
