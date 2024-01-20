@@ -1,4 +1,5 @@
 import re
+import json
 import csv
 import discord
 from redbot.core import commands, data_manager, Config, checks, bot
@@ -49,12 +50,20 @@ class Weather(BaseCog):
             return
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://api.weather.gov/points/{lat},{lon}") as resp:
+            async with session.get(f"https://api.weather.gov/points/{lat},{lon}/forecast") as resp:
                 if resp.status != 200:
-                    await ctx.send(f"Unable to get weather for {user_zip}!")
+                    await ctx.send(f"Unable to get weather!")
                     return
-                data = await resp.json()
-        await ctx.send(f"""```\n{data}\n```""")
+                weather_metadata = await resp.json()
+
+            forecast_url = weather_metadata['properties']['forecast']
+
+            async with session.get(forecast_url) as resp:
+                if resp.status != 200:
+                    await ctx.send(f"Unable to get weather!")
+                    return
+                forecast = await resp.json()
+                await ctx.send(f"""```\n{json.dumps(forecast)}\n```""")
 
     @commands.command()
     async def myzip(self, ctx: commands.Context, zipcode: str):
