@@ -91,11 +91,6 @@ class Weather(BaseCog):
         )
         embedded_response.set_thumbnail(url=forecast_periods[0]['icon'])
 
-        embedded_response.set_footer(
-            text="Forecast provided by NWS & NOAA",
-            icon_url="https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2022-11/NOAAlogoWhiteBG16x9.jpg"
-        )
-
         await ctx.send(embed=embedded_response)
 
     @commands.command()

@@ -6,7 +6,6 @@ import discord
 from discord import utils
 from redbot.core import commands, data_manager, Config, checks
 
-
 BaseCog = getattr(commands, "Cog", object)
 
 
@@ -24,6 +23,8 @@ class RoleRequest(BaseCog):
 
         async def add_role_to_user(reaction: discord.RawReactionActionEvent):
             guild: discord.Guild = utils.get(self.bot.guilds, id=reaction.guild_id)
+            if guild is None:
+                return
             hooks = await self.config.guild(guild).hooks()
             message_id = str(reaction.message_id)
             if message_id not in hooks:
@@ -50,6 +51,8 @@ class RoleRequest(BaseCog):
 
         async def remove_role_from_user(reaction: discord.RawReactionActionEvent):
             guild: discord.Guild = utils.get(self.bot.guilds, id=reaction.guild_id)
+            if guild is None:
+                return
             hooks = await self.config.guild(guild).hooks()
             message_id = str(reaction.message_id)
             if message_id not in hooks:
@@ -82,7 +85,7 @@ class RoleRequest(BaseCog):
     @role.command(pass_context=True)
     @checks.mod()
     async def designate(
-        self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji
+            self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji
     ):
         """
         Mod-only command to designate a message as a role-request message. Once designated, any user who reacts

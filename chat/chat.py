@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from PIL import Image
 import re
 import base64
@@ -41,7 +42,9 @@ class Chat(BaseCog):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         if not isinstance(channel, discord.Thread):
-            await ctx.send("Chat command can only be used in an active thread! Please ask a question first.")
+            await ctx.send(
+                "Chat command can only be used in an active thread! Please ask a question first."
+            )
             return
 
         found_bot_response = False
@@ -79,22 +82,18 @@ class Chat(BaseCog):
         author: discord.Member = message.author
         thread_name = None
 
-        message_without_command = ' '.join(message.content.split(' ')[1:])
+        message_without_command = " ".join(message.content.split(" ")[1:])
 
         if not message_without_command:
             return
 
         if isinstance(channel, discord.TextChannel):
-            query, system_messages = extract_system_messages_from_message(message_without_command)
+            query, system_messages = extract_system_messages_from_message(
+                message_without_command
+            )
             thread_name = " ".join(query.split(" ")[:5]) + "..."
             formatted_query = [
-                *[
-                    {
-                        "role": "system",
-                        "content": msg
-                    }
-                    for msg in system_messages
-                ],
+                *[{"role": "system", "content": msg} for msg in system_messages],
                 {
                     "role": "user",
                     "name": author.display_name,
@@ -105,22 +104,20 @@ class Chat(BaseCog):
                             for attachment in message.attachments
                         ],
                     ],
-                }
+                },
             ]
         elif isinstance(channel, discord.Thread):
             formatted_query = []
             starter_message = channel.starter_message
             if starter_message is not None:
-                starter_message_content_without_command = ' '.join(starter_message.content.split(' ')[1:])
-                query, system_messages = extract_system_messages_from_message(starter_message_content_without_command)
+                starter_message_content_without_command = " ".join(
+                    starter_message.content.split(" ")[1:]
+                )
+                query, system_messages = extract_system_messages_from_message(
+                    starter_message_content_without_command
+                )
                 formatted_query = [
-                    *[
-                        {
-                            "role": "system",
-                            "content": msg
-                        }
-                        for msg in system_messages
-                    ],
+                    *[{"role": "system", "content": msg} for msg in system_messages],
                     {
                         "role": "user",
                         "name": author.display_name,
@@ -131,48 +128,52 @@ class Chat(BaseCog):
                                 for attachment in message.attachments
                             ],
                         ],
-                    }
+                    },
                 ]
             async for thread_message in channel.history(limit=100, oldest_first=True):
                 if thread_message.author.bot:
-                    formatted_query.append({
-                        "role": "assistant",
-                        "name": thread_message.author.display_name,
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": thread_message.clean_content,
-                            },
-                        ],
-                    })
+                    formatted_query.append(
+                        {
+                            "role": "assistant",
+                            "name": thread_message.author.display_name,
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": thread_message.clean_content,
+                                },
+                            ],
+                        }
+                    )
                 elif thread_message.clean_content.startswith(f"{prefix}chat"):
-                    query, system_messages = extract_system_messages_from_message(thread_message.content)
+                    query, system_messages = extract_system_messages_from_message(
+                        thread_message.content
+                    )
                     # first, hoist all system messages to top of current message block
                     formatted_query += [
-                        {
-                            "role": "system",
-                            "content": msg
-                        }
-                        for msg in system_messages
+                        {"role": "system", "content": msg} for msg in system_messages
                     ]
 
                     # then we can add the current message
-                    formatted_query.append({
-                        "role": "user",
-                        "name": thread_message.author.display_name,
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": " ".join(
-                                    w for w in thread_message.clean_content.split(" ") if w != f"{prefix}chat"
-                                ),
-                            },
-                            *[
-                                await format_attachment(attachment)
-                                for attachment in thread_message.attachments
+                    formatted_query.append(
+                        {
+                            "role": "user",
+                            "name": thread_message.author.display_name,
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " ".join(
+                                        w
+                                        for w in thread_message.clean_content.split(" ")
+                                        if w != f"{prefix}chat"
+                                    ),
+                                },
+                                *[
+                                    await format_attachment(attachment)
+                                    for attachment in thread_message.attachments
+                                ],
                             ],
-                        ],
-                    })
+                        }
+                    )
         else:
             return
 
@@ -186,7 +187,7 @@ class Chat(BaseCog):
         author: discord.Member = message.author
         thread_name = None
 
-        query = message.clean_content.split(' ')[1:]
+        query = message.clean_content.split(" ")[1:]
 
         if not query:
             return
@@ -212,7 +213,9 @@ class Chat(BaseCog):
             formatted_query = []
             starter_message = channel.starter_message
             if starter_message is not None:
-                message_without_command = ' '.join(starter_message.content.split(' ')[1:])
+                message_without_command = " ".join(
+                    starter_message.content.split(" ")[1:]
+                )
                 formatted_query = [
                     {
                         "role": "user",
@@ -234,17 +237,26 @@ class Chat(BaseCog):
                         {
                             "type": "text",
                             "text": " ".join(
-                                w for w in thread_message.clean_content.split(" ") if not w.startswith('.')
+                                w
+                                for w in thread_message.clean_content.split(" ")
+                                if not w.startswith(".")
                             ),
                         },
+                        *[
+                            {"type": "text", "text": json.dumps(embed.to_dict())}
+                            for embed in thread_message.embeds
+                        ],
                         *[
                             await format_attachment(attachment)
                             for attachment in thread_message.attachments
                         ],
                     ],
                 }
-                async for thread_message in channel.history(limit=100, oldest_first=True)
-                if thread_message.author.bot or thread_message.clean_content.startswith(".")
+                async for thread_message in channel.history(
+                    limit=100, oldest_first=True
+                )
+                if thread_message.author.bot
+                or thread_message.clean_content.startswith(".")
             ]
         else:
             return None
@@ -262,14 +274,16 @@ class Chat(BaseCog):
     async def image(self, ctx: commands.Context):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        prompt_words = [w for i, w in enumerate(message.content.split(' ')) if i != 0]
-        prompt: str = ' '.join(prompt_words)
-        thread_name = ' '.join(prompt_words[:5]) + 'image'
+        prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
+        prompt: str = " ".join(prompt_words)
+        thread_name = " ".join(prompt_words[:5]) + "image"
         attachment = None
-        attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
+        attachments: list[discord.Attachment] = [
+            m for m in message.attachments if m.width
+        ]
         if len(attachments) > 0:
             attachment: discord.Attachment = attachments[0]
-        elif prompt == '':
+        elif prompt == "":
             return
 
         await self.query_openai(
@@ -281,16 +295,17 @@ class Chat(BaseCog):
             image_api=True,
         )
 
-    async def query_openai(self,
-                           message: discord.Message,
-                           channel: discord.TextChannel | discord.Thread,
-                           thread_name: str,
-                           formatted_query: str | list[dict],
-                           attachment: discord.Attachment = None,
-                           image_api: bool = False,
-                           ):
+    async def query_openai(
+        self,
+        message: discord.Message,
+        channel: discord.TextChannel | discord.Thread,
+        thread_name: str,
+        formatted_query: str | list[dict],
+        attachment: discord.Attachment = None,
+        image_api: bool = False,
+    ):
         token = await self.get_openai_token()
-        channel_name = 'a thread and no further warnings are needed'
+        channel_name = "a thread and no further warnings are needed"
         if isinstance(channel, discord.TextChannel):
             channel_name = f"#{channel.name}"
         system_prefix = [
@@ -307,23 +322,23 @@ class Chat(BaseCog):
                             "a thread for all messages. If the current channel is not any of those, or in a thread, "
                             "please remind the user that their queries should be redirected to those locations. "
                             f"Our current location is {channel_name}."
-                        )
+                        ),
                     }
-                ]
+                ],
             }
         ]
         kwargs = {
-            'model': 'gpt-4-vision-preview',
-            'temperature': 1,
-            'max_tokens': 2000,
+            "model": "gpt-4-vision-preview",
+            "temperature": 1,
+            "max_tokens": 2000,
         }
         try:
             if image_api:
                 kwargs = {
-                    'n': 1,
-                    'model': 'dall-e-2',
-                    'response_format': 'b64_json',
-                    'size': '1024x1024',
+                    "n": 1,
+                    "model": "dall-e-2",
+                    "response_format": "b64_json",
+                    "size": "1024x1024",
                 }
                 if attachment is not None:  # then it's an edit
                     buf = io.BytesIO()
@@ -332,9 +347,9 @@ class Chat(BaseCog):
                     input_image = Image.open(buf)
                     input_image = input_image.resize((1024, 1024))
                     input_image_buffer = io.BytesIO()
-                    input_image.save(input_image_buffer, format='png')
+                    input_image.save(input_image_buffer, format="png")
                     input_image_buffer.seek(0)
-                    kwargs['image'] = input_image_buffer.read()
+                    kwargs["image"] = input_image_buffer.read()
 
                     # mask = io.BytesIO()
                     # mask_image = Image.new('RGBA', (1024, 1024))
@@ -343,21 +358,23 @@ class Chat(BaseCog):
                     # kwargs['mask'] = mask.read()
                 else:
                     style = None
-                    if 'vivid' in formatted_query:
-                        style = 'vivid'
-                    elif 'natural' in formatted_query:
-                        style = 'natural'
+                    if "vivid" in formatted_query:
+                        style = "vivid"
+                    elif "natural" in formatted_query:
+                        style = "natural"
                     kwargs = {
                         **kwargs,
                         **{
-                            'model': 'dall-e-3',
-                            'quality': 'hd',
-                            'style': style,
-                        }
+                            "model": "dall-e-3",
+                            "quality": "hd",
+                            "style": style,
+                        },
                     }
                 response = await openai_query(formatted_query, token, **kwargs)
             else:
-                response = await openai_query(system_prefix + formatted_query, token, **kwargs)
+                response = await openai_query(
+                    system_prefix + formatted_query, token, **kwargs
+                )
         except Exception as e:
             await channel.send(f"Something went wrong: {e}")
             return
@@ -371,11 +388,13 @@ class Chat(BaseCog):
             for page in response:
                 await destination.send(page)
         else:
-            filename = thread_name.replace(' ', '_') + '.png'
+            filename = thread_name.replace(" ", "_") + ".png"
             await destination.send(file=discord.File(response, filename=filename))
 
 
-async def openai_query(query: List[Dict], token: str, **kwargs) -> list[str] | io.BytesIO:
+async def openai_query(
+    query: List[Dict], token: str, **kwargs
+) -> list[str] | io.BytesIO:
     loop = asyncio.get_running_loop()
     time_to_sleep = 1
     exception_string = None
@@ -385,13 +404,12 @@ async def openai_query(query: List[Dict], token: str, **kwargs) -> list[str] | i
             raise TimeoutError(exception_string)
         try:
             response: str | io.BytesIO = await loop.run_in_executor(
-                None,
-                lambda: openai_client_and_query(token, query, **kwargs)
+                None, lambda: openai_client_and_query(token, query, **kwargs)
             )
             break
         except Exception as e:
             exception_string = str(e)
-            await asyncio.sleep(time_to_sleep ** 2)
+            await asyncio.sleep(time_to_sleep**2)
             time_to_sleep += 1
 
     if isinstance(response, str):
@@ -409,37 +427,34 @@ def pagify_chat_result(response: str) -> list[str]:
     split_by_code = code_expression.split(response)
     lines = []
     for line in split_by_code:
-        if line.startswith('```'):
+        if line.startswith("```"):
             if len(line) <= 2000:
                 lines.append(line)
             else:
                 codelines = list(chat_formatting.pagify(line))
                 for i, subline in enumerate(codelines):
                     if i == 0:
-                        lines.append(subline + '```')
+                        lines.append(subline + "```")
                     elif i == len(codelines) - 1:
-                        lines.append('```' + subline)
+                        lines.append("```" + subline)
                     else:
-                        lines.append('```' + subline + '```')
+                        lines.append("```" + subline + "```")
         else:
             lines += chat_formatting.pagify(line)
 
     return lines
 
 
-def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) -> str | io.BytesIO:
+def openai_client_and_query(
+    token: str, messages: str | list[dict], **kwargs
+) -> str | io.BytesIO:
     client = openai.OpenAI(api_key=token)
-    kwargs = {
-        k: v for k, v in kwargs.items() if v is not None
-    }
-    if kwargs['model'].startswith('dall'):
-        if 'image' in kwargs:
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    if kwargs["model"].startswith("dall"):
+        if "image" in kwargs:
             images = client.images.create_variation(**kwargs)
         else:
-            images = client.images.generate(
-                prompt=messages,
-                **kwargs
-            )
+            images = client.images.generate(prompt=messages, **kwargs)
         encoded_image = images.data[0].b64_json
         image = base64.b64decode(encoded_image)
         buf = io.BytesIO()
@@ -460,11 +475,10 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
     # https://regex101.com/r/5VTsQ7/1
     system_message_expression = re.compile(r"(`+)([^`]+)\1", re.IGNORECASE)
 
-    system_messages = [msg for tick, msg in
-                       system_message_expression.findall(message)]
+    system_messages = [msg for tick, msg in system_message_expression.findall(message)]
 
     # now remove them
-    message_without_system, _ = system_message_expression.subn('', message)
+    message_without_system, _ = system_message_expression.subn("", message)
     query = message_without_system.strip()
 
     return query, system_messages
@@ -473,30 +487,22 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
 async def format_attachment(attachment: discord.Attachment) -> dict:
     mimetype: str = attachment.content_type.lower()
     filename: str = attachment.filename.lower()
-    formatted_attachment = {
-        "type": "text",
-        "text": "<MISSING ATTACHMENT>"
-    }
+    formatted_attachment = {"type": "text", "text": "<MISSING ATTACHMENT>"}
     text = None
-    if filename.endswith('.txt') or 'text' in mimetype:  # if it's text
+    if filename.endswith(".txt") or "text" in mimetype:  # if it's text
         buf = io.BytesIO()
         await attachment.save(buf)
         buf.seek(0)
-        text = buf.read().decode('utf-8')
-        formatted_attachment = {
-            "type": "text",
-            "text": text
-        }
+        text = buf.read().decode("utf-8")
+        formatted_attachment = {"type": "text", "text": text}
     elif attachment.width:  # then it's an image
         formatted_attachment = {
             "type": "image_url",
-            "image_url": {
-                "url": attachment.url
-            }
+            "image_url": {"url": attachment.url},
         }
     if text is None:
         print(formatted_attachment)
     else:
-        print(text[:25] + '...' + text[-25:])
+        print(text[:25] + "..." + text[-25:])
     # otherwise it's not supported
     return formatted_attachment

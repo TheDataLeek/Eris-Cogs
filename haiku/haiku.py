@@ -62,10 +62,14 @@ class Haiku(BaseCog, ErisEventMixin):
         if message.author.bot:
             return
 
+        # don't do anything in threads
+        if not isinstance(message, discord.TextChannel):
+            return
+
         if 'http' in message.clean_content:
             return
-        #Cleaned is the message with one spoiler removed
-        cleaned = self.quote_re.sub(message.clean_content,"")
+        # Cleaned is the message with one spoiler removed
+        cleaned = self.quote_re.sub(message.clean_content, "")
         if self.quote_re.search(message.clean_content):
             return
         flag = True
@@ -117,7 +121,6 @@ class Haiku(BaseCog, ErisEventMixin):
         msg = " ".join(msg)
 
         await ctx.send(msg)
-
 
     @commands.command()
     async def haikulog(self, ctx, msg_id: Optional[int] = None):
