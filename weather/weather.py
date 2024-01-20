@@ -42,7 +42,6 @@ class Weather(BaseCog):
         }
 
         self.scheduler = AsyncIOScheduler(
-            # executors={"default": ThreadPoolExecutor(max_workers=2)},
             jobstores={"default": MemoryJobStore()},
         )
         self.scheduler.start()
@@ -70,10 +69,30 @@ class Weather(BaseCog):
                     await user.create_dm()
                     dm_channel: discord.DMChannel = user.dm_channel
 
-                forecast_periods = forecast["properties"]["periods"]
-                await dm_channel.send("Checked Weather")
+                alerts = []
+                for period in forecast["properties"]["periods"][:3]:
+                    if int(period["temperature"]) <= 15:  # fahrenheit
+                        alerts.append(
+                            f"# Freeze Alert!\n## {period['name']}\n{period['detailedForecast']}"
+                        )
+                    if int(period["temperature"]) >= 100:
+                        alerts.append(
+                            f"# Heat Alert!\n## {period['name']}\n{period['detailedForecast']}"
+                        )
+                    if "snow" in period["shortForecast"].lower():
+                        alerts.append(
+                            f"# Snow Alert!\n## {period['name']}\n{period['detailedForecast']}"
+                        )
+                    if int(period["windSpeed"].split(" ")[0]) >= 20:
+                        alerts.append(
+                            f"# Wind Alert!\n## {period['name']}\n{period['detailedForecast']}"
+                        )
+                alert_text = "\n".join(alerts)
+                await dm_channel.send(alert_text)
 
-        self.scheduler.add_job(get_weather_alerts, trigger=IntervalTrigger(seconds=60))
+        self.scheduler.add_job(
+            get_weather_alerts, trigger=IntervalTrigger(minutes=60 * 4)
+        )
 
     @commands.command()
     async def enable_weather_alerts(self, ctx: commands.Context):
