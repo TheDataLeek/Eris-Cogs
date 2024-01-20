@@ -39,7 +39,6 @@ class Weather(BaseCog):
         """
         user: discord.User = ctx.author
         user_zip = await self._config.user(user).zip_code()
-        await ctx.send(f"Your zipcode is `{user_zip}`")
         if user_zip is None:
             await ctx.send("You need to save your zipcode first! Please use [p]myzip to save!")
             return
@@ -50,29 +49,29 @@ class Weather(BaseCog):
             await ctx.send(f"Unable to find your zipcode {user_zip}!")
             return
 
-        await ctx.send(f"Your lat/lon is `{lat}`, `{lon}`")
-
         async with aiohttp.ClientSession() as session:
             metadata_url = f"https://api.weather.gov/points/{lat},{lon}"
-            await ctx.send(metadata_url)
             async with session.get(metadata_url) as resp:
                 if resp.status != 200:
                     await ctx.send(f"Unable to get weather! STATUS {resp.status}")
                     return
                 weather_metadata = await resp.json()
 
-            await ctx.send(f"""```\n{json.dumps(weather_metadata)}\n```""")
-
             forecast_url = weather_metadata['properties']['forecast']
-
-            await ctx.send(forecast_url)
 
             async with session.get(forecast_url) as resp:
                 if resp.status != 200:
                     await ctx.send(f"Unable to get weather! STATUS {resp.status}")
                     # return
                 forecast = await resp.json()
-                await ctx.send(f"""```\n{json.dumps(forecast)}\n```""")
+
+        forecast_periods = forecast['properties']['periods']
+        forecast_lines = [
+            f"* {period['name']}: {period['detailedForecast']}"
+            for period in forecast_periods
+        ]
+        forecast_text = "\n".join(forecast_lines)
+        await ctx.send(forecast_text)
 
     @commands.command()
     async def myzip(self, ctx: commands.Context, zipcode: str):
