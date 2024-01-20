@@ -229,6 +229,7 @@ class Weather(BaseCog):
             return
 
         full_forecast = {
+            "metadata": weather_metadata["properties"],
             "forecast": forecast["properties"],
             "hourly": hourly_forecast["properties"],
         }
