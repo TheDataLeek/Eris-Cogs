@@ -9,7 +9,7 @@ import apscheduler
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.jobstores.memory import MemoryJobStore
-from concurrent.futures import ThreadPoolExecutor
+from apscheduler.executors.pool import ThreadPoolExecutor
 
 BaseCog = getattr(commands, "Cog", object)
 RETYPE = type(re.compile("a"))
