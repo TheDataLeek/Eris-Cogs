@@ -5,5 +5,8 @@
   "description": "Looks up weather based on zip code. Zip code lookups provided by https://gist.github.com/erichurst/7882666",
   "name": "Weather",
   "short": "Weather",
-  "ready": true
+  "ready": true,
+  "requirements": [
+    "apscheduler==3.10.4"
+  ]
 }
