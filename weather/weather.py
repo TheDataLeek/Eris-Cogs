@@ -1,5 +1,6 @@
 import re
 import json
+import io
 import csv
 import discord
 from redbot.core import commands, data_manager, Config, checks, bot
@@ -196,10 +197,52 @@ class Weather(BaseCog):
         await self._config.user(ctx.author).zip_code.set(zipcode)
         await ctx.send("Zipcode saved!")
 
+    @commands.command()
+    async def weatherdump(self, ctx: commands.Context, zipcode: str = None):
+        user: discord.User = ctx.author
+        if zipcode is None:
+            user_zip = await self._config.user(user).zip_code()
+            if user_zip is None:
+                await ctx.send(
+                    "You need to save your zipcode first! Please use [p]myzip to save!"
+                )
+                return
+        elif not self.check_zipcode(zipcode):
+            await ctx.send(f"Invalid zipcode {zipcode}!")
+            return
+        else:
+            user_zip = zipcode
+
+        try:
+            lat, lon = self.zip_codes[user_zip]
+        except KeyError:
+            await ctx.send(f"Unable to find your zipcode {user_zip}!")
+            return
+
+        try:
+            weather_metadata, forecast = await self.check_weather(lat, lon)
+            weather_metadata, hourly_forecast = await self.check_weather(
+                lat, lon, hourly=True
+            )
+        except Exception as e:
+            await ctx.send(f"Unable to get weather! {e}")
+            return
+
+        full_forecast = {
+            "forecast": forecast["properties"],
+            "hourly": hourly_forecast["properties"],
+        }
+        buf = io.BytesIO()
+        buf.write(json.dumps(full_forecast).encode())
+        buf.seek(0)
+        await ctx.send(file=discord.File(buf, filename="weather.json"))
+
     def check_zipcode(self, zipcode: str) -> bool:
         return bool(re.match(r"^\d{5}$", zipcode))
 
-    async def check_weather(self, lat: str, lon: str) -> tuple[dict, dict]:
+    async def check_weather(
+        self, lat: str, lon: str, hourly: bool = False
+    ) -> tuple[dict, dict]:
         async with aiohttp.ClientSession() as session:
             metadata_url = f"https://api.weather.gov/points/{lat},{lon}"
             async with session.get(metadata_url) as resp:
@@ -208,6 +251,8 @@ class Weather(BaseCog):
                 weather_metadata = await resp.json()
 
             forecast_url = weather_metadata["properties"]["forecast"]
+            if hourly:
+                forecast_url = weather_metadata["properties"]["forecastHourly"]
 
             async with session.get(forecast_url) as resp:
                 if resp.status != 200:
