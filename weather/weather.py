@@ -67,7 +67,7 @@ class Weather(BaseCog):
             async with session.get(forecast_url) as resp:
                 if resp.status != 200:
                     await ctx.send(f"Unable to get weather! STATUS {resp.status}")
-                    # return
+                    return
                 forecast = await resp.json()
 
         forecast_periods = forecast['properties']['periods']
@@ -76,7 +76,11 @@ class Weather(BaseCog):
             for period in forecast_periods
         ]
         forecast_text = "\n".join(forecast_lines)
-        await ctx.send(forecast_text)
+        city = weather_metadata['properties']['relativeLocation']['properties']['city']
+        state = weather_metadata['properties']['relativeLocation']['properties']['state']
+        weather_report = f"# Weather Forecast for {city}, {state}\n{forecast_text}"
+
+        await ctx.send(weather_report)
 
     @commands.command()
     async def myzip(self, ctx: commands.Context, zipcode: str):
