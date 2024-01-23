@@ -11,7 +11,7 @@ from typing import Dict, List, Tuple, Union
 
 import discord
 import openai
-from redbot.core import commands
+from redbot.core import commands, data_manager
 from redbot.core.bot import Red
 from redbot.core.utils import chat_formatting
 
@@ -23,6 +23,7 @@ class Chat(BaseCog):
         self.bot: Red = bot
         self.openai_settings = None
         self.openai_token = None
+        self.data_dir = data_manager.bundled_data_path(self)
 
     async def get_openai_token(self):
         self.openai_settings = await self.bot.get_shared_api_tokens("openai")
@@ -68,6 +69,29 @@ class Chat(BaseCog):
                 break
 
         await message.delete()
+
+    @commands.command()
+    async def tarot(self, ctx: commands.Context) -> None:
+        thread_name, formatted_query = await self.extract_chat_history_and_format(ctx)
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
+        tarot_guide = (self.data_dir / 'tarot.json').read_text()
+
+        formatted_query = [
+            {
+                "role": "system",
+                "content": (
+                    "You are to intepret the user-provided tarot reading below using the following "
+                    f"JSON-formatted reference guide.\n{tarot_guide}\n Please ask for clarification when needed, "
+                    "and allow for non-standard layouts to be described. Additionally if users provide images "
+                    "please read which cards are out, taking note of arrangement and orientation and provide the "
+                    "full reading in either case."
+                )
+            },
+            *formatted_query
+        ]
+
+        await self.query_openai(message, channel, thread_name, formatted_query)
 
     @commands.command()
     async def chatas(self, ctx: commands.Context) -> None:
