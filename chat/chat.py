@@ -97,7 +97,9 @@ class Chat(BaseCog):
             *formatted_query,
         ]
 
-        await self.query_openai(message, channel, thread_name, formatted_query)
+        await self.query_openai(
+            message, channel, thread_name, formatted_query, model="gpt-3.5-turbo"
+        )
 
     @commands.command()
     async def chatas(self, ctx: commands.Context) -> None:
@@ -333,6 +335,7 @@ class Chat(BaseCog):
         formatted_query: str | list[dict],
         attachment: discord.Attachment = None,
         image_api: bool = False,
+        model: str = "gpt-4-vision-preview",
     ):
         token = await self.get_openai_token()
         channel_name = "a thread and no further warnings are needed"
@@ -359,7 +362,7 @@ class Chat(BaseCog):
             }
         ]
         kwargs = {
-            "model": "gpt-4-vision-preview",
+            "model": model,
             "temperature": 1,
             "max_tokens": 2000,
         }
