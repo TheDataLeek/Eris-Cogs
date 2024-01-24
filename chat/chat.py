@@ -75,20 +75,26 @@ class Chat(BaseCog):
         thread_name, formatted_query = await self.extract_chat_history_and_format(ctx)
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        tarot_guide = (self.data_dir / 'tarot.json').read_text()
+        tarot_guide = (self.data_dir / "tarot_guide.txt").read_text()
+        lines_to_include = [(406, 3744)]
+        split_guide = tarot_guide.split("\n")
+        passages = [
+            "\n".join(split_guide[start : end + 1]) for start, end in lines_to_include
+        ]
 
         formatted_query = [
             {
                 "role": "system",
                 "content": (
-                    "You are to intepret the user-provided tarot reading below using the following "
-                    f"JSON-formatted reference guide.\n{tarot_guide}\n Please ask for clarification when needed, "
+                    "You are to intepret the user-provided tarot reading below using the provided"
+                    f"reference guide. Please ask for clarification when needed, "
                     "and allow for non-standard layouts to be described. Additionally if users provide images "
                     "please read which cards are out, taking note of arrangement and orientation and provide the "
                     "full reading in either case."
-                )
+                ),
             },
-            *formatted_query
+            *[{"role": "system", "content": passage} for passage in passages],
+            *formatted_query,
         ]
 
         await self.query_openai(message, channel, thread_name, formatted_query)
