@@ -76,7 +76,7 @@ class Chat(BaseCog):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         tarot_guide = (self.data_dir / "tarot_guide.txt").read_text()
-        lines_to_include = [(406, 3744)]
+        lines_to_include = [(406, 799), (1444, 2904), (2906, 3299)]
         split_guide = tarot_guide.split("\n")
         passages = [
             "\n".join(split_guide[start : end + 1]) for start, end in lines_to_include
@@ -98,7 +98,7 @@ class Chat(BaseCog):
         ]
 
         await self.query_openai(
-            message, channel, thread_name, formatted_query, model="gpt-3.5-turbo-16k"
+            message, channel, thread_name, formatted_query, model="gpt-4-1106-preview"
         )
 
     @commands.command()
