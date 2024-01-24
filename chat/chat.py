@@ -128,7 +128,7 @@ class Chat(BaseCog):
                 *[{"role": "system", "content": msg} for msg in system_messages],
                 {
                     "role": "user",
-                    "name": author.display_name,
+                    "name": author.name,
                     "content": [
                         {"type": "text", "text": query},
                         *[
@@ -152,7 +152,7 @@ class Chat(BaseCog):
                     *[{"role": "system", "content": msg} for msg in system_messages],
                     {
                         "role": "user",
-                        "name": author.display_name,
+                        "name": author.name,
                         "content": [
                             {"type": "text", "text": query},
                             *[
@@ -167,7 +167,7 @@ class Chat(BaseCog):
                     formatted_query.append(
                         {
                             "role": "assistant",
-                            "name": thread_message.author.display_name,
+                            "name": thread_message.author.name,
                             "content": [
                                 {
                                     "type": "text",
@@ -189,7 +189,7 @@ class Chat(BaseCog):
                     formatted_query.append(
                         {
                             "role": "user",
-                            "name": thread_message.author.display_name,
+                            "name": thread_message.author.name,
                             "content": [
                                 {
                                     "type": "text",
@@ -231,7 +231,7 @@ class Chat(BaseCog):
             formatted_query = [
                 {
                     "role": "user",
-                    "name": author.display_name,
+                    "name": author.name,
                     "content": [
                         {"type": "text", "text": formatted_query},
                         *[
@@ -251,7 +251,7 @@ class Chat(BaseCog):
                 formatted_query = [
                     {
                         "role": "user",
-                        "name": author.display_name,
+                        "name": author.name,
                         "content": [
                             {"type": "text", "text": message_without_command},
                             *[
@@ -264,7 +264,7 @@ class Chat(BaseCog):
             formatted_query += [
                 {
                     "role": "assistant" if thread_message.author.bot else "user",
-                    "name": thread_message.author.display_name,
+                    "name": thread_message.author.name,
                     "content": [
                         {
                             "type": "text",
@@ -308,7 +308,7 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
         prompt: str = " ".join(prompt_words)
-        thread_name = " ".join(prompt_words[:5]) + "image"
+        thread_name = " ".join(prompt_words[:5]) + " image"
         attachment = None
         attachments: list[discord.Attachment] = [
             m for m in message.attachments if m.width
@@ -355,7 +355,7 @@ class Chat(BaseCog):
                             "a thread for all messages. If the current channel is not any of those, or in a thread, "
                             "please remind the user that their queries should be redirected to those locations. "
                             f"Our current location is {channel_name}. If we're in an appropriate channel, please don't "
-                            "restate this policy and instead just remind the user to prefix their message with `.chat`."
+                            "restate this policy"
                         ),
                     }
                 ],
