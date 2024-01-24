@@ -98,7 +98,7 @@ class Chat(BaseCog):
         ]
 
         await self.query_openai(
-            message, channel, thread_name, formatted_query, model="gpt-3.5-turbo"
+            message, channel, thread_name, formatted_query, model="gpt-3.5-turbo-16k"
         )
 
     @commands.command()
