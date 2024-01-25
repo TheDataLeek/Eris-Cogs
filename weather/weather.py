@@ -1,4 +1,5 @@
 import re
+import time
 import json
 import io
 import csv
@@ -31,6 +32,7 @@ class Weather(BaseCog):
         )
         self._config.register_global(
             users_to_alert=list(),
+            last_alerted_at=dict(),
         )
 
         data_dir = data_manager.bundled_data_path(self)
@@ -51,47 +53,54 @@ class Weather(BaseCog):
 
         async def get_weather_alerts():
             users = await self._config.users_to_alert()
-            for userid in users:
-                user = self.bot.get_user(userid)
-                if user is None:
-                    continue
-                user_zip = await self._config.user(user).zip_code()
-                if user_zip is None:
-                    continue
-                try:
-                    lat, lon = self.zip_codes[user_zip]
-                except KeyError:
-                    continue
-                try:
-                    weather_metadata, forecast = await self.check_weather(lat, lon)
-                except Exception as e:
-                    print(e)
-                    continue
-                dm_channel: discord.DMChannel = user.dm_channel
-                if dm_channel is None:
-                    await user.create_dm()
-                    dm_channel: discord.DMChannel = user.dm_channel
+            async with self._config.last_alerted_at() as last_alerted_at:
+                for userid in users:
+                    if userid in last_alerted_at:
+                        if time.time() - last_alerted_at[userid] < 60 * 60 * 18:
+                            continue
 
-                alerts = []
-                for period in forecast["properties"]["periods"][:3]:
-                    if int(period["temperature"]) <= 15:  # fahrenheit
-                        alerts.append(
-                            f"# Freeze Alert!\n## {period['name']}\n{period['detailedForecast']}"
-                        )
-                    if int(period["temperature"]) >= 100:
-                        alerts.append(
-                            f"# Heat Alert!\n## {period['name']}\n{period['detailedForecast']}"
-                        )
-                    if "snow" in period["shortForecast"].lower():
-                        alerts.append(
-                            f"# Snow Alert!\n## {period['name']}\n{period['detailedForecast']}"
-                        )
-                    if int(period["windSpeed"].split(" ")[0]) >= 20:
-                        alerts.append(
-                            f"# Wind Alert!\n## {period['name']}\n{period['detailedForecast']}"
-                        )
-                alert_text = "\n".join(alerts)
-                await dm_channel.send(alert_text)
+                    user = self.bot.get_user(userid)
+                    if user is None:
+                        continue
+                    user_zip = await self._config.user(user).zip_code()
+                    if user_zip is None:
+                        continue
+                    try:
+                        lat, lon = self.zip_codes[user_zip]
+                    except KeyError:
+                        continue
+                    try:
+                        weather_metadata, forecast = await self.check_weather(lat, lon)
+                    except Exception as e:
+                        print(e)
+                        continue
+                    dm_channel: discord.DMChannel = user.dm_channel
+                    if dm_channel is None:
+                        await user.create_dm()
+                        dm_channel: discord.DMChannel = user.dm_channel
+
+                    alerts = []
+                    for period in forecast["properties"]["periods"][:3]:
+                        if int(period["temperature"]) <= 15:  # fahrenheit
+                            alerts.append(
+                                f"# Freeze Alert!\n## {period['name']}\n{period['detailedForecast']}"
+                            )
+                        if int(period["temperature"]) >= 100:
+                            alerts.append(
+                                f"# Heat Alert!\n## {period['name']}\n{period['detailedForecast']}"
+                            )
+                        if "snow" in period["shortForecast"].lower():
+                            alerts.append(
+                                f"# Snow Alert!\n## {period['name']}\n{period['detailedForecast']}"
+                            )
+                        if int(period["windSpeed"].split(" ")[0]) >= 20:
+                            alerts.append(
+                                f"# Wind Alert!\n## {period['name']}\n{period['detailedForecast']}"
+                            )
+                    if alerts:
+                        last_alerted_at[userid] = time.time()
+                        alert_text = "\n".join(alerts)
+                        await dm_channel.send(alert_text)
 
         self.scheduler.add_job(
             get_weather_alerts, trigger=IntervalTrigger(minutes=60 * 4)
