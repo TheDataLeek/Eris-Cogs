@@ -16,6 +16,9 @@ from apscheduler.executors.pool import ThreadPoolExecutor
 BaseCog = getattr(commands, "Cog", object)
 RETYPE = type(re.compile("a"))
 
+MINUTES = 60
+HOURS = 60
+
 
 class Weather(BaseCog):
     def __init__(self, bot_instance: bot):
@@ -47,17 +50,16 @@ class Weather(BaseCog):
         self.scheduler = AsyncIOScheduler(
             jobstores={"default": MemoryJobStore()},
         )
-        for job in self.scheduler.get_jobs():
-            job.remove()
         self.scheduler.start()
 
         async def get_weather_alerts():
             users = await self._config.users_to_alert()
             async with self._config.last_alerted_at() as last_alerted_at:
                 for userid in users:
-                    if userid in last_alerted_at:
-                        if time.time() - last_alerted_at[userid] < 60 * 60 * 18:
-                            continue
+                    user_last_alerted_at = last_alerted_at.get(userid, 0)
+                    seconds_since_last_alert = time.time() - user_last_alerted_at
+                    if seconds_since_last_alert / (MINUTES * HOURS) < 18:   # only notify every 18 hours at the most
+                        continue
 
                     user = self.bot.get_user(userid)
                     if user is None:
@@ -103,7 +105,11 @@ class Weather(BaseCog):
                         await dm_channel.send(alert_text)
 
         self.scheduler.add_job(
-            get_weather_alerts, trigger=IntervalTrigger(minutes=60 * 4)
+            get_weather_alerts,
+            trigger=IntervalTrigger(minutes=60 * 4),
+            replace_existing=True,
+            id='DiscordWeatherAlerts',
+            name='DiscordWeatherAlerts',
         )
 
     @commands.command()
