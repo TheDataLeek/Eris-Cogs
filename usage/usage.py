@@ -100,7 +100,9 @@ class Usage(BaseCog):
             buf.seek(0)
             attachments.append([buf, attachment.filename])
 
-        owner = await self.bot.get_owner()
+        owner_id = self.bot.owner_id
+        owner = self.bot.get_user(owner_id)
+
         await owner.dm_channel.send(
             f"Message from {message.author.name}\n{message_content}",
             files=[
