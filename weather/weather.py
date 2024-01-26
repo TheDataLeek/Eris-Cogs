@@ -128,7 +128,7 @@ class Weather(BaseCog):
             message = (
                 f"```\nUsers\n{pprint.pformat(users)}\n\n"
                 f"Last Alerts\n{pprint.pformat(last_alerted_at)}\n\n"
-                f"Last Alerts in Seconds\n{converted_last_alerts}\n\n"
+                f"Last Alerts in Seconds\n{pprint.pformat(converted_last_alerts)}\n\n"
                 f"It is currently {time.time()}\n```"
             )
         await ctx.send(message)
