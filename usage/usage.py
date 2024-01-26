@@ -1,7 +1,8 @@
 import io
 import json
 import discord
-from redbot.core import commands, data_manager, Config, checks, bot
+from redbot.core import commands, data_manager, Config, checks
+from redbot.core.bot import Red
 
 from typing import Union
 
@@ -10,7 +11,7 @@ BaseCog = getattr(commands, "Cog", object)
 
 
 class Usage(BaseCog):
-    def __init__(self, bot_instance: bot):
+    def __init__(self, bot_instance: Red):
         self.bot = bot_instance
         self._config = Config.get_conf(
             self,
@@ -101,7 +102,9 @@ class Usage(BaseCog):
             attachments.append([buf, attachment.filename])
 
         owner_id = self.bot.owner_id
-        owner = self.bot.get_user(owner_id)
+        print(owner_id)
+        owner = self.bot.get_user(int(owner_id))
+        print(owner)
 
         await owner.dm_channel.send(
             f"Message from {message.author.name}\n{message_content}",
