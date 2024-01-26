@@ -121,7 +121,16 @@ class Weather(BaseCog):
     async def show_weather_config(self, ctx: commands.Context):
         users = await self._config.users_to_alert()
         async with self._config.last_alerted_at() as last_alerted_at:
-            message = f"```\nUsers\n{pprint.pformat(users)}\n\nLast Alerts\n{pprint.pformat(last_alerted_at)}\n```"
+            converted_last_alerts = {
+                userid: time.time() - last_alert
+                for userid, last_alert in last_alerted_at.items()
+            }
+            message = (
+                f"```\nUsers\n{pprint.pformat(users)}\n\n"
+                f"Last Alerts\n{pprint.pformat(last_alerted_at)}\n\n"
+                f"Last Alerts in Seconds\n{converted_last_alerts}\n\n"
+                f"It is currently {time.time()}\n```"
+            )
         await ctx.send(message)
 
     @commands.command()
