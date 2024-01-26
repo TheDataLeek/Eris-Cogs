@@ -123,7 +123,7 @@ class Weather(BaseCog):
 
     @commands.command()
     @checks.is_owner()
-    async def show_weather_config(self, cts: commands.Context):
+    async def show_weather_config(self, ctx: commands.Context):
         users = await self._config.users_to_alert()
         async with self._config.last_alerted_at() as last_alerted_at:
             message = f"```\nUsers\n{pprint.pformat(users)}\n\nLast Alerts\n{pprint.pformat(last_alerted_at)}\n```"
