@@ -33,6 +33,9 @@ class Usage(BaseCog):
         return prefix
 
     async def usage_message_handler(self, message: discord.Message):
+        if message.author.bot:
+            return
+
         prefixes = await self.get_prefix(message)
         bot_command = False
         for prefix in prefixes:
@@ -40,13 +43,17 @@ class Usage(BaseCog):
 
         if bot_command:
             guild: Union[str, int] = "DM" if message.guild is None else message.guild.id
+            guild_name: str = "DM" if message.guild is None else message.guild.name
             async with self._config.command_log() as command_log:
                 command_log.append(
                     {
                         "timestamp": f"{message.created_at.isoformat()}",
                         "guild": guild,
+                        "guild_name": guild_name,
                         "author": message.author.id,
+                        "author_name": message.author.name,
                         "channel": message.channel.id,
+                        "channel_name": None if guild == "DM" else message.channel.name,
                         "command": message.content.split(" ")[0],
                         "content": message.clean_content,
                     }
@@ -61,6 +68,7 @@ class Usage(BaseCog):
                     {
                         "timestamp": f"{message.created_at.isoformat()}",
                         "author": message.author.id,
+                        "author_name": message.author.name,
                         "content": message.clean_content,
                         "attachments": [
                             attachment.url for attachment in message.attachments
