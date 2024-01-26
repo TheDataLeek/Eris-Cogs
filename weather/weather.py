@@ -12,6 +12,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor
+import pprint
 
 BaseCog = getattr(commands, "Cog", object)
 RETYPE = type(re.compile("a"))
@@ -56,9 +57,17 @@ class Weather(BaseCog):
             users = await self._config.users_to_alert()
             async with self._config.last_alerted_at() as last_alerted_at:
                 for userid in users:
+                    if (
+                        str(userid) != "142431859148718080"
+                    ):  # debugging - just show me the alerts
+                        continue
                     user_last_alerted_at = last_alerted_at.get(userid, 0)
                     seconds_since_last_alert = time.time() - user_last_alerted_at
-                    if seconds_since_last_alert / (MINUTES * HOURS) < 18:   # only notify every 18 hours at the most
+                    if (
+                        # seconds_since_last_alert / (MINUTES * HOURS) < 18  # only notify every 18 hours at the most
+                        seconds_since_last_alert
+                        <= 60
+                    ):
                         continue
 
                     user = self.bot.get_user(userid)
@@ -108,9 +117,17 @@ class Weather(BaseCog):
             get_weather_alerts,
             trigger=IntervalTrigger(minutes=60 * 4),
             replace_existing=True,
-            id='DiscordWeatherAlerts',
-            name='DiscordWeatherAlerts',
+            id="DiscordWeatherAlerts",
+            name="DiscordWeatherAlerts",
         )
+
+    @commands.command()
+    @checks.is_owner()
+    async def show_weather_config(self, cts: commands.Context):
+        users = await self._config.users_to_alert()
+        async with self._config.last_alerted_at() as last_alerted_at:
+            message = f"```\nUsers\n{pprint.pformat(users)}\n\nLast Alerts\n{pprint.pformat(last_alerted_at)}\n```"
+        await ctx.send(message)
 
     @commands.command()
     async def enable_weather_alerts(self, ctx: commands.Context):
