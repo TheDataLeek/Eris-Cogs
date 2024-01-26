@@ -85,3 +85,26 @@ class Usage(BaseCog):
         command_log_buffer.write(json.dumps(command_log, indent=2).encode())
         command_log_buffer.seek(0)
         await ctx.send(file=discord.File(command_log_buffer, filename=f"commands.json"))
+
+    @commands.command()
+    async def hey(self, ctx: commands.Context):
+        """
+        Send a message to the bot owner!
+        """
+        message = ctx.message
+        message_content = " ".join(message.clean_content.split(" ")[1:])
+        attachments = []
+        for attachment in message.attachments:
+            buf = io.BytesIO()
+            await attachment.save(buf)
+            buf.seek(0)
+            attachments.append([buf, attachment.filename])
+
+        owner = await self.bot.get_owner()
+        await owner.dm_channel.send(
+            f"Message from {message.author.name}\n{message_content}",
+            files=[
+                discord.File(buffer, filename=filename)
+                for buffer, filename in attachments
+            ],
+        )
