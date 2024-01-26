@@ -57,16 +57,11 @@ class Weather(BaseCog):
             users = await self._config.users_to_alert()
             async with self._config.last_alerted_at() as last_alerted_at:
                 for userid in users:
-                    if (
-                        str(userid) != "142431859148718080"
-                    ):  # debugging - just show me the alerts
-                        continue
                     user_last_alerted_at = last_alerted_at.get(str(userid), 0)
                     seconds_since_last_alert = time.time() - user_last_alerted_at
                     if (
-                        # seconds_since_last_alert / (MINUTES * HOURS) < 18  # only notify every 18 hours at the most
-                        seconds_since_last_alert
-                        <= 60
+                        seconds_since_last_alert / (MINUTES * HOURS)
+                        < 18  # only notify every 18 hours
                     ):
                         continue
 
@@ -115,8 +110,7 @@ class Weather(BaseCog):
 
         self.scheduler.add_job(
             get_weather_alerts,
-            # trigger=IntervalTrigger(minutes=60 * 4),
-            trigger=IntervalTrigger(seconds=30),
+            trigger=IntervalTrigger(minutes=60 * 4),
             replace_existing=True,
             id="DiscordWeatherAlerts",
             name="DiscordWeatherAlerts",
