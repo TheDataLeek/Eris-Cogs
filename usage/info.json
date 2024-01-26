@@ -1,0 +1,9 @@
+{
+  "author": [
+    "Eris"
+  ],
+  "description": "Tracks usage of all bot commands and interactions",
+  "name": "Usage",
+  "short": "Usage Monitoring",
+  "ready": true
+}
