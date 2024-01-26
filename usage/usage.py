@@ -111,7 +111,7 @@ class Usage(BaseCog):
         source_channel = "DM" if message.guild is None else message.channel.mention
 
         await dm_channel.send(
-            f"Message from {message.author.name}\n{message_content} ({source_channel})",
+            f"Message from {message.author.name}\n{source_channel}\n{message_content}",
             files=[
                 discord.File(buffer, filename=filename)
                 for buffer, filename in attachments
