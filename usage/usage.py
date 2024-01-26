@@ -87,7 +87,7 @@ class Usage(BaseCog):
         command_log_buffer.seek(0)
         await ctx.send(file=discord.File(command_log_buffer, filename=f"commands.json"))
 
-    @commands.command()
+    @commands.command(alias=["bug", "bugreport", "bug_report", "tell_owner"])
     async def hey(self, ctx: commands.Context):
         """
         Send a message to the bot owner!
