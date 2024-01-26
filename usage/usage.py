@@ -101,10 +101,8 @@ class Usage(BaseCog):
             buf.seek(0)
             attachments.append([buf, attachment.filename])
 
-        owner_id = self.bot.owner_id
-        print(owner_id)
-        owner = self.bot.get_user(int(owner_id))
-        print(owner)
+        app_info: discord.AppInfo = await self.bot.application_info()
+        owner: discord.User = app_info.owner
 
         await owner.dm_channel.send(
             f"Message from {message.author.name}\n{message_content}",
