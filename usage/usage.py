@@ -110,3 +110,5 @@ class Usage(BaseCog):
                 for buffer, filename in attachments
             ],
         )
+
+        await ctx.send(f"Message sent to {owner.name}!")
