@@ -108,8 +108,10 @@ class Usage(BaseCog):
         if dm_channel is None:
             dm_channel = await owner.create_dm()
 
+        source_channel = "DM" if message.guild is None else message.channel.mention
+
         await dm_channel.send(
-            f"Message from {message.author.name}\n{message_content}",
+            f"Message from {message.author.name}\n{message_content} ({source_channel})",
             files=[
                 discord.File(buffer, filename=filename)
                 for buffer, filename in attachments
