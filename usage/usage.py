@@ -104,7 +104,11 @@ class Usage(BaseCog):
         app_info: discord.AppInfo = await self.bot.application_info()
         owner: discord.User = app_info.owner
 
-        await owner.dm_channel.send(
+        dm_channel: discord.DMChannel = owner.dm_channel
+        if dm_channel is None:
+            dm_channel = await owner.create_dm()
+
+        await dm_channel.send(
             f"Message from {message.author.name}\n{message_content}",
             files=[
                 discord.File(buffer, filename=filename)
