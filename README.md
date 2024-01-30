@@ -11,9 +11,11 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Autoreact](#autoreact) | Adds reactions to posts! | ✅ |
 | [Big_name](#big_name) | Change a user's name regardless of permissions | ✅ |
 | [Big_text](#big_text) | Make your message big and emoji-fied | ✅ |
+| [Chat](#chat) | Use OpenAI's ChatGPT to respond to the conversation | ✅ |
 | [Clone](#clone) | The bot takes on a user's name and avatar | ✅ |
 | [Dice](#dice) | Improved dice roller. | ✅ |
 | [Dm_role](#dm_role) | DM everyone with certain role | ✅ |
+| [Dragon](#dragon) | Dragons! | ✅ |
 | [Emojsplosion](#emojsplosion) | EMOJSPLOSION | ✅ |
 | [Event_config](#event_config) | Configure `on_message` events | ✅ |
 | [Export_emoji](#export_emoji) | Bulk Emoji Export | ✅ |
@@ -21,6 +23,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Fires](#fires) | US Firemap | ✅ |
 | [Goodbot](#goodbot) | Good Bot Emoji Tracker | ✅ |
 | [Haiku](#haiku) | Haiku | ✅ |
+| [Hostinfo](#hostinfo) | Host Info | ✅ |
 | [Hotel_california](#hotel_california) | Role-based "punishment" for infractions on moderator whim. | ✅ |
 | [Im_dad](#im_dad) | Replies Hi _ I'm Dad | ✅ |
 | [Imdb_lookup](#imdb_lookup) | IMDB | ✅ |
@@ -34,19 +37,24 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [No_fuck_you](#no_fuck_you) | Replies 'no fuck you' | ✅ |
 | [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. | ✅ |
 | [Partition](#partition) | Partition Teams | ✅ |
+| [Qr](#qr) | None | ✅ |
 | [Quotes](#quotes) | Incorrect Quotes by ScatterPatter | ✅ |
 | [Rock_and_stone](#rock_and_stone) | Deep Rock Galactic shouting | ✅ |
 | [Rolerequest](#rolerequest) | Emoji-based Role Request | ✅ |
+| [Roulette](#roulette) | None | ✅ |
 | [Sarcasm](#sarcasm) | Randomly mocks users | ✅ |
 | [Say](#say) | Send messages as the bot | ✅ |
 | [Search](#search) | Search the internet! | ✅ |
+| [Secretsanta](#secretsanta) | None | ✅ |
 | [Spoop](#spoop) | Sneakily spoops users | ✅ |
 | [Steve](#steve) | Provides LARGE pictures of Steve when asked | ✅ |
 | [Stonks](#stonks) | A stock tracker using yahoofinance | ✅ |
 | [Sudo](#sudo) | Warns when users say sudo | ✅ |
 | [Suggestion](#suggestion) | Suggest | ✅ |
 | [Timezone](#timezone) | US Timezone converter | ✅ |
+| [Usage](#usage) | Usage Monitoring | ✅ |
 | [Venmo](#venmo) | Venmo Replacement | ✅ |
+| [Weather](#weather) | Weather | ✅ |
 | [Weave](#weave) | Create a mosaic of alternating emoji | ✅ |
 | [Whois](#whois) | Whois for discord | ✅ |
 | [Wiggler](#wiggler) | Adds random reactions to posts! | ✅ |
@@ -72,6 +80,10 @@ Description: Change someone's name - who cares about permissions. Usage: `[p]big
 Short: Make your message big and emoji-fied
 
 Description: Usage: [p]big_text [ASCII message]
+## Chat
+Short: Use OpenAI's ChatGPT to respond to the conversation
+
+Description: Usage: [p]chat. Tarot reference soured from https://www.kaggle.com/datasets/lsind18/tarot-json
 ## Clone
 Short: The bot takes on a user's name and avatar
 
@@ -84,6 +96,10 @@ Description: Improved dice roller, can support arbitrary dice. Usage regex: [p]d
 Short: DM everyone with certain role
 
 Description: DMs everyone with a specific role based on fuzzy role name
+## Dragon
+Short: Dragons!
+
+Description: Replies with giant ascii dragons
 ## Emojsplosion
 Short: EMOJSPLOSION
 
@@ -114,6 +130,10 @@ Description: Good Bot Emoji Tracker - tracks all emoji reactions (that the bot h
 Short: Haiku
 
 Description: Determines haikus!
+## Hostinfo
+Short: Host Info
+
+Description: Information on bot server
 ## Hotel_california
 Short: Role-based "punishment" for infractions on moderator whim.
 
@@ -172,6 +192,10 @@ Description: Archives a channel of out of context quotes. Posts quotes randomly 
 Short: Partition Teams
 
 Description: Partitions users into teams
+## Qr
+Short: None
+
+Description: Generate QR codes on demand
 ## Quotes
 Short: Incorrect Quotes by ScatterPatter
 
@@ -186,6 +210,10 @@ Description: Shouts various rock and stone quotes from Deep Rock Galactic
 Short: Emoji-based Role Request
 
 Description: Emoji-based role request for user roles.
+## Roulette
+Short: None
+
+Description: Roulette between 2 or more channels!
 ## Sarcasm
 Short: Randomly mocks users
 
@@ -200,6 +228,10 @@ Usage `[p]say guild channel ...message`
 Short: Search the internet!
 
 Description: Search the internet for useful info. Currently only wikipedia supported.
+## Secretsanta
+Short: None
+
+Description: Secret santa with csv
 ## Spoop
 Short: Sneakily spoops users
 
@@ -226,10 +258,18 @@ Description: Suggest a change, provides ez access urls
 Short: US Timezone converter
 
 Description: Timezone converter! Switch between multiple US timezones easily
+## Usage
+Short: Usage Monitoring
+
+Description: Tracks usage of all bot commands and interactions
 ## Venmo
 Short: Venmo Replacement
 
 Description: Posts my cashapp link
+## Weather
+Short: Weather
+
+Description: Looks up weather based on zip code. Zip code lookups provided by https://gist.github.com/erichurst/7882666
 ## Weave
 ![png](weave/demo.png)
 
