@@ -68,10 +68,13 @@ class WhoIs(BaseCog):
         """
         Reverse whois, where you search for the real name and get the tag of the matching users
         """
+        member_ids_in_channel: list[str] = [
+            str(member.id) for member in ctx.channel.members
+        ]
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             matches = []
             for userid, name in whois_dict.items():
-                if realname in name.lower():
+                if realname in name.lower() and str(userid) in member_ids_in_channel:
                     matches.append(ctx.guild.get_member(int(userid)).mention)
 
         if len(matches) == 0:
@@ -85,9 +88,14 @@ class WhoIs(BaseCog):
         """
         Print all entries in the whois db
         """
+        member_ids_in_channel: list[str] = [
+            str(member.id) for member in ctx.channel.members
+        ]
         async with self.config.guild(ctx.guild).whois_dict() as whois_dict:
             users = []
             for userid, name in whois_dict.items():
+                if str(userid) not in member_ids_in_channel:
+                    continue
                 member: discord.Member = ctx.guild.get_member(int(userid))
                 if member is not None:
                     users.append((member, name))
