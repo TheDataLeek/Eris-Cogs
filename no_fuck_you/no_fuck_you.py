@@ -34,9 +34,10 @@ class NoFuckYou(BaseCog, ErisEventMixin):
             if not allowed:
                 return
 
-            if random.random() <= 0.5:
-                return
-
-            await ctx.send("No fuck you")
+            if random.random() < 0.5:
+                if random.random() < 0.1:
+                    await ctx.send("Please fuck me :pleading_face:")
+                else:
+                    await ctx.send("No fuck you")
 
             await self.log_last_message(ctx, message)
