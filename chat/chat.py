@@ -426,7 +426,7 @@ class Chat(BaseCog):
 
                     if image_expansion:
                         mask_image = Image.new('RGBA', (1024, 1024), (255, 255, 255, 0))
-                        border_width = 256
+                        border_width = 512
                         new_image = input_image.resize((1024 - border_width, 1024 - border_width))
                         mask_image.paste(new_image, (border_width // 2, border_width // 2))
                         input_image = mask_image
