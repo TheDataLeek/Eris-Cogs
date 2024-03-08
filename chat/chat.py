@@ -310,6 +310,7 @@ class Chat(BaseCog):
         prompt: str = " ".join(prompt_words)
         thread_name = " ".join(prompt_words[:5]) + " image"
         attachment = None
+        # todo - snag image from reply
         attachments: list[discord.Attachment] = [
             m for m in message.attachments if m.width
         ]
@@ -326,6 +327,40 @@ class Chat(BaseCog):
             attachment=attachment,
             image_api=True,
         )
+    
+    @commands.command()
+    async def expand(self, ctx: commands.Context):
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
+        prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
+        prompt: str = " ".join(prompt_words)
+        thread_name = (" ".join(prompt_words[:5]) + " expanded").strip()
+        attachment = None
+        attachments: list[discord.Attachment] = [
+            m for m in message.attachments if m.width
+        ]
+        if message.reference:
+            referenced: discord.MessageReference = message.reference
+            referenced_message: discord.Message = await channel.fetch_message(referenced.message_id)
+            attachments += [
+                m for m in referenced_message.attachments if m.width
+            ]
+        if len(attachments) > 0:
+            attachment: discord.Attachment = attachments[0]
+        else:
+            await ctx.send(f"Please provide an image to expand!")
+            return
+
+        await self.query_openai(
+            message,
+            channel,
+            thread_name,
+            prompt,
+            attachment=attachment,
+            image_api=True,
+            image_expansion=True
+        )
+
 
     async def query_openai(
         self,
@@ -336,6 +371,7 @@ class Chat(BaseCog):
         attachment: discord.Attachment = None,
         image_api: bool = False,
         model: str = "gpt-4-vision-preview",
+        image_expansion: bool = False,
     ):
         token = await self.get_openai_token()
         channel_name = "a thread and no further warnings are needed"
@@ -384,17 +420,26 @@ class Chat(BaseCog):
                     await attachment.save(buf)
                     buf.seek(0)
                     input_image = Image.open(buf)
+
+                    # crop square image to the smaller dim
+                    width, height = input_image.size
+                    if width != height:
+                        new_size = min(width, height)
+                        input_image = input_image.crop((0, 0, new_size, new_size))
+
                     input_image = input_image.resize((1024, 1024))
+
+                    if image_expansion:
+                        mask_image = Image.new('RGBA', (1024, 1024), (255, 255, 255, 0))
+                        border_width = 256
+                        new_image = input_image.resize((1024 - border_width, 1024 - border_width))
+                        mask_image.paste(new_image, (border_width // 2, border_width // 2))
+                        input_image = mask_image
+
                     input_image_buffer = io.BytesIO()
                     input_image.save(input_image_buffer, format="png")
                     input_image_buffer.seek(0)
                     kwargs["image"] = input_image_buffer.read()
-
-                    # mask = io.BytesIO()
-                    # mask_image = Image.new('RGBA', (1024, 1024))
-                    # mask_image.save(mask, format='png')
-                    # mask.seek(0)
-                    # kwargs['mask'] = mask.read()
                 else:
                     style = None
                     if "vivid" in formatted_query:
