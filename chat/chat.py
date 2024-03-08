@@ -424,8 +424,14 @@ class Chat(BaseCog):
                     # crop square image to the smaller dim
                     width, height = input_image.size
                     if width != height:
-                        new_size = min(width, height)
-                        input_image = input_image.crop((0, 0, new_size, new_size))
+                        left = top = 0
+                        if width < height:
+                            new_size = width
+                            top = (height - width) // 2
+                        else:
+                            new_size = height
+                            left = (width - height) // 2
+                        input_image = input_image.crop((left, top, new_size, new_size))
 
                     input_image = input_image.resize((1024, 1024))
 
