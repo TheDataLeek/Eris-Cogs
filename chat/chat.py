@@ -430,17 +430,6 @@ class Chat(BaseCog):
                         new_image = input_image.resize((1024 - border_width, 1024 - border_width))
                         mask_image.paste(new_image, (border_width // 2, border_width // 2))
                         input_image = mask_image
-                        formatted_query = [
-                            {
-                                "role": "system",
-                                "content": [
-                                    {
-                                        "type": "text",
-                                        "text": "Given the provided image, expand it to fill the empty space."
-                                    }
-                                ]
-                            }
-                        ]
 
                     input_image_buffer = io.BytesIO()
                     input_image.save(input_image_buffer, format="png")
@@ -542,7 +531,10 @@ def openai_client_and_query(
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     if kwargs["model"].startswith("dall"):
         if "image" in kwargs:
-            images = client.images.edit(prompt=messages, **kwargs)
+            images = client.images.edit(
+                prompt="Expand the image to fill the empty space.",
+                **kwargs
+            )
         else:
             images = client.images.generate(prompt=messages, **kwargs)
         encoded_image = images.data[0].b64_json
