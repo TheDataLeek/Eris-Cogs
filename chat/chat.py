@@ -309,22 +309,11 @@ class Chat(BaseCog):
         prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
         prompt: str = " ".join(prompt_words)
         thread_name = " ".join(prompt_words[:5]) + " image"
-        attachment = None
-        # todo - snag image from reply
-        attachments: list[discord.Attachment] = [
-            m for m in message.attachments if m.width
-        ]
-        if len(attachments) > 0:
-            attachment: discord.Attachment = attachments[0]
-        elif prompt == "":
-            return
-
         await self.query_openai(
             message,
             channel,
             thread_name,
             prompt,
-            attachment=attachment,
             image_api=True,
         )
     
@@ -441,6 +430,17 @@ class Chat(BaseCog):
                         new_image = input_image.resize((1024 - border_width, 1024 - border_width))
                         mask_image.paste(new_image, (border_width // 2, border_width // 2))
                         input_image = mask_image
+                        formatted_query = [
+                            {
+                                "role": "system",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "Given the provided image, expand it to fill the empty space."
+                                    }
+                                ]
+                            }
+                        ]
 
                     input_image_buffer = io.BytesIO()
                     input_image.save(input_image_buffer, format="png")
@@ -542,7 +542,7 @@ def openai_client_and_query(
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     if kwargs["model"].startswith("dall"):
         if "image" in kwargs:
-            images = client.images.create_variation(**kwargs)
+            images = client.images.edit(prompt=messages, **kwargs)
         else:
             images = client.images.generate(prompt=messages, **kwargs)
         encoded_image = images.data[0].b64_json
