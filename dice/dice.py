@@ -44,3 +44,14 @@ class Dice(BaseCog):
         formatted_rolls = " + ".join(str(r) for r in rolls)
 
         await ctx.send(f"Rolling {roll}... {sum(rolls)} ({formatted_rolls})")
+
+    @commands.command()
+    async def savingthrow(self, ctx, *bonuses: str):
+        result = {}
+        for bonus in bonuses:
+            name, value = bonus.split("=")
+            result[name] = random.randint(1, 20) + int(value)
+
+        formatted = "\n".join(f"{k}: {v}" for k, v in result.items())
+
+        await ctx.send(f"```\n{formatted}\n```")
