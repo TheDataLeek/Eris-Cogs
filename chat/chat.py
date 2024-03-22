@@ -8,6 +8,7 @@ import base64
 import io
 from pprint import pprint
 from typing import Dict, List, Tuple, Union
+import string
 
 import discord
 import openai
@@ -128,7 +129,7 @@ class Chat(BaseCog):
                 *[{"role": "system", "content": msg} for msg in system_messages],
                 {
                     "role": "user",
-                    "name": author.name,
+                    "name": clean_username(author.name),
                     "content": [
                         {"type": "text", "text": query},
                         *[
@@ -152,7 +153,7 @@ class Chat(BaseCog):
                     *[{"role": "system", "content": msg} for msg in system_messages],
                     {
                         "role": "user",
-                        "name": author.name,
+                        "name": clean_username(author.name),
                         "content": [
                             {"type": "text", "text": query},
                             *[
@@ -167,7 +168,7 @@ class Chat(BaseCog):
                     formatted_query.append(
                         {
                             "role": "assistant",
-                            "name": thread_message.author.name,
+                            "name": clean_username(thread_message.author.name),
                             "content": [
                                 {
                                     "type": "text",
@@ -189,7 +190,7 @@ class Chat(BaseCog):
                     formatted_query.append(
                         {
                             "role": "user",
-                            "name": thread_message.author.name,
+                            "name": clean_username(thread_message.author.name),
                             "content": [
                                 {
                                     "type": "text",
@@ -231,7 +232,7 @@ class Chat(BaseCog):
             formatted_query = [
                 {
                     "role": "user",
-                    "name": author.name,
+                    "name": clean_username(author.name),
                     "content": [
                         {"type": "text", "text": formatted_query},
                         *[
@@ -251,7 +252,7 @@ class Chat(BaseCog):
                 formatted_query = [
                     {
                         "role": "user",
-                        "name": author.name,
+                        "name": clean_username(author.name),
                         "content": [
                             {"type": "text", "text": message_without_command},
                             *[
@@ -264,7 +265,7 @@ class Chat(BaseCog):
             formatted_query += [
                 {
                     "role": "assistant" if thread_message.author.bot else "user",
-                    "name": thread_message.author.name,
+                    "name": clean_username(thread_message.author.name),
                     "content": [
                         {
                             "type": "text",
@@ -608,3 +609,9 @@ async def format_attachment(attachment: discord.Attachment) -> dict:
         print(text[:25] + "..." + text[-25:])
     # otherwise it's not supported
     return formatted_attachment
+
+
+def clean_username(name: str) -> str:
+    name = name.lower()
+    name = ''.join(c for c in name if c in string.ascii_lowercase)
+    return name
