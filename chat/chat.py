@@ -272,7 +272,7 @@ class Chat(BaseCog):
                             "text": " ".join(
                                 w
                                 for w in thread_message.clean_content.split(" ")
-                                if not w.startswith(".")
+                                if not w.startswith(f'{prefix}chat')
                             ),
                         },
                         *[
@@ -289,7 +289,7 @@ class Chat(BaseCog):
                     limit=100, oldest_first=True
                 )
                 if thread_message.author.bot
-                or thread_message.clean_content.startswith(".")
+                or thread_message.clean_content.startswith(f'{prefix}chat')
             ]
         else:
             return None
