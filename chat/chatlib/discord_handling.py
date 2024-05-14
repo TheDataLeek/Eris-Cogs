@@ -20,7 +20,6 @@ async def extract_chat_history_and_format(
     author: discord.Member,
     extract_full_history: bool = False,
 ) -> tuple[str, list[dict]]:
-    thread_name = "foo"
     formatted_query = []
     query = message.clean_content.split(" ")[1:]
     skip_command_word = f"{prefix}chat"
@@ -34,7 +33,6 @@ async def extract_chat_history_and_format(
     if isinstance(channel, discord.TextChannel):
         formatted_query = " ".join(query)
 
-        thread_name = " ".join(formatted_query.split(" ")[:5]) + "..."
         if extract_full_history:
             formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
         else:
@@ -53,6 +51,8 @@ async def extract_chat_history_and_format(
             formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
         else:
             formatted_query = await extract_history(channel, author, skip_command_word=skip_command_word)
+
+    thread_name = (" ".join(formatted_query[0]['content']['text'].split(" ")[:5]))[:80] + '...'
 
     return thread_name, formatted_query
 
