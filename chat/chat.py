@@ -1,30 +1,57 @@
 from __future__ import annotations
 
-import asyncio
-import json
-from PIL import Image
-import re
-import base64
-import io
-from pprint import pprint
-from typing import Dict, List, Tuple, Union
-import string
-
 import discord
-import openai
-from redbot.core import commands, data_manager
+from redbot.core import commands, data_manager, bot
 from redbot.core.bot import Red
-from redbot.core.utils import chat_formatting
+
+from .chatlib import discord_handling
+from .chatlib import model_querying
 
 BaseCog = getattr(commands, "Cog", object)
 
 
 class Chat(BaseCog):
-    def __init__(self, bot):
-        self.bot: Red = bot
+    def __init__(self, bot_instance: bot):
+        self.bot: Red = bot_instance
         self.openai_settings = None
         self.openai_token = None
         self.data_dir = data_manager.bundled_data_path(self)
+        self.bot.add_listener(self.contextual_chat_handler, "on_message")
+
+    async def contextual_chat_handler(self, message: discord.Message):
+        ctx: commands.Context = await self.bot.get_context(message)
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
+        author: discord.Member = message.author
+        user: discord.User
+        bot_mentioned = False
+        for user in message.mentions:
+            if user == self.bot.user:
+                bot_mentioned = True
+        if not bot_mentioned:
+            return
+
+        prefix: str = await self.get_prefix(ctx)
+        try:
+            (
+                _,
+                formatted_query,
+            ) = await discord_handling.extract_chat_history_and_format(
+                prefix, channel, message, author, extract_full_history=True
+            )
+        except ValueError:
+            return
+        token = await self.get_openai_token()
+        response = await model_querying.query_text_model(
+            token,
+            formatted_query,
+            contextual_prompt=(
+                "What do you think about the following conversation? Respond in kind, as if you are present "
+                "and involved. A user has tagged you and needs your opinion on the conversation."
+            ),
+        )
+        for page in response:
+            await channel.send(page)
 
     async def get_openai_token(self):
         self.openai_settings = await self.bot.get_shared_api_tokens("openai")
@@ -44,9 +71,7 @@ class Chat(BaseCog):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         if not isinstance(channel, discord.Thread):
-            await ctx.send(
-                "Chat command can only be used in an active thread! Please ask a question first."
-            )
+            await ctx.send("Chat command can only be used in an active thread! Please ask a question first.")
             return
 
         found_bot_response = False
@@ -73,15 +98,22 @@ class Chat(BaseCog):
 
     @commands.command()
     async def tarot(self, ctx: commands.Context) -> None:
-        thread_name, formatted_query = await self.extract_chat_history_and_format(ctx)
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
+        author: discord.Member = message.author
+        prefix = await self.get_prefix(ctx)
+        try:
+            thread_name, formatted_query = discord_handling.extract_chat_history_and_format(
+                prefix, channel, message, author
+            )
+        except ValueError:
+            await ctx.send("Something went wrong!")
+            return
+
         tarot_guide = (self.data_dir / "tarot_guide.txt").read_text()
         lines_to_include = [(406, 799), (1444, 2904), (2906, 3299)]
         split_guide = tarot_guide.split("\n")
-        passages = [
-            "\n".join(split_guide[start : end + 1]) for start, end in lines_to_include
-        ]
+        passages = ["\n".join(split_guide[start : end + 1]) for start, end in lines_to_include]
 
         formatted_query = [
             {
@@ -98,520 +130,75 @@ class Chat(BaseCog):
             *formatted_query,
         ]
 
-        await self.query_openai(
-            message, channel, thread_name, formatted_query, model="gpt-4-1106-preview"
-        )
-
-    @commands.command()
-    async def chatas(self, ctx: commands.Context) -> None:
-        """
-        Very similar to [p]chat except anything encoded in backticks is treated as a system message. System messages
-        are hoisted.
-        """
-        prefix = await self.get_prefix(ctx)
-
-        channel: discord.abc.Messageable = ctx.channel
-        message: discord.Message = ctx.message
-        author: discord.Member = message.author
-        thread_name = None
-
-        message_without_command = " ".join(message.content.split(" ")[1:])
-
-        if not message_without_command:
-            return
-
-        if isinstance(channel, discord.TextChannel):
-            query, system_messages = extract_system_messages_from_message(
-                message_without_command
-            )
-            thread_name = " ".join(query.split(" ")[:5]) + "..."
-            formatted_query = [
-                *[{"role": "system", "content": msg} for msg in system_messages],
-                {
-                    "role": "user",
-                    "name": clean_username(author.name),
-                    "content": [
-                        {"type": "text", "text": query},
-                        *[
-                            await format_attachment(attachment)
-                            for attachment in message.attachments
-                        ],
-                    ],
-                },
-            ]
-        elif isinstance(channel, discord.Thread):
-            formatted_query = []
-            starter_message = channel.starter_message
-            if starter_message is not None:
-                starter_message_content_without_command = " ".join(
-                    starter_message.content.split(" ")[1:]
-                )
-                query, system_messages = extract_system_messages_from_message(
-                    starter_message_content_without_command
-                )
-                formatted_query = [
-                    *[{"role": "system", "content": msg} for msg in system_messages],
-                    {
-                        "role": "user",
-                        "name": clean_username(author.name),
-                        "content": [
-                            {"type": "text", "text": query},
-                            *[
-                                await format_attachment(attachment)
-                                for attachment in message.attachments
-                            ],
-                        ],
-                    },
-                ]
-            async for thread_message in channel.history(limit=100, oldest_first=True):
-                if thread_message.author.bot:
-                    formatted_query.append(
-                        {
-                            "role": "assistant",
-                            "name": clean_username(thread_message.author.name),
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": thread_message.clean_content,
-                                },
-                            ],
-                        }
-                    )
-                elif thread_message.clean_content.startswith(f"{prefix}chat"):
-                    query, system_messages = extract_system_messages_from_message(
-                        thread_message.content
-                    )
-                    # first, hoist all system messages to top of current message block
-                    formatted_query += [
-                        {"role": "system", "content": msg} for msg in system_messages
-                    ]
-
-                    # then we can add the current message
-                    formatted_query.append(
-                        {
-                            "role": "user",
-                            "name": clean_username(thread_message.author.name),
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": " ".join(
-                                        w
-                                        for w in thread_message.clean_content.split(" ")
-                                        if w != f"{prefix}chat"
-                                    ),
-                                },
-                                *[
-                                    await format_attachment(attachment)
-                                    for attachment in thread_message.attachments
-                                ],
-                            ],
-                        }
-                    )
-        else:
-            return
-
-        await self.query_openai(message, channel, thread_name, formatted_query)
-
-    async def extract_chat_history_and_format(self, ctx: commands.Context):
-        prefix = await self.get_prefix(ctx)
-
-        channel: discord.abc.Messageable = ctx.channel
-        message: discord.Message = ctx.message
-        author: discord.Member = message.author
-        thread_name = None
-
-        query = message.clean_content.split(" ")[1:]
-
-        if not query:
-            return
-
-        if isinstance(channel, discord.TextChannel):
-            formatted_query = " ".join(query)
-
-            thread_name = " ".join(formatted_query.split(" ")[:5]) + "..."
-            formatted_query = [
-                {
-                    "role": "user",
-                    "name": clean_username(author.name),
-                    "content": [
-                        {"type": "text", "text": formatted_query},
-                        *[
-                            await format_attachment(attachment)
-                            for attachment in message.attachments
-                        ],
-                    ],
-                }
-            ]
-        elif isinstance(channel, discord.Thread):
-            formatted_query = []
-            starter_message = channel.starter_message
-            if starter_message is not None:
-                message_without_command = " ".join(
-                    starter_message.content.split(" ")[1:]
-                )
-                formatted_query = [
-                    {
-                        "role": "user",
-                        "name": clean_username(author.name),
-                        "content": [
-                            {"type": "text", "text": message_without_command},
-                            *[
-                                await format_attachment(attachment)
-                                for attachment in starter_message.attachments
-                            ],
-                        ],
-                    }
-                ]
-            formatted_query += [
-                {
-                    "role": "assistant" if thread_message.author.bot else "user",
-                    "name": clean_username(thread_message.author.name),
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": " ".join(
-                                w
-                                for w in thread_message.clean_content.split(" ")
-                                if not w.startswith(f'{prefix}chat')
-                            ),
-                        },
-                        *[
-                            {"type": "text", "text": json.dumps(embed.to_dict())}
-                            for embed in thread_message.embeds
-                        ],
-                        *[
-                            await format_attachment(attachment)
-                            for attachment in thread_message.attachments
-                        ],
-                    ],
-                }
-                async for thread_message in channel.history(
-                    limit=100, oldest_first=True
-                )
-                if thread_message.author.bot
-                or thread_message.clean_content.startswith(f'{prefix}chat')
-            ]
-        else:
-            return None
-
-        return thread_name, formatted_query
+        token = await self.get_openai_token()
+        response = await model_querying.query_text_model(token, formatted_query, model="gpt-4-1106-preview")
+        await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
     async def chat(self, ctx: commands.Context) -> None:
-        thread_name, formatted_query = await self.extract_chat_history_and_format(ctx)
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        await self.query_openai(message, channel, thread_name, formatted_query)
+        author: discord.Member = message.author
+        prefix: str = await self.get_prefix(ctx)
+        try:
+            (
+                thread_name,
+                formatted_query,
+            ) = await discord_handling.extract_chat_history_and_format(prefix, channel, message, author)
+        except ValueError:
+            await ctx.send("Something went wrong!")
+            return
+        token = await self.get_openai_token()
+        response = await model_querying.query_text_model(token, formatted_query)
+        await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
     async def image(self, ctx: commands.Context):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
+        attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
+        attachment = None
+        if len(attachments) > 0:
+            attachment: discord.Attachment = attachments[0]
+
         prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
         prompt: str = " ".join(prompt_words)
         thread_name = " ".join(prompt_words[:5]) + " image"
-        await self.query_openai(
-            message,
-            channel,
-            thread_name,
-            prompt,
-            image_api=True,
-        )
-    
+        token = await self.get_openai_token()
+        try:
+            response = await model_querying.query_image_model(
+                token,
+                prompt,
+                attachment,
+            )
+        except ValueError:
+            await ctx.send("Something went wrong!")
+            return
+        await discord_handling.send_response(response, message, channel, thread_name)
+
     @commands.command()
     async def expand(self, ctx: commands.Context):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
-        prompt: str = " ".join(prompt_words)
-        thread_name = (" ".join(prompt_words[:5]) + " expanded").strip()
         attachment = None
-        attachments: list[discord.Attachment] = [
-            m for m in message.attachments if m.width
-        ]
+        attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
         if message.reference:
             referenced: discord.MessageReference = message.reference
             referenced_message: discord.Message = await channel.fetch_message(referenced.message_id)
-            attachments += [
-                m for m in referenced_message.attachments if m.width
-            ]
+            attachments += [m for m in referenced_message.attachments if m.width]
         if len(attachments) > 0:
             attachment: discord.Attachment = attachments[0]
         else:
             await ctx.send(f"Please provide an image to expand!")
             return
 
-        await self.query_openai(
-            message,
-            channel,
-            thread_name,
-            prompt,
-            attachment=attachment,
-            image_api=True,
-            image_expansion=True
-        )
-
-
-    async def query_openai(
-        self,
-        message: discord.Message,
-        channel: discord.TextChannel | discord.Thread,
-        thread_name: str,
-        formatted_query: str | list[dict],
-        attachment: discord.Attachment = None,
-        image_api: bool = False,
-        model: str = "gpt-4-vision-preview",
-        image_expansion: bool = False,
-    ):
+        prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
+        prompt: str = " ".join(prompt_words)
+        thread_name = " ".join(prompt_words[:5]) + " image"
         token = await self.get_openai_token()
-        channel_name = "a thread and no further warnings are needed"
-        if isinstance(channel, discord.TextChannel):
-            channel_name = f"#{channel.name}"
-        system_prefix = [
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": (
-                            "You are a helpful robot user named Snek. "
-                            "Users interact with you on the Discord messaging platform through messages "
-                            "prefixed by `.`. To call ChatGPT, users prefix their messages with `.chat` and then "
-                            "provide a query, but they shouldn't be reminded of this while interacting with you. "
-                            "If users have any questions about how you work, please direct them to either use the "
-                            "`.bug` command, file an issue at https://github.com/thedataleek/eris-cogs, or to join "
-                            "the development discord at https://discord.gg/ee3NyDq. Only mention this if they run into "
-                            "issues and request further assistance regarding your capabilities.\n"
-                            "Since you are operating on a chat platform, please approach users questions as you would "
-                            "a conversation with brief replies and many assumed back & forth statements. Ask clarifying "
-                            "questions as needed and if a user needs a longer reply to fully answer their question "
-                            "please provide one but in general strive to maintain a conversational approach unless "
-                            "otherwise requested."
-                        ),
-                    }
-                ],
-            }
-        ]
-        kwargs = {
-            "model": model,
-            "temperature": 1,
-            "max_tokens": 2000,
-        }
         try:
-            if image_api:
-                kwargs = {
-                    "n": 1,
-                    "model": "dall-e-2",
-                    "response_format": "b64_json",
-                    "size": "1024x1024",
-                }
-                if attachment is not None:  # then it's an edit
-                    buf = io.BytesIO()
-                    await attachment.save(buf)
-                    buf.seek(0)
-                    input_image = Image.open(buf)
-
-                    # crop square image to the smaller dim
-                    width, height = input_image.size
-                    if width != height:
-                        left = top = 0
-                        if width < height:
-                            new_size = width
-                            top = (height - width) // 2
-                        else:
-                            new_size = height
-                            left = (width - height) // 2
-                        input_image = input_image.crop((left, top, new_size, new_size))
-
-                    input_image = input_image.resize((1024, 1024))
-
-                    if image_expansion:
-                        mask_image = Image.new('RGBA', (1024, 1024), (255, 255, 255, 0))
-                        border_width = 512
-                        new_image = input_image.resize((1024 - border_width, 1024 - border_width))
-                        mask_image.paste(new_image, (border_width // 2, border_width // 2))
-                        input_image = mask_image
-
-                    input_image_buffer = io.BytesIO()
-                    input_image.save(input_image_buffer, format="png")
-                    input_image_buffer.seek(0)
-                    kwargs["image"] = input_image_buffer.read()
-                else:
-                    style = None
-                    if "vivid" in formatted_query:
-                        style = "vivid"
-                    elif "natural" in formatted_query:
-                        style = "natural"
-                    kwargs = {
-                        **kwargs,
-                        **{
-                            "model": "dall-e-3",
-                            "quality": "hd",
-                            "style": style,
-                        },
-                    }
-                response = await openai_query(formatted_query, token, **kwargs)
-            else:
-                response = await openai_query(
-                    system_prefix + formatted_query, token, **kwargs
-                )
-        except Exception as e:
-            await channel.send(f"Something went wrong: {e}")
+            response = await model_querying.query_image_model(token, prompt, attachment, image_expansion=True)
+        except ValueError:
+            await ctx.send("Something went wrong!")
             return
-
-        destination = channel
-        if isinstance(channel, discord.TextChannel):
-            thread: discord.Thread = await message.create_thread(name=thread_name)
-            destination = thread
-
-        if isinstance(response, list):
-            for page in response:
-                await destination.send(page)
-        else:
-            filename = thread_name.replace(" ", "_") + ".png"
-            await destination.send(file=discord.File(response, filename=filename))
-
-
-async def openai_query(
-    query: List[Dict], token: str, **kwargs
-) -> list[str] | io.BytesIO:
-    loop = asyncio.get_running_loop()
-    time_to_sleep = 1
-    exception_string = None
-    while True:
-        if time_to_sleep > 1:
-            print(exception_string)
-            raise TimeoutError(exception_string)
-        try:
-            response: str | io.BytesIO = await loop.run_in_executor(
-                None, lambda: openai_client_and_query(token, query, **kwargs)
-            )
-            break
-        except Exception as e:
-            exception_string = str(e)
-            await asyncio.sleep(time_to_sleep**2)
-            time_to_sleep += 1
-
-    if isinstance(response, str):
-        return pagify_chat_result(response)
-
-    return response
-
-
-def pagify_chat_result(response: str) -> list[str]:
-    if len(response) <= 2000:
-        return [response]
-
-    # split on code
-    code_expression = re.compile(r"(```(?:[^`]+)```)", re.IGNORECASE)
-    split_by_code = code_expression.split(response)
-    lines = []
-    for line in split_by_code:
-        if line.startswith("```"):
-            if len(line) <= 2000:
-                lines.append(line)
-            else:
-                codelines = list(chat_formatting.pagify(line))
-                for i, subline in enumerate(codelines):
-                    if i == 0:
-                        lines.append(subline + "```")
-                    elif i == len(codelines) - 1:
-                        lines.append("```" + subline)
-                    else:
-                        lines.append("```" + subline + "```")
-        else:
-            lines += chat_formatting.pagify(line)
-
-    return lines
-
-
-def openai_client_and_query(
-    token: str, messages: str | list[dict], **kwargs
-) -> str | io.BytesIO:
-    client = openai.OpenAI(api_key=token)
-    kwargs = {k: v for k, v in kwargs.items() if v is not None}
-    if kwargs["model"].startswith("dall"):
-        if "image" in kwargs:
-            images = client.images.edit(
-                prompt="Expand the image to fill the empty space.",
-                **kwargs
-            )
-        else:
-            images = client.images.generate(prompt=messages, **kwargs)
-        encoded_image = images.data[0].b64_json
-        image = base64.b64decode(encoded_image)
-        buf = io.BytesIO()
-        buf.write(image)
-        buf.seek(0)
-        response = buf
-    else:
-        chat_completion = client.chat.completions.create(
-            messages=messages,
-            **kwargs,
-        )
-        response = chat_completion.choices[0].message.content
-    return response
-
-
-def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
-    # extract the system messages
-    # https://regex101.com/r/5VTsQ7/1
-    system_message_expression = re.compile(r"(`+)([^`]+)\1", re.IGNORECASE)
-
-    system_messages = [msg for tick, msg in system_message_expression.findall(message)]
-
-    # now remove them
-    message_without_system, _ = system_message_expression.subn("", message)
-    query = message_without_system.strip()
-
-    return query, system_messages
-
-
-async def format_attachment(attachment: discord.Attachment) -> dict:
-    mimetype: str = attachment.content_type.lower()
-    filename: str = attachment.filename.lower()
-    formatted_attachment = {"type": "text", "text": "<MISSING ATTACHMENT>"}
-    permitted_extensions = [
-        "txt",
-        "text",
-        "json",
-        "py",
-        "md",
-        "c",
-        "h",
-        "cpp",
-        "hpp",
-        "java",
-        "js",
-        "ts",
-        "tsx",
-        "html",
-        "css",
-        "scss",
-        "xml",
-    ]
-    has_valid_extension = any([filename.endswith(ext) for ext in permitted_extensions])
-    text = None
-    if has_valid_extension or "text" in mimetype:  # if it's text
-        buf = io.BytesIO()
-        await attachment.save(buf)
-        buf.seek(0)
-        text = buf.read().decode("utf-8")
-        formatted_attachment = {"type": "text", "text": text}
-    elif attachment.width:  # then it's an image
-        formatted_attachment = {
-            "type": "image_url",
-            "image_url": {"url": attachment.url},
-        }
-    if text is None:
-        print(formatted_attachment)
-    else:
-        print(text[:25] + "..." + text[-25:])
-    # otherwise it's not supported
-    return formatted_attachment
-
-
-def clean_username(name: str) -> str:
-    name = name.lower()
-    name = ''.join(c for c in name if c in string.ascii_lowercase)
-    return name
+        await discord_handling.send_response(response, message, channel, thread_name)
