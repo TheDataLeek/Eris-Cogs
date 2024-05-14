@@ -68,42 +68,35 @@ async def extract_history(
     history = []
     async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after):
         if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word):
-            cleaned_message, page_contents = extract_message(
-                            thread_message.content,
-                            keep_all_words,
-                            skip_command_word)
+            cleaned_message, page_contents = await extract_message(
+                thread_message.content, keep_all_words, skip_command_word
+            )
             for url, page in page_contents:
-                history.append({
-                    "role": "user",
-                    'name': clean_username(author.name),
-                    "content": {'type': 'text', 'text': page}
-                })
-            history.append({
-            "role": "assistant" if thread_message.author.bot else "user",
-            "name": clean_username(thread_message.author.name),
-            "content": [
+                history.append(
+                    {"role": "user", "name": clean_username(author.name), "content": {"type": "text", "text": page}}
+                )
+            history.append(
                 {
-                    "type": "text",
-                    "text": cleaned_message,
-                },
-                *[{"type": "text", "text": json.dumps(embed.to_dict())} for embed in thread_message.embeds],
-                *[await format_attachment(attachment) for attachment in thread_message.attachments],
-            ],
-        })
+                    "role": "assistant" if thread_message.author.bot else "user",
+                    "name": clean_username(thread_message.author.name),
+                    "content": [
+                        {"type": "text", "text": cleaned_message},
+                        *[{"type": "text", "text": json.dumps(embed.to_dict())} for embed in thread_message.embeds],
+                        *[await format_attachment(attachment) for attachment in thread_message.attachments],
+                    ],
+                }
+            )
 
     if isinstance(channel_or_thread, discord.Thread):
         starter_message = channel_or_thread.starter_message
         if starter_message is not None:
-            cleaned_message, page_contents = extract_message(
-                            starter_message.content,
-                            keep_all_words,
-                            skip_command_word)
+            cleaned_message, page_contents = await extract_message(
+                starter_message.content, keep_all_words, skip_command_word
+            )
             for url, page in page_contents:
-                history.append({
-                    "role": "user",
-                    'name': clean_username(author.name),
-                    "content": {'type': 'text', 'text': page}
-                })
+                history.append(
+                    {"role": "user", "name": clean_username(author.name), "content": {"type": "text", "text": page}}
+                )
             history.append(
                 {
                     "role": "user",
@@ -118,6 +111,7 @@ async def extract_history(
     history = history[::-1]  # flip to oldest first
     return history
 
+
 async def fetch_url(url: str):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
@@ -128,28 +122,25 @@ async def fetch_url(url: str):
     return markdown_content
 
 
-def extract_message(message, keep_all_words, skip_command_word):
-    words = message.split(' ')
+async def extract_message(message, keep_all_words, skip_command_word):
+    words = message.split(" ")
     keep_words = []
     page_contents = []
     for word in words:
-        match = re.match(r'\+\[(https?://.+?)\]', word)
+        match = re.match(r"\+\[(https?://.+?)\]", word)
         if match:
             url = match.group(1)
             page_contents.append((url, await fetch_url(url)))
         elif keep_all_words or (not word.startswith(skip_command_word)):
             keep_words.append(word)
 
-    cleaned_message = ' '.join(keep_words)
+    cleaned_message = " ".join(keep_words)
 
     return cleaned_message, page_contents
 
 
 async def send_response(
-    response: str | io.BytesIO,
-    message: discord.Message,
-    channel_or_thread: discord.abc.Messageable,
-    thread_name: str,
+    response: str | io.BytesIO, message: discord.Message, channel_or_thread: discord.abc.Messageable, thread_name: str
 ):
     if isinstance(channel_or_thread, discord.TextChannel):
         channel_or_thread: discord.Thread = await message.create_thread(name=thread_name)
@@ -208,10 +199,7 @@ async def format_attachment(attachment: discord.Attachment) -> dict:
         text = buf.read().decode("utf-8")
         formatted_attachment = {"type": "text", "text": text}
     elif attachment.width:  # then it's an image
-        formatted_attachment = {
-            "type": "image_url",
-            "image_url": {"url": attachment.url},
-        }
+        formatted_attachment = {"type": "image_url", "image_url": {"url": attachment.url}}
     if text is None:
         print(formatted_attachment)
     else:
