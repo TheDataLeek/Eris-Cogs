@@ -127,7 +127,7 @@ async def extract_message(message, keep_all_words, skip_command_word):
     keep_words = []
     page_contents = []
     for word in words:
-        match = re.match(r"\+\[(https?://.+?)\]", word)
+        match = re.match(r"\+\[(https?://.+?)\]", word, flags=re.IGNORECASE)
         if match:
             url = match.group(1)
             page_contents.append((url, await fetch_url(url)))
