@@ -1,1 +1,1 @@
-from . import discord_handling, events, model_querying
+from . import discord_handling, model_querying

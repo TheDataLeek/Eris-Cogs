@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import asyncio
 from PIL import Image
 import base64
@@ -8,9 +9,8 @@ from pprint import pprint
 from typing import Dict, List, Tuple, Union
 
 import discord
+from redbot.core.utils import chat_formatting
 import openai
-
-from .discord_handling import pagify_chat_result
 
 
 async def query_text_model(
@@ -160,3 +160,30 @@ def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) ->
         )
         response = chat_completion.choices[0].message.content
     return response
+
+
+def pagify_chat_result(response: str) -> list[str]:
+    if len(response) <= 2000:
+        return [response]
+
+    # split on code
+    code_expression = re.compile(r"(```(?:[^`]+)```)", re.IGNORECASE)
+    split_by_code = code_expression.split(response)
+    lines = []
+    for line in split_by_code:
+        if line.startswith("```"):
+            if len(line) <= 2000:
+                lines.append(line)
+            else:
+                codelines = list(chat_formatting.pagify(line))
+                for i, subline in enumerate(codelines):
+                    if i == 0:
+                        lines.append(subline + "```")
+                    elif i == len(codelines) - 1:
+                        lines.append("```" + subline)
+                    else:
+                        lines.append("```" + subline + "```")
+        else:
+            lines += chat_formatting.pagify(line)
+
+    return lines

@@ -4,8 +4,7 @@ import discord
 from redbot.core import commands, data_manager, bot
 from redbot.core.bot import Red
 
-from .chatlib import discord_handling
-from .chatlib import model_querying
+from .chatlib import discord_handling, model_querying
 
 BaseCog = getattr(commands, "Cog", object)
 
