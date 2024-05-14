@@ -20,6 +20,7 @@ async def extract_chat_history_and_format(
     author: discord.Member,
     extract_full_history: bool = False,
 ) -> tuple[str, list[dict]]:
+    thread_name = 'foo'
     formatted_query = []
     query = message.clean_content.split(" ")[1:]
     skip_command_word = f"{prefix}chat"
