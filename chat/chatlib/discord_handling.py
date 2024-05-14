@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import datetime as dt
 import json
 import io
 from typing import Dict, List, Tuple, Union
@@ -53,6 +54,8 @@ async def extract_history(
     channel_or_thread: discord.abc.Messageable, author: discord.Member, skip_command_word: str = None, limit: int = 100
 ):
     keep_all_words = skip_command_word is None
+    how_far_back = dt.timedelta(minutes=10)
+    after = dt.datetime.now() - how_far_back
     history = [
         {
             "role": "assistant" if thread_message.author.bot else "user",
@@ -70,7 +73,7 @@ async def extract_history(
                 *[await format_attachment(attachment) for attachment in thread_message.attachments],
             ],
         }
-        async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False)
+        async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after)
         if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word)
     ]
 
