@@ -22,6 +22,9 @@ async def extract_chat_history_and_format(
     query = message.clean_content.split(" ")[1:]
     skip_command_word = f"{prefix}chat"
 
+    how_far_back = dt.timedelta(minutes=30)
+    after = dt.datetime.now() - how_far_back
+
     if not query:
         raise ValueError("Query not supplied!")
 
@@ -30,7 +33,7 @@ async def extract_chat_history_and_format(
 
         thread_name = " ".join(formatted_query.split(" ")[:5]) + "..."
         if extract_full_history:
-            formatted_query = await extract_history(channel, author, skip_command_word=None)
+            formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
         else:
             formatted_query = [
                 {
@@ -44,18 +47,21 @@ async def extract_chat_history_and_format(
             ]
     elif isinstance(channel, discord.Thread):
         if extract_full_history:
-            skip_command_word = None
-        formatted_query = await extract_history(channel, author, skip_command_word=skip_command_word)
+            formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
+        else:
+            formatted_query = await extract_history(channel, author, skip_command_word=skip_command_word)
 
     return thread_name, formatted_query
 
 
 async def extract_history(
-    channel_or_thread: discord.abc.Messageable, author: discord.Member, skip_command_word: str = None, limit: int = 100
+    channel_or_thread: discord.abc.Messageable,
+    author: discord.Member,
+    skip_command_word: str = None,
+    limit: int = 100,
+    after=None,
 ):
     keep_all_words = skip_command_word is None
-    how_far_back = dt.timedelta(minutes=10)
-    after = dt.datetime.now() - how_far_back
     history = [
         {
             "role": "assistant" if thread_message.author.bot else "user",
