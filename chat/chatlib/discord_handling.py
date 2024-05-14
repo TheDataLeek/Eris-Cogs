@@ -29,7 +29,7 @@ async def extract_chat_history_and_format(
 
         thread_name = " ".join(formatted_query.split(" ")[:5]) + "..."
         if extract_full_history:
-            formatted_query = extract_history(channel, author, skip_command_word=None)
+            formatted_query = await extract_history(channel, author, skip_command_word=None)
         else:
             formatted_query = [
                 {
@@ -44,7 +44,7 @@ async def extract_chat_history_and_format(
     elif isinstance(channel, discord.Thread):
         if extract_full_history:
             skip_command_word = None
-        formatted_query = extract_history(channel, author, skip_command_word=skip_command_word)
+        formatted_query = await extract_history(channel, author, skip_command_word=skip_command_word)
 
     return thread_name, formatted_query
 

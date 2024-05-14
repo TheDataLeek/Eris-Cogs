@@ -38,7 +38,8 @@ class Chat(BaseCog):
             ) = await discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author, extract_full_history=True
             )
-        except ValueError:
+        except ValueError as e:
+            print(e)
             return
         token = await self.get_openai_token()
         response = await model_querying.query_text_model(
