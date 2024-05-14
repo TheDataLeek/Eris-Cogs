@@ -14,10 +14,7 @@ import openai
 
 
 async def query_text_model(
-    token: str,
-    formatted_query: str | list[dict],
-    model: str = "gpt-4-vision-preview",
-    contextual_prompt: str = "",
+    token: str, formatted_query: str | list[dict], model: str = "gpt-4-vision-preview", contextual_prompt: str = ""
 ) -> str:
     system_prefix = [
         {
@@ -44,27 +41,15 @@ async def query_text_model(
             ],
         }
     ]
-    kwargs = {
-        "model": model,
-        "temperature": 1,
-        "max_tokens": 2000,
-    }
+    kwargs = {"model": model, "temperature": 1, "max_tokens": 2000}
     response = await construct_async_query(system_prefix + formatted_query, token, **kwargs)
     return response
 
 
 async def query_image_model(
-    token: str,
-    formatted_query: str | list[dict],
-    attachment: discord.Attachment = None,
-    image_expansion: bool = False,
+    token: str, formatted_query: str | list[dict], attachment: discord.Attachment = None, image_expansion: bool = False
 ) -> io.BytesIO:
-    kwargs = {
-        "n": 1,
-        "model": "dall-e-2",
-        "response_format": "b64_json",
-        "size": "1024x1024",
-    }
+    kwargs = {"n": 1, "model": "dall-e-2", "response_format": "b64_json", "size": "1024x1024"}
     if attachment is not None:  # then it's an edit
         buf = io.BytesIO()
         await attachment.save(buf)
@@ -102,14 +87,7 @@ async def query_image_model(
             style = "vivid"
         elif "natural" in formatted_query:
             style = "natural"
-        kwargs = {
-            **kwargs,
-            **{
-                "model": "dall-e-3",
-                "quality": "hd",
-                "style": style,
-            },
-        }
+        kwargs = {**kwargs, **{"model": "dall-e-3", "quality": "hd", "style": style}}
     response = await construct_async_query(formatted_query, token, **kwargs)
 
     return response
@@ -130,7 +108,7 @@ async def construct_async_query(query: List[Dict], token: str, **kwargs) -> list
             break
         except Exception as e:
             exception_string = str(e)
-            await asyncio.sleep(time_to_sleep**2)
+            await asyncio.sleep(time_to_sleep ** 2)
             time_to_sleep += 1
 
     if isinstance(response, str):
@@ -154,10 +132,7 @@ def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) ->
         buf.seek(0)
         response = buf
     else:
-        chat_completion = client.chat.completions.create(
-            messages=messages,
-            **kwargs,
-        )
+        chat_completion = client.chat.completions.create(messages=messages, **kwargs)
         response = chat_completion.choices[0].message.content
     return response
 

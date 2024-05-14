@@ -6,6 +6,9 @@ import json
 import io
 from typing import Dict, List, Tuple, Union
 import string
+import aiohttp
+
+from markdownify import markdownify as md
 
 import discord
 
@@ -62,37 +65,51 @@ async def extract_history(
     after=None,
 ):
     keep_all_words = skip_command_word is None
-    history = [
-        {
+    history = []
+    async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after):
+        if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word):
+            cleaned_message, page_contents = extract_message(
+                            thread_message.content,
+                            keep_all_words,
+                            skip_command_word)
+            for url, page in page_contents:
+                history.append({
+                    "role": "user",
+                    'name': clean_username(author.name),
+                    "content": {'type': 'text', 'text': page}
+                })
+            history.append({
             "role": "assistant" if thread_message.author.bot else "user",
             "name": clean_username(thread_message.author.name),
             "content": [
                 {
                     "type": "text",
-                    "text": " ".join(
-                        w
-                        for w in thread_message.clean_content.split(" ")
-                        if keep_all_words or (not w.startswith(skip_command_word))
-                    ),
+                    "text": cleaned_message,
                 },
                 *[{"type": "text", "text": json.dumps(embed.to_dict())} for embed in thread_message.embeds],
                 *[await format_attachment(attachment) for attachment in thread_message.attachments],
             ],
-        }
-        async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after)
-        if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word)
-    ]
+        })
 
     if isinstance(channel_or_thread, discord.Thread):
         starter_message = channel_or_thread.starter_message
         if starter_message is not None:
-            message_without_command = " ".join(starter_message.content.split(" ")[1:])
+            cleaned_message, page_contents = extract_message(
+                            starter_message.content,
+                            keep_all_words,
+                            skip_command_word)
+            for url, page in page_contents:
+                history.append({
+                    "role": "user",
+                    'name': clean_username(author.name),
+                    "content": {'type': 'text', 'text': page}
+                })
             history.append(
                 {
                     "role": "user",
                     "name": clean_username(author.name),
                     "content": [
-                        {"type": "text", "text": message_without_command},
+                        {"type": "text", "text": cleaned_message},
                         *[await format_attachment(attachment) for attachment in starter_message.attachments],
                     ],
                 }
@@ -100,6 +117,32 @@ async def extract_history(
 
     history = history[::-1]  # flip to oldest first
     return history
+
+async def fetch_url(url: str):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            if resp.status != 200:
+                return []
+            page_content = await resp.text()
+            markdown_content = md(page_content)
+    return markdown_content
+
+
+def extract_message(message, keep_all_words, skip_command_word):
+    words = message.split(' ')
+    keep_words = []
+    page_contents = []
+    for word in words:
+        match = re.match(r'\+\[(https?://.+?)\]', word)
+        if match:
+            url = match.group(1)
+            page_contents.append((url, await fetch_url(url)))
+        elif keep_all_words or (not word.startswith(skip_command_word)):
+            keep_words.append(word)
+
+    cleaned_message = ' '.join(keep_words)
+
+    return cleaned_message, page_contents
 
 
 async def send_response(

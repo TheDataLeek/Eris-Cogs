@@ -7,7 +7,8 @@
   "short": "Use OpenAI's ChatGPT to respond to the conversation",
   "requirements": [
     "openai",
-    "pillow"
+    "pillow",
+    "markdownify"
   ],
   "ready": true
 }
