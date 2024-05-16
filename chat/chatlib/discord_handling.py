@@ -20,7 +20,7 @@ async def extract_chat_history_and_format(
     author: discord.Member,
     extract_full_history: bool = False,
 ) -> tuple[str, list[dict]]:
-    thread_name = 'foo'
+    thread_name = "foo"
     formatted_query = []
     query = message.clean_content.split(" ")[1:]
     skip_command_word = f"{prefix}chat"
@@ -33,27 +33,30 @@ async def extract_chat_history_and_format(
 
     if isinstance(channel, discord.TextChannel):
         formatted_query = " ".join(query)
-        thread_name = (" ".join(formatted_query.split(" ")[:5]))[:80] + '...'
+        thread_name = (" ".join(formatted_query.split(" ")[:5]))[:80] + "..."
 
         if extract_full_history:
             formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
         else:
+            extracted_message, page_contents = await extract_message(formatted_query, False, skip_command_word)
             formatted_query = [
                 {
                     "role": "user",
                     "name": clean_username(author.name),
                     "content": [
-                        {"type": "text", "text": formatted_query},
+                        {"type": "text", "text": extracted_message},
                         *[await format_attachment(attachment) for attachment in message.attachments],
                     ],
                 }
+            ] + [
+                {"role": "user", "name": clean_username(author.name), "content": {"type": "text", "text": page}}
+                for url, page in page_contents
             ]
     elif isinstance(channel, discord.Thread):
         if extract_full_history:
             formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
         else:
             formatted_query = await extract_history(channel, author, skip_command_word=skip_command_word)
-
 
     return thread_name, formatted_query
 
@@ -199,7 +202,7 @@ async def format_attachment(attachment: discord.Attachment) -> dict:
         buf.seek(0)
         text = buf.read().decode("utf-8")
         formatted_attachment = {"type": "text", "text": text}
-    elif attachment.width:  # then it's an image
+    elif attachment.width and attachment.size <= 2e-7:  # then it's an image less than 20MB
         formatted_attachment = {"type": "image_url", "image_url": {"url": attachment.url}}
     if text is None:
         print(formatted_attachment)
