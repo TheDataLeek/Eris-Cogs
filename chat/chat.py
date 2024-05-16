@@ -131,7 +131,7 @@ class Chat(BaseCog):
         ]
 
         token = await self.get_openai_token()
-        response = await model_querying.query_text_model(token, formatted_query, model="gpt-4-1106-preview")
+        response = await model_querying.query_text_model(token, formatted_query, model="gpt-4o")
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
