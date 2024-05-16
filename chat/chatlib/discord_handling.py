@@ -202,7 +202,7 @@ async def format_attachment(attachment: discord.Attachment) -> dict:
         buf.seek(0)
         text = buf.read().decode("utf-8")
         formatted_attachment = {"type": "text", "text": text}
-    elif attachment.width and attachment.size <= 2e-7:  # then it's an image less than 20MB
+    elif attachment.width:  # then it's an image less than 20MB
         formatted_attachment = {"type": "image_url", "image_url": {"url": attachment.url}}
     if text is None:
         print(formatted_attachment)
