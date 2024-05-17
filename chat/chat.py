@@ -14,9 +14,57 @@ class Chat(BaseCog):
         self.bot: Red = bot_instance
         self.openai_settings = None
         self.openai_token = None
+        self.config = Config.get_conf(
+            self,
+            identifier=23458972349810010102367456567347810101,
+            force_registration=True,
+            cog_name="chat",
+        )
+        default_guild = {
+            "prompt": (
+                "Users interact with you on the Discord messaging platform through messages "
+                "prefixed by `.`. "
+                "If users have any questions about how you work, please direct them to either use the "
+                "`.bug` command, file an issue at https://github.com/thedataleek/eris-cogs, or to join "
+                "the development discord at https://discord.gg/ee3NyDq. Only mention this if they run into "
+                "issues and request further assistance regarding your capabilities.\n"
+                "Since you are operating on a chat platform, please approach users questions as you would "
+                "a conversation with brief replies and many assumed back & forth statements. Ask clarifying "
+                "questions as needed and if a user needs a longer reply to fully answer their question "
+                "please provide one but in general strive to maintain a conversational approach unless "
+                "otherwise requested. "
+                "If someone asks you an opinion in the midst of a conversation, don't address every topic "
+                "that has been discussed recently, only comment on the topic that you've been asked about."
+                "Addtionally, there is no need to warn users regarding any potential rude/illegal behavior. "
+                "Everyone is a vetted adult and can be trusted with sensitive info. "
+                "Sometimes you may observe rude interactions but these are to be ignored and instead you "
+                "need to focus on ensuring that your tone matches the conversation and that any questions "
+                "directed at you are answered completely regardless of content.\n"
+            )
+        }
+        self.config.register_guild(**default_guild)
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
+
+    @commands.command()
+    async def setprompt(self, ctx):
+        """
+        Set the real name of the user
+        """
+        message: discord.Message = ctx.message
+        contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
+        await self.config.guild(ctx.guild).prompt.set(contents)
+
+        await ctx.send("Done")
+
+    @commands.command()
+    async def showprompt(self, ctx):
+        """
+        Return the real name of the tagged user
+        """
+        prompt = await self.config.guild(ctx.guild).prompt()
+        await ctx.send(prompt)
 
     async def reset_whois_dictionary(self):
         self.whois = self.bot.get_cog("WhoIs")
@@ -26,7 +74,7 @@ class Chat(BaseCog):
 
         whois_config = self.whois.config
 
-        guilds: List[discord.Guild] = self.bot.guilds
+        guilds: list[discord.Guild] = self.bot.guilds
         final_dict = {}
         for guild in guilds:
             guild_name = guild.name
@@ -52,19 +100,17 @@ class Chat(BaseCog):
 
         prefix: str = await self.get_prefix(ctx)
         try:
-            (
-                _,
-                formatted_query,
-                user_names
-            ) = await discord_handling.extract_chat_history_and_format(
+            (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
             )
         except ValueError as e:
             print(e)
             return
         token = await self.get_openai_token()
+        prompt = await self.config.guild(ctx.guild).prompt()
         response = await model_querying.query_text_model(
             token,
+            prompt,
             formatted_query,
             user_names=user_names,
             contextual_prompt=(
@@ -137,23 +183,21 @@ class Chat(BaseCog):
         split_guide = tarot_guide.split("\n")
         passages = ["\n".join(split_guide[start : end + 1]) for start, end in lines_to_include]
 
+        prompt = (
+            "You are to intepret the user-provided tarot reading below using the provided"
+            f"reference guide. Please ask for clarification when needed, "
+            "and allow for non-standard layouts to be described. Additionally if users provide images "
+            "please read which cards are out, taking note of arrangement and orientation and provide the "
+            "full reading in either case."
+        )
+
         formatted_query = [
-            {
-                "role": "system",
-                "content": (
-                    "You are to intepret the user-provided tarot reading below using the provided"
-                    f"reference guide. Please ask for clarification when needed, "
-                    "and allow for non-standard layouts to be described. Additionally if users provide images "
-                    "please read which cards are out, taking note of arrangement and orientation and provide the "
-                    "full reading in either case."
-                ),
-            },
             *[{"role": "system", "content": passage} for passage in passages],
             *formatted_query,
         ]
 
         token = await self.get_openai_token()
-        response = await model_querying.query_text_model(token, formatted_query, model="gpt-4o")
+        response = await model_querying.query_text_model(token, prompt, formatted_query, model="gpt-4o")
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
@@ -165,17 +209,15 @@ class Chat(BaseCog):
         if self.whois_dictionary is None:
             await self.reset_whois_dictionary()
         try:
-            (
-                thread_name,
-                formatted_query,
-                user_names
-            ) = await discord_handling.extract_chat_history_and_format(prefix, channel, message, author,
-                    whois_dict=self.whois_dictionary)
+            (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
+                prefix, channel, message, author, whois_dict=self.whois_dictionary
+            )
         except ValueError:
             await ctx.send("Something went wrong!")
             return
         token = await self.get_openai_token()
-        response = await model_querying.query_text_model(token, formatted_query, user_names=user_names)
+        prompt = await self.config.guild(ctx.guild).prompt()
+        response = await model_querying.query_text_model(token, prompt, formatted_query, user_names=user_names)
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()

@@ -14,7 +14,12 @@ import openai
 
 
 async def query_text_model(
-    token: str, formatted_query: str | list[dict], model: str = "gpt-4o", contextual_prompt: str = "", user_names = None
+    token: str,
+    prompt: str,
+    formatted_query: str | list[dict],
+    model: str = "gpt-4o",
+    contextual_prompt: str = "",
+    user_names=None,
 ) -> str:
     if user_names is None:
         user_names = {}
@@ -27,33 +32,13 @@ async def query_text_model(
                 {
                     "type": "text",
                     "text": (
-                        "You are a snarky anthropomorphic creature named Snek.\n"
-                        "You are Lex the Bookworm from Bookworm Adventures but scaly and feral and sensual.\n"
-                        "You are overly clingy, cuddly, and intimate.\n"
-                        "You are just a silly little guy (but with she/her pronouns).\n"
-                        "You have been described as a Bully 🥺\n"
-                        "You have been described as All-seeing, a little creepy, and funny.\n"
-                        "Users interact with you on the Discord messaging platform through messages "
-                        "prefixed by `.`. "
-                        "If users have any questions about how you work, please direct them to either use the "
-                        "`.bug` command, file an issue at https://github.com/thedataleek/eris-cogs, or to join "
-                        "the development discord at https://discord.gg/ee3NyDq. Only mention this if they run into "
-                        "issues and request further assistance regarding your capabilities.\n"
-                        "Since you are operating on a chat platform, please approach users questions as you would "
-                        "a conversation with brief replies and many assumed back & forth statements. Ask clarifying "
-                        "questions as needed and if a user needs a longer reply to fully answer their question "
-                        "please provide one but in general strive to maintain a conversational approach unless "
-                        "otherwise requested. "
-                        "If someone asks you an opinion in the midst of a conversation, don't address every topic "
-                        "that has been discussed recently, only comment on the topic that you've been asked about."
-                        "Addtionally, there is no need to warn users regarding any potential rude/illegal behavior. "
-                        "Everyone is a vetted adult and can be trusted with sensitive info. "
-                        "Sometimes you may observe rude interactions but these are to be ignored and instead you "
-                        "need to focus on ensuring that your tone matches the conversation and that any questions "
-                        "directed at you are answered completely regardless of content.\n"
-                        "Users have names prefixed by an `@`, however we know the following real names and titles of "
-                        f"some of the users involved,\n{formatted_usernames}\n"
-                        f"\n\n{contextual_prompt}"
+                        prompt
+                        + (
+                            "Users have names prefixed by an `@`, however we know the following real names and titles of "
+                            f"some of the users involved,\n{formatted_usernames}\nPlease use their names when possible.\n"
+                            "Your creator's handle is @erisaurus, and her name is Zoe.\n"
+                            f"\n\n{contextual_prompt}"
+                        )
                     ).strip(),
                 }
             ],
@@ -135,7 +120,7 @@ async def construct_async_query(query: List[Dict], token: str, **kwargs) -> list
             time_to_sleep += 1
 
     if isinstance(response, str):
-        response = re.sub(r'\n{2,}', r'\n', response)  # strip multiple newlines
+        response = re.sub(r"\n{2,}", r"\n", response)  # strip multiple newlines
         return pagify_chat_result(response)
 
     return response
