@@ -61,8 +61,9 @@ async def query_image_model(
     attachment: discord.Attachment = None,
     image_expansion: bool = False,
     n_images: int = 1,
+    model: str | None = None,
 ) -> io.BytesIO:
-    kwargs = {"n": n_images, "model": "dall-e-2", "response_format": "b64_json", "size": "1024x1024"}
+    kwargs = {"n": n_images, "model": model or "dall-e-2", "response_format": "b64_json", "size": "1024x1024"}
     if attachment is not None:  # then it's an edit
         buf = io.BytesIO()
         await attachment.save(buf)

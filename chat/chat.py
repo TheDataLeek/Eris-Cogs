@@ -162,9 +162,9 @@ class Chat(BaseCog):
     async def images(self, ctx: commands.Context):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        await self._image(channel, message, n_images=4)
+        await self._image(channel, message, n_images=4, model="dall-e-2")
 
-    async def _image(self, channel: discord.abc.Messageable, message: discord, n_images=1):
+    async def _image(self, channel: discord.abc.Messageable, message: discord, n_images=1, model: str = None):
         attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
         attachment = None
         if len(attachments) > 0:
@@ -175,7 +175,7 @@ class Chat(BaseCog):
         thread_name = " ".join(prompt_words[:5]) + " image"
         token = await self.get_openai_token()
         try:
-            response = await model_querying.query_image_model(token, prompt, attachment, n_images=n_images)
+            response = await model_querying.query_image_model(token, prompt, attachment, n_images=n_images, model=model)
         except ValueError:
             await channel.send("Something went wrong!")
             return
