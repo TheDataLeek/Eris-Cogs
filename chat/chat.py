@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import discord
-from redbot.core import commands, data_manager, bot
+from redbot.core import commands, data_manager, bot, Config
 from redbot.core.bot import Red
 
 from .chatlib import discord_handling, model_querying
