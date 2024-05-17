@@ -38,7 +38,7 @@ async def extract_chat_history_and_format(
         if extract_full_history:
             formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
         else:
-            extracted_message, page_contents = await extract_message(formatted_query, False, skip_command_word)
+            extracted_message, pages = await extract_message(formatted_query, False, skip_command_word)
             formatted_query = [
                 {
                     "role": "user",
@@ -48,10 +48,7 @@ async def extract_chat_history_and_format(
                         *[await format_attachment(attachment) for attachment in message.attachments],
                     ],
                 }
-            ] + [
-                {"role": "user", "name": clean_username(author.name), "content": {"type": "text", "text": page}}
-                for url, page in page_contents
-            ]
+            ] + pages
     elif isinstance(channel, discord.Thread):
         if extract_full_history:
             formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
@@ -72,13 +69,8 @@ async def extract_history(
     history = []
     async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after):
         if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word):
-            cleaned_message, page_contents = await extract_message(
-                thread_message.content, keep_all_words, skip_command_word
-            )
-            for url, page in page_contents:
-                history.append(
-                    {"role": "user", "name": clean_username(author.name), "content": {"type": "text", "text": page}}
-                )
+            cleaned_message, pages = await extract_message(thread_message.content, keep_all_words, skip_command_word)
+            history += pages
             history.append(
                 {
                     "role": "assistant" if thread_message.author.bot else "user",
@@ -94,13 +86,8 @@ async def extract_history(
     if isinstance(channel_or_thread, discord.Thread):
         starter_message = channel_or_thread.starter_message
         if starter_message is not None:
-            cleaned_message, page_contents = await extract_message(
-                starter_message.content, keep_all_words, skip_command_word
-            )
-            for url, page in page_contents:
-                history.append(
-                    {"role": "user", "name": clean_username(author.name), "content": {"type": "text", "text": page}}
-                )
+            cleaned_message, pages = await extract_message(starter_message.content, keep_all_words, skip_command_word)
+            history += pages
             history.append(
                 {
                     "role": "user",
@@ -120,7 +107,7 @@ async def fetch_url(url: str):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             if resp.status != 200:
-                return []
+                return ""
             page_content = await resp.text()
             markdown_content = md(page_content)
     return markdown_content
@@ -140,7 +127,14 @@ async def extract_message(message, keep_all_words, skip_command_word):
 
     cleaned_message = " ".join(keep_words)
 
-    return cleaned_message, page_contents
+    pages = [
+        {
+            "role": "user",
+            "content": [{"type": "text", "text": f"---\n{url}---\n{page}\n---\n"} for url, page in page_contents],
+        }
+    ]
+
+    return cleaned_message, pages
 
 
 async def send_response(
@@ -172,7 +166,7 @@ def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
 
 
 async def format_attachment(attachment: discord.Attachment) -> dict:
-    mimetype: str = attachment.content_type.lower()
+    mimetype: str = (attachment.content_type or "").lower()
     filename: str = attachment.filename.lower()
     formatted_attachment = {"type": "text", "text": "<MISSING ATTACHMENT>"}
     permitted_extensions = [
@@ -202,7 +196,7 @@ async def format_attachment(attachment: discord.Attachment) -> dict:
         buf.seek(0)
         text = buf.read().decode("utf-8")
         formatted_attachment = {"type": "text", "text": text}
-    elif attachment.width:  # then it's an image less than 20MB
+    elif attachment.width and "image" in attachment.content_type:
         formatted_attachment = {"type": "image_url", "image_url": {"url": attachment.url}}
     if text is None:
         print(formatted_attachment)

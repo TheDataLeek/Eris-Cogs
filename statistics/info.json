@@ -1,0 +1,12 @@
+{
+  "author": [
+    "Eris"
+  ],
+  "description": "Collects streaming statistics on usage",
+  "name": "Statistics",
+  "short": "Statistics",
+  "ready": true,
+  "requirements": [
+    "polars"
+  ]
+}
