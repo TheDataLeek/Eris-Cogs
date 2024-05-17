@@ -15,20 +15,23 @@ class Chat(BaseCog):
         self.openai_settings = None
         self.openai_token = None
         self.data_dir = data_manager.bundled_data_path(self)
-        self.whois_config = Config.get_conf(
-            self,
-            identifier=746578326459283047523,
-        )
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
 
     async def reset_whois_dictionary(self):
+        self.whois = self.bot.get_cog("WhoIs")
+        if self.whois is None:
+            self.whois_dictionary = {}
+            return
+
+        whois_config = self.whois.config
+
         guilds: List[discord.Guild] = self.bot.guilds
         final_dict = {}
         for guild in guilds:
             guild_name = guild.name
-            async with self.whois_config.guild(guild).whois_dict() as whois_dict:
-                final_dict[guild_name] = whois_dict
+            final_dict[guild_name] = (await whois_config.guild(guild).whois_dict.get()) or dict()
+
         self.whois_dictionary = final_dict
 
     async def contextual_chat_handler(self, message: discord.Message):
