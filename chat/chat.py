@@ -32,9 +32,8 @@ class Chat(BaseCog):
             guild_name = guild.name
             final_dict[guild_name] = (await whois_config.guild(guild).whois_dict()) or dict()
 
-        print(self.whois_dictionary)
-
         self.whois_dictionary = final_dict
+        print(self.whois_dictionary)
 
     async def contextual_chat_handler(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
