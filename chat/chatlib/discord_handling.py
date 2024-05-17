@@ -54,7 +54,7 @@ async def extract_chat_history_and_format(
                     ],
                 }
             ] + pages
-            users_involved = author
+            users_involved = [author]
     elif isinstance(channel, discord.Thread):
         if extract_full_history:
             formatted_query, users_involved = await extract_history(channel, author, skip_command_word=None, after=after)
