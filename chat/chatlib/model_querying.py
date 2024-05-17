@@ -56,9 +56,13 @@ async def query_text_model(
 
 
 async def query_image_model(
-    token: str, formatted_query: str | list[dict], attachment: discord.Attachment = None, image_expansion: bool = False
+    token: str,
+    formatted_query: str | list[dict],
+    attachment: discord.Attachment = None,
+    image_expansion: bool = False,
+    n_images: int = 1,
 ) -> io.BytesIO:
-    kwargs = {"n": 1, "model": "dall-e-2", "response_format": "b64_json", "size": "1024x1024"}
+    kwargs = {"n": n_images, "model": "dall-e-2", "response_format": "b64_json", "size": "1024x1024"}
     if attachment is not None:  # then it's an edit
         buf = io.BytesIO()
         await attachment.save(buf)
@@ -117,7 +121,7 @@ async def construct_async_query(query: List[Dict], token: str, **kwargs) -> list
             break
         except Exception as e:
             exception_string = str(e)
-            await asyncio.sleep(time_to_sleep ** 2)
+            await asyncio.sleep(time_to_sleep**2)
             time_to_sleep += 1
 
     if isinstance(response, str):
@@ -126,7 +130,7 @@ async def construct_async_query(query: List[Dict], token: str, **kwargs) -> list
     return response
 
 
-def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) -> str | io.BytesIO:
+def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) -> str | io.BytesIO | list[io.BytesIO]:
     client = openai.OpenAI(api_key=token)
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     if kwargs["model"].startswith("dall"):
@@ -134,12 +138,16 @@ def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) ->
             images = client.images.edit(prompt="Expand the image to fill the empty space.", **kwargs)
         else:
             images = client.images.generate(prompt=messages, **kwargs)
-        encoded_image = images.data[0].b64_json
-        image = base64.b64decode(encoded_image)
-        buf = io.BytesIO()
-        buf.write(image)
-        buf.seek(0)
-        response = buf
+        results = []
+        for encoded_image in images.data:
+            image = base64.b64decode(encoded_image.b64_json)
+            buf = io.BytesIO()
+            buf.write(image)
+            buf.seek(0)
+            results.append(buf)
+        response = results
+        if len(results) == 1:
+            response = response[0]
     else:
         chat_completion = client.chat.completions.create(messages=messages, **kwargs)
         response = chat_completion.choices[0].message.content

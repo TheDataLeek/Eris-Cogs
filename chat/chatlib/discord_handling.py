@@ -138,14 +138,22 @@ async def extract_message(message, keep_all_words, skip_command_word):
 
 
 async def send_response(
-    response: str | io.BytesIO, message: discord.Message, channel_or_thread: discord.abc.Messageable, thread_name: str
+    response: str | io.BytesIO | list[io.BytesIO],
+    message: discord.Message,
+    channel_or_thread: discord.abc.Messageable,
+    thread_name: str,
 ):
     if isinstance(channel_or_thread, discord.TextChannel):
         channel_or_thread: discord.Thread = await message.create_thread(name=thread_name)
 
     if isinstance(response, list):
-        for page in response:
-            await channel_or_thread.send(page)
+        if isinstance(response[0], io.BytesIO):  # then we have multiple images
+            await channel_or_thread.send(
+                files=[discord.File(buf, filename=f"{i}.png") for i, buf in enumerate(response)]
+            )
+        else:
+            for page in response:
+                await channel_or_thread.send(page)
     else:
         filename = thread_name.replace(" ", "_") + ".png"
         await channel_or_thread.send(file=discord.File(response, filename=filename))

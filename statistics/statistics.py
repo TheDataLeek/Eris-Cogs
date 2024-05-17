@@ -13,13 +13,13 @@ class Statistics(BaseCog):
 
         self.bot = bot_instance
 
-        data_dir = data_manager.bundled_data_path(self)
-        data_dir.mkdir(exist_ok=True, parents=True)
-        self.logfile = data_dir / "events.log"
-
-        self.logfile.open(mode="a")
-
         self.bot.add_listener(self.log_handler, "on_message")
+
+    async def get_prefix(self, ctx: commands.Context) -> str:
+        prefix = await self.bot.get_prefix(ctx.message)
+        if isinstance(prefix, list):
+            prefix = prefix[0]
+        return prefix
 
     async def log_handler(self, message: discord.Message):
         pass

@@ -156,6 +156,15 @@ class Chat(BaseCog):
     async def image(self, ctx: commands.Context):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
+        await self._image(channel, message)
+
+    @commands.command()
+    async def images(self, ctx: commands.Context):
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
+        await self._image(channel, message, n_images=4)
+
+    async def _image(self, channel: discord.abc.Messageable, message: discord, n_images=1):
         attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
         attachment = None
         if len(attachments) > 0:
@@ -172,7 +181,7 @@ class Chat(BaseCog):
                 attachment,
             )
         except ValueError:
-            await ctx.send("Something went wrong!")
+            await channel.send("Something went wrong!")
             return
         await discord_handling.send_response(response, message, channel, thread_name)
 
