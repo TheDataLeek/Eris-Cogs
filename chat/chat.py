@@ -22,12 +22,12 @@ class Chat(BaseCog):
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
 
-    async def reset_whois_dictionary():
+    async def reset_whois_dictionary(self):
         guilds: List[discord.Guild] = self.bot.guilds
         final_dict = {}
         for guild in guilds:
             guild_name = guild.name
-            async with self.config.guild(guild).whois_dict() as whois_dict:
+            async with self.whois_config.guild(guild).whois_dict() as whois_dict:
                 final_dict[guild_name] = whois_dict
         self.whois_dictionary = final_dict
 
@@ -44,7 +44,8 @@ class Chat(BaseCog):
         if not bot_mentioned:
             return
 
-        await self.reset_whois_dictionary()
+        if self.whois_dictionary is None:
+            await self.reset_whois_dictionary()
 
         prefix: str = await self.get_prefix(ctx)
         try:
@@ -158,7 +159,8 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         prefix: str = await self.get_prefix(ctx)
-        await self.reset_whois_dictionary()
+        if self.whois_dictionary is None:
+            await self.reset_whois_dictionary()
         try:
             (
                 thread_name,
