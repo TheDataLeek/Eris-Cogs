@@ -18,7 +18,7 @@ async def query_text_model(
 ) -> str:
     if user_names is None:
         user_names = {}
-    formatted_usernames = pformat(usernames)
+    formatted_usernames = pformat(user_names)
 
     system_prefix = [
         {
