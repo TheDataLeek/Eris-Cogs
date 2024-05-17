@@ -15,7 +15,21 @@ class Chat(BaseCog):
         self.openai_settings = None
         self.openai_token = None
         self.data_dir = data_manager.bundled_data_path(self)
+        self.whois_config = Config.get_conf(
+            self,
+            identifier=746578326459283047523,
+        )
+        self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
+
+    async def reset_whois_dictionary():
+        guilds: List[discord.Guild] = self.bot.guilds
+        final_dict = {}
+        for guild in guilds:
+            guild_name = guild.name
+            async with self.config.guild(guild).whois_dict() as whois_dict:
+                final_dict[guild_name] = whois_dict
+        self.whois_dictionary = final_dict
 
     async def contextual_chat_handler(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
@@ -30,13 +44,16 @@ class Chat(BaseCog):
         if not bot_mentioned:
             return
 
+        await self.reset_whois_dictionary()
+
         prefix: str = await self.get_prefix(ctx)
         try:
             (
                 _,
                 formatted_query,
+                user_names
             ) = await discord_handling.extract_chat_history_and_format(
-                prefix, channel, message, author, extract_full_history=True
+                prefix, channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
             )
         except ValueError as e:
             print(e)
@@ -45,6 +62,7 @@ class Chat(BaseCog):
         response = await model_querying.query_text_model(
             token,
             formatted_query,
+            user_names=user_names,
             contextual_prompt=(
                 "What do you think about the following conversation? Respond in kind, as if you are present "
                 "and involved. A user has tagged you and needs your opinion on the conversation."
@@ -103,7 +121,7 @@ class Chat(BaseCog):
         author: discord.Member = message.author
         prefix = await self.get_prefix(ctx)
         try:
-            thread_name, formatted_query = discord_handling.extract_chat_history_and_format(
+            thread_name, formatted_query, _ = discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author
             )
         except ValueError:
@@ -140,16 +158,19 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         prefix: str = await self.get_prefix(ctx)
+        await self.reset_whois_dictionary()
         try:
             (
                 thread_name,
                 formatted_query,
-            ) = await discord_handling.extract_chat_history_and_format(prefix, channel, message, author)
+                user_names
+            ) = await discord_handling.extract_chat_history_and_format(prefix, channel, message, author,
+                    whois_dict=self.whois_dictionary)
         except ValueError:
             await ctx.send("Something went wrong!")
             return
         token = await self.get_openai_token()
-        response = await model_querying.query_text_model(token, formatted_query)
+        response = await model_querying.query_text_model(token, formatted_query, user_names=user_names)
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()

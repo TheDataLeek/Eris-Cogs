@@ -19,7 +19,11 @@ async def extract_chat_history_and_format(
     message: discord.Message,
     author: discord.Member,
     extract_full_history: bool = False,
-) -> tuple[str, list[dict]]:
+    whois_dict: dict = None
+) -> tuple[str, list[dict], dict[str, str]]:
+    if whois_dict is None:
+        whois_dict = {}
+    guild: discord.Guild = message.guild
     thread_name = "foo"
     formatted_query = []
     query = message.clean_content.split(" ")[1:]
@@ -31,12 +35,13 @@ async def extract_chat_history_and_format(
     if not query:
         raise ValueError("Query not supplied!")
 
+    users_involved = []
     if isinstance(channel, discord.TextChannel):
         formatted_query = " ".join(query)
         thread_name = (" ".join(formatted_query.split(" ")[:5]))[:80] + "..."
 
         if extract_full_history:
-            formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
+            formatted_query, users_involved = await extract_history(channel, author, skip_command_word=None, after=after)
         else:
             extracted_message, pages = await extract_message(formatted_query, False, skip_command_word)
             formatted_query = [
@@ -49,13 +54,18 @@ async def extract_chat_history_and_format(
                     ],
                 }
             ] + pages
+            users_involved = author
     elif isinstance(channel, discord.Thread):
         if extract_full_history:
-            formatted_query = await extract_history(channel, author, skip_command_word=None, after=after)
+            formatted_query, users_involved = await extract_history(channel, author, skip_command_word=None, after=after)
         else:
-            formatted_query = await extract_history(channel, author, skip_command_word=skip_command_word)
+            formatted_query, users_involved = await extract_history(channel, author, skip_command_word=skip_command_word)
 
-    return thread_name, formatted_query
+    users = {
+            clean_username(user.name): find_user(guild.name, user, whois_dict)
+            for user in users_involved
+            }
+    return thread_name, formatted_query, users
 
 
 async def extract_history(
@@ -67,6 +77,7 @@ async def extract_history(
 ):
     keep_all_words = skip_command_word is None
     history = []
+    users_involved = []
     async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after):
         if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word):
             cleaned_message, pages = await extract_message(thread_message.content, keep_all_words, skip_command_word)
@@ -82,6 +93,7 @@ async def extract_history(
                     ],
                 }
             )
+            users_involved.append(thread_message.author)
 
     if isinstance(channel_or_thread, discord.Thread):
         starter_message = channel_or_thread.starter_message
@@ -98,9 +110,11 @@ async def extract_history(
                     ],
                 }
             )
+            users_involved.append(author)
 
     history = history[::-1]  # flip to oldest first
-    return history
+    users_involved = list(set(users_involved))  # remove duplicates
+    return history, users_involved
 
 
 async def fetch_url(url: str):
@@ -218,3 +232,11 @@ def clean_username(name: str) -> str:
     name = name.lower()
     name = "".join(c for c in name if c in string.ascii_lowercase)
     return name
+
+
+def find_user(guild_name: str, user: discord.Member, whois_dictionary) -> str:
+    if guild_name in whois_dictionary:
+        userid = str(user.id)
+        if userid in whois_dictionary[guild_name]:
+            return whois_dictionary[guild_name][userid]
+

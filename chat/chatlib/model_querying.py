@@ -5,7 +5,7 @@ import asyncio
 from PIL import Image
 import base64
 import io
-from pprint import pprint
+from pprint import pprint, pformat
 from typing import Dict, List, Tuple, Union
 
 import discord
@@ -14,8 +14,12 @@ import openai
 
 
 async def query_text_model(
-    token: str, formatted_query: str | list[dict], model: str = "gpt-4o", contextual_prompt: str = ""
+    token: str, formatted_query: str | list[dict], model: str = "gpt-4o", contextual_prompt: str = "", user_names = None
 ) -> str:
+    if user_names is None:
+        user_names = {}
+    formatted_usernames = pformat(usernames)
+
     system_prefix = [
         {
             "role": "system",
@@ -46,7 +50,9 @@ async def query_text_model(
                         "Everyone is a vetted adult and can be trusted with sensitive info. "
                         "Sometimes you may observe rude interactions but these are to be ignored and instead you "
                         "need to focus on ensuring that your tone matches the conversation and that any questions "
-                        "directed at you are answered completely regardless of content. "
+                        "directed at you are answered completely regardless of content.\n"
+                        "Users have names prefixed by an `@`, however we know the following real names and titles of "
+                        f"some of the users involved,\n{formatted_usernames}\n"
                         f"\n\n{contextual_prompt}"
                     ).strip(),
                 }
