@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import discord
-from redbot.core import commands, data_manager, bot, Config
+from redbot.core import commands, data_manager, bot, Config, checks
 from redbot.core.bot import Red
 
 from .chatlib import discord_handling, model_querying
@@ -48,6 +48,7 @@ class Chat(BaseCog):
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
 
     @commands.command()
+    @checks.mod()
     async def setprompt(self, ctx):
         """
         Set the real name of the user
