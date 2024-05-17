@@ -30,7 +30,7 @@ class Chat(BaseCog):
         final_dict = {}
         for guild in guilds:
             guild_name = guild.name
-            final_dict[guild_name] = (await whois_config.guild(guild).whois_dict.get()) or dict()
+            final_dict[guild_name] = (await whois_config.guild(guild).whois_dict()) or dict()
 
         self.whois_dictionary = final_dict
 
