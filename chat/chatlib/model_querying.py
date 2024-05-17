@@ -101,7 +101,7 @@ async def query_image_model(
             style = "vivid"
         elif "natural" in formatted_query:
             style = "natural"
-        kwargs = {**kwargs, **{"model": "dall-e-3", "quality": "hd", "style": style}}
+        kwargs = {**{"model": "dall-e-3", "quality": "hd", "style": style}, **kwargs}
     response = await construct_async_query(formatted_query, token, **kwargs)
 
     return response
