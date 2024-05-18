@@ -225,7 +225,7 @@ class Chat(BaseCog):
     async def image(self, ctx: commands.Context):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        await self._image(channel, message)
+        await self._image(channel, message, model='dall-e-3')
 
     @commands.command()
     async def images(self, ctx: commands.Context):
