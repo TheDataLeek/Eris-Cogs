@@ -56,7 +56,7 @@ async def extract_chat_history_and_format(
                     ],
                 }
             ] + pages
-            users_involved = [author]
+            users_involved = [author] + message.mentions
     elif isinstance(channel, discord.Thread):
         if extract_full_history:
             formatted_query, users_involved = await extract_history(
@@ -92,7 +92,9 @@ async def extract_history(
     users_involved = []
     async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after):
         if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word):
-            cleaned_message, pages = await extract_message(thread_message.clean_content, keep_all_words, skip_command_word)
+            cleaned_message, pages = await extract_message(
+                thread_message.clean_content, keep_all_words, skip_command_word
+            )
             history += pages
             history.append(
                 {
@@ -106,11 +108,14 @@ async def extract_history(
                 }
             )
             users_involved.append(thread_message.author)
+            users_involved += thread_message.mentions
 
     if isinstance(channel_or_thread, discord.Thread):
         starter_message = channel_or_thread.starter_message
         if starter_message is not None:
-            cleaned_message, pages = await extract_message(starter_message.clean_content, keep_all_words, skip_command_word)
+            cleaned_message, pages = await extract_message(
+                starter_message.clean_content, keep_all_words, skip_command_word
+            )
             history += pages
             history.append(
                 {
@@ -123,6 +128,7 @@ async def extract_history(
                 }
             )
             users_involved.append(author)
+            users_involved += starter_message.mentions
 
     history = history[::-1]  # flip to oldest first
     return history, users_involved
