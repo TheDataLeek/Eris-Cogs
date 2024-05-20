@@ -31,21 +31,24 @@ async def query_text_model(
             "content": [
                 {
                     "type": "text",
+                    "text": prompt,
+                },
+                {
+                    "type": "text",
                     "text": (
-                        prompt
-                        + (
-                            "Users have names prefixed by an `@`, however we know the following real names and titles of "
-                            f"some of the users involved,\n{formatted_usernames}\nPlease use their names when possible.\n"
-                            "Your creator's handle is @erisaurus, and her name is Zoe.\n"
-                            f"\n\n{contextual_prompt}"
-                        )
-                    ).strip(),
-                }
+                        "Users have names prefixed by an `@`, however we know the following real names and titles of "
+                        f"some of the users involved,\n{formatted_usernames}\nPlease use their names when possible.\n"
+                        "Your creator's handle is @erisaurus, and her name is Zoe.\n"
+                        "To tag a user, use the format, `<@id>`, but only do this if you don't know their real name."
+                    ),
+                },
             ],
-        }
+        },
     ]
+    if contextual_prompt != "":
+        system_prefix[0]["content"].append({"type": "text", "text": contextual_prompt})
     kwargs = {"model": model, "temperature": 1, "max_tokens": 2000}
-    response = await construct_async_query(system_prefix + formatted_query, token, **kwargs)
+    response = str(await construct_async_query(system_prefix + formatted_query, token, **kwargs))
     return response
 
 
