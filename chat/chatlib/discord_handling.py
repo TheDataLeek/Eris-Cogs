@@ -80,7 +80,7 @@ async def extract_history(
     users_involved = []
     async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after):
         if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word):
-            cleaned_message, pages = await extract_message(thread_message.content, keep_all_words, skip_command_word)
+            cleaned_message, pages = await extract_message(thread_message.clean_content, keep_all_words, skip_command_word)
             history += pages
             history.append(
                 {
@@ -98,7 +98,7 @@ async def extract_history(
     if isinstance(channel_or_thread, discord.Thread):
         starter_message = channel_or_thread.starter_message
         if starter_message is not None:
-            cleaned_message, pages = await extract_message(starter_message.content, keep_all_words, skip_command_word)
+            cleaned_message, pages = await extract_message(starter_message.clean_content, keep_all_words, skip_command_word)
             history += pages
             history.append(
                 {
