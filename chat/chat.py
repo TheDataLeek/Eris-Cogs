@@ -132,8 +132,9 @@ class Chat(BaseCog):
             formatted_query,
             user_names=user_names,
             contextual_prompt=(
-                "What do you think about the following conversation? Respond in kind, as if you are present "
-                "and involved. A user has tagged you and needs your opinion on the conversation."
+                "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
+                "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
+                "strive to blend in the conversation as closely as possible"
             ),
         )
         for page in response:
