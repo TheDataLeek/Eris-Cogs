@@ -59,6 +59,9 @@ class Chat(BaseCog):
         After running the command, the bot will confirm with a "Done" message.
         """
         message: discord.Message = ctx.message
+        if not isinstance(message.channel, discord.TextChannel):
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
         contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
         await self.config.guild(ctx.guild).prompt.set(contents)
 
@@ -74,6 +77,10 @@ class Chat(BaseCog):
         [p]showprompt
         Upon execution, the bot will send the current prompt in the chat.
         """
+        message: discord.Message = ctx.message
+        if not isinstance(message.channel, discord.TextChannel):
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
         prompt = await self.config.guild(ctx.guild).prompt()
         await ctx.send(prompt)
 
@@ -205,6 +212,9 @@ class Chat(BaseCog):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
+        if not isinstance(message.channel, discord.TextChannel):
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
         prefix = await self.get_prefix(ctx)
         try:
             thread_name, formatted_query, user_names = await discord_handling.extract_chat_history_and_format(
@@ -270,6 +280,9 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         prefix: str = await self.get_prefix(ctx)
+        if not isinstance(message.channel, discord.TextChannel):
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
         if self.whois_dictionary is None:
             await self.reset_whois_dictionary()
         try:
@@ -296,6 +309,9 @@ class Chat(BaseCog):
         """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
+        if not isinstance(message.channel, discord.TextChannel):
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
         await self._image(channel, message, model="dall-e-3")
 
     @commands.command()
@@ -310,6 +326,9 @@ class Chat(BaseCog):
         """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
+        if not isinstance(message.channel, discord.TextChannel):
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
         await self._image(channel, message, n_images=4, model="dall-e-2")
 
     async def _image(self, channel: discord.abc.Messageable, message: discord, n_images=1, model: str = None):
@@ -344,6 +363,9 @@ class Chat(BaseCog):
         """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
+        if not isinstance(message.channel, discord.TextChannel):
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
         attachment = None
         attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
         if message.reference:
