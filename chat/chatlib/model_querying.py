@@ -48,7 +48,7 @@ async def query_text_model(
     if contextual_prompt != "":
         system_prefix[0]["content"].append({"type": "text", "text": contextual_prompt})
     kwargs = {"model": model, "temperature": 1, "max_tokens": 2000}
-    response = str(await construct_async_query(system_prefix + formatted_query, token, **kwargs))
+    response = await construct_async_query(system_prefix + formatted_query, token, **kwargs)
     return response
 
 
