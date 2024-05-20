@@ -172,7 +172,7 @@ class Chat(BaseCog):
         author: discord.Member = message.author
         prefix = await self.get_prefix(ctx)
         try:
-            thread_name, formatted_query, _ = discord_handling.extract_chat_history_and_format(
+            thread_name, formatted_query, user_names = await discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author
             )
         except ValueError:
@@ -215,7 +215,8 @@ class Chat(BaseCog):
         ]
 
         token = await self.get_openai_token()
-        response = await model_querying.query_text_model(token, prompt, formatted_query, model="gpt-4o")
+        response = await model_querying.query_text_model(token, prompt, formatted_query, model="gpt-4o",
+                user_names=user_names)
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
