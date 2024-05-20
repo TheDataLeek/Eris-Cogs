@@ -51,7 +51,12 @@ class Chat(BaseCog):
     @checks.mod()
     async def setprompt(self, ctx):
         """
-        Set the real name of the user
+        Sets a custom prompt for this server's GPT-4 based interactions.
+        Usage:
+        [p]setprompt <prompt_text>
+        Example:
+        [p]setprompt Welcome to our server! How can I assist you today?
+        After running the command, the bot will confirm with a "Done" message.
         """
         message: discord.Message = ctx.message
         contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
@@ -62,7 +67,12 @@ class Chat(BaseCog):
     @commands.command()
     async def showprompt(self, ctx):
         """
-        Return the real name of the tagged user
+        Displays the current custom GPT-4 prompt for this server.
+        Usage:
+        [p]showprompt
+        Example:
+        [p]showprompt
+        Upon execution, the bot will send the current prompt in the chat.
         """
         prompt = await self.config.guild(ctx.guild).prompt()
         await ctx.send(prompt)
@@ -135,6 +145,17 @@ class Chat(BaseCog):
 
     @commands.command()
     async def rewind(self, ctx: commands.Context) -> None:
+        """
+        Rewinds the chat in an active thread by removing the bot's latest responses and the associated user input.
+        Usage:
+        [p]rewind
+        Note:
+        The command can only be used within an active thread. If used elsewhere, the bot will notify the user that it
+        requires an active thread.
+        Example:
+        [p]rewind
+        The bot will delete the necessary messages and confirm by deleting the user's command message as well.
+        """
         prefix = await self.get_prefix(ctx)
 
         channel: discord.abc.Messageable = ctx.channel
@@ -167,6 +188,20 @@ class Chat(BaseCog):
 
     @commands.command()
     async def tarot(self, ctx: commands.Context) -> None:
+        """
+        Provides a tarot card reading interpreted by Wrin Sivinxi.
+        Usage:
+        [p]tarot
+        Example:
+        [p]tarot What does the future hold for my career given the following reading?
+        Upon execution, the bot will engage in the tarot reading process, delivering insightful and enchanting
+        interpretations.
+        Notes:
+        - Wrin Sivinxi is described as a ditzy and friendly merchant in Otari, with a strong character setup.
+        - The command utilizes an AI model, so responses will be shaped by the model's interpretation along with the
+        given prompt.
+        - The AI model is given a tarot guide to facilitate in accurate readings
+        """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
@@ -215,12 +250,22 @@ class Chat(BaseCog):
         ]
 
         token = await self.get_openai_token()
-        response = await model_querying.query_text_model(token, prompt, formatted_query, model="gpt-4o",
-                user_names=user_names)
+        response = await model_querying.query_text_model(
+            token, prompt, formatted_query, model="gpt-4o", user_names=user_names
+        )
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
     async def chat(self, ctx: commands.Context) -> None:
+        """
+        Engages in a chat conversation using a custom GPT-4 prompt and create an active thread if not already in one.
+        Usage:
+        [p]chat <your_message>
+        Example:
+        [p]chat How are you doing today?
+        Upon execution, the bot will process the chat history and the provided message, then respond within the same
+        thread.
+        """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
@@ -241,12 +286,28 @@ class Chat(BaseCog):
 
     @commands.command()
     async def image(self, ctx: commands.Context):
+        """
+        Generates an image based on the user's prompt using the DALL-E 3 model.
+        Usage:
+        [p]image <your_prompt>
+        Example:
+        [p]image A cat riding a skateboard in space
+        Upon execution, the bot will generate an image matching the description and send it in the chat.
+        """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         await self._image(channel, message, model="dall-e-3")
 
     @commands.command()
     async def images(self, ctx: commands.Context):
+        """
+        Generates multiple images based on the user's prompt using the DALL-E 2 model.
+        Usage:
+        [p]images <your_prompt>
+        Example:
+        [p]images A beautiful sunset over the mountains
+        Upon execution, the bot will generate four images matching the description and send them in the chat.
+        """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         await self._image(channel, message, n_images=4, model="dall-e-2")
@@ -270,6 +331,17 @@ class Chat(BaseCog):
 
     @commands.command()
     async def expand(self, ctx: commands.Context):
+        """
+        Expands an image based on the user's prompt using an AI model.
+        Usage:
+        [p]expand <your_prompt>
+        Example:
+        [p]expand Make this forest scene extend to the left with more trees and a river
+        Notes:
+        - The user must attach an image or reference one in their message.
+        - The bot will notify the user if no image is provided before attempting the expansion.
+        Upon execution, the bot will generate an expanded version of the image and send it in the chat.
+        """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         attachment = None
