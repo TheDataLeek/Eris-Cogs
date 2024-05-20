@@ -59,7 +59,7 @@ class Chat(BaseCog):
         After running the command, the bot will confirm with a "Done" message.
         """
         message: discord.Message = ctx.message
-        if not isinstance(message.channel, discord.TextChannel):
+        if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
@@ -78,7 +78,7 @@ class Chat(BaseCog):
         Upon execution, the bot will send the current prompt in the chat.
         """
         message: discord.Message = ctx.message
-        if not isinstance(message.channel, discord.TextChannel):
+        if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         prompt = await self.config.guild(ctx.guild).prompt()
@@ -167,7 +167,7 @@ class Chat(BaseCog):
 
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        if not isinstance(channel, discord.Thread):
+        if message.guild is None:
             await ctx.send("Chat command can only be used in an active thread! Please ask a question first.")
             return
 
@@ -212,7 +212,7 @@ class Chat(BaseCog):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
-        if not isinstance(message.channel, discord.TextChannel):
+        if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         prefix = await self.get_prefix(ctx)
@@ -280,7 +280,7 @@ class Chat(BaseCog):
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         prefix: str = await self.get_prefix(ctx)
-        if not isinstance(message.channel, discord.TextChannel):
+        if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         if self.whois_dictionary is None:
@@ -309,7 +309,7 @@ class Chat(BaseCog):
         """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        if not isinstance(message.channel, discord.TextChannel):
+        if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         await self._image(channel, message, model="dall-e-3")
@@ -326,7 +326,7 @@ class Chat(BaseCog):
         """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        if not isinstance(message.channel, discord.TextChannel):
+        if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         await self._image(channel, message, n_images=4, model="dall-e-2")
@@ -363,7 +363,7 @@ class Chat(BaseCog):
         """
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
-        if not isinstance(message.channel, discord.TextChannel):
+        if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         attachment = None
