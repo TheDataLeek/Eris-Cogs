@@ -26,7 +26,7 @@ async def query_text_model(
         user_names = {}
     formatted_usernames = pformat(user_names)
 
-    today_string = dt.datetime.now().strftime("%A, %B %m, %Y. The time is %I:%M %p MST")
+    today_string = dt.datetime.now().strftime("The date is %A, %B %m, %Y. The time is %I:%M %p MST")
 
     system_prefix = [
         {
@@ -42,10 +42,10 @@ async def query_text_model(
                         "Users have names prefixed by an `@`, however we know the following real names and titles of "
                         f"some of the users involved,\n{formatted_usernames}\nPlease use their names when possible.\n"
                         "Your creator's handle is @erisaurus, and her name is Zoe.\n"
-                        "To tag a user, use the format, `<@id>`, but only do this if you don't know their real name."
+                        "To tag a user, use the format, `<@id>`, but only do this if you don't know their real name.\n"
+                        f"{today_string}"
                     ),
                 },
-                {"type": "text", "text": f"It is currently {today_string}"},
             ],
         },
     ]
