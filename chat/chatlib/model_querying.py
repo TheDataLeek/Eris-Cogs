@@ -26,7 +26,7 @@ async def query_text_model(
         user_names = {}
     formatted_usernames = pformat(user_names)
 
-    today_string = dt.datetime.now().strftime("The date is %A, %B %m, %Y. The time is %I:%M %p MST")
+    today_string = dt.datetime.now().strftime("The date is %A, %B %m, %Y. The time is %I:%M %p %Z")
 
     system_prefix = [
         {
