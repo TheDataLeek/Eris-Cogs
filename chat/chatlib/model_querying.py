@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime as dt
 import re
 import asyncio
 from PIL import Image
@@ -25,6 +26,8 @@ async def query_text_model(
         user_names = {}
     formatted_usernames = pformat(user_names)
 
+    today_string = dt.datetime.now().strftime("%A, %B %m, %Y. The time is %I:%M %p MST")
+
     system_prefix = [
         {
             "role": "system",
@@ -42,6 +45,7 @@ async def query_text_model(
                         "To tag a user, use the format, `<@id>`, but only do this if you don't know their real name."
                     ),
                 },
+                {"type": "text", "text": f"It is currently {today_string}"},
             ],
         },
     ]
