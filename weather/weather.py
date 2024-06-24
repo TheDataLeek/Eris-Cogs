@@ -218,7 +218,7 @@ class Weather(BaseCog):
             description=forecast_text,
             url=weblink,
         )
-        embedded_response.set_thumbnail(url=forecast_periods[0]["icon"])
+        # embedded_response.set_thumbnail(url=forecast_periods[0]["icon"])
 
         await ctx.send(embed=embedded_response)
 
