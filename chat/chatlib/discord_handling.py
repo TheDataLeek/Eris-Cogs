@@ -72,7 +72,7 @@ async def extract_chat_history_and_format(
         str(user.id): {
             "username": user.name,
             "author": clean_username(user.name),
-            "nickname": user.nick,
+            "nickname": user.nick  if isinstance(user, discord.Member) else user.name,
             "real name": find_user(guild.name, user, whois_dict),
         }
         for user in users_involved
