@@ -2,8 +2,8 @@ bot
 human
 person
 thing
-boy
-girl
+bean
+flower
 robot
 flesh creature
 meat suit
