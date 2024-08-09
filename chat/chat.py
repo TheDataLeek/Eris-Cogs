@@ -126,7 +126,9 @@ class Chat(BaseCog):
         for user in exempted_users:
             if user.id not in self.exempt_users:
                 self.exempt_users.append(user.id)  # Add exempted user IDs
-        await self.config.guild().exempt_users.set(self.exempt_users)  # Save to config
+
+        # Save to config using the guild context
+        await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
         await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
 
     async def reset_whois_dictionary(self):
