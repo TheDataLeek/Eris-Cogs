@@ -3,6 +3,7 @@ from __future__ import annotations
 import discord
 from redbot.core import commands, data_manager, bot, Config, checks
 from redbot.core.bot import Red
+import asyncio  #needed for user id stuff for cooldowns
 
 from .chatlib import discord_handling, model_querying
 
