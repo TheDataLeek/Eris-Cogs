@@ -103,6 +103,7 @@ class Chat(BaseCog):
     async def contextual_chat_handler(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
         channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
         author: discord.Member = message.author
         user: discord.User
         bot_mentioned = False
@@ -120,12 +121,6 @@ class Chat(BaseCog):
             (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
             )
-            
-            # Filter out messages containing image URLs
-            formatted_query = [
-                msg for msg in formatted_query if not ('http' in msg.get('content', '') and 'image' in msg.get('content', ''))
-            ]
-            
         except ValueError as e:
             print(e)
             return
