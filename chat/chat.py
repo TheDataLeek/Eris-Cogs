@@ -48,6 +48,7 @@ class Chat(BaseCog):
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
+        self.exempt_users = []  # List to store exempted user IDs
 
     @commands.command()
     @checks.mod()
@@ -88,13 +89,13 @@ class Chat(BaseCog):
 
     @commands.command()
     @checks.mod()
-    async def setcooldown(self, ctx, seconds: int):
+    async def setcooldown(self, ctx, seconds: int, *exempted_users: int):
         """
         Sets a cooldown period for the chat commands in this server.
         Usage:
-        [p]setcooldown <seconds>
+        [p]setcooldown <seconds> <user_id1> <user_id2> ...
         Example:
-        [p]setcooldown 30
+        [p]setcooldown 30 123456789 987654321
         After running the command, the bot will confirm with a "Cooldown set to <seconds> seconds" message.
         """
         message: discord.Message = ctx.message
@@ -102,6 +103,7 @@ class Chat(BaseCog):
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         await self.config.guild(ctx.guild).cooldown.set(seconds)
+        self.exempt_users = list(exempted_users)  # Store exempted user IDs
         await ctx.send(f"Cooldown set to {seconds} seconds")
 
     async def reset_whois_dictionary(self):
@@ -131,6 +133,9 @@ class Chat(BaseCog):
         # Check for cooldown
         current_time = discord.utils.utcnow().timestamp()
         cooldown_duration = await self.config.guild(ctx.guild).cooldown()  # Get cooldown from config
+
+        if author.id in self.exempt_users:  # Check if the user is exempt
+            return  # Skip cooldown check for exempted users
 
         if author.id in self.mention_cooldowns:
             last_mentioned_time = self.mention_cooldowns[author.id]
