@@ -22,6 +22,9 @@ class Chat(BaseCog):
             force_registration=True,
             cog_name="chat",
         )
+        self.exempt_users = []  # List to store exempted user IDs
+        self.load_exempt_users()  # Load exempt users from config
+
         default_guild = {
             "prompt": (
                 "Users interact with you on the Discord messaging platform through messages "
@@ -50,8 +53,6 @@ class Chat(BaseCog):
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
-        self.exempt_users = []  # List to store exempted user IDs
-        self.load_exempt_users()  # Load exempt users from config
 
     async def load_exempt_users(self):
         """Load exempt users from the configuration."""
