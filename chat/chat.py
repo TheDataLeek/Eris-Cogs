@@ -57,6 +57,7 @@ class Chat(BaseCog):
     async def load_exempt_users(self):
         """Load exempt users from the configuration."""
         self.exempt_users = await self.config.guild().exempt_users() or []
+        print(f"Loaded exempt users: {self.exempt_users}")  # Debug statement
 
     @commands.command()
     @checks.mod()
@@ -169,29 +170,22 @@ class Chat(BaseCog):
         ctx: commands.Context = await self.bot.get_context(message)
         author: discord.Member = message.author
 
+        # Debug: Print the author ID and exempt users
+        print(f"Author ID: {author.id}, Exempt Users: {self.exempt_users}")
+
         # Check if the user is exempt from cooldown
         if author.id in self.exempt_users:
+            print(f"User {author.id} is exempt from cooldown.")
             return  # Skip cooldown check for exempted users
 
-        # Check for cooldown
-        current_time = discord.utils.utcnow().timestamp()
-        cooldown_duration = await self.config.guild(ctx.guild).cooldown()
-
-        if author.id in self.mention_cooldowns:
-            last_mentioned_time = self.mention_cooldowns[author.id]
-            if current_time - last_mentioned_time < cooldown_duration:
-                await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
-                return
-
         # Check if the bot is mentioned
-        bot_mentioned = False
-        for user in message.mentions:
-            if user == self.bot.user:
-                bot_mentioned = True
-                self.mention_cooldowns[author.id] = current_time  # Update the timestamp
-                break  # No need to check further if the bot is mentioned
-
-        if not bot_mentioned:
+        bot_mentioned = self.bot.user in message.mentions
+        if bot_mentioned:
+            print(f"Bot mentioned by {author.id}.")
+            # Update the cooldown timestamp
+            self.mention_cooldowns[author.id] = discord.utils.utcnow().timestamp()
+        else:
+            print("Bot was not mentioned.")
             return  # Exit if the bot was not mentioned
 
         # Proceed with handling the message if the bot was mentioned
