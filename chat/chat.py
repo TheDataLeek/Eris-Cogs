@@ -14,6 +14,7 @@ class Chat(BaseCog):
         self.bot: Red = bot_instance
         self.openai_settings = None
         self.openai_token = None
+        self.mention_cooldowns = {}  # Initialize mention_cooldowns here
         self.config = Config.get_conf(
             self,
             identifier=23458972349810010102367456567347810101,
