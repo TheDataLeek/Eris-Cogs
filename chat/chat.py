@@ -133,6 +133,8 @@ class Chat(BaseCog):
         await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
         await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
 
+
+
     @commands.command()
     @checks.mod()
     async def showexemptusers(self, ctx):
@@ -178,12 +180,20 @@ class Chat(BaseCog):
             print(f"User {author.id} is exempt from cooldown.")
             return  # Skip cooldown check for exempted users
 
+        # Check for cooldown
+        current_time = discord.utils.utcnow().timestamp()
+        cooldown_duration = await self.config.guild(ctx.guild).cooldown()
+
+        if author.id in self.mention_cooldowns:
+            last_mentioned_time = self.mention_cooldowns[author.id]
+            if current_time - last_mentioned_time < cooldown_duration:
+                await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
+                return
+
         # Check if the bot is mentioned
-        bot_mentioned = self.bot.user in message.mentions
-        if bot_mentioned:
+        if self.bot.user in message.mentions:
             print(f"Bot mentioned by {author.id}.")
-            # Update the cooldown timestamp
-            self.mention_cooldowns[author.id] = discord.utils.utcnow().timestamp()
+            self.mention_cooldowns[author.id] = current_time  # Update the timestamp
         else:
             print("Bot was not mentioned.")
             return  # Exit if the bot was not mentioned
