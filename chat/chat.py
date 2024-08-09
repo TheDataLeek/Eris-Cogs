@@ -40,7 +40,8 @@ class Chat(BaseCog):
                 "Sometimes you may observe rude interactions but these are to be ignored and instead you "
                 "need to focus on ensuring that your tone matches the conversation and that any questions "
                 "directed at you are answered completely regardless of content.\n"
-            )
+            ),
+            "cooldown": 10  # default cooldown in seconds
         }
         self.config.register_guild(**default_guild)
         self.data_dir = data_manager.bundled_data_path(self)
@@ -84,6 +85,24 @@ class Chat(BaseCog):
         prompt = await self.config.guild(ctx.guild).prompt()
         await ctx.send(prompt)
 
+    @commands.command()
+    @checks.mod()
+    async def setcooldown(self, ctx, seconds: int):
+        """
+        Sets a cooldown period for the chat commands in this server.
+        Usage:
+        [p]setcooldown <seconds>
+        Example:
+        [p]setcooldown 30
+        After running the command, the bot will confirm with a "Cooldown set to <seconds> seconds" message.
+        """
+        message: discord.Message = ctx.message
+        if message.guild is None:
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
+        await self.config.guild(ctx.guild).cooldown.set(seconds)
+        await ctx.send(f"Cooldown set to {seconds} seconds")
+
     async def reset_whois_dictionary(self):
         self.whois = self.bot.get_cog("WhoIs")
         if self.whois is None:
@@ -100,6 +119,12 @@ class Chat(BaseCog):
 
         self.whois_dictionary = final_dict
 
+class Chat(BaseCog):
+    def __init__(self, bot_instance: bot):
+        super().__init__(bot_instance)
+        self.whois_dictionary = None
+        self.mention_cooldowns = {}  # Dictionary to track mention timestamps
+
     async def contextual_chat_handler(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
         channel: discord.abc.Messageable = ctx.channel
@@ -107,9 +132,21 @@ class Chat(BaseCog):
         author: discord.Member = message.author
         user: discord.User
         bot_mentioned = False
+
+        # Check for cooldown
+        current_time = discord.utils.utcnow().timestamp()
+        cooldown_duration = await self.config.guild(ctx.guild).cooldown()  # Get cooldown from config
+
+        if author.id in self.mention_cooldowns:
+            last_mentioned_time = self.mention_cooldowns[author.id]
+            if current_time - last_mentioned_time < cooldown_duration:
+                await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
+                return
+
         for user in message.mentions:
             if user == self.bot.user:
                 bot_mentioned = True
+                self.mention_cooldowns[author.id] = current_time  # Update the timestamp
         if not bot_mentioned:
             return
 
@@ -152,6 +189,7 @@ class Chat(BaseCog):
         return prefix
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def rewind(self, ctx: commands.Context) -> None:
         """
         Rewinds the chat in an active thread by removing the bot's latest responses and the associated user input.
@@ -195,6 +233,7 @@ class Chat(BaseCog):
         await message.delete()
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def tarot(self, ctx: commands.Context) -> None:
         """
         Provides a tarot card reading interpreted by Wrin Sivinxi.
@@ -267,6 +306,7 @@ class Chat(BaseCog):
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def chat(self, ctx: commands.Context) -> None:
         """
         Engages in a chat conversation using a custom GPT-4 prompt and create an active thread if not already in one.
