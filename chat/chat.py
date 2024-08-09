@@ -14,7 +14,7 @@ class Chat(BaseCog):
         self.bot: Red = bot_instance
         self.openai_settings = None
         self.openai_token = None
-        self.mention_cooldowns = {}  # Initialize mention_cooldowns here
+        self.mention_cooldowns = {}  # initialises mention_cooldowns stuff here
         self.config = Config.get_conf(
             self,
             identifier=23458972349810010102367456567347810101,
@@ -135,7 +135,9 @@ class Chat(BaseCog):
         if author.id in self.mention_cooldowns:
             last_mentioned_time = self.mention_cooldowns[author.id]
             if current_time - last_mentioned_time < cooldown_duration:
-                await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
+                cooldown_message = await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
+                await asyncio.sleep(5)  # Wait for 5 seconds without blocking the bot
+                await cooldown_message.delete()  # Delete the cooldown message
                 return
 
         for user in message.mentions:
