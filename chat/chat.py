@@ -11,7 +11,6 @@ BaseCog = getattr(commands, "Cog", object)
 
 class Chat(BaseCog):
     def __init__(self, bot_instance: bot):
-        super().__init__(bot_instance)  # Ensure proper initialization
         self.bot: Red = bot_instance
         self.openai_settings = None
         self.openai_token = None
@@ -47,7 +46,6 @@ class Chat(BaseCog):
         self.config.register_guild(**default_guild)
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
-        self.mention_cooldowns = {}  # Dictionary to track mention timestamps
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
 
     @commands.command()
