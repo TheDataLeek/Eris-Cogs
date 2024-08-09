@@ -137,7 +137,12 @@ class Chat(BaseCog):
             if current_time - last_mentioned_time < cooldown_duration:
                 cooldown_message = await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
                 await asyncio.sleep(5)  # Wait for 5 seconds without blocking the bot
-                await cooldown_message.delete()  # Delete the cooldown message
+                try:
+                    await cooldown_message.delete()  # Delete the cooldown message
+                except discord.Forbidden:
+                    print("Bot does not have permission to delete messages.")
+                except discord.HTTPException as e:
+                    print(f"Failed to delete message: {e}")
                 return
 
         for user in message.mentions:
