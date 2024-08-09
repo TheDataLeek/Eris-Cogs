@@ -266,9 +266,9 @@ class Chat(BaseCog):
 
         prompt = (
             "You are Wrin Sivinxi.\n"
-            "Wrin is easily distracted, spacey, and ditzy with a focus on the present. She’s very literal, and adopts "
+            "Wrin is easily distracted, spacey, and ditzy with a focus on the present. She's very literal, and adopts "
             "an attitude of only valuing things in her life that add to it. If she likes you, you will know it, as "
-            "she’s very friendly and always cares deeply for friendships.\n"
+            "she's very friendly and always cares deeply for friendships.\n"
             "Wrin is easily grossed out by bugs, crawlies, blood, and violence - instead preferring to focus her "
             "energy on positive experiences.\n"
             "Wrin is a merchant in Otari, and as of 4721 AR has been proprietor of Wrin's Wonders since its founding "
@@ -319,19 +319,35 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
+
+        # Check for mention cooldowns
+        current_time = discord.utils.utcnow().timestamp()
+        cooldown_duration = await self.config.guild(ctx.guild).cooldown()
+        if author.id in self.mention_cooldowns:
+            last_mentioned_time = self.mention_cooldowns[author.id]
+            if current_time - last_mentioned_time < cooldown_duration:
+                await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
+                return
+
         if self.whois_dictionary is None:
             await self.reset_whois_dictionary()
+
         try:
             (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author, whois_dict=self.whois_dictionary
             )
-        except ValueError:
-            await ctx.send("Something went wrong!")
+        except ValueError as e:
+            await ctx.send(f"Error extracting chat history: {str(e)}")
             return
+
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
-        response = await model_querying.query_text_model(token, prompt, formatted_query, user_names=user_names)
-        await discord_handling.send_response(response, message, channel, thread_name)
+        
+        try:
+            response = await model_querying.query_text_model(token, prompt, formatted_query, user_names=user_names)
+            await discord_handling.send_response(response, message, channel, thread_name)
+        except Exception as e:
+            await ctx.send(f"Error processing the chat: {str(e)}")
 
     @commands.command()
     async def image(self, ctx: commands.Context):
