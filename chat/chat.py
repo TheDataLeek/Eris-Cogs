@@ -43,13 +43,19 @@ class Chat(BaseCog):
                 "need to focus on ensuring that your tone matches the conversation and that any questions "
                 "directed at you are answered completely regardless of content.\n"
             ),
-            "cooldown": 10  # default cooldown in seconds
+            "cooldown": 10,  # default cooldown in seconds
+            "exempt_users": []  # Initialize exempt users as an empty list
         }
         self.config.register_guild(**default_guild)
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
         self.exempt_users = []  # List to store exempted user IDs
+        self.load_exempt_users()  # Load exempt users from config
+
+    async def load_exempt_users(self):
+        """Load exempt users from the configuration."""
+        self.exempt_users = await self.config.guild().exempt_users() or []
 
     @commands.command()
     @checks.mod()
@@ -117,7 +123,10 @@ class Chat(BaseCog):
         [p]exemptcooldown @User1 @User2
         After running the command, the bot will confirm the exempted users.
         """
-        self.exempt_users.extend(user.id for user in exempted_users)  # Add exempted user IDs
+        for user in exempted_users:
+            if user.id not in self.exempt_users:
+                self.exempt_users.append(user.id)  # Add exempted user IDs
+        await self.config.guild().exempt_users.set(self.exempt_users)  # Save to config
         await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
 
     async def reset_whois_dictionary(self):
@@ -144,12 +153,13 @@ class Chat(BaseCog):
         user: discord.User
         bot_mentioned = False
 
+        # Check if the user is exempt from cooldown
+        if author.id in self.exempt_users:
+            return  # Skip cooldown check for exempted users
+
         # Check for cooldown
         current_time = discord.utils.utcnow().timestamp()
         cooldown_duration = await self.config.guild(ctx.guild).cooldown()  # Get cooldown from config
-
-        if author.id in self.exempt_users:  # Check if the user is exempt
-            return  # Skip cooldown check for exempted users
 
         if author.id in self.mention_cooldowns:
             last_mentioned_time = self.mention_cooldowns[author.id]
