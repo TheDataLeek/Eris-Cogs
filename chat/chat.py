@@ -131,6 +131,23 @@ class Chat(BaseCog):
         await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
         await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
 
+    @commands.command()
+    @checks.mod()
+    async def showexemptusers(self, ctx):
+        """
+        Displays the current exempted users from the cooldown period.
+        Usage:
+        [p]showexemptusers
+        Example:
+        [p]showexemptusers
+        Upon execution, the bot will send the list of exempted users in the chat.
+        """
+        if not self.exempt_users:
+            await ctx.send("There are currently no exempted users.")
+        else:
+            exempted_user_ids = ', '.join(str(user_id) for user_id in self.exempt_users)
+            await ctx.send(f"Exempted users: {exempted_user_ids}")
+
     async def reset_whois_dictionary(self):
         self.whois = self.bot.get_cog("WhoIs")
         if self.whois is None:
@@ -149,11 +166,7 @@ class Chat(BaseCog):
 
     async def contextual_chat_handler(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
-        channel: discord.abc.Messageable = ctx.channel
-        message: discord.Message = ctx.message
         author: discord.Member = message.author
-        user: discord.User
-        bot_mentioned = False
 
         # Check if the user is exempt from cooldown
         if author.id in self.exempt_users:
@@ -161,39 +174,38 @@ class Chat(BaseCog):
 
         # Check for cooldown
         current_time = discord.utils.utcnow().timestamp()
-        cooldown_duration = await self.config.guild(ctx.guild).cooldown()  # Get cooldown from config
+        cooldown_duration = await self.config.guild(ctx.guild).cooldown()
 
         if author.id in self.mention_cooldowns:
             last_mentioned_time = self.mention_cooldowns[author.id]
             if current_time - last_mentioned_time < cooldown_duration:
-                cooldown_message = await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
-                await asyncio.sleep(5)  # Wait for 5 seconds without blocking the bot
-                try:
-                    await cooldown_message.delete()  # Delete the cooldown message
-                except discord.Forbidden:
-                    print("Bot does not have permission to delete messages.")
-                except discord.HTTPException as e:
-                    print(f"Failed to delete message: {e}")
+                await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
                 return
 
+        # Check if the bot is mentioned
+        bot_mentioned = False
         for user in message.mentions:
             if user == self.bot.user:
                 bot_mentioned = True
                 self.mention_cooldowns[author.id] = current_time  # Update the timestamp
-        if not bot_mentioned:
-            return
+                break  # No need to check further if the bot is mentioned
 
+        if not bot_mentioned:
+            return  # Exit if the bot was not mentioned
+
+        # Proceed with handling the message if the bot was mentioned
         if self.whois_dictionary is None:
             await self.reset_whois_dictionary()
 
         prefix: str = await self.get_prefix(ctx)
         try:
             (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
-                prefix, channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
+                prefix, ctx.channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
             )
         except ValueError as e:
             print(e)
             return
+
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
         response = await model_querying.query_text_model(
@@ -208,7 +220,7 @@ class Chat(BaseCog):
             ),
         )
         for page in response:
-            await channel.send(page)
+            await ctx.channel.send(page)
 
     async def get_openai_token(self):
         self.openai_settings = await self.bot.get_shared_api_tokens("openai")
