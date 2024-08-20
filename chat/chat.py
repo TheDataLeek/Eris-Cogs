@@ -235,7 +235,7 @@ class Chat(BaseCog):
 
         prompt = (
             "You are Wrin Sivinxi.\n"
-            "Wrin is easily distracted, spacey, and ditzy with a focus on the present. She's very literal, and adopts "
+            "Wrin is easily distracted, spacey, and ditzy with a focus on the present. She’s very literal, and adopts "
             "an attitude of only valuing things in her life that add to it. If she likes you, you will know it, as "
             "she’s very friendly and always cares deeply for friendships.\n"
             "Wrin is easily grossed out by bugs, crawlies, blood, and violence - instead preferring to focus her "
@@ -264,7 +264,6 @@ class Chat(BaseCog):
         ]
 
         token = await self.get_openai_token()
-        await ctx.channel.trigger_typing()  # Add typing indicator
         response = await model_querying.query_text_model(
             token, prompt, formatted_query, model="gpt-4o", user_names=user_names
         )
@@ -299,7 +298,6 @@ class Chat(BaseCog):
             return
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
-        await ctx.channel.trigger_typing()  # Add typing indicator
         response = await model_querying.query_text_model(token, prompt, formatted_query, user_names=user_names)
         await discord_handling.send_response(response, message, channel, thread_name)
 
@@ -318,7 +316,6 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        await ctx.channel.trigger_typing()  # Add typing indicator
         await self._image(channel, message, model="dall-e-3")
 
     @commands.command()
@@ -336,7 +333,6 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        await ctx.channel.trigger_typing()  # Add typing indicator
         await self._image(channel, message, n_images=4, model="dall-e-2")
 
     async def _image(self, channel: discord.abc.Messageable, message: discord, n_images=1, model: str = None):
@@ -390,7 +386,6 @@ class Chat(BaseCog):
         prompt: str = " ".join(prompt_words)
         thread_name = " ".join(prompt_words[:5]) + " image"
         token = await self.get_openai_token()
-        await ctx.channel.trigger_typing()  # Add typing indicator
         try:
             response = await model_querying.query_image_model(token, prompt, attachment, image_expansion=True)
         except ValueError:
