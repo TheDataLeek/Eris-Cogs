@@ -217,6 +217,10 @@ class Chat(BaseCog):
 
     async def contextual_chat_handler(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
+        if ctx.cog is None:  # Check if ctx.cog is None
+            print("Context cog is None. Exiting handler.")
+            return  # Exit if the cog is not available
+
         author: discord.Member = message.author
 
         # Check if the bot is mentioned
