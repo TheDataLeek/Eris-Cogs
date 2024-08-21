@@ -446,7 +446,7 @@ class Chat(BaseCog):
         
         try:
             response = await model_querying.query_text_model(token, prompt, formatted_query, user_names=user_names)
-            await discord_handling.send_response(response, message, channel, thread_name)
+            await discord_handling.send_response(ctx, response, message, channel, thread_name)  # Ensure all arguments are passed
         except Exception as e:
             await ctx.send(f"Error processing the chat: {str(e)}")
 
