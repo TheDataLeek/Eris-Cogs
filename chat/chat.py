@@ -77,6 +77,7 @@ class Chat(BaseCog):
 
         return commands.check(predicate)
 
+
     @commands.group(name="chatset", invoke_without_command=True)
     async def chatset(self, ctx):
         """Group command for chat settings."""
@@ -499,7 +500,8 @@ class Chat(BaseCog):
         except ValueError:
             await channel.send("Something went wrong!")
             return
-        await discord_handling.send_response(response, message, channel, thread_name)
+        # Ensure send_response accepts thread_name
+        await discord_handling.send_response(response, message, channel, thread_name)  # Ensure all arguments are passed
 
     @commands.command()
     async def expand(self, ctx: commands.Context):
