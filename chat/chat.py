@@ -80,7 +80,93 @@ class Chat(BaseCog):
     @commands.group(name="chatset", invoke_without_command=True)
     async def chatset(self, ctx):
         """Group command for chat settings."""
-        await ctx.send("Available subcommands: toggle_role_check, ...")
+        await ctx.send("Available subcommands: setprompt, setcooldown, exemptcooldown, deleteexemptcooldown, showexemptusers.")
+
+    @chatset.command(name="setprompt")
+    @checks.mod()  # Require mod permissions
+    async def setprompt(self, ctx):
+        """
+        Sets a custom prompt for this server's GPT-4 based interactions.
+        Usage:
+        [p]chatset setprompt <prompt_text>
+        Example:
+        [p]chatset setprompt Welcome to our server! How can I assist you today?
+        After running the command, the bot will confirm with a "Done" message.
+        """
+        message: discord.Message = ctx.message
+        if message.guild is None:
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
+        contents = " ".join(message.clean_content.split(" ")[2:])  # skip command and subcommand
+        await self.config.guild(ctx.guild).prompt.set(contents)
+
+        await ctx.send("Done")
+
+    @chatset.command(name="setcooldown")
+    @checks.mod()  # Require mod permissions
+    async def setcooldown(self, ctx, seconds: int):
+        """
+        Sets a cooldown period for the chat commands in this server.
+        Usage:
+        [p]chatset setcooldown <seconds>
+        Example:
+        [p]chatset setcooldown 30
+        After running the command, the bot will confirm with a "Cooldown set to <seconds> seconds" message.
+        """
+        message: discord.Message = ctx.message
+        if message.guild is None:
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
+        await self.config.guild(ctx.guild).cooldown.set(seconds)
+        await ctx.send(f"Cooldown set to {seconds} seconds.")
+
+    @chatset.command(name="exemptcooldown")
+    @checks.mod()  # Require mod permissions
+    async def exemptcooldown(self, ctx, *exempted_users: discord.User):
+        """
+        Exempts specified users from the cooldown period.
+        Usage:
+        [p]chatset exemptcooldown @User1 @User2
+        Example:
+        [p]chatset exemptcooldown @User1 @User2
+        After running the command, the bot will confirm the exempted users.
+        """
+        for user in exempted_users:
+            if user.id not in self.exempt_users:
+                self.exempt_users.append(user.id)  # Add exempted user IDs
+
+        # Save to config using the guild context
+        await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
+        await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
+
+    @chatset.command(name="deleteexemptcooldown")
+    @checks.mod()  # Require mod permissions
+    async def deleteexemptcooldown(self, ctx, *exempted_users: discord.User):
+        """Deletes specified users from the exempted cooldown list."""
+        for user in exempted_users:
+            if user.id in self.exempt_users:
+                self.exempt_users.remove(user.id)  # Remove exempted user IDs
+
+        # Save updated list to config
+        await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
+        await ctx.send(f"Removed exempted users: {', '.join(str(user.id) for user in exempted_users)}")
+
+    @chatset.command(name="showexemptusers")
+    @checks.mod()  # Require mod permissions
+    async def showexemptusers(self, ctx):
+        """
+        Displays the current exempted users from the cooldown period.
+        Usage:
+        [p]chatset showexemptusers
+        Example:
+        [p]chatset showexemptusers
+        Upon execution, the bot will send the list of exempted users in the chat.
+        """
+        if not self.exempt_users:
+            await ctx.send("There are currently no exempted users.")
+        else:
+            exempted_user_ids = ', '.join(str(user_id) for user_id in self.exempt_users)
+            await ctx.send(f"Exempted users: {exempted_user_ids}")
 
     @chatset.command(name="toggle_role_check")
     @has_role("Admin", enabled=True)  # Allow users with the 'Admin' role to toggle the role check
@@ -89,26 +175,6 @@ class Chat(BaseCog):
         self.role_check_enabled = not self.role_check_enabled
         status = "enabled" if self.role_check_enabled else "disabled"
         await ctx.send(f"Role check is now {status}.")
-
-    @commands.command()
-    @has_role(enabled=True)  # Require the specific role
-    async def setprompt(self, ctx):
-        """
-        Sets a custom prompt for this server's GPT-4 based interactions.
-        Usage:
-        [p]setprompt <prompt_text>
-        Example:
-        [p]setprompt Welcome to our server! How can I assist you today?
-        After running the command, the bot will confirm with a "Done" message.
-        """
-        message: discord.Message = ctx.message
-        if message.guild is None:
-            await ctx.send("Can only run in a text channel in a server, not a DM!")
-            return
-        contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
-        await self.config.guild(ctx.guild).prompt.set(contents)
-
-        await ctx.send("Done")
 
     @commands.command()
     @checks.mod()
@@ -131,72 +197,6 @@ class Chat(BaseCog):
         # Split the prompt into chunks of 2000 characters or less
         for i in range(0, len(prompt), 2000):
             await ctx.send(prompt[i:i + 2000])  # Send each chunk
-
-    @commands.command()
-    @has_role(enabled=True)  # Require the specific role
-    async def setcooldown(self, ctx, seconds: int):
-        """
-        Sets a cooldown period for the chat commands in this server.
-        Usage:
-        [p]setcooldown <seconds>
-        Example:
-        [p]setcooldown 30
-        After running the command, the bot will confirm with a "Cooldown set to <seconds> seconds" message.
-        """
-        message: discord.Message = ctx.message
-        if message.guild is None:
-            await ctx.send("Can only run in a text channel in a server, not a DM!")
-            return
-        await self.config.guild(ctx.guild).cooldown.set(seconds)
-        await ctx.send(f"Cooldown set to {seconds} seconds.")
-
-    @commands.command()
-    @commands.admin_or_permissions()
-    async def exemptcooldown(self, ctx, *exempted_users: discord.User):
-        """
-        Exempts specified users from the cooldown period.
-        Usage:
-        [p]exemptcooldown @User1 @User2
-        Example:
-        [p]exemptcooldown @User1 @User2
-        After running the command, the bot will confirm the exempted users.
-        """
-        for user in exempted_users:
-            if user.id not in self.exempt_users:
-                self.exempt_users.append(user.id)  # Add exempted user IDs
-
-        # Save to config using the guild context
-        await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
-        await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
-
-    @commands.command()
-    @commands.admin_or_permissions()
-    async def deleteexemptcooldown(self, ctx, *exempted_users: discord.User):
-        """Deletes specified users from the exempted cooldown list."""
-        for user in exempted_users:
-            if user.id in self.exempt_users:
-                self.exempt_users.remove(user.id)  # Remove exempted user IDs
-
-        # Save updated list to config
-        await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
-        await ctx.send(f"Removed exempted users: {', '.join(str(user.id) for user in exempted_users)}")
-
-    @commands.command()
-    @commands.admin_or_permissions()
-    async def showexemptusers(self, ctx):
-        """
-        Displays the current exempted users from the cooldown period.
-        Usage:
-        [p]showexemptusers
-        Example:
-        [p]showexemptusers
-        Upon execution, the bot will send the list of exempted users in the chat.
-        """
-        if not self.exempt_users:
-            await ctx.send("There are currently no exempted users.")
-        else:
-            exempted_user_ids = ', '.join(str(user_id) for user_id in self.exempt_users)
-            await ctx.send(f"Exempted users: {exempted_user_ids}")
 
     async def reset_whois_dictionary(self):
         self.whois = self.bot.get_cog("WhoIs")
