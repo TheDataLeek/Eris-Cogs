@@ -218,60 +218,56 @@ class Chat(BaseCog):
         ctx: commands.Context = await self.bot.get_context(message)
         author: discord.Member = message.author
 
-        # Debug: Print the author ID and exempt users
-        print(f"Author ID: {author.id}, Exempt Users: {self.exempt_users}")
-
-        # Check if the user is exempt from cooldown
-        if author.id in self.exempt_users:
-            print(f"User {author.id} is exempt from cooldown.")
-            return  # Skip cooldown check for exempted users
-
-        # Check for cooldown
-        current_time = discord.utils.utcnow().timestamp()
-        cooldown_duration = await self.config.guild(ctx.guild).cooldown()
-
-        if author.id in self.mention_cooldowns:
-            last_mentioned_time = self.mention_cooldowns[author.id]
-            if current_time - last_mentioned_time < cooldown_duration:
-                await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
-                return
-
         # Check if the bot is mentioned
         if self.bot.user in message.mentions:
-            print(f"Bot mentioned by {author.id}.")
-            self.mention_cooldowns[author.id] = current_time  # Update the timestamp
+            # Check if the user is exempt from cooldown
+            if author.id in self.exempt_users:
+                return  # Skip cooldown check for exempted users
+
+            # Check for cooldown
+            current_time = discord.utils.utcnow().timestamp()
+            cooldown_duration = await self.config.guild(ctx.guild).cooldown()
+
+            if author.id in self.mention_cooldowns:
+                last_mentioned_time = self.mention_cooldowns[author.id]
+                if current_time - last_mentioned_time < cooldown_duration:
+                    # Do not send a message; just return
+                    return
+
+            # Update the timestamp for the mention
+            self.mention_cooldowns[author.id] = current_time
+
+            # Proceed with handling the message if the bot was mentioned
+            if self.whois_dictionary is None:
+                await self.reset_whois_dictionary()
+
+            prefix: str = await self.get_prefix(ctx)
+            try:
+                (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
+                    prefix, ctx.channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
+                )
+            except ValueError as e:
+                print(e)
+                return
+
+            token = await self.get_openai_token()
+            prompt = await self.config.guild(ctx.guild).prompt()
+            response = await model_querying.query_text_model(
+                token,
+                prompt,
+                formatted_query,
+                user_names=user_names,
+                contextual_prompt=(
+                    "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
+                    "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
+                    "strive to blend in the conversation as closely as possible"
+                ),
+            )
+            for page in response:
+                await ctx.channel.send(page)
         else:
             print("Bot was not mentioned.")
             return  # Exit if the bot was not mentioned
-
-        # Proceed with handling the message if the bot was mentioned
-        if self.whois_dictionary is None:
-            await self.reset_whois_dictionary()
-
-        prefix: str = await self.get_prefix(ctx)
-        try:
-            (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
-                prefix, ctx.channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
-            )
-        except ValueError as e:
-            print(e)
-            return
-
-        token = await self.get_openai_token()
-        prompt = await self.config.guild(ctx.guild).prompt()
-        response = await model_querying.query_text_model(
-            token,
-            prompt,
-            formatted_query,
-            user_names=user_names,
-            contextual_prompt=(
-                "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
-                "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
-                "strive to blend in the conversation as closely as possible"
-            ),
-        )
-        for page in response:
-            await ctx.channel.send(page)
 
     async def get_openai_token(self):
         self.openai_settings = await self.bot.get_shared_api_tokens("openai")
