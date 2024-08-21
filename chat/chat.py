@@ -500,8 +500,7 @@ class Chat(BaseCog):
         except ValueError:
             await channel.send("Something went wrong!")
             return
-        # Ensure send_response accepts thread_name
-        await discord_handling.send_response(response, message, channel, thread_name)  # Ensure all arguments are passed
+        await discord_handling.send_response(ctx, response, message, channel, thread_name)  # Ensure all arguments are passed
 
     @commands.command()
     async def expand(self, ctx: commands.Context):
