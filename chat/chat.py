@@ -48,7 +48,8 @@ class Chat(BaseCog):
                 "directed at you are answered completely regardless of content.\n"
             ),
             "cooldown": 10,  # default cooldown in seconds
-            "exempt_users": []  # Initialize exempt users as an empty list
+            "exempt_users": [],  # Initialize exempt users as an empty list
+            "role_name": None  # Add this line to store the role name per server
         }
         self.config.register_guild(**default_guild)
         self.data_dir = data_manager.bundled_data_path(self)
@@ -61,12 +62,18 @@ class Chat(BaseCog):
         print(f"Loaded exempt users: {self.exempt_users}")  # Debug statement
 
     @staticmethod
-    def has_role(role_name: str, enabled: bool = False):
+    def has_role(enabled: bool = False):
         """Decorator to check if the user has a specific role."""
         def predicate(ctx):
             if not enabled or not ctx.cog.role_check_enabled:
                 return True  # Skip check if disabled
-            return any(role.name == role_name for role in ctx.author.roles)
+            
+            role_id = ctx.cog.config.guild(ctx.guild).role_name()  # Get the role ID from config
+            if role_id is None:
+                return True  # If no role is set, skip check
+            
+            role = ctx.guild.get_role(role_id)
+            return role in ctx.author.roles if role else False  # Check if the user has the role
 
         return commands.check(predicate)
 
@@ -76,7 +83,7 @@ class Chat(BaseCog):
         await ctx.send("Available subcommands: toggle_role_check, ...")
 
     @chatset.command(name="toggle_role_check")
-    @commands.is_owner()  # Example command to toggle role check
+    @has_role("Admin", enabled=True)  # Allow users with the 'Admin' role to toggle the role check
     async def toggle_role_check(self, ctx):
         """Toggle the role check on or off."""
         self.role_check_enabled = not self.role_check_enabled
