@@ -81,7 +81,8 @@ class Chat(BaseCog):
     @commands.group(name="chatset", invoke_without_command=True)
     async def chatset(self, ctx):
         """Group command for chat settings."""
-        await ctx.send("Available subcommands: setprompt, setcooldown, exemptcooldown, deleteexemptcooldown, showexemptusers, showcooldown..")
+        if ctx.invoked_subcommand is None:  # Check if no subcommand was invoked
+            await ctx.send_help()  # Use Redbot's built-in help command
 
     @chatset.command(name="setprompt")
     @checks.mod()  # Require mod permissions
