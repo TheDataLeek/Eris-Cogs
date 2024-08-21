@@ -24,6 +24,7 @@ class Chat(BaseCog):
         )
         self.exempt_users = []  # List to store exempted user IDs
         self.load_exempt_users()  # Load exempt users from config
+        self.role_check_enabled = False  # Default to disabled
 
         default_guild = {
             "prompt": (
@@ -59,8 +60,30 @@ class Chat(BaseCog):
         self.exempt_users = await self.config.guild().exempt_users() or []
         print(f"Loaded exempt users: {self.exempt_users}")  # Debug statement
 
+    def has_role(self, role_name: str, enabled: bool = False):
+        """Decorator to check if the user has a specific role."""
+        def predicate(ctx):
+            if not enabled or not self.role_check_enabled:
+                return True  # Skip check if disabled
+            return any(role.name == role_name for role in ctx.author.roles)
+
+        return commands.check(predicate)
+
+    @commands.group(name="chatset", invoke_without_command=True)
+    async def chatset(self, ctx):
+        """Group command for chat settings."""
+        await ctx.send("Available subcommands: toggle_role_check, ...")
+
+    @chatset.command(name="toggle_role_check")
+    @commands.is_owner()  # Example command to toggle role check
+    async def toggle_role_check(self, ctx):
+        """Toggle the role check on or off."""
+        self.role_check_enabled = not self.role_check_enabled
+        status = "enabled" if self.role_check_enabled else "disabled"
+        await ctx.send(f"Role check is now {status}.")
+
     @commands.command()
-    @checks.mod()
+    @has_role("Admin", enabled=True)  # Require 'Admin' role
     async def setprompt(self, ctx):
         """
         Sets a custom prompt for this server's GPT-4 based interactions.
@@ -80,7 +103,9 @@ class Chat(BaseCog):
         await ctx.send("Done")
 
     @commands.command()
+    @checks.mod()
     async def showprompt(self, ctx):
+        
         """
         Displays the current custom GPT-4 prompt for this server.
         Usage:
@@ -100,7 +125,7 @@ class Chat(BaseCog):
             await ctx.send(prompt[i:i + 2000])  # Send each chunk
 
     @commands.command()
-    @checks.mod()
+    @has_role("Admin", enabled=True)  # Require 'Admin' role
     async def setcooldown(self, ctx, seconds: int):
         """
         Sets a cooldown period for the chat commands in this server.
@@ -118,7 +143,7 @@ class Chat(BaseCog):
         await ctx.send(f"Cooldown set to {seconds} seconds.")
 
     @commands.command()
-    @checks.mod()
+    @has_role("Admin", enabled=True)  # Require 'Admin' role
     async def exemptcooldown(self, ctx, *exempted_users: discord.User):
         """
         Exempts specified users from the cooldown period.
@@ -136,10 +161,20 @@ class Chat(BaseCog):
         await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
         await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
 
+    @commands.command()
+    @has_role("Admin", enabled=True)  # Require 'Admin' role
+    async def deleteexemptcooldown(self, ctx, *exempted_users: discord.User):
+        """Deletes specified users from the exempted cooldown list."""
+        for user in exempted_users:
+            if user.id in self.exempt_users:
+                self.exempt_users.remove(user.id)  # Remove exempted user IDs
 
+        # Save updated list to config
+        await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
+        await ctx.send(f"Removed exempted users: {', '.join(str(user.id) for user in exempted_users)}")
 
     @commands.command()
-    @checks.mod()
+    @has_role("Admin", enabled=True)  # Require 'Admin' role
     async def showexemptusers(self, ctx):
         """
         Displays the current exempted users from the cooldown period.
