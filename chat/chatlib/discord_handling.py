@@ -191,8 +191,8 @@ async def send_response(
     if isinstance(channel_or_thread, discord.TextChannel):
         channel_or_thread: discord.Thread = await message.create_thread(name=thread_name)
 
-    # Check if the user has the required role for mentions
-    if not await has_role_check(ctx):
+    # Check if the role check is enabled before enforcing it
+    if ctx.cog.role_check_enabled and not await has_role_check(ctx):
         await channel_or_thread.send("You do not have permission to mention the bot.")
         return
 
