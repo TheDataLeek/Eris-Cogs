@@ -91,7 +91,7 @@ class Chat(BaseCog):
         await ctx.send(f"Role check is now {status}.")
 
     @commands.command()
-    @has_role("Admin", enabled=True)  # Require 'Admin' role
+    @has_role(enabled=True)  # Require the specific role
     async def setprompt(self, ctx):
         """
         Sets a custom prompt for this server's GPT-4 based interactions.
@@ -133,7 +133,7 @@ class Chat(BaseCog):
             await ctx.send(prompt[i:i + 2000])  # Send each chunk
 
     @commands.command()
-    @has_role("Admin", enabled=True)  # Require 'Admin' role
+    @has_role(enabled=True)  # Require the specific role
     async def setcooldown(self, ctx, seconds: int):
         """
         Sets a cooldown period for the chat commands in this server.
@@ -151,7 +151,7 @@ class Chat(BaseCog):
         await ctx.send(f"Cooldown set to {seconds} seconds.")
 
     @commands.command()
-    @has_role("Admin", enabled=True)  # Require 'Admin' role
+    @commands.admin_or_permissions()
     async def exemptcooldown(self, ctx, *exempted_users: discord.User):
         """
         Exempts specified users from the cooldown period.
@@ -170,7 +170,7 @@ class Chat(BaseCog):
         await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
 
     @commands.command()
-    @has_role("Admin", enabled=True)  # Require 'Admin' role
+    @commands.admin_or_permissions()
     async def deleteexemptcooldown(self, ctx, *exempted_users: discord.User):
         """Deletes specified users from the exempted cooldown list."""
         for user in exempted_users:
@@ -182,7 +182,7 @@ class Chat(BaseCog):
         await ctx.send(f"Removed exempted users: {', '.join(str(user.id) for user in exempted_users)}")
 
     @commands.command()
-    @has_role("Admin", enabled=True)  # Require 'Admin' role
+    @commands.admin_or_permissions()
     async def showexemptusers(self, ctx):
         """
         Displays the current exempted users from the cooldown period.
@@ -541,3 +541,16 @@ class Chat(BaseCog):
             await ctx.send("Something went wrong!")
             return
         await discord_handling.send_response(response, message, channel, thread_name)
+
+    @commands.command()
+    @has_role("Admin", enabled=True)
+    async def setserverrole(self, ctx, role: discord.Role):
+        """
+        Sets the role that can use the bot's commands for this server.
+        Usage:
+        [p]setserverrole @Role
+        Example:
+        [p]setserverrole @Admin
+        """
+        await self.config.guild(ctx.guild).role_name.set(role.id)  # Store the role ID
+        await ctx.send(f"Role '{role.name}' has been set for this server.")
