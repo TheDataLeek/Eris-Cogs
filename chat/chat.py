@@ -81,7 +81,7 @@ class Chat(BaseCog):
     @commands.group(name="chatset", invoke_without_command=True)
     async def chatset(self, ctx):
         """Group command for chat settings."""
-        await ctx.send("Available subcommands: setprompt, setcooldown, exemptcooldown, deleteexemptcooldown, showexemptusers, showcooldown.")
+        await ctx.send("Available subcommands: setprompt, setcooldown, exemptcooldown, deleteexemptcooldown, showexemptusers, showcooldown..")
 
     @chatset.command(name="setprompt")
     @checks.mod()  # Require mod permissions
