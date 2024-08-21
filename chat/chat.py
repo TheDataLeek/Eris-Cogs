@@ -94,7 +94,10 @@ class Chat(BaseCog):
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
         prompt = await self.config.guild(ctx.guild).prompt()
-        await ctx.send(prompt)
+
+        # Split the prompt into chunks of 2000 characters or less
+        for i in range(0, len(prompt), 2000):
+            await ctx.send(prompt[i:i + 2000])  # Send each chunk
 
     @commands.command()
     @checks.mod()
