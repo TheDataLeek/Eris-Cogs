@@ -182,6 +182,7 @@ async def extract_message(message, keep_all_words, skip_command_word):
 
 
 async def send_response(
+    ctx: commands.Context,  # Add ctx as a parameter
     response: str | io.BytesIO | list[io.BytesIO],
     message: discord.Message,
     channel_or_thread: discord.abc.Messageable,
