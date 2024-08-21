@@ -538,15 +538,15 @@ class Chat(BaseCog):
             return
         await discord_handling.send_response(response, message, channel, thread_name)
 
-    @commands.command()
-    @has_role("Admin", enabled=True)
+    @chatset.command(name="setserverrole")
+    @checks.mod()  # Require mod permissions
     async def setserverrole(self, ctx, role: discord.Role):
         """
         Sets the role that can use the bot's commands for this server.
         Usage:
-        [p]setserverrole @Role
+        [p]chatset setserverrole @Role
         Example:
-        [p]setserverrole @Admin
+        [p]chatset setserverrole @Admin
         """
         await self.config.guild(ctx.guild).role_name.set(role.id)  # Store the role ID
         await ctx.send(f"Role '{role.name}' has been set for this server.")
