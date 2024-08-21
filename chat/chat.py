@@ -62,16 +62,16 @@ class Chat(BaseCog):
         print(f"Loaded exempt users: {self.exempt_users}")  # Debug statement
 
     @staticmethod
-    def has_role(enabled: bool = False):
+    def has_role(role_name: str = None, enabled: bool = False):
         """Decorator to check if the user has a specific role."""
         def predicate(ctx):
             if not enabled or not ctx.cog.role_check_enabled:
                 return True  # Skip check if disabled
             
-            role_id = ctx.cog.config.guild(ctx.guild).role_name()  # Get the role ID from config
-            if role_id is None:
+            if role_name is None:
                 return True  # If no role is set, skip check
             
+            role_id = ctx.cog.config.guild(ctx.guild).role_name()  # Get the role ID from config
             role = ctx.guild.get_role(role_id)
             return role in ctx.author.roles if role else False  # Check if the user has the role
 
