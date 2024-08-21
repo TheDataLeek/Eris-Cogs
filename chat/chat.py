@@ -179,7 +179,6 @@ class Chat(BaseCog):
     @commands.command()
     @checks.mod()
     async def showprompt(self, ctx):
-        
         """
         Displays the current custom GPT-4 prompt for this server.
         Usage:
@@ -431,7 +430,12 @@ class Chat(BaseCog):
 
         try:
             (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
-                prefix, channel, message, author, whois_dict=self.whois_dictionary
+                ctx,  # Pass ctx here
+                prefix, 
+                channel, 
+                message, 
+                author, 
+                whois_dict=self.whois_dictionary
             )
         except ValueError as e:
             await ctx.send(f"Error extracting chat history: {str(e)}")

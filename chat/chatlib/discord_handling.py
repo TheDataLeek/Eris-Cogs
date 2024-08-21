@@ -22,6 +22,7 @@ async def has_role_check(ctx: commands.Context) -> bool:
     return role in ctx.author.roles if role else False
 
 async def extract_chat_history_and_format(
+    ctx: commands.Context,  # Add ctx as a parameter
     prefix: None | str,
     channel: discord.abc.Messageable,
     message: discord.Message,
@@ -49,7 +50,7 @@ async def extract_chat_history_and_format(
         thread_name = (" ".join(formatted_query.split(" ")[:5]))[:80] + "..."
 
         # Check if the user has the required role
-        if not await has_role_check(ctx):
+        if not await has_role_check(ctx):  # Now ctx is defined
             raise ValueError("You do not have permission to use this command.")
 
         if extract_full_history:
