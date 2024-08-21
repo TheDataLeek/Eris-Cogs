@@ -465,7 +465,8 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        await self._image(channel, message, model="dall-e-3")
+        thread_name = " ".join(message.content.split(" ")[1:5]) + " image"  # Create a thread name based on the prompt
+        await self._image(channel, message, model="dall-e-3", thread_name=thread_name)  # Pass thread_name to _image
 
     @commands.command()
     async def images(self, ctx: commands.Context):
@@ -484,7 +485,7 @@ class Chat(BaseCog):
             return
         await self._image(channel, message, n_images=4, model="dall-e-2")
 
-    async def _image(self, channel: discord.abc.Messageable, message: discord, n_images=1, model: str = None):
+    async def _image(self, channel: discord.abc.Messageable, message: discord.Message, n_images=1, model: str = None, thread_name: str = None):
         attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
         attachment = None
         if len(attachments) > 0:
@@ -492,7 +493,6 @@ class Chat(BaseCog):
 
         prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
         prompt: str = " ".join(prompt_words)
-        thread_name = " ".join(prompt_words[:5]) + " image"
         token = await self.get_openai_token()
         try:
             response = await model_querying.query_image_model(token, prompt, attachment, n_images=n_images, model=model)
