@@ -243,8 +243,15 @@ class Chat(BaseCog):
 
             prefix: str = await self.get_prefix(ctx)
             try:
+                # Ensure 'author' is passed correctly
                 (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
-                    prefix, ctx.channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
+                    ctx,  # Pass ctx here
+                    prefix, 
+                    ctx.channel, 
+                    message, 
+                    author,  # Pass author here
+                    extract_full_history=True, 
+                    whois_dict=self.whois_dictionary
                 )
             except ValueError as e:
                 print(e)
