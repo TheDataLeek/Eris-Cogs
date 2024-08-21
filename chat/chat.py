@@ -80,7 +80,7 @@ class Chat(BaseCog):
     @commands.group(name="chatset", invoke_without_command=True)
     async def chatset(self, ctx):
         """Group command for chat settings."""
-        await ctx.send("Available subcommands: setprompt, setcooldown, exemptcooldown, deleteexemptcooldown, showexemptusers.")
+        await ctx.send("Available subcommands: setprompt, setcooldown, exemptcooldown, deleteexemptcooldown, showexemptusers, showcooldown.")
 
     @chatset.command(name="setprompt")
     @checks.mod()  # Require mod permissions
@@ -117,7 +117,7 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        await self.config.guild(ctx.guild).cooldown.set(seconds)
+        await self.config.guild(ctx.guild).cooldown.set(seconds)  # Save to config
         await ctx.send(f"Cooldown set to {seconds} seconds.")
 
     @chatset.command(name="exemptcooldown")
