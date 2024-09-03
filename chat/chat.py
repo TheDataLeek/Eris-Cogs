@@ -106,13 +106,8 @@ class Chat(BaseCog):
     async def contextual_chat_handler(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
         channel: discord.abc.Messageable = ctx.channel
-        message: discord.Message = ctx.message
         author: discord.Member = message.author
-        user: discord.User
-        bot_mentioned = False
-        for user in message.mentions:
-            if user == self.bot.user:
-                bot_mentioned = True
+        bot_mentioned = any(user == self.bot.user for user in message.mentions)
         if not bot_mentioned:
             return
 
@@ -124,9 +119,16 @@ class Chat(BaseCog):
             (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
             )
+
+            # Ensure image URLs are assigned the 'user' role
+            for msg in formatted_query:
+                if 'image_url' in msg.get('content', '') and msg.get('role') != 'user':
+                    msg['role'] = 'user'  # Set the role to 'user' if it contains an image URL
+
         except ValueError as e:
             print(e)
             return
+
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
         response = await model_querying.query_text_model(
