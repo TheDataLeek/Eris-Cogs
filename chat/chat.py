@@ -124,11 +124,6 @@ class Chat(BaseCog):
             (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
             )
-            
-            # Filter out image URLs from the formatted_query if they are from the assistant fixes 
-            formatted_query = [
-                msg for msg in formatted_query if not (msg.get('role') == 'assistant' and 'http' in msg.get('content', ''))
-            ]
         except ValueError as e:
             print(e)
             return
