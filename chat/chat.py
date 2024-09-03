@@ -122,15 +122,21 @@ class Chat(BaseCog):
 
             # Ensure image URLs are assigned the 'user' role
             for msg in formatted_query:
-                if 'image_url' in msg.get('content', '') and msg.get('role') != 'user':
+                if 'image_url' in msg.get('content', ''):
                     msg['role'] = 'user'  # Set the role to 'user' if it contains an image URL
 
         except ValueError as e:
-            print(e)
+            print(f"ValueError: {e}")
             return
 
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
+        
+        # Check if formatted_query is not empty
+        if not formatted_query:
+            await channel.send("No valid messages to process.")
+            return
+
         response = await model_querying.query_text_model(
             token,
             prompt,
@@ -142,6 +148,8 @@ class Chat(BaseCog):
                 "strive to blend in the conversation as closely as possible"
             ),
         )
+
+        # Send the response back to the channel
         for page in response:
             await channel.send(page)
 
