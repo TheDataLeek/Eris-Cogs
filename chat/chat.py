@@ -124,18 +124,14 @@ class Chat(BaseCog):
             (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
                 prefix, channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
             )
-
-            # Debugging: Print the original formatted_query
-            print("Original formatted_query:", formatted_query)
-
-            # Filter out image URLs from the assistant's messages
+            
+            # Filter out image URLs from the formatted_query if they are from the assistant fixes 
             formatted_query = [
                 msg for msg in formatted_query if not (msg.get('role') == 'assistant' and 'http' in msg.get('content', ''))
             ]
         except ValueError as e:
             print(e)
             return
-
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
         response = await model_querying.query_text_model(
