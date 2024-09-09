@@ -30,13 +30,13 @@ class MTG(BaseCog):
         async with aiohttp.ClientSession(headers={"User-Agent": "ErisMTGDiscordBot/1.0", "Accept": "*/*"}) as session:
             url = "https://api.scryfall.com/cards/named"
             for match in matches:
-                async with session.get(f"{url}?format=image&version=png&fuzzy={match.group(1)}") as resp:
+                async with session.get(f"{url}?format=image&version=png&fuzzy={match}") as resp:
                     if resp.status != 200:
                         continue
                     cardbuf = io.BytesIO()
                     cardbuf.write(await resp.read())
                     cardbuf.seek(0)
-                    cards.append(discord.File(cardbuf, filename=f"{match.group(1)}.png"))
+                    cards.append(discord.File(cardbuf, filename=f"{match}.png"))
 
                 time.sleep(0.1)
 
