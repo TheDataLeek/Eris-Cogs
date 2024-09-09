@@ -3,6 +3,7 @@ from __future__ import annotations
 import discord
 from redbot.core import commands, data_manager, bot, Config, checks
 from redbot.core.bot import Red
+import asyncio  #needed for user id stuff for cooldowns
 
 from .chatlib import discord_handling, model_querying
 
@@ -14,12 +15,17 @@ class Chat(BaseCog):
         self.bot: Red = bot_instance
         self.openai_settings = None
         self.openai_token = None
+        self.mention_cooldowns = {}  # initialises mention_cooldowns stuff here
         self.config = Config.get_conf(
             self,
             identifier=23458972349810010102367456567347810101,
             force_registration=True,
             cog_name="chat",
         )
+        self.exempt_users = []  # List to store exempted user IDs
+        self.load_exempt_users()  # Load exempt users from config
+        self.role_check_enabled = False  # Default to disabled
+
         default_guild = {
             "prompt": (
                 "Users interact with you on the Discord messaging platform through messages "
@@ -40,34 +46,68 @@ class Chat(BaseCog):
                 "Sometimes you may observe rude interactions but these are to be ignored and instead you "
                 "need to focus on ensuring that your tone matches the conversation and that any questions "
                 "directed at you are answered completely regardless of content.\n"
-            )
+            ),
+            "cooldown": 10,  # default cooldown in seconds
+            "exempt_users": [],  # Initialize exempt users as an empty list
+            "role_name": None  # Add this line to store the role name per server
         }
         self.config.register_guild(**default_guild)
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
 
-    @commands.command()
-    @checks.mod()
+    async def load_exempt_users(self):
+        """Load exempt users from the configuration."""
+        self.exempt_users = await self.config.guild().exempt_users() or []
+        print(f"Loaded exempt users: {self.exempt_users}")  # Debug statement
+
+    @staticmethod
+    def has_role(role_name: str = None, enabled: bool = False):
+        """Decorator to check if the user has a specific role."""
+        def predicate(ctx):
+            if not enabled or not ctx.cog.role_check_enabled:
+                return True  # Skip check if disabled
+            
+            if role_name is None:
+                return True  # If no role is set, skip check
+            
+            role_id = ctx.cog.config.guild(ctx.guild).role_name()  # Get the role ID from config
+            role = ctx.guild.get_role(role_id)
+            return role in ctx.author.roles if role else False  # Check if the user has the role
+
+        return commands.check(predicate)
+
+
+    @commands.group(name="chatset", invoke_without_command=True)
+    async def chatset(self, ctx):
+        """Group command for chat settings."""
+        if ctx.invoked_subcommand is None:  # Check if no subcommand was invoked
+            await ctx.send_help()  # Use Redbot's built-in help command
+
+    @chatset.command(name="setprompt")
+    @checks.mod()  # Require mod permissions
     async def setprompt(self, ctx):
         """
         Sets a custom prompt for this server's GPT-4 based interactions.
         Usage:
-        [p]setprompt <prompt_text>
+        [p]chatset setprompt <prompt_text>
         Example:
-        [p]setprompt Welcome to our server! How can I assist you today?
+        [p]chatset setprompt Welcome to our server! How can I assist you today?
         After running the command, the bot will confirm with a "Done" message.
         """
         message: discord.Message = ctx.message
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
+        contents = " ".join(message.clean_content.split(" ")[2:])  # skip command and subcommand
         await self.config.guild(ctx.guild).prompt.set(contents)
 
         await ctx.send("Done")
 
+
+
     @commands.command()
+    @checks.mod()
     async def showprompt(self, ctx):
         """
         Displays the current custom GPT-4 prompt for this server.
@@ -105,43 +145,69 @@ class Chat(BaseCog):
 
     async def contextual_chat_handler(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
-        channel: discord.abc.Messageable = ctx.channel
-        message: discord.Message = ctx.message
+        if ctx.cog is None:  # Check if ctx.cog is None
+            print("Context cog is None. Exiting handler.")
+            return  # Exit if the cog is not available
+
         author: discord.Member = message.author
-        user: discord.User
-        bot_mentioned = False
-        for user in message.mentions:
-            if user == self.bot.user:
-                bot_mentioned = True
-        if not bot_mentioned:
-            return
 
-        if self.whois_dictionary is None:
-            await self.reset_whois_dictionary()
+        # Check if the bot is mentioned
+        if self.bot.user in message.mentions:
+            # Check if the user is exempt from cooldown
+            if author.id in self.exempt_users:
+                return  # Skip cooldown check for exempted users
 
-        prefix: str = await self.get_prefix(ctx)
-        try:
-            (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
-                prefix, channel, message, author, extract_full_history=True, whois_dict=self.whois_dictionary
+            # Check for cooldown
+            current_time = discord.utils.utcnow().timestamp()
+            cooldown_duration = await self.config.guild(ctx.guild).cooldown()
+
+            if author.id in self.mention_cooldowns:
+                last_mentioned_time = self.mention_cooldowns[author.id]
+                if current_time - last_mentioned_time < cooldown_duration:
+                    # Do not send a message; just return
+                    return
+
+            # Update the timestamp for the mention
+            self.mention_cooldowns[author.id] = current_time
+
+            # Proceed with handling the message if the bot was mentioned
+            if self.whois_dictionary is None:
+                await self.reset_whois_dictionary()
+
+            prefix: str = await self.get_prefix(ctx)
+            try:
+                # Ensure 'author' is passed correctly
+                (_, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
+                    ctx,  # Pass ctx here
+                    prefix, 
+                    ctx.channel, 
+                    message, 
+                    author,  # Pass author here
+                    extract_full_history=True, 
+                    whois_dict=self.whois_dictionary
+                )
+            except ValueError as e:
+                print(e)
+                return
+
+            token = await self.get_openai_token()
+            prompt = await self.config.guild(ctx.guild).prompt()
+            response = await model_querying.query_text_model(
+                token,
+                prompt,
+                formatted_query,
+                user_names=user_names,
+                contextual_prompt=(
+                    "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
+                    "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
+                    "strive to blend in the conversation as closely as possible"
+                ),
             )
-        except ValueError as e:
-            print(e)
-            return
-        token = await self.get_openai_token()
-        prompt = await self.config.guild(ctx.guild).prompt()
-        response = await model_querying.query_text_model(
-            token,
-            prompt,
-            formatted_query,
-            user_names=user_names,
-            contextual_prompt=(
-                "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
-                "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
-                "strive to blend in the conversation as closely as possible"
-            ),
-        )
-        for page in response:
-            await channel.send(page)
+            for page in response:
+                await ctx.channel.send(page)
+        else:
+            print("Bot was not mentioned.")
+            return  # Exit if the bot was not mentioned
 
     async def get_openai_token(self):
         self.openai_settings = await self.bot.get_shared_api_tokens("openai")
@@ -155,6 +221,7 @@ class Chat(BaseCog):
         return prefix
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def rewind(self, ctx: commands.Context) -> None:
         """
         Rewinds the chat in an active thread by removing the bot's latest responses and the associated user input.
@@ -198,6 +265,7 @@ class Chat(BaseCog):
         await message.delete()
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def tarot(self, ctx: commands.Context) -> None:
         """
         Provides a tarot card reading interpreted by Wrin Sivinxi.
@@ -235,9 +303,9 @@ class Chat(BaseCog):
 
         prompt = (
             "You are Wrin Sivinxi.\n"
-            "Wrin is easily distracted, spacey, and ditzy with a focus on the present. She’s very literal, and adopts "
+            "Wrin is easily distracted, spacey, and ditzy with a focus on the present. She's very literal, and adopts "
             "an attitude of only valuing things in her life that add to it. If she likes you, you will know it, as "
-            "she’s very friendly and always cares deeply for friendships.\n"
+            "she's very friendly and always cares deeply for friendships.\n"
             "Wrin is easily grossed out by bugs, crawlies, blood, and violence - instead preferring to focus her "
             "energy on positive experiences.\n"
             "Wrin is a merchant in Otari, and as of 4721 AR has been proprietor of Wrin's Wonders since its founding "
@@ -269,37 +337,7 @@ class Chat(BaseCog):
         )
         await discord_handling.send_response(response, message, channel, thread_name)
 
-    @commands.command()
-    async def chat(self, ctx: commands.Context) -> None:
-        """
-        Engages in a chat conversation using a custom GPT-4 prompt and create an active thread if not already in one.
-        Usage:
-        [p]chat <your_message>
-        Example:
-        [p]chat How are you doing today?
-        Upon execution, the bot will process the chat history and the provided message, then respond within the same
-        thread.
-        """
-        channel: discord.abc.Messageable = ctx.channel
-        message: discord.Message = ctx.message
-        author: discord.Member = message.author
-        prefix: str = await self.get_prefix(ctx)
-        if message.guild is None:
-            await ctx.send("Can only run in a text channel in a server, not a DM!")
-            return
-        if self.whois_dictionary is None:
-            await self.reset_whois_dictionary()
-        try:
-            (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
-                prefix, channel, message, author, whois_dict=self.whois_dictionary
-            )
-        except ValueError:
-            await ctx.send("Something went wrong!")
-            return
-        token = await self.get_openai_token()
-        prompt = await self.config.guild(ctx.guild).prompt()
-        response = await model_querying.query_text_model(token, prompt, formatted_query, user_names=user_names)
-        await discord_handling.send_response(response, message, channel, thread_name)
+
 
     @commands.command()
     async def image(self, ctx: commands.Context):
@@ -316,7 +354,8 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        await self._image(channel, message, model="dall-e-3")
+        thread_name = " ".join(message.content.split(" ")[1:5]) + " image"  # Create a thread name based on the prompt
+        await self._image(channel, message, model="dall-e-3", thread_name=thread_name)  # Pass thread_name to _image
 
     @commands.command()
     async def images(self, ctx: commands.Context):
@@ -335,7 +374,7 @@ class Chat(BaseCog):
             return
         await self._image(channel, message, n_images=4, model="dall-e-2")
 
-    async def _image(self, channel: discord.abc.Messageable, message: discord, n_images=1, model: str = None):
+    async def _image(self, channel: discord.abc.Messageable, message: discord.Message, n_images=1, model: str = None, thread_name: str = None):
         attachments: list[discord.Attachment] = [m for m in message.attachments if m.width]
         attachment = None
         if len(attachments) > 0:
@@ -343,14 +382,13 @@ class Chat(BaseCog):
 
         prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
         prompt: str = " ".join(prompt_words)
-        thread_name = " ".join(prompt_words[:5]) + " image"
         token = await self.get_openai_token()
         try:
             response = await model_querying.query_image_model(token, prompt, attachment, n_images=n_images, model=model)
         except ValueError:
             await channel.send("Something went wrong!")
             return
-        await discord_handling.send_response(response, message, channel, thread_name)
+        await discord_handling.send_response(ctx, response, message, channel, thread_name)  # Ensure all arguments are passed
 
     @commands.command()
     async def expand(self, ctx: commands.Context):
@@ -392,3 +430,164 @@ class Chat(BaseCog):
             await ctx.send("Something went wrong!")
             return
         await discord_handling.send_response(response, message, channel, thread_name)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @chatset.command(name="setserverrole")
+    @checks.mod()  # Require mod permissions
+    async def setserverrole(self, ctx, role: discord.Role):
+        """
+        Sets the role that can use the bot's commands for this server.
+        Usage:
+        [p]chatset setserverrole @Role
+        Example:
+        [p]chatset setserverrole @Admin
+        """
+        await self.config.guild(ctx.guild).role_name.set(role.id)  # Store the role ID
+        await ctx.send(f"Role '{role.name}' has been set for this server.")
+        
+        
+    @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def chat(self, ctx: commands.Context) -> None:
+        """
+        Engages in a chat conversation using a custom GPT-4 prompt and create an active thread if not already in one.
+        Usage:
+        [p]chat <your_message>
+        Example:
+        [p]chat How are you doing today?
+        Upon execution, the bot will process the chat history and the provided message, then respond within the same
+        thread.
+        """
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
+        author: discord.Member = message.author
+        prefix: str = await self.get_prefix(ctx)
+        if message.guild is None:
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
+
+        # Check for mention cooldowns
+        current_time = discord.utils.utcnow().timestamp()
+        cooldown_duration = await self.config.guild(ctx.guild).cooldown()
+        if author.id in self.mention_cooldowns:
+            last_mentioned_time = self.mention_cooldowns[author.id]
+            if current_time - last_mentioned_time < cooldown_duration:
+                await ctx.send("You're on cooldown for mentioning the bot. Please wait a bit.")
+                return
+
+        if self.whois_dictionary is None:
+            await self.reset_whois_dictionary()
+
+        try:
+            (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
+                ctx,  # Pass ctx here
+                prefix, 
+                channel, 
+                message, 
+                author, 
+                whois_dict=self.whois_dictionary
+            )
+        except ValueError as e:
+            await ctx.send(f"Error extracting chat history: {str(e)}")
+            return
+
+        token = await self.get_openai_token()
+        prompt = await self.config.guild(ctx.guild).prompt()
+        
+        try:
+            response = await model_querying.query_text_model(token, prompt, formatted_query, user_names=user_names)
+            await discord_handling.send_response(ctx, response, message, channel, thread_name)  # Ensure all arguments are passed
+        except Exception as e:
+            await ctx.send(f"Error processing the chat: {str(e)}")
+
+
+
+    @chatset.command(name="setcooldown")
+    @checks.mod()  # Require mod permissions
+    async def setcooldown(self, ctx, seconds: int):
+        """
+        Sets a cooldown period for the chat commands in this server.
+        Usage:
+        [p]chatset setcooldown <seconds>
+        Example:
+        [p]chatset setcooldown 30
+        After running the command, the bot will confirm with a "Cooldown set to <seconds> seconds" message.
+        """
+        message: discord.Message = ctx.message
+        if message.guild is None:
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
+        await self.config.guild(ctx.guild).cooldown.set(seconds)  # Save to config
+        await ctx.send(f"Cooldown set to {seconds} seconds.")
+
+    @chatset.command(name="exemptcooldown")
+    @checks.mod()  # Require mod permissions
+    async def exemptcooldown(self, ctx, *exempted_users: discord.User):
+        """
+        Exempts specified users from the cooldown period.
+        Usage:
+        [p]chatset exemptcooldown @User1 @User2
+        Example:
+        [p]chatset exemptcooldown @User1 @User2
+        After running the command, the bot will confirm the exempted users.
+        """
+        for user in exempted_users:
+            if user.id not in self.exempt_users:
+                self.exempt_users.append(user.id)  # Add exempted user IDs
+
+        # Save to config using the guild context
+        await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
+        await ctx.send(f"Exempted users: {', '.join(str(user.id) for user in exempted_users)}")
+
+    @chatset.command(name="deleteexemptcooldown")
+    @checks.mod()  # Require mod permissions
+    async def deleteexemptcooldown(self, ctx, *exempted_users: discord.User):
+        """Deletes specified users from the exempted cooldown list."""
+        for user in exempted_users:
+            if user.id in self.exempt_users:
+                self.exempt_users.remove(user.id)  # Remove exempted user IDs
+
+        # Save updated list to config
+        await self.config.guild(ctx.guild).exempt_users.set(self.exempt_users)  
+        await ctx.send(f"Removed exempted users: {', '.join(str(user.id) for user in exempted_users)}")
+
+    @chatset.command(name="showexemptusers")
+    @checks.mod()  # Require mod permissions
+    async def showexemptusers(self, ctx):
+        """
+        Displays the current exempted users from the cooldown period.
+        Usage:
+        [p]chatset showexemptusers
+        Example:
+        [p]chatset showexemptusers
+        Upon execution, the bot will send the list of exempted users in the chat.
+        """
+        if not self.exempt_users:
+            await ctx.send("There are currently no exempted users.")
+        else:
+            exempted_user_ids = ', '.join(str(user_id) for user_id in self.exempt_users)
+            await ctx.send(f"Exempted users: {exempted_user_ids}")
+
+    @chatset.command(name="toggle_role_check")
+    @has_role("Admin", enabled=True)  # Allow users with the 'Admin' role to toggle the role check
+    async def toggle_role_check(self, ctx, enable: bool):
+        """Enable or disable the role check. Usage: [p]chatset toggle_role_check <True/False>"""
+        self.role_check_enabled = enable
+        status = "enabled" if self.role_check_enabled else "disabled"
+        await ctx.send(f"Role check is now {status}.")

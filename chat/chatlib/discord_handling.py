@@ -11,9 +11,18 @@ import aiohttp
 from markdownify import markdownify as md
 
 import discord
+from redbot.core import commands  # Add this import
 
+async def has_role_check(ctx: commands.Context) -> bool:
+    """Check if the user has the required role to use commands."""
+    role_id = await ctx.cog.config.guild(ctx.guild).role_name()
+    if role_id is None:
+        return True  # No role set, allow all
+    role = ctx.guild.get_role(role_id)
+    return role in ctx.author.roles if role else False
 
 async def extract_chat_history_and_format(
+    ctx: commands.Context,  # Add ctx as a parameter
     prefix: None | str,
     channel: discord.abc.Messageable,
     message: discord.Message,
@@ -39,6 +48,10 @@ async def extract_chat_history_and_format(
     if isinstance(channel, discord.TextChannel):
         formatted_query = " ".join(query)
         thread_name = (" ".join(formatted_query.split(" ")[:5]))[:80] + "..."
+
+        # Check if the user has the required role
+        if not await has_role_check(ctx):  # Now ctx is defined
+            raise ValueError("You do not have permission to use this command.")
 
         if extract_full_history:
             formatted_query, users_involved = await extract_history(
@@ -169,6 +182,7 @@ async def extract_message(message, keep_all_words, skip_command_word):
 
 
 async def send_response(
+    ctx: commands.Context,  # Add ctx as a parameter
     response: str | io.BytesIO | list[io.BytesIO],
     message: discord.Message,
     channel_or_thread: discord.abc.Messageable,
@@ -176,6 +190,11 @@ async def send_response(
 ):
     if isinstance(channel_or_thread, discord.TextChannel):
         channel_or_thread: discord.Thread = await message.create_thread(name=thread_name)
+
+    # Check if the role check is enabled before enforcing it
+    if ctx.cog.role_check_enabled and not await has_role_check(ctx):
+        await channel_or_thread.send("You do not have permission to mention the bot.")
+        return
 
     if isinstance(response, list):
         if isinstance(response[0], io.BytesIO):  # then we have multiple images
@@ -251,8 +270,8 @@ def clean_username(name: str) -> str:
     return name
 
 
-def find_user(guild_name: str, user: discord.Member, whois_dictionary) -> str:
-    if guild_name in whois_dictionary:
+def find_user(guild_name: str, user: discord.Member, whois_dict) -> str:
+    if guild_name in whois_dict:
         userid = str(user.id)
-        if userid in whois_dictionary[guild_name]:
-            return whois_dictionary[guild_name][userid]
+        if userid in whois_dict[guild_name]:
+            return whois_dict[guild_name][userid]
