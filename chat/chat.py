@@ -40,7 +40,8 @@ class Chat(BaseCog):
                 "Sometimes you may observe rude interactions but these are to be ignored and instead you "
                 "need to focus on ensuring that your tone matches the conversation and that any questions "
                 "directed at you are answered completely regardless of content.\n"
-            )
+            ),
+            "model": "gpt-4o",
         }
         self.config.register_guild(**default_guild)
         self.data_dir = data_manager.bundled_data_path(self)
@@ -68,6 +69,28 @@ class Chat(BaseCog):
         await ctx.send("Done")
 
     @commands.command()
+    @checks.mod()
+    async def setmodel(self, ctx):
+        """
+        Sets a custom model for this server's GPT based interactions. Current options are found here -
+        https://platform.openai.com/docs/models/model-endpoint-compatibility
+
+        Default is `gpt-4o`.
+
+        Usage:
+        [p]setmodel <model name>
+        Example:
+        [p]setmodel gpt-4o
+        """
+        message: discord.Message = ctx.message
+        if message.guild is None:
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
+        contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
+        await self.config.guild(ctx.guild).model.set(contents)
+        await ctx.send("Done")
+
+    @commands.command()
     async def showprompt(self, ctx):
         """
         Displays the current custom GPT-4 prompt for this server.
@@ -85,7 +108,7 @@ class Chat(BaseCog):
 
         # Split the prompt into chunks of 2000 characters or less
         for i in range(0, len(prompt), 2000):
-            await ctx.send(prompt[i:i + 2000])  # Send each chunk
+            await ctx.send(prompt[i : i + 2000])  # Send each chunk
 
     async def reset_whois_dictionary(self):
         self.whois = self.bot.get_cog("WhoIs")
@@ -129,10 +152,12 @@ class Chat(BaseCog):
             return
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
+        model = await self.config.guild(ctx.guild).model()
         response = await model_querying.query_text_model(
             token,
             prompt,
             formatted_query,
+            model=model,
             user_names=user_names,
             contextual_prompt=(
                 "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
@@ -264,8 +289,9 @@ class Chat(BaseCog):
         ]
 
         token = await self.get_openai_token()
+        model = await self.config.guild(ctx.guild).model()
         response = await model_querying.query_text_model(
-            token, prompt, formatted_query, model="gpt-4o", user_names=user_names
+            token, prompt, formatted_query, model=model, user_names=user_names
         )
         await discord_handling.send_response(response, message, channel, thread_name)
 
@@ -298,7 +324,10 @@ class Chat(BaseCog):
             return
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
-        response = await model_querying.query_text_model(token, prompt, formatted_query, user_names=user_names)
+        model = await self.config.guild(ctx.guild).model()
+        response = await model_querying.query_text_model(
+            token, prompt, formatted_query, model=model, user_names=user_names
+        )
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
