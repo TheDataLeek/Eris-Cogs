@@ -57,9 +57,11 @@ class MTG(BaseCog):
                 channel = await user.create_dm()
 
             if i == len(users) - 1:
-                i = 0
+                target_index = 0
+            else:
+                target_index = i + 1
 
-            target: discord.Member = users[i]
+            target: discord.Member = users[target_index]
             name = target.display_name
             base_name = target.name
 
