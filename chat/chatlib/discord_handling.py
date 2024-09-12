@@ -85,7 +85,7 @@ async def extract_chat_history_and_format(
         str(user.id): {
             "username": user.name,
             "author": clean_username(user.name),
-            "nickname": user.nick  if isinstance(user, discord.Member) else user.name,
+            "nickname": user.nick if isinstance(user, discord.Member) else user.name,
             "real name": find_user(guild.name, user, whois_dict),
         }
         for user in users_involved
@@ -116,6 +116,14 @@ async def extract_history(
                     "content": [
                         {"type": "text", "text": cleaned_message},
                         *[{"type": "text", "text": json.dumps(embed.to_dict())} for embed in thread_message.embeds],
+                    ],
+                },
+            )
+            history.append(
+                {
+                    "role": "user",
+                    "name": clean_username(thread_message.author.name),
+                    "content": [
                         *[await format_attachment(attachment) for attachment in thread_message.attachments],
                     ],
                 }
