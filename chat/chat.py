@@ -104,6 +104,10 @@ class Chat(BaseCog):
         self.whois_dictionary = final_dict
 
     async def contextual_chat_handler(self, message: discord.Message):
+        # Check if the message author is a bot
+        if message.author.bot:
+            return
+
         ctx: commands.Context = await self.bot.get_context(message)
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
