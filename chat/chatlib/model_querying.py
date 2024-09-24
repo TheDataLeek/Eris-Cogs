@@ -18,7 +18,7 @@ async def query_text_model(
     token: str,
     prompt: str,
     formatted_query: str | list[dict],
-    model: str = "gpt-4o-2024-08-06",
+    model: str = "gpt-4o",
     contextual_prompt: str = "",
     user_names=None,
 ) -> str:
