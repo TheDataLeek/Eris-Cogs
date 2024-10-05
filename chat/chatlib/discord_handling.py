@@ -29,7 +29,7 @@ async def extract_chat_history_and_format(
     query = message.clean_content.split(" ")[1:]
     skip_command_word = f"{prefix}chat"
 
-    how_far_back = dt.timedelta(minutes=30)
+    how_far_back = dt.timedelta(hours=12)
     after = dt.datetime.now() - how_far_back
 
     if not query:
@@ -84,7 +84,7 @@ async def extract_history(
     channel_or_thread: discord.abc.Messageable,
     author: discord.Member,
     skip_command_word: str = None,
-    limit: int = 100,
+    limit: int = 25,
     after=None,
 ):
     keep_all_words = skip_command_word is None
