@@ -12,6 +12,14 @@ from redbot.core import commands, data_manager, Config, checks, Config
 
 BaseCog = getattr(commands, "Cog", object)
 
+COLORS = {
+    "W": "#E1E4C7",
+    "R": "#EBA689",
+    "U": "#A7DEFC",
+    "B": "#C2C1BF",
+    "G": "#A1D0B0",
+}
+
 
 class MTG(BaseCog):
     def __init__(self, bot: commands.Cog):
@@ -54,14 +62,16 @@ class MTG(BaseCog):
                 f"{card['oracle_text']}\n"
                 f"Legal in Commander? {card['legalities']['commander']}\n"
                 f"Price: ${card['prices']['usd']}\n"
-                f"[Scryfall URL]({card['scryfall_uri']}\n"
-                f"[TCG Player]({card['purchase_uris']['tcgplayer']}"
+                f"[Scryfall URL]({card['scryfall_uri']})\n"
+                f"[TCG Player]({card['purchase_uris']['tcgplayer']})"
             )
             card_embed = discord.Embed(
-                title=f"{card['name']} - {card['mana_cost']}", type="rich", description=description
+                title=f"{card['name']} - {card['mana_cost']}",
+                type="rich",
+                description=description,
+                color=discord.Color.from_str(COLORS[card["colors"][0]]),
             )
             card_embed.set_thumbnail(url=card["image_uris"]["png"])
-            card_embed.set_footer(text=card["scryfall_uri"])
             await channel.send(embed=card_embed)
 
     @commands.command()
