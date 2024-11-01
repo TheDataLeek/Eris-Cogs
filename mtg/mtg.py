@@ -50,8 +50,15 @@ class MTG(BaseCog):
         channel: discord.TextChannel = ctx.channel
 
         for card in cards:
+            description = (
+                f"{card['oracle_text']}\n"
+                f"Legal in Commander? {card['legalities']['commander']}\n"
+                f"Price: ${card['prices']['usd']}\n"
+                f"[Scryfall URL]({card['scryfall_uri']}\n"
+                f"[TCG Player]({card['purchase_uris']['tcgplayer']}"
+            )
             card_embed = discord.Embed(
-                title=f"{card['name']} - {card['mana_cost']}", type="rich", description=card["oracle_text"]
+                title=f"{card['name']} - {card['mana_cost']}", type="rich", description=description
             )
             card_embed.set_thumbnail(url=card["image_uris"]["png"])
             card_embed.set_footer(text=card["scryfall_uri"])
