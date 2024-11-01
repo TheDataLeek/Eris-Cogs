@@ -59,10 +59,10 @@ class MTG(BaseCog):
 
         for card in cards:
             description = (
-                f"{card['oracle_text']}\n"
+                f"{card['oracle_text']}\n-\n"
                 f"Legal in Commander? {card['legalities']['commander']}\n"
                 f"Price: ${card['prices']['usd']}\n"
-                f"[Scryfall URL]({card['scryfall_uri']})\n"
+                f"[Scryfall]({card['scryfall_uri']})\n"
                 f"[TCG Player]({card['purchase_uris']['tcgplayer']})"
             )
             card_embed = discord.Embed(
