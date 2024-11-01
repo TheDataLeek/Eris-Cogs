@@ -51,9 +51,10 @@ class MTG(BaseCog):
 
         for card in cards:
             card_embed = discord.Embed(
-                title=card["name"], type="rich", description=card["oracle_text"], url=card["scryfall_uri"]
+                title=f"{card['name']} - {card['mana_cost']}", type="rich", description=card["oracle_text"]
             )
-            card_embed.set_image(url=card["image_uris"]["png"])
+            card_embed.set_thumbnail(url=card["image_uris"]["png"])
+            card_embed.set_footer(text=card["scryfall_uri"])
             await channel.send(embed=card_embed)
 
     @commands.command()
