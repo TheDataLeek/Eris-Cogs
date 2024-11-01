@@ -98,7 +98,7 @@ async def query_scryfall(
                 cardbuf = io.BytesIO()
                 cardbuf.write(await resp.read())
                 cardbuf.seek(0)
-                data.append(discord.File(cardbuf, filename=f"{match}.png"))
+                data.append(discord.File(cardbuf, filename=f"{card_name}.png"))
             else:
                 data.append(await resp.json())
         time.sleep(0.1)
