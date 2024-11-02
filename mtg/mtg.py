@@ -38,7 +38,10 @@ class MTG(BaseCog):
         cards = []
         async with aiohttp.ClientSession(headers={"User-Agent": "ErisMTGDiscordBot/1.0", "Accept": "*/*"}) as session:
             for match in matches:
-                cards += await query_scryfall(session, match)
+                try:
+                    cards += await query_scryfall(session, match)
+                except Exception as e:
+                    print(e)
 
         channel: discord.TextChannel = ctx.channel
         await channel.send(files=cards)
@@ -53,7 +56,10 @@ class MTG(BaseCog):
         cards = []
         async with aiohttp.ClientSession(headers={"User-Agent": "ErisMTGDiscordBot/1.0", "Accept": "*/*"}) as session:
             for match in matches:
-                cards += await query_scryfall(session, match, datatype="json")
+                try:
+                    cards += await query_scryfall(session, match, datatype="json")
+                except Exception as e:
+                    print(e)
 
         channel: discord.TextChannel = ctx.channel
 
