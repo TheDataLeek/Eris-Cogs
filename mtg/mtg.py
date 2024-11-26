@@ -8,6 +8,7 @@ import random
 # third party
 import discord
 from redbot.core import commands, data_manager, Config, checks, Config
+from thefuzz import process
 
 
 BaseCog = getattr(commands, "Cog", object)
@@ -28,6 +29,9 @@ class MTG(BaseCog):
         self.bot.add_listener(self.pull_card_references, "on_message")
         self.bot.add_listener(self.pull_card_embed, "on_message")
 
+        data_dir = data_manager.bundled_data_path(self)
+        self.all_cards = (data_dir / "cards.csv").read_text().lower().splitlines()
+
     async def pull_card_references(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
         text = message.clean_content.lower()
@@ -39,7 +43,7 @@ class MTG(BaseCog):
         async with aiohttp.ClientSession(headers={"User-Agent": "ErisMTGDiscordBot/1.0", "Accept": "*/*"}) as session:
             for match in matches:
                 try:
-                    cards += await query_scryfall(session, match)
+                    cards += await query_scryfall(session, match, all_cards)
                 except Exception as e:
                     print(e)
 
@@ -57,7 +61,7 @@ class MTG(BaseCog):
         async with aiohttp.ClientSession(headers={"User-Agent": "ErisMTGDiscordBot/1.0", "Accept": "*/*"}) as session:
             for match in matches:
                 try:
-                    cards += await query_scryfall(session, match, datatype="json")
+                    cards += await query_scryfall(session, match, all_cards, datatype="json")
                 except Exception as e:
                     print(e)
 
@@ -102,8 +106,11 @@ class MTG(BaseCog):
 
 
 async def query_scryfall(
-    session: aiohttp.ClientSession, card_name: str, datatype="image"
+    session: aiohttp.ClientSession, card_name: str, all_cards: list[str], datatype="image"
 ) -> list[io.BytesIO] | list[dict]:
+    if card_name not in all_cards:
+        card_name, score = process.extractOne(card_name, all_cards)
+
     data = []
     url = "https://api.scryfall.com/cards/named"
     for i in range(2):

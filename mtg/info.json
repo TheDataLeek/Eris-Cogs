@@ -5,6 +5,9 @@
   "description": "Magic the Gathering Tools",
   "name": "MTG",
   "short": "Magic the Gathering Tools",
+  "requirements": [
+    "thefuzz"
+  ],
   "hidden": false,
   "ready": true
 }
