@@ -43,7 +43,7 @@ class MTG(BaseCog):
         async with aiohttp.ClientSession(headers={"User-Agent": "ErisMTGDiscordBot/1.0", "Accept": "*/*"}) as session:
             for match in matches:
                 try:
-                    cards += await query_scryfall(session, match, all_cards)
+                    cards += await query_scryfall(session, match, self.all_cards)
                 except Exception as e:
                     print(e)
 
@@ -61,7 +61,7 @@ class MTG(BaseCog):
         async with aiohttp.ClientSession(headers={"User-Agent": "ErisMTGDiscordBot/1.0", "Accept": "*/*"}) as session:
             for match in matches:
                 try:
-                    cards += await query_scryfall(session, match, all_cards, datatype="json")
+                    cards += await query_scryfall(session, match, self.all_cards, datatype="json")
                 except Exception as e:
                     print(e)
 
