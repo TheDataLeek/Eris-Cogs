@@ -30,7 +30,9 @@ class MTG(BaseCog):
         self.bot.add_listener(self.pull_card_embed, "on_message")
 
         data_dir = data_manager.bundled_data_path(self)
-        self.all_cards = (data_dir / "cards.csv").read_text().lower().splitlines()
+        # datafile from here https://mtgjson.com/downloads/all-files/
+        # only includes the names tho, need to clean up on each new set release
+        self.all_cards = list(set((data_dir / "cards.csv").read_text().lower().splitlines()))
 
     async def pull_card_references(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
