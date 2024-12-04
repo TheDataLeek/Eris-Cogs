@@ -110,7 +110,12 @@ class MTG(BaseCog):
 async def query_scryfall(
     session: aiohttp.ClientSession, card_name: str, all_cards: list[str], datatype="image"
 ) -> list[io.BytesIO] | list[dict]:
-    if card_name not in all_cards:
+    card_exists = (
+        any(card.startswith(card_name.lower()) for card in all_cards)
+        or any(card_name.lower() in card for card in all_cards)
+        or (card_name.lower() in all_cards)
+    )
+    if not card_exists:
         card_name, score = process.extractOne(card_name, all_cards)
 
     data = []
