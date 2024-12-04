@@ -4,6 +4,7 @@ import re
 import time
 import aiohttp
 import random
+import string
 
 # third party
 import discord
@@ -32,7 +33,10 @@ class MTG(BaseCog):
         data_dir = data_manager.bundled_data_path(self)
         # datafile from here https://mtgjson.com/downloads/all-files/
         # only includes the names tho, need to clean up on each new set release
-        self.all_cards = list(set((data_dir / "cards.csv").read_text().lower().splitlines()))
+        raw_cards = (data_dir / "cards.csv").read_text().lower()
+        allowed_chars = string.ascii_lowercase + " \n\r"
+        raw_cards = "".join(char for char in raw_cards if (char in allowed_chars))
+        self.all_cards = list(set(raw_cards.splitlines()))
 
     async def pull_card_references(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
