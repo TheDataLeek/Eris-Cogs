@@ -47,7 +47,7 @@ class Chat(BaseCog):
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
-        self.logged_messages = []  # Initialize a list to store messages
+        self.logged_messages = {}  # Initialize a dictionary to store messages per channel
 
     @commands.command()
     @checks.mod()
@@ -173,10 +173,14 @@ class Chat(BaseCog):
         for page in response:
             await channel.send(page)
 
-        # Log the message content to the logged_messages list
-        if len(self.logged_messages) >= 20:  # Keep only the last 20 messages
-            self.logged_messages.pop(0)  # Remove the oldest message
-        self.logged_messages.append(message.content)  # Add the new message
+        # Log the message content to the logged_messages dictionary for the specific channel
+        channel_id = message.channel.id
+        if channel_id not in self.logged_messages:
+            self.logged_messages[channel_id] = []  # Initialize the list for this channel
+
+        if len(self.logged_messages[channel_id]) >= 20:  # Keep only the last 20 messages
+            self.logged_messages[channel_id].pop(0)  # Remove the oldest message
+        self.logged_messages[channel_id].append(message.content)  # Add the new message
 
     async def get_openai_token(self):
         self.openai_settings = await self.bot.get_shared_api_tokens("openai")
@@ -442,10 +446,11 @@ class Chat(BaseCog):
         [p]show_logged_messages
         Upon execution, the bot will send the logged messages in the chat.
         """
-        if not self.logged_messages:
+        channel_id = ctx.channel.id
+        if channel_id not in self.logged_messages or not self.logged_messages[channel_id]:
             await ctx.send("No messages logged yet.")
             return
 
-        # Send the logged messages
-        for msg in self.logged_messages:
+        # Send the logged messages for this specific channel
+        for msg in self.logged_messages[channel_id]:
             await ctx.send(msg)
