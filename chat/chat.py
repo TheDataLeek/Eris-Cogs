@@ -47,6 +47,7 @@ class Chat(BaseCog):
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
+        self.logged_messages = []  # Initialize a list to store messages
 
     @commands.command()
     @checks.mod()
@@ -171,6 +172,11 @@ class Chat(BaseCog):
         )
         for page in response:
             await channel.send(page)
+
+        # Log the message content to the logged_messages list
+        if len(self.logged_messages) >= 20:  # Keep only the last 20 messages
+            self.logged_messages.pop(0)  # Remove the oldest message
+        self.logged_messages.append(message.content)  # Add the new message
 
     async def get_openai_token(self):
         self.openai_settings = await self.bot.get_shared_api_tokens("openai")
@@ -425,3 +431,21 @@ class Chat(BaseCog):
             await ctx.send("Something went wrong!")
             return
         await discord_handling.send_response(response, message, channel, thread_name)
+
+    @commands.command()
+    async def show_logged_messages(self, ctx: commands.Context):
+        """
+        Displays the last 20 messages sent to ChatGPT from this channel.
+        Usage:
+        [p]show_logged_messages
+        Example:
+        [p]show_logged_messages
+        Upon execution, the bot will send the logged messages in the chat.
+        """
+        if not self.logged_messages:
+            await ctx.send("No messages logged yet.")
+            return
+
+        # Send the logged messages
+        for msg in self.logged_messages:
+            await ctx.send(msg)
