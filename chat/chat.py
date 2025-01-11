@@ -449,7 +449,7 @@ class Chat(BaseCog):
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
-    @checks.mod() # add check for mods 
+    @checks.mod() # add check for mods because I forgot
     async def lastmessages(self, ctx: commands.Context):
         """
         Displays the last 20 messages sent to ChatGPT from this channel.
