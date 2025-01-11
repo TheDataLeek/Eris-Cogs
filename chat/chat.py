@@ -55,7 +55,7 @@ class Chat(BaseCog):
         """
         Sets a custom prompt for this server's GPT-4 based interactions.
         Usage:
-        [p]setprompt <prompt_text>
+        [p]setprompt <prompt_text> or attach a file with the prompt.
         Example:
         [p]setprompt Welcome to our server! How can I assist you today?
         After running the command, the bot will confirm with a "Done" message.
@@ -64,9 +64,21 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
-        await self.config.guild(ctx.guild).prompt.set(contents)
+        
+        # Check for attached files
+        if message.attachments:
+            attachment = message.attachments[0]
+            # Ensure the file is a text file
+            if attachment.filename.endswith('.txt'):
+                file_content = await attachment.read()
+                contents = file_content.decode('utf-8')  # Decode the file content
+            else:
+                await ctx.send("Please attach a valid text file (.txt).")
+                return
+        else:
+            contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
 
+        await self.config.guild(ctx.guild).prompt.set(contents)
         await ctx.send("Done")
 
     @commands.command()
