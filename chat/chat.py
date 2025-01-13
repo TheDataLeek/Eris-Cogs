@@ -47,6 +47,7 @@ class Chat(BaseCog):
         self.data_dir = data_manager.bundled_data_path(self)
         self.whois_dictionary = None
         self.bot.add_listener(self.contextual_chat_handler, "on_message")
+        self.logged_messages = {}  # Initialize a dictionary to store messages per channel
 
     @commands.command()
     @checks.mod()
@@ -54,7 +55,7 @@ class Chat(BaseCog):
         """
         Sets a custom prompt for this server's GPT-4 based interactions.
         Usage:
-        [p]setprompt <prompt_text>
+        [p]setprompt <prompt_text> or attach a file with the prompt.
         Example:
         [p]setprompt Welcome to our server! How can I assist you today?
         After running the command, the bot will confirm with a "Done" message.
@@ -63,9 +64,21 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
-        await self.config.guild(ctx.guild).prompt.set(contents)
+        
+        # Check for attached files
+        if message.attachments:
+            attachment = message.attachments[0]
+            # Ensure the file is a text file
+            if attachment.filename.endswith('.txt'):
+                file_content = await attachment.read()
+                contents = file_content.decode('utf-8')  # Decode the file content
+            else:
+                await ctx.send("Please attach a valid text file (.txt).")
+                return
+        else:
+            contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
 
+        await self.config.guild(ctx.guild).prompt.set(contents)
         await ctx.send("Done")
 
     @commands.command()
@@ -171,6 +184,15 @@ class Chat(BaseCog):
         )
         for page in response:
             await channel.send(page)
+
+        # Log the message content to the logged_messages dictionary for the specific channel
+        channel_id = message.channel.id
+        if channel_id not in self.logged_messages:
+            self.logged_messages[channel_id] = []  # Initialize the list for this channel
+
+        if len(self.logged_messages[channel_id]) >= 20:  # Keep only the last 20 messages
+            self.logged_messages[channel_id].pop(0)  # Remove the oldest message
+        self.logged_messages[channel_id].append(message.content)  # Add the new message
 
     async def get_openai_token(self):
         self.openai_settings = await self.bot.get_shared_api_tokens("openai")
@@ -425,3 +447,23 @@ class Chat(BaseCog):
             await ctx.send("Something went wrong!")
             return
         await discord_handling.send_response(response, message, channel, thread_name)
+
+    @commands.command()
+    @checks.mod() # add check for mods
+    async def lastmessages(self, ctx: commands.Context):
+        """
+        Displays the last 20 messages sent to ChatGPT from this channel.
+        Usage:
+        [p]show_logged_messages
+        Example:
+        [p]show_logged_messages
+        Upon execution, the bot will send the logged messages in the chat.
+        """
+        channel_id = ctx.channel.id
+        if channel_id not in self.logged_messages or not self.logged_messages[channel_id]:
+            await ctx.send("No messages logged yet.")
+            return
+
+        # Send the logged messages for this specific channel
+        for msg in self.logged_messages[channel_id]:
+            await ctx.send(msg)
