@@ -114,7 +114,10 @@ class MTG(BaseCog):
 
         channel: discord.TextChannel = ctx.channel
         json_decklist = json.dumps(cards, indent=2)
-        await channel.send(files=[discord.File(json_decklist, filename="decklist.json")])
+        buf = io.BytesIO()
+        buf.write(json_decklist.encode("utf-8"))
+        buf.seek(0)
+        await channel.send(files=[discord.File(buf, filename="decklist.json")])
 
     @commands.command()
     async def send_targets(self, ctx: commands.context, *users: discord.Member):
