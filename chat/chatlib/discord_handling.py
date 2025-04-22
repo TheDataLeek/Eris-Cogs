@@ -7,6 +7,7 @@ import io
 from typing import Dict, List, Tuple, Union
 import string
 import aiohttp
+import functools
 
 from markdownify import markdownify as md
 
@@ -142,6 +143,7 @@ async def extract_history(
     return history, users_involved
 
 
+@functools.lru_cache
 async def fetch_url(url: str):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:

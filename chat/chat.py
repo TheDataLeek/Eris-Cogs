@@ -490,26 +490,36 @@ class Chat(BaseCog):
         prefix: str = await self.get_prefix(ctx)
         model = await self.config.guild(ctx.guild).model()
 
-        prompt = """
-        You are to to generate a Pathfinder 2e character using provided reference materials.
-        We'll do this step-by-step.
-        To start, using the provided reference materials, please generate a character concept by establishing their ancestry and class.
-        Then choose a name that fits their ancestry. Be creative with this name!
-        Once selected, identify all urls needed to flesh out character details. In your response, insert all required URLS in the format, +[<url>], and then provide a brief description of the character concept.
-        We'll iterate on this concept until the character is fully fleshed out. If you have everything you need for 
-        the character, start your response with <<<DONE>>> followed by the character stat block.
+        prompt = f"""
+        You are to to generate a Pathfinder 2e character using provided reference materials in an automated agent 
+        loop. Do not refer to Zoe or any other people in this process as you'll only be interacting with yourself and your own chain-of-thought.
+        The process will be as follows.
+        
+            1. Using the provided reference materials, please generate a character concept by establishing their ancestry and class.
+            2. Choose a name that fits their ancestry. Be creative with this name!
+            3. Identify all urls needed to flesh out character details.
+            
+        In your response, insert all required URLS in the format, +[<url>].
+        
+        We'll then iterate on the following steps, and again, there's no human interactions here and you'll just be 
+        responding to yourself, so keep your answers brief and to the point.
+        
+            1. Look through what answers you've already provided
+            2. Download all urls and extract the relevant information
+            3. Decide on the next steps
+        
+        We'll iterate until the character is fully fleshed out. If you have everything you need for the character,
+        start your response with <<<DONE>>> followed by the character stat block.
+        
+        Your goal is to create a character that matches the priorities listed here: {contents}
         """
-        if contents:
-            prompt += f"\nThe goal is to create a character that matches the priorities listed here: {contents}"
-        else:
-            prompt += "\nThe goal is to create a random character"
 
         classes = "https://2e.aonprd.com/Search.aspx?include-types=class&sort=name-asc&display=table&columns=icon_image+ability+hp+tradition+attack_proficiency+defense_proficiency+fortitude_proficiency+reflex_proficiency+will_proficiency+perception_proficiency+skill_proficiency+rarity+pfs"
         ancestries = "https://2e.aonprd.com/Search.aspx?include-types=ancestry&sort=rarity-asc+name-asc&display=table&columns=hp+size+speed+ability_boost+ability_flaw+language+vision+rarity+pfs"
         message.content += f"\n\n+[{classes}]\n\n+[{ancestries}]"
 
         thread = None
-        for i in range(4):
+        for i in range(10):
             try:
                 (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
                     prefix, channel, message, author
