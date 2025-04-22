@@ -578,7 +578,7 @@ class Chat(BaseCog):
         )
         thread = await discord_handling.send_response(response, message, channel, thread_name)
 
-        for i in range(5):
+        for i in range(10):
             formatted_query.append(
                 {
                     "role": "system",
