@@ -64,14 +64,14 @@ class Chat(BaseCog):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        
+
         # Check for attached files
         if message.attachments:
             attachment = message.attachments[0]
             # Ensure the file is a text file
-            if attachment.filename.endswith('.txt'):
+            if attachment.filename.endswith(".txt"):
                 file_content = await attachment.read()
-                contents = file_content.decode('utf-8')  # Decode the file content
+                contents = file_content.decode("utf-8")  # Decode the file content
             else:
                 await ctx.send("Please attach a valid text file (.txt).")
                 return
@@ -449,7 +449,7 @@ class Chat(BaseCog):
         await discord_handling.send_response(response, message, channel, thread_name)
 
     @commands.command()
-    @checks.mod() # add check for mods
+    @checks.mod()  # add check for mods
     async def lastmessages(self, ctx: commands.Context):
         """
         Displays the last 20 messages sent to ChatGPT from this channel.
@@ -475,39 +475,50 @@ class Chat(BaseCog):
         We'll start with the overview page, and then give her full crawling access over the entire site.
         We'll need to do this as a loop:
             * Starting page
-            * What's my next step? 
+            * What's my next step?
             * What links will I need?
             * download each link and cram into context window (leveraging the 1million token limit)
             * send a message each time we make an update
 
-        Very similar to agent structure 
+        Very similar to agent structure
         """
-        raise NotImplementedError
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
-        contents: str = ' '.join(message.clean_content.split(' ')[1:])
-
-        try:
-            (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
-                prefix,
-                channel,
-                message,
-                author,
-                whois_dict=self.whois_dictionary
-            )
-        except ValueError:
-            await ctx.send("Something went wrong!")
-            return
+        contents: str = " ".join(message.clean_content.split(" ")[1:])
         token = await self.get_openai_token()
-        prompt = "You are to to generate a Pathfinder 2e character for me. We'll do this step-by-step."
-        overview = "https://2e.aonprd.com/Rules.aspx?ID=2027"
+        prefix: str = await self.get_prefix(ctx)
         model = await self.config.guild(ctx.guild).model()
-        response = await model_querying.query_text_model(
-            token,
-            prompt,
-            formatted_query,
-            model=model,
-            user_names=user_names
-        )
-        await discord_handling.send_response(response, message, channel, thread_name)
+
+        prompt = """
+        You are to to generate a Pathfinder 2e character using provided reference materials.
+        We'll do this step-by-step.
+        To start, using the provided reference materials, please generate a character concept by establishing their ancestry and class.
+        Once selected, identify all urls needed to flesh out character details. In your response, insert all required URLS in the format, +[<url>], and then provide a brief description of the character concept.
+        We'll iterate on this concept until the character is fully fleshed out. If you have everything you need for 
+        the character, start your response with <<<DONE>>> followed by the character stat block.
+        """
+        if contents:
+            prompt += f"\nThe goal is to create a character that matches the priorities listed here: {contents}"
+        else:
+            prompt += "\nThe goal is to create a random character"
+
+        classes = "https://2e.aonprd.com/Search.aspx?include-types=class&sort=name-asc&display=table&columns=icon_image+ability+hp+tradition+attack_proficiency+defense_proficiency+fortitude_proficiency+reflex_proficiency+will_proficiency+perception_proficiency+skill_proficiency+rarity+pfs"
+        ancestries = "https://2e.aonprd.com/Search.aspx?include-types=ancestry&sort=rarity-asc+name-asc&display=table&columns=hp+size+speed+ability_boost+ability_flaw+language+vision+rarity+pfs"
+        message.content += f"\n\n+[{classes}]\n\n+[{ancestries}]"
+
+        for i in range(4):
+            try:
+                (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
+                    prefix, channel, message, author
+                )
+            except ValueError:
+                await ctx.send("Something went wrong!")
+                return
+
+            response = await model_querying.query_text_model(
+                token, prompt, formatted_query, model=model, user_names=user_names
+            )
+            await discord_handling.send_response(response, message, channel, thread_name)
+            if "<<<DONE>>>" in response:
+                break
