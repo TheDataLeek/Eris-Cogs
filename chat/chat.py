@@ -494,6 +494,7 @@ class Chat(BaseCog):
         You are to to generate a Pathfinder 2e character using provided reference materials.
         We'll do this step-by-step.
         To start, using the provided reference materials, please generate a character concept by establishing their ancestry and class.
+        Then choose a name that fits their ancestry. Be creative with this name!
         Once selected, identify all urls needed to flesh out character details. In your response, insert all required URLS in the format, +[<url>], and then provide a brief description of the character concept.
         We'll iterate on this concept until the character is fully fleshed out. If you have everything you need for 
         the character, start your response with <<<DONE>>> followed by the character stat block.
@@ -507,6 +508,7 @@ class Chat(BaseCog):
         ancestries = "https://2e.aonprd.com/Search.aspx?include-types=ancestry&sort=rarity-asc+name-asc&display=table&columns=hp+size+speed+ability_boost+ability_flaw+language+vision+rarity+pfs"
         message.content += f"\n\n+[{classes}]\n\n+[{ancestries}]"
 
+        thread = None
         for i in range(4):
             try:
                 (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
@@ -519,6 +521,9 @@ class Chat(BaseCog):
             response = await model_querying.query_text_model(
                 token, prompt, formatted_query, model=model, user_names=user_names
             )
-            await discord_handling.send_response(response, message, channel, thread_name)
+            if i == 0:
+                thread = await discord_handling.send_response(response, message, channel, thread_name)
+            else:
+                await discord_handling.send_response(response, message, thread, thread_name)
             if "<<<DONE>>>" in response:
                 break

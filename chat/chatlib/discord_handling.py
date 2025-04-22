@@ -181,7 +181,7 @@ async def send_response(
     message: discord.Message,
     channel_or_thread: discord.abc.Messageable,
     thread_name: str,
-):
+) -> discord.abc.Messageable:
     if isinstance(channel_or_thread, discord.TextChannel):
         channel_or_thread: discord.Thread = await message.create_thread(name=thread_name)
 
@@ -196,6 +196,7 @@ async def send_response(
     else:
         filename = thread_name.replace(" ", "_") + ".png"
         await channel_or_thread.send(file=discord.File(response, filename=filename))
+    return channel_or_thread
 
 
 def extract_system_messages_from_message(message: str) -> Tuple[str, List[str]]:
