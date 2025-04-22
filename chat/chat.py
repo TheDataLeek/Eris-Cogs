@@ -467,3 +467,47 @@ class Chat(BaseCog):
         # Send the logged messages for this specific channel
         for msg in self.logged_messages[channel_id]:
             await ctx.send(msg)
+
+    @commands.command()
+    async def generate_pf2e_character(self, ctx: commands.Context):
+        """
+        OK so the thinking here is that we can have her crawl through the site like a human would
+        We'll start with the overview page, and then give her full crawling access over the entire site.
+        We'll need to do this as a loop:
+            * Starting page
+            * What's my next step? 
+            * What links will I need?
+            * download each link and cram into context window (leveraging the 1million token limit)
+            * send a message each time we make an update
+
+        Very similar to agent structure 
+        """
+        raise NotImplementedError
+        channel: discord.abc.Messageable = ctx.channel
+        message: discord.Message = ctx.message
+        author: discord.Member = message.author
+        contents: str = ' '.join(message.clean_content.split(' ')[1:])
+
+        try:
+            (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
+                prefix,
+                channel,
+                message,
+                author,
+                whois_dict=self.whois_dictionary
+            )
+        except ValueError:
+            await ctx.send("Something went wrong!")
+            return
+        token = await self.get_openai_token()
+        prompt = "You are to to generate a Pathfinder 2e character for me. We'll do this step-by-step."
+        overview = "https://2e.aonprd.com/Rules.aspx?ID=2027"
+        model = await self.config.guild(ctx.guild).model()
+        response = await model_querying.query_text_model(
+            token,
+            prompt,
+            formatted_query,
+            model=model,
+            user_names=user_names
+        )
+        await discord_handling.send_response(response, message, channel, thread_name)
