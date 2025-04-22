@@ -551,12 +551,12 @@ class Chat(BaseCog):
                     "content": [
                         {
                             "type": "text",
-                            "text": response,
+                            "text": "\n".join(response),
                         },
                     ],
                 }
             )
-            new_urls = set(re.findall(r"(https?://[^\s]+)", prompt, flags=re.IGNORECASE))
+            new_urls = set(re.findall(r"(https?://2e\.aonprd\.com[^\s]+)", prompt, flags=re.IGNORECASE))
             for url in urls.union(new_urls):
                 contents = await discord_handling.fetch_url(url)
                 formatted_query.append(
