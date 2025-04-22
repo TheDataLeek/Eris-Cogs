@@ -8,7 +8,8 @@
   "requirements": [
     "openai",
     "pillow",
-    "markdownify"
+    "markdownify",
+    "async-lru"
   ],
   "install_msg": "Ensure that you set the openAI token, using `[p]set api`, and then the name of the secret should be `openai`, while the value needs to be in the format `key <token>`",
   "ready": true
