@@ -526,12 +526,9 @@ class Chat(BaseCog):
         
         The final stat block should be in the following format:
         
-        Creature Name
-        Concept
-        Description
-        Level
-        Size
-        Other Traits
+        # <Creature Name>
+        *<Level breakdown e.g. "Fighter 1, Wizard 2">*
+        *<Concept and description>*
         ---
         Perception The creature’s Perception modifier is listed here, followed by any special senses.
         Languages The languages for a typical creature of that kind are listed here, followed by any special communication abilities. If a creature lacks this entry, it cannot communicate with or understand another creature through language.
@@ -553,7 +550,7 @@ class Chat(BaseCog):
         Rituals Any rituals the creature can cast appear here.
         Offensive or Proactive Abilities Any actions, activities, or abilities that automatically affect the creature’s offense, as well as free actions or reactions that are usually triggered on the creature’s turn, appear here in alphabetical order.
         ---
-        Reference URLS
+        Reference URLS (ignore any class or ancestry URLs, only provide specific feat/spells/ability URLs)
             *
             *
             *
