@@ -1,4 +1,5 @@
 from __future__ import annotations
+import re
 
 import discord
 from redbot.core import commands, data_manager, bot, Config, checks
@@ -507,7 +508,7 @@ class Chat(BaseCog):
                 c. Choose your spells (if you have them as part of your class)
             
         As you go through these steps, identify all followup URLs needed to flesh out more information. In your 
-        response, insert all required URLS in the format, +[<url>]. If a URL has already been provided, do not repeat it again.
+        response, insert all required URLS. If a URL has already been provided, do not repeat it again.
         
         We'll then iterate on the following steps, and again, there's no human interactions here and you'll just be 
         responding to yourself, so keep your answers brief and to the point. There's no need to summarize at the end 
@@ -521,30 +522,54 @@ class Chat(BaseCog):
         start your response with <<<DONE>>> followed by the character stat block. Your goal is to finish in 5 steps. 
         For every step beyond 5, you'll lose 1 point of your final score. If you finish in 5 steps, you'll get a bonus point.
         
-        Your goal is to create a character that matches the priorities listed here: {contents}
+        Your goal is to create a character that matches: {contents}
         """
 
-        classes = "https://2e.aonprd.com/Search.aspx?include-types=class&sort=name-asc&display=table&columns=icon_image+ability+hp+tradition+attack_proficiency+defense_proficiency+fortitude_proficiency+reflex_proficiency+will_proficiency+perception_proficiency+skill_proficiency+rarity+pfs"
-        ancestries = "https://2e.aonprd.com/Search.aspx?include-types=ancestry&sort=rarity-asc+name-asc&display=table&columns=hp+size+speed+ability_boost+ability_flaw+language+vision+rarity+pfs"
-        backgrounds = "https://2e.aonprd.com/Backgrounds.aspx"
-        message.content += f"\n\n+[{classes}]\n\n+[{ancestries}]\n\n+[{backgrounds}]"
+        urls = {
+            "https://2e.aonprd.com/Backgrounds.aspx",
+            "https://2e.aonprd.com/Search.aspx?include-types=class&sort=name-asc&display=table&columns=icon_image+ability+hp+tradition+attack_proficiency+defense_proficiency+fortitude_proficiency+reflex_proficiency+will_proficiency+perception_proficiency+skill_proficiency+rarity+pfs",
+            "https://2e.aonprd.com/Search.aspx?include-types=ancestry&sort=rarity-asc+name-asc&display=table&columns=hp+size+speed+ability_boost+ability_flaw+language+vision+rarity+pfs",
+        }
 
-        thread = None
-        for i in range(10):
-            try:
-                (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
-                    prefix, channel, message, author
+        try:
+            (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
+                prefix, channel, message, author
+            )
+        except ValueError:
+            await ctx.send("Something went wrong!")
+            return
+
+        response = await model_querying.query_text_model(
+            token, prompt, formatted_query, model=model, user_names=user_names
+        )
+        thread = await discord_handling.send_response(response, message, channel, thread_name)
+
+        for i in range(5):
+            formatted_query.append(
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": response,
+                        },
+                    ],
+                }
+            )
+            new_urls = set(re.findall(r"(https?://[^\s]+)", prompt, flags=re.IGNORECASE))
+            for url in urls.union(new_urls):
+                contents = await discord_handling.fetch_url(url)
+                formatted_query.append(
+                    {
+                        "role": "system",
+                        "content": [
+                            {"type": "text", "text": contents},
+                        ],
+                    }
                 )
-            except ValueError:
-                await ctx.send("Something went wrong!")
-                return
-
             response = await model_querying.query_text_model(
                 token, prompt, formatted_query, model=model, user_names=user_names
             )
-            if i == 0:
-                thread = await discord_handling.send_response(response, message, channel, thread_name)
-            else:
-                await discord_handling.send_response(response, message, thread, thread_name)
+            await discord_handling.send_response(response, message, thread, thread_name)
             if "<<<DONE>>>" in response:
                 break
