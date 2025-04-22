@@ -495,28 +495,39 @@ class Chat(BaseCog):
         loop. Do not refer to Zoe or any other people in this process as you'll only be interacting with yourself and your own chain-of-thought.
         The process will be as follows.
         
-            1. Using the provided reference materials, please generate a character concept by establishing their ancestry and class.
+            1. Generate a character concept using the provided prompt. Be creative!
             2. Choose a name that fits their ancestry. Be creative with this name!
-            3. Identify all urls needed to flesh out character details.
+            3. Choose an ancestry for the character.
+            4. Choose a background.
+            5. Choose a class for the character.
+            6. Finalize your attributes
+            7. Note all class details
+                a. Choose your skills.
+                b. Choose your feats.
+                c. Choose your spells (if you have them as part of your class)
             
-        In your response, insert all required URLS in the format, +[<url>].
+        As you go through these steps, identify all followup URLs needed to flesh out more information. In your 
+        response, insert all required URLS in the format, +[<url>]. If a URL has already been provided, do not repeat it again.
         
         We'll then iterate on the following steps, and again, there's no human interactions here and you'll just be 
-        responding to yourself, so keep your answers brief and to the point.
+        responding to yourself, so keep your answers brief and to the point. There's no need to summarize at the end 
+        of each step, as for the following steps you'll have access to the full chain-of-thought history.
         
             1. Look through what answers you've already provided
             2. Download all urls and extract the relevant information
             3. Decide on the next steps
         
         We'll iterate until the character is fully fleshed out. If you have everything you need for the character,
-        start your response with <<<DONE>>> followed by the character stat block.
+        start your response with <<<DONE>>> followed by the character stat block. Your goal is to finish in 5 steps. 
+        For every step beyond 5, you'll lose 1 point of your final score. If you finish in 5 steps, you'll get a bonus point.
         
         Your goal is to create a character that matches the priorities listed here: {contents}
         """
 
         classes = "https://2e.aonprd.com/Search.aspx?include-types=class&sort=name-asc&display=table&columns=icon_image+ability+hp+tradition+attack_proficiency+defense_proficiency+fortitude_proficiency+reflex_proficiency+will_proficiency+perception_proficiency+skill_proficiency+rarity+pfs"
         ancestries = "https://2e.aonprd.com/Search.aspx?include-types=ancestry&sort=rarity-asc+name-asc&display=table&columns=hp+size+speed+ability_boost+ability_flaw+language+vision+rarity+pfs"
-        message.content += f"\n\n+[{classes}]\n\n+[{ancestries}]"
+        backgrounds = "https://2e.aonprd.com/Backgrounds.aspx"
+        message.content += f"\n\n+[{classes}]\n\n+[{ancestries}]\n\n+[{backgrounds}]"
 
         thread = None
         for i in range(10):
