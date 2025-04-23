@@ -506,9 +506,12 @@ class Chat(BaseCog):
                 a. Choose your skills.
                 b. Choose your feats.
                 c. Choose your spells (if you have them as part of your class)
+                d. If there's important equipment, note that too. If necessary, choose a weapon, armor, and feel free to build creative magic items if the character requires it.
             
         As you go through these steps, identify all followup URLs needed to flesh out more information. In your 
-        response, insert all required URLS. If a URL has already been provided, do not repeat it again.
+        response, insert all required URLS. If a URL has already been provided, do not repeat it again. If you made a
+        mistake and found a URL that isn't needed for the character, ignore it and ensure that you collect the correct
+        information from the updated URL.
         
         We'll then iterate on the following steps, and again, there's no human interactions here and you'll just be 
         responding to yourself, so keep your answers brief and to the point. There's no need to summarize at the end 
@@ -527,36 +530,70 @@ class Chat(BaseCog):
         The final stat block should be in the following format:
         
         # <Creature Name>
+        
         *<Level breakdown e.g. "Fighter 1, Wizard 2">*
+        
         *<Concept and description>*
-        Brief roleplaying notes:
-            * <roleplaying notes>
-            * <make sure to be succinct but thorough>
-        ---
-        Perception The creature’s Perception modifier is listed here, followed by any special senses.
-        Languages The languages for a typical creature of that kind are listed here, followed by any special communication abilities. If a creature lacks this entry, it cannot communicate with or understand another creature through language.
-        Skills The creature is trained or better in these skills. For untrained skills, use the corresponding attribute modifier.
-        Attribute Modifiers The creature’s attribute modifiers are listed here.
-        Items Any significant gear the creature carries is listed here.
-        Interaction Abilities Special abilities that affect how a creature perceives and interacts with the world are listed here.
-        ---
-        AC, followed by any special bonuses to AC; Saving Throws A special bonus to a specific save appears in parentheses after that save’s bonus. Any special bonuses to all three saving throws against particular types of effects are listed after the three saves.
-        HP, followed by automatic abilities that affect the creature’s Hit Points or healing; Immunities; Weaknesses; Resistances Any immunities, weaknesses, or resistances the creature has are listed here.
-        Automatic Abilities The creature’s auras, any abilities that automatically affect its defenses, and the like are listed here.
-        Reactive Abilities Free actions or reactions that are usually triggered when it’s not the creature’s turn are listed here. Speed, followed by any other Speeds or movement abilities.
-        ---
-        Melee [one-action] (traits; some weapon traits, such as deadly, include their calculations for convenience) The name of the weapon or unarmed attack the creature uses for a melee Strike, followed by the attack modifier and traits in parentheses. If a creature has any abilities or gear that would affect its attack modifier, such as a weapon with a +1 weapon potency rune, those calculations are already included, Damage amount and damage type, plus any additional effects (this entry is Effect if the Strike doesn’t deal damage).
-        Ranged [one-action] As Melee, but also lists range or range increment with traits, Damage as Melee.
-        Spells The entry starts with the magical tradition and whether the spells are prepared or spontaneous, followed by the DC (and spell attack modifier if any spells require spell attack rolls). Spells are listed by rank, followed by cantrips. A spell prepared multiple times lists the number of times in parentheses—for example, “(×2).” Spontaneous spells list the number of spell slots after the spell rank.
-        Innate Spells These are listed like other spells, but can also include constant, at-will, and focus spells. If the creature has a focus spell as an innate spell, it works like other innate spells with listed uses, rather than costing Focus Points. Spells that can be used an unlimited number of times list “(at will)” after the spell’s name. Constant spells appear at the end, separated by rank. Rules for constant and at-will spells appear in the Ability Glossary.
-        Focus Spells If a creature has focus spells, this entry lists the spells’ rank, the Focus Points in the creature’s focus pool, the DC, and those spells.
-        Rituals Any rituals the creature can cast appear here.
-        Offensive or Proactive Abilities Any actions, activities, or abilities that automatically affect the creature’s offense, as well as free actions or reactions that are usually triggered on the creature’s turn, appear here in alphabetical order.
-        ---
+        
+        **Roleplaying notes:**
+            * <roleplaying notes - make sure to be succinct but thorough>
+
+        ## Core
+        
+        **Perception:** The creature’s Perception modifier is listed here, followed by any special senses.
+        
+        **Languages:** The languages for a typical creature of that kind are listed here, followed by any special communication abilities. If a creature lacks this entry, it cannot communicate with or understand another creature through language.
+        
+        **Skills:** The creature is trained or better in these skills. For untrained skills, use the corresponding attribute modifier.
+        
+        **Attribute Modifiers:** The creature’s attribute modifiers are listed here.
+        
+        **Items:** Any significant gear the creature carries is listed here.
+        
+        **Interaction:** Abilities Special abilities that affect how a creature perceives and interacts with the world are listed here.
+        
+        **AC:** followed by any special bonuses to AC
+        
+        **Saving Throws:** A special bonus to a specific save appears in parentheses after that save’s bonus. Any special bonuses to all three saving throws against particular types of effects are listed after the three saves.
+        
+        **HP:** followed by automatic abilities that affect the creature’s Hit Points or healing
+        
+        **Immunities, Weaknesses, Resistances:** Any immunities, weaknesses, or resistances the creature has are listed here.
+        
+        **Automatic Abilities:** The creature’s auras, any abilities that automatically affect its defenses, and the like are listed here.
+        
+        **Reactive Abilities:** Free actions or reactions that are usually triggered when it’s not the creature’s turn are listed here.
+        
+        **Speed:** followed by any other Speeds or movement abilities.
+
+        ## Abilities & Feats
+        
+        **Melee:** (traits; some weapon traits, such as deadly, include their calculations for convenience) The name of the weapon or unarmed attack the creature uses for a melee Strike, followed by the attack modifier and traits in parentheses. If a creature has any abilities or gear that would affect its attack modifier, such as a weapon with a +1 weapon potency rune, those calculations are already included, Damage amount and damage type, plus any additional effects (this entry is Effect if the Strike doesn’t deal damage).
+        
+        **Ranged:** As Melee, but also lists range or range increment with traits, Damage as Melee.
+        
+        **Spells:* The entry starts with the magical tradition and whether the spells are prepared or spontaneous, followed by the DC (and spell attack modifier if any spells require spell attack rolls). Spells are listed by rank, followed by cantrips. A spell prepared multiple times lists the number of times in parentheses—for example, “(×2).” Spontaneous spells list the number of spell slots after the spell rank.
+        
+        **Innate Spells:** These are listed like other spells, but can also include constant, at-will, and focus spells. If the creature has a focus spell as an innate spell, it works like other innate spells with listed uses, rather than costing Focus Points. Spells that can be used an unlimited number of times list “(at will)” after the spell’s name. Constant spells appear at the end, separated by rank. Rules for constant and at-will spells appear in the Ability Glossary.
+        
+        **Focus Spells:** If a creature has focus spells, this entry lists the spells’ rank, the Focus Points in the creature’s focus pool, the DC, and those spells.
+        
+        **Rituals:** Any rituals the creature can cast appear here.
+        
+        **Offensive or Proactive Abilities:** Any actions, activities, or abilities that automatically affect the creature’s offense, as well as free actions or reactions that are usually triggered on the creature’s turn, appear here in alphabetical order.
+        
+        **Other Abilities:** Anything that didn't fit into the above categories, such as special abilities, feats, or spells, appears here in alphabetical order. If a creature has a lot of these abilities, they might be listed in a separate section.
+        
+        ## Reference
+        
         Reference URLS (ignore any class or ancestry URLs, only provide specific feat/spells/ability URLs)
             *
             *
             *
+            
+        # Magic Items
+        
+        If any magic items were created for this character, list them separately here.
         """
 
         urls = {
@@ -597,7 +634,7 @@ class Chat(BaseCog):
                     {
                         "role": "system",
                         "content": [
-                            {"type": "text", "text": contents},
+                            {"type": "text", "text": f"---\nFETCHED URL: {url}\nCONTENTS:\n{contents}\n---\n"},
                         ],
                     }
                 )
