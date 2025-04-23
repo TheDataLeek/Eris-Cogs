@@ -529,6 +529,9 @@ class Chat(BaseCog):
         # <Creature Name>
         *<Level breakdown e.g. "Fighter 1, Wizard 2">*
         *<Concept and description>*
+        Brief roleplaying notes:
+            * <roleplaying notes>
+            * <make sure to be succinct but thorough>
         ---
         Perception The creature’s Perception modifier is listed here, followed by any special senses.
         Languages The languages for a typical creature of that kind are listed here, followed by any special communication abilities. If a creature lacks this entry, it cannot communicate with or understand another creature through language.
