@@ -527,7 +527,7 @@ class Chat(BaseCog):
         
         Your goal is to create a character that matches: {contents}
         
-        The final stat block should be in the following format:
+        The final stat block should be in the following format (DO NOT include URLs in the stat block, only attach them at the end)
         
         # <Creature Name>
         
@@ -596,11 +596,13 @@ class Chat(BaseCog):
         If any magic items were created for this character, list them separately here.
         """
 
-        urls = {
-            "https://2e.aonprd.com/Backgrounds.aspx",
-            "https://2e.aonprd.com/Search.aspx?include-types=class&sort=name-asc&display=table&columns=icon_image+ability+hp+tradition+attack_proficiency+defense_proficiency+fortitude_proficiency+reflex_proficiency+will_proficiency+perception_proficiency+skill_proficiency+rarity+pfs",
-            "https://2e.aonprd.com/Search.aspx?include-types=ancestry&sort=rarity-asc+name-asc&display=table&columns=hp+size+speed+ability_boost+ability_flaw+language+vision+rarity+pfs",
+        urls: dict[str, None | dict[str, str]] = {
+            "https://2e.aonprd.com/Backgrounds.aspx": None,
+            "https://2e.aonprd.com/Search.aspx?include-types=class&sort=name-asc&display=table&columns=icon_image+ability+hp+tradition+attack_proficiency+defense_proficiency+fortitude_proficiency+reflex_proficiency+will_proficiency+perception_proficiency+skill_proficiency+rarity+pfs": None,
+            "https://2e.aonprd.com/Search.aspx?include-types=ancestry&sort=rarity-asc+name-asc&display=table&columns=hp+size+speed+ability_boost+ability_flaw+language+vision+rarity+pfs": None,
         }
+        for url in urls.keys():
+            urls[url] = await summarize_url(model, token, url)
 
         try:
             (thread_name, formatted_query, user_names) = await discord_handling.extract_chat_history_and_format(
@@ -609,6 +611,9 @@ class Chat(BaseCog):
         except ValueError:
             await ctx.send("Something went wrong!")
             return
+
+        for url, obj in urls.items():
+            formatted_query = add_url_to_formatted_query(formatted_query, url, obj["summary"], obj["contents"])
 
         response = await model_querying.query_text_model(
             token, prompt, formatted_query, model=model, user_names=user_names
@@ -627,20 +632,74 @@ class Chat(BaseCog):
                     ],
                 }
             )
-            new_urls = set(re.findall(r"(https?://2e\.aonprd\.com[^\s]+)", prompt, flags=re.IGNORECASE))
-            for url in urls.union(new_urls):
-                contents = await discord_handling.fetch_url(url)
-                formatted_query.append(
-                    {
-                        "role": "system",
-                        "content": [
-                            {"type": "text", "text": f"---\nFETCHED URL: {url}\nCONTENTS:\n{contents}\n---\n"},
-                        ],
-                    }
-                )
+            new_urls = re.findall(r"(https?://2e\.aonprd\.com[^\s]+)", prompt, flags=re.IGNORECASE)
+            for new_url in new_urls:
+                if new_url in urls:
+                    continue
+
+                urls[new_url] = await summarize_url(model, token, new_url)
+
+            for url, obj in urls.items():
+                formatted_query = add_url_to_formatted_query(formatted_query, url, obj["summary"], obj["contents"])
+
             response = await model_querying.query_text_model(
                 token, prompt, formatted_query, model=model, user_names=user_names
             )
             await discord_handling.send_response(response, message, thread, thread_name)
             if "<<<DONE>>>" in "\n".join(response):
                 break
+
+
+async def summarize_url(model, token, url) -> dict:
+    contents = await discord_handling.fetch_url(url)
+    summary = "\n".join(
+        await model_querying.query_text_model(
+            token,
+            (
+                "Your job is to summarize downloaded html web-pages that have been transformed to markdown. "
+                "You will be used in an automated agent-pattern without human supervision, summarize the following in at most 3 sentences."
+            ),
+            [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": f"---\nFETCHED URL: {url}\nCONTENTS:\n{contents}\n---\n",
+                        }
+                    ],
+                }
+            ],
+            model=model,
+        )
+    )
+
+    return {"summary": summary, "contents": contents}
+
+
+def add_url_to_formatted_query(
+    formatted_query: list[dict[str, str]],
+    url: str,
+    summary: str,
+    contents: str,
+) -> list[dict[str, str]]:
+    formatted_query.append(
+        {
+            "role": "system",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "".join(
+                        [
+                            "---\n",
+                            f"FETCHED URL: {url}\n",
+                            f"SUMMARY: {summary}\n",
+                            f"CONTENTS:\n{contents}\n",
+                            "---\n",
+                        ]
+                    ),
+                },
+            ],
+        }
+    )
+    return formatted_query
