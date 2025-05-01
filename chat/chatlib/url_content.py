@@ -15,9 +15,9 @@ class URLContent:
     name: str
     content: str
     markdown: str
-    summary: str
     hex: str
     soup: bs4.BeautifulSoup
+    summary: str = None
 
     def __init__(self, url: str):
         self.url: str = url
