@@ -31,6 +31,7 @@ DEFAULT_GUILD_SETTINGS = {
     "model": "gpt-4o",
 }
 
+
 class ChatBase(BaseCog):
     openai_settings = None
     openai_token = None
@@ -47,7 +48,7 @@ class ChatBase(BaseCog):
                 cog_name="chat",
             )
             self.config.register_guild(**DEFAULT_GUILD_SETTINGS)
-        self.data_dir = Path(__file__).parent.parent.parent / 'data'
+        self.data_dir = Path(__file__).parent.parent.parent / "data"
         self.logged_messages = {}  # Initialize a dictionary to store messages per channel
 
     async def get_openai_token(self):

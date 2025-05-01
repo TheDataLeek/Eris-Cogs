@@ -198,7 +198,10 @@ def pagify_chat_result(response: str) -> list[str]:
 
     return lines
 
-async def generate_url_summary(url_name: str, url_markdown: str, model: openai.Client, token: str) -> str:
+
+async def generate_url_summary(
+    url_name: str, url_markdown: str, model: openai.Client, token: str
+) -> str:
     summary = "\n".join(
         await query_text_model(
             token,

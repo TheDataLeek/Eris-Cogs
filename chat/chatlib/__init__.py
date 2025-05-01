@@ -1,3 +1,3 @@
 from .cog import Chat
 
-__all__ = ['Chat']
+__all__ = ["Chat"]

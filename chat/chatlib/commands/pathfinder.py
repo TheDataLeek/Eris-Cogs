@@ -116,7 +116,7 @@ If any magic items were created for this character, list them separately here.
 class PathfinderCommands(ChatBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        data_dir = Path(__file__).parent.parent.parent / 'data'
+        data_dir = Path(__file__).parent.parent.parent / "data"
         self.content_store = ContentStore(cache_dir=data_dir / "page_cache")
 
     @commands.command()

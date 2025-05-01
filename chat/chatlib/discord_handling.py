@@ -25,7 +25,7 @@ async def extract_chat_history_and_format(
     guild: discord.Guild = message.guild
     thread_name = "foo"
     formatted_query = []
-    query = message.clean_content().split(" ")[1:]
+    query = message.clean_content.split(" ")[1:]
     skip_command_word = f"{prefix}chat"
 
     how_far_back = dt.timedelta(hours=12)
@@ -102,10 +102,10 @@ async def extract_history(
         if (
             thread_message.author.bot
             or keep_all_words
-            or thread_message.clean_content().startswith(skip_command_word)
+            or thread_message.clean_content.startswith(skip_command_word)
         ):
             cleaned_message, pages = await extract_message(
-                thread_message.clean_content(),
+                thread_message.clean_content,
                 keep_all_words,
                 skip_command_word,
             )
@@ -142,7 +142,7 @@ async def extract_history(
         starter_message = channel_or_thread.starter_message
         if starter_message is not None:
             cleaned_message, pages = await extract_message(
-                starter_message.clean_content(),
+                starter_message.clean_content,
                 keep_all_words,
                 skip_command_word,
             )
