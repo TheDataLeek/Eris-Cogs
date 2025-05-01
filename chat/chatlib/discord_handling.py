@@ -9,7 +9,7 @@ import string
 
 import discord
 
-import chat.chatlib.content
+from . import content
 
 
 async def extract_chat_history_and_format(
@@ -167,8 +167,8 @@ async def extract_history(
     return history, users_involved
 
 
-async def fetch_url(url: str) -> chat.chatlib.content.Content:
-    url_content = chat.chatlib.content.Content(url)
+async def fetch_url(url: str) -> content.Content:
+    url_content = content.Content(url)
     await url_content.fetch()
     return url_content
 
@@ -176,7 +176,7 @@ async def fetch_url(url: str) -> chat.chatlib.content.Content:
 async def extract_message(message: str, keep_all_words: bool, skip_command_word: str):
     words = message.split(" ")
     keep_words = []
-    page_contents: list[chat.chatlib.content.Content] = []
+    page_contents: list[content.Content] = []
     for word in words:
         match = re.match(r"(https?://.+?)", word, flags=re.IGNORECASE)
         if match:
