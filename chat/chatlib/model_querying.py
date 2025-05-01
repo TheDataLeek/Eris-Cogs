@@ -13,8 +13,6 @@ import discord
 from redbot.core.utils import chat_formatting
 import openai
 
-from . import content
-
 
 async def query_text_model(
     token: str,
@@ -200,7 +198,7 @@ def pagify_chat_result(response: str) -> list[str]:
 
     return lines
 
-async def generate_summary_for_url_content(urlc: content.Content, model, token) -> dict:
+async def generate_url_summary(url_name: str, url_markdown: str, model: openai.Client, token: str) -> str:
     summary = "\n".join(
         await query_text_model(
             token,
@@ -214,7 +212,7 @@ async def generate_summary_for_url_content(urlc: content.Content, model, token) 
                     "content": [
                         {
                             "type": "text",
-                            "text": f"---\nFETCHED URL NAME: {urlc.name}\nCONTENTS:\n{urlc.markdown}\n---\n",
+                            "text": f"---\nFETCHED URL NAME: {url_name}\nCONTENTS:\n{url_markdown}\n---\n",
                         }
                     ],
                 }
@@ -222,4 +220,4 @@ async def generate_summary_for_url_content(urlc: content.Content, model, token) 
             model=model,
         )
     )
-    urlc.summary = summary
+    return summary
