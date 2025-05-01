@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import re
 import discord
-from redbot.core import data_manager, commands
+from redbot.core import data_manager, commands, checks
 
 from .base import ChatBase
 from .. import discord_handling, model_querying
@@ -120,6 +120,7 @@ class PathfinderCommands(ChatBase):
         self.content_store = ContentStore(cache_dir=data_dir / "page_cache")
 
     @commands.command()
+    @checks.is_owner()
     async def generate_pf2e_character(self, ctx: commands.Context):
         """
         OK so the thinking here is that we can have her crawl through the site like a human would
