@@ -4,7 +4,8 @@ import re
 import discord
 from redbot.core import data_manager, commands
 
-from . import ChatBase, model_querying, discord_handling, content
+from .base import ChatBase
+from . import model_querying, discord_handling, content
 
 SYSTEM_PROMPT = f"""
 You are to to generate a Pathfinder 2e character using provided reference materials in an automated agent 

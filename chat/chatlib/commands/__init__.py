@@ -1,7 +1,5 @@
 from .. import discord_handling, model_querying, content
 
-from .base import ChatBase
-
 from .chat import ChatCommands
 from .images import ImageCommands
 from .meta import MetaCommands
@@ -15,7 +13,9 @@ class Chat(
     MetaCommands,
     PathfinderCommands,
     TarotCommands,
-): ...
+):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 __all__ = ['Chat']

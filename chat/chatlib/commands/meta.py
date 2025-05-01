@@ -3,7 +3,7 @@ from __future__ import annotations
 import discord
 from redbot.core import commands, checks
 
-from . import ChatBase
+from .base import ChatBase
 
 
 class MetaCommands(ChatBase):

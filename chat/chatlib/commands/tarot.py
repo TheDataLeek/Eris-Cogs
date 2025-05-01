@@ -3,7 +3,8 @@ from __future__ import annotations
 import discord
 from redbot.core import commands
 
-from . import ChatBase, discord_handling, model_querying
+from .base import ChatBase
+from . import discord_handling, model_querying
 
 
 class TarotCommands(ChatBase):
