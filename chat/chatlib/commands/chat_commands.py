@@ -1,14 +1,15 @@
 import discord
 from redbot.core import commands
 
-from chat.chatlib import discord_handling, model_querying
+from .. import model_querying, discord_handling
 from .base import ChatBase
 
 
 class ChatCommands(ChatBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.bot.add_listener(self.contextual_chat_handler, "on_message")
+        if self.bot is not None:
+            self.bot.add_listener(self.contextual_chat_handler, "on_message")
 
     @commands.command()
     async def chat(self, ctx: commands.Context) -> None:

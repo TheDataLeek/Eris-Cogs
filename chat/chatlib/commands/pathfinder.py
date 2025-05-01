@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from pathlib import Path
 import re
 import discord
 from redbot.core import data_manager, commands
 
 from .base import ChatBase
-from . import discord_handling, model_querying
+from .. import discord_handling, model_querying
+from ..url_content import ContentStore
 
 SYSTEM_PROMPT = f"""
 You are to to generate a Pathfinder 2e character using provided reference materials in an automated agent 
@@ -114,8 +116,8 @@ If any magic items were created for this character, list them separately here.
 class PathfinderCommands(ChatBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        data_dir = data_manager.bundled_data_path(self)
-        self.content_store = content.ContentStore(cache_dir=data_dir / "page_cache")
+        data_dir = Path(__file__).parent.parent.parent / 'data'
+        self.content_store = ContentStore(cache_dir=data_dir / "page_cache")
 
     @commands.command()
     async def generate_pf2e_character(self, ctx: commands.Context):

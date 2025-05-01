@@ -3,7 +3,7 @@ from __future__ import annotations
 import discord
 from redbot.core import commands
 
-from . import discord_handling, model_querying
+from .. import model_querying, discord_handling
 from .base import ChatBase
 
 

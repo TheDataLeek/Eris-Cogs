@@ -4,7 +4,7 @@ import discord
 from redbot.core import commands
 
 from .base import ChatBase
-from . import discord_handling, model_querying
+from .. import model_querying, discord_handling
 
 
 class TarotCommands(ChatBase):
