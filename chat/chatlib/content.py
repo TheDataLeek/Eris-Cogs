@@ -8,8 +8,6 @@ import aiohttp
 from async_lru import alru_cache
 from markdownify import markdownify as md
 
-from . import model_querying
-
 CACHE = pathlib.Path(__file__).parent / "pages"
 
 
@@ -64,30 +62,6 @@ class Content:
         content.name = data.get("name")
         content.summary = data.get("summary")
         return content
-
-    async def summarize_url(self, model, token) -> dict:
-        summary = "\n".join(
-            await model_querying.query_text_model(
-                token,
-                (
-                    "Your job is to summarize downloaded html web-pages that have been transformed to markdown. "
-                    "You will be used in an automated agent-pattern without human supervision, summarize the following in at most 3 sentences."
-                ),
-                [
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": f"---\nFETCHED URL NAME: {self.name}\nCONTENTS:\n{self.markdown}\n---\n",
-                            }
-                        ],
-                    }
-                ],
-                model=model,
-            )
-        )
-        self.summary = summary
 
     def format_for_openai(self) -> dict:
         return {

@@ -13,6 +13,8 @@ import discord
 from redbot.core.utils import chat_formatting
 import openai
 
+from . import content
+
 
 async def query_text_model(
     token: str,
@@ -197,3 +199,27 @@ def pagify_chat_result(response: str) -> list[str]:
             lines += chat_formatting.pagify(line)
 
     return lines
+
+async def generate_summary_for_url_content(urlc: content.Content, model, token) -> dict:
+    summary = "\n".join(
+        await query_text_model(
+            token,
+            (
+                "Your job is to summarize downloaded html web-pages that have been transformed to markdown. "
+                "You will be used in an automated agent-pattern without human supervision, summarize the following in at most 3 sentences."
+            ),
+            [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": f"---\nFETCHED URL NAME: {urlc.name}\nCONTENTS:\n{urlc.markdown}\n---\n",
+                        }
+                    ],
+                }
+            ],
+            model=model,
+        )
+    )
+    urlc.summary = summary
