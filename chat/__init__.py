@@ -1,4 +1,4 @@
-from chatlib.commands import Chat
+from .chatlib import Chat
 
 
 async def setup(bot):
