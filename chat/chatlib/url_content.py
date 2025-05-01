@@ -94,19 +94,19 @@ class ContentStore:
 
     def save(self):
         for _, content in self.contents.items():
-            (self.cache_dir / f"{content.hex}.json").write_text(json.dumps(content))
+            (self.cache_dir / f"{content.hex}.json").write_text(json.dumps(content.to_dict()))
 
     def load(self):
         for file in CACHE.glob("*.json"):
             content = URLContent.from_json(file)
             self.contents[content.url] = content
 
-    async def fetch_content(self, url: str) -> URLContent:
+    async def fetch_content(self, url: str, model: openai.Client = None, token: str = None) -> URLContent:
         if url in self.contents:
             return self.contents[url]
         else:
             content = URLContent(url)
-            await content.fetch()
+            await content.fetch(model=model, token=token)
             self.add(content)
             return content
 
