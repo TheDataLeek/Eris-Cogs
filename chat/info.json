@@ -9,7 +9,8 @@
     "openai",
     "pillow",
     "markdownify",
-    "async-lru"
+    "async-lru",
+    "beatifulsoup4"
   ],
   "install_msg": "Ensure that you set the openAI token, using `[p]set api`, and then the name of the secret should be `openai`, while the value needs to be in the format `key <token>`",
   "ready": true
