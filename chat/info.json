@@ -6,11 +6,11 @@
   "name": "Chat",
   "short": "Use OpenAI's ChatGPT to respond to the conversation",
   "requirements": [
-    "openai",
-    "pillow",
-    "markdownify",
-    "async-lru",
-    "beatifulsoup4"
+    "openai==1.76.2",
+    "pillow==11.2.1",
+    "markdownify==1.1.0",
+    "async-lru==2.0.5",
+    "beatifulsoup4==4.13.4"
   ],
   "install_msg": "Ensure that you set the openAI token, using `[p]set api`, and then the name of the secret should be `openai`, while the value needs to be in the format `key <token>`",
   "ready": true
