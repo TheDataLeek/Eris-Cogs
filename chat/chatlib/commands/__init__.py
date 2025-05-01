@@ -10,7 +10,6 @@ from .tarot import TarotCommands
 
 
 class Chat(
-    ChatBase,
     ChatCommands,
     ImageCommands,
     MetaCommands,
