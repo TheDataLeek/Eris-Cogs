@@ -84,6 +84,7 @@ class URLContent:
 class ContentStore:
     def __init__(self, cache_dir: pathlib.Path = CACHE):
         self.cache_dir = cache_dir
+        self.cache_dir.mkdir(exist_ok=True, parents=True)
         self.contents: dict[str, URLContent] = {}
 
     async def add(self, content: URLContent):
