@@ -4,13 +4,9 @@ import re
 import datetime as dt
 import json
 import io
-from typing import Dict, List, Tuple, Union
+from typing import List, Tuple
 import string
 
-import bs4
-import aiohttp
-from async_lru import alru_cache
-from markdownify import markdownify as md
 import discord
 
 from . import content

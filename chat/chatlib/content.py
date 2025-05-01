@@ -8,7 +8,7 @@ import aiohttp
 from async_lru import alru_cache
 from markdownify import markdownify as md
 
-from . import model_querying, discord_handling
+from . import model_querying
 
 CACHE = pathlib.Path(__file__).parent / "pages"
 
