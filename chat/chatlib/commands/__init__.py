@@ -1,5 +1,3 @@
-from .. import discord_handling, model_querying, content
-
 from .chat import ChatCommands
 from .images import ImageCommands
 from .meta import MetaCommands

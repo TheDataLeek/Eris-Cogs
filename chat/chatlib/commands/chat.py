@@ -1,8 +1,8 @@
 import discord
 from redbot.core import commands
 
+from chat.chatlib import discord_handling, model_querying
 from .base import ChatBase
-from . import discord_handling, model_querying
 
 
 class ChatCommands(ChatBase):
