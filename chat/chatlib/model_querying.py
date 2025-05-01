@@ -10,8 +10,8 @@ from pprint import pformat
 from typing import Dict, List
 
 import discord
-from redbot.core.utils import chat_formatting
 import openai
+from redbot.core.utils import chat_formatting
 
 
 async def query_text_model(

@@ -11,7 +11,7 @@ from markdownify import markdownify as md
 CACHE = pathlib.Path(__file__).parent / "pages"
 
 
-class Content:
+class URLContent:
     name: str
     content: str
     markdown: str
@@ -52,7 +52,7 @@ class Content:
         }
 
     @classmethod
-    def from_json(cls, data: dict | pathlib.Path) -> "Content":
+    def from_json(cls, data: dict | pathlib.Path) -> "URLContent":
         if isinstance(data, pathlib.Path):
             data = json.loads(data.read_text())
         content = cls(data["url"])
@@ -86,9 +86,9 @@ class Content:
 class ContentStore:
     def __init__(self, cache_dir: pathlib.Path = CACHE):
         self.cache_dir = cache_dir
-        self.contents: dict[str, Content] = {}
+        self.contents: dict[str, URLContent] = {}
 
-    def add(self, content: Content):
+    def add(self, content: URLContent):
         self.contents[content.url] = content
         self.save()
 
@@ -98,14 +98,14 @@ class ContentStore:
 
     def load(self):
         for file in CACHE.glob("*.json"):
-            content = Content.from_json(file)
+            content = URLContent.from_json(file)
             self.contents[content.url] = content
 
-    async def fetch_content(self, url: str) -> Content:
+    async def fetch_content(self, url: str) -> URLContent:
         if url in self.contents:
             return self.contents[url]
         else:
-            content = Content(url)
+            content = URLContent(url)
             await content.fetch()
             self.add(content)
             return content
