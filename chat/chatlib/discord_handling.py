@@ -178,11 +178,15 @@ async def extract_message(message: str, keep_all_words: bool, skip_command_word:
     keep_words = []
     page_contents: list[URLContent] = []
     for word in words:
-        match = re.match(r"(https?://.+?)", word, flags=re.IGNORECASE)
+        match = re.match(r"\+\[(https?://.+?)\]", word, flags=re.IGNORECASE)
         if match:
             url = match.group(1)
-            urlc = await fetch_url(url)
-            page_contents.append(urlc)
+            try:
+                urlc = await fetch_url(url)
+                page_contents.append(urlc)
+            except Exception as e:
+                print(f"Error fetching {url}")
+                continue
         elif keep_all_words or (not word.startswith(skip_command_word)):
             keep_words.append(word)
 
