@@ -92,7 +92,8 @@ class ContentStore:
 
     async def save(self):
         for _, content in self.contents.items():
-            (self.cache_dir / f"{content.hex}.json").write_text(json.dumps(content.to_dict()))
+            json_content = json.dumps(await content.to_dict())
+            (self.cache_dir / f"{content.hex}.json").write_text(json_content)
 
     def load(self):
         for file in CACHE.glob("*.json"):
