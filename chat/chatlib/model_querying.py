@@ -6,8 +6,8 @@ import asyncio
 from PIL import Image
 import base64
 import io
-from pprint import pprint, pformat
-from typing import Dict, List, Tuple, Union
+from pprint import pformat
+from typing import Dict, List
 
 import discord
 from redbot.core.utils import chat_formatting

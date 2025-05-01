@@ -16,3 +16,6 @@ class Chat(
     PathfinderCommands,
     TarotCommands,
 ): ...
+
+
+__all__ = ['Chat']

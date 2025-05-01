@@ -17,9 +17,18 @@ dependencies = [
     "pillow>=11.2.1",
     "red-discordbot>=3.5.19",
 ]
-authors = ["Zoe Farmer <zoe@dataleek.io>"]
+authors = [{name = "Zoe Farmer", email = "zoe@dataleek.io"}]
 
 [dependency-groups]
 dev = [
+    "pytest>=8.3.5",
     "ruff>=0.11.7",
+    "typer>=0.15.3",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ['chat']
