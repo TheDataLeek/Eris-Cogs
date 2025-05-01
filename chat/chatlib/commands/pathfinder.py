@@ -151,6 +151,10 @@ class PathfinderCommands(ChatBase):
         ]:
             await self.content_store.fetch_content(url)
 
+        for _, content in self.content_store.contents.items():
+            if content.summary is None:
+                content.summary = await model_querying.generate_url_summary(content.url, content.name, model, token)
+
         try:
             (
                 thread_name,
@@ -191,6 +195,10 @@ class PathfinderCommands(ChatBase):
             )
             for new_url in new_urls:
                 await self.content_store.fetch_content(new_url)
+
+            for _, content in self.content_store.contents.items():
+                if content.summary is None:
+                    content.summary = await model_querying.generate_url_summary(content.url, content.name, model, token)
 
             response = await model_querying.query_text_model(
                 token,

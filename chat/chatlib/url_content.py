@@ -23,7 +23,7 @@ class URLContent:
         self.url: str = url
 
     @alru_cache(maxsize=128)
-    async def fetch(self, model: openai.Client = None, token: str = None):
+    async def fetch(self):
         async with aiohttp.ClientSession() as session:
             resp: aiohttp.ClientResponse
             async with session.get(self.url) as resp:
@@ -35,8 +35,6 @@ class URLContent:
                 self.markdown = md(self.content)
                 self.name = self.soup.title.string
                 self.hex = hashlib.sha256(self.url.encode("utf-8")).hexdigest()
-                if (model is not None) and (token is not None):
-                    await self.summarize_url(model, token)
 
     async def to_dict(self):
         if self.content is None:
@@ -88,11 +86,11 @@ class ContentStore:
         self.cache_dir = cache_dir
         self.contents: dict[str, URLContent] = {}
 
-    def add(self, content: URLContent):
+    async def add(self, content: URLContent):
         self.contents[content.url] = content
-        self.save()
+        await self.save()
 
-    def save(self):
+    async def save(self):
         for _, content in self.contents.items():
             (self.cache_dir / f"{content.hex}.json").write_text(json.dumps(content.to_dict()))
 
@@ -101,13 +99,13 @@ class ContentStore:
             content = URLContent.from_json(file)
             self.contents[content.url] = content
 
-    async def fetch_content(self, url: str, model: openai.Client = None, token: str = None) -> URLContent:
+    async def fetch_content(self, url: str) -> URLContent:
         if url in self.contents:
             return self.contents[url]
         else:
             content = URLContent(url)
-            await content.fetch(model=model, token=token)
-            self.add(content)
+            await content.fetch()
+            await self.add(content)
             return content
 
     def to_dict(self) -> dict:
