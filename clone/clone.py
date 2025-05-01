@@ -21,7 +21,9 @@ class Clone(BaseCog):
             await ctx.send("Error finding role, aborting!")
             return
         my_role = my_role[0]
-        avatar = await user.display_avatar.replace(static_format='png', format='png').read()
+        avatar = await user.display_avatar.replace(
+            static_format="png", format="png"
+        ).read()
         me = ctx.message.guild.me
 
         # await ctx.send(file=discord.File(avatar, filename='profile.png'))

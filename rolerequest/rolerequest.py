@@ -85,7 +85,7 @@ class RoleRequest(BaseCog):
     @role.command(pass_context=True)
     @checks.mod()
     async def designate(
-            self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji
+        self, ctx: commands.Context, msg_id: int, role_name: str, emoji: discord.Emoji
     ):
         """
         Mod-only command to designate a message as a role-request message. Once designated, any user who reacts

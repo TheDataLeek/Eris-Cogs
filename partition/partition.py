@@ -37,14 +37,13 @@ class Partition(BaseCog):
                 end = len(users) + 1
             teams[team_index] = users[start:end]
 
-        formatted_message = ['```']
+        formatted_message = ["```"]
         for i, team in enumerate(teams):
             members = sorted([m.nick or m.display_name for m in team])
-            members = ', '.join(members)
+            members = ", ".join(members)
             formatted_message.append(f"Team #{i + 1}: {members}")
 
-        formatted_message.append('```')
-        formatted_message = '\n'.join(formatted_message)
+        formatted_message.append("```")
+        formatted_message = "\n".join(formatted_message)
 
         await ctx.send(formatted_message)
-

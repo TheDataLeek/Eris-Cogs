@@ -69,9 +69,7 @@ class Lifs(BaseCog):
     The City Watch makes an arrest on the premises.
     Volo shows up and would like to make arrangements for a signing of Volo’s Guide to Monsters. Also has a number of questions regarding the haunting of Trollskull Manor for Volo’s Guide to Spirits and Specters.
     Staff Event (e.g., the star elf triplets float up to the ceiling and a spontaneous light show erupts; after a few minutes they float back down and resume service as if nothing happened)
-        """.split(
-                "\n"
-            )
+        """.split("\n")
         ]
 
     @commands.command()

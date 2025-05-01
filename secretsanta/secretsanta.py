@@ -27,13 +27,13 @@ class SecretSanta(BaseCog):
         message: discord.Message = ctx.message
         attachments: list[discord.Attachment] = message.attachments
         if not len(attachments):
-            await ctx.send('Need to provide CSV file with inputs!')
+            await ctx.send("Need to provide CSV file with inputs!")
             return
 
         csv_file = attachments[0]
 
-        extension = csv_file.filename.split('.')[-1]
-        if extension != 'csv':
+        extension = csv_file.filename.split(".")[-1]
+        if extension != "csv":
             await ctx.send("Needs to be a .csv!")
             return
 
@@ -44,14 +44,14 @@ class SecretSanta(BaseCog):
 
         # convert to text-based buffer so csv can handle it
         stringbuf = io.StringIO()
-        stringbuf.write(buf.read().decode('utf-8'))
+        stringbuf.write(buf.read().decode("utf-8"))
         stringbuf.seek(0)
 
         reader = csv.reader(stringbuf)
         data = [row for row in reader]
         header = data[0]
-        header[1] = 'email'
-        header[2] = 'discord'
+        header[1] = "email"
+        header[2] = "discord"
         data = data[1:]
         data = [dict(zip(header, row)) for row in data]
 
@@ -67,7 +67,10 @@ class SecretSanta(BaseCog):
             bad_pairings = False
             for i, person in enumerate(data):
                 matched = data[i - 1]
-                if person['discord'] == matched['do_not_match'] or matched['discord'] == person['do_not_match']:
+                if (
+                    person["discord"] == matched["do_not_match"]
+                    or matched["discord"] == person["do_not_match"]
+                ):
                     bad_pairings = True
                     break
 
@@ -84,21 +87,19 @@ class SecretSanta(BaseCog):
                 
                 Thanks for signing up for the Secret Santa, Snek by Praised!
                 
-                Your match is `@{matched['discord']}`. Here's what they filled out in the form,
+                Your match is `@{matched["discord"]}`. Here's what they filled out in the form,
             """
 
             for col in header[4:]:
                 # skip address
-                if 'address' in col.lower():
+                if "address" in col.lower():
                     continue
                 message_template += f"\n## {col}\n{matched[col]}"
 
-            final_message = '\n'.join(line.strip() for line in message_template.splitlines() if line)
-            final_matches.append([
-                person['discord'],
-                matched['discord'],
-                final_message
-            ])
+            final_message = "\n".join(
+                line.strip() for line in message_template.splitlines() if line
+            )
+            final_matches.append([person["discord"], matched["discord"], final_message])
 
         formatted_matches = io.StringIO()
         writer = csv.writer(formatted_matches)
@@ -106,8 +107,10 @@ class SecretSanta(BaseCog):
             writer.writerow(row)
 
         formatted_matches.seek(0)
-        await self.bot.send_to_owners('Here are this year\'s matches for debugging purposes!',
-                                      file=discord.File(formatted_matches, filename='matches.csv'))
+        await self.bot.send_to_owners(
+            "Here are this year's matches for debugging purposes!",
+            file=discord.File(formatted_matches, filename="matches.csv"),
+        )
 
         who_do_we_need_to_find = [row[0] for row in final_matches]
         people = {}

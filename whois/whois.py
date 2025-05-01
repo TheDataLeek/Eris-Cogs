@@ -172,7 +172,7 @@ class WhoIs(BaseCog):
         WHOFILE = os.path.join(str(pathlib.Path.home()), "whois.db")
         with sqlite3.connect(WHOFILE) as con:
             cursor = con.cursor()
-            cursor.execute("SELECT userid, name " "FROM usernames")
+            cursor.execute("SELECT userid, name FROM usernames")
             results = cursor.fetchall()
 
             async with self.config.guild(ctx.guild).whois_dict() as whois_dict:

@@ -38,7 +38,7 @@ class ExportEmoji(BaseCog):
         image_count = 0
         chunksize = 1000
 
-        archive_dir = self.data_path / 'archives'
+        archive_dir = self.data_path / "archives"
         if not archive_dir.exists():
             os.mkdir(archive_dir)
         filepath = archive_dir / f"channel_archive_{dt.datetime.now().isoformat()}.zip"
@@ -48,7 +48,9 @@ class ExportEmoji(BaseCog):
             while True:
                 counter = 0
                 message: discord.Message
-                async for message in channel.history(limit=chunksize, oldest_first=True, after=last_message_examined):
+                async for message in channel.history(
+                    limit=chunksize, oldest_first=True, after=last_message_examined
+                ):
                     author: discord.Member = message.author
                     attachment: discord.Attachment
                     for attachment in message.attachments:
@@ -61,7 +63,9 @@ class ExportEmoji(BaseCog):
                             zf.writestr(formatted_filename, buf.getvalue())
                             image_count += 1
 
-                    messages.append([message.created_at, author.display_name, message.clean_content])
+                    messages.append(
+                        [message.created_at, author.display_name, message.clean_content]
+                    )
                     counter += 1
 
                 total_count += counter
@@ -81,7 +85,7 @@ class ExportEmoji(BaseCog):
             f"{created_at.isoformat()} | {name} | {content if content else '<attachment>'}"
             for created_at, name, content in messages
         ]
-        messages = '\n\n'.join(messages)
+        messages = "\n\n".join(messages)
 
         delta = time.time() - stime
         minutes = delta // 60
@@ -94,18 +98,18 @@ class ExportEmoji(BaseCog):
         )
 
         buf = io.BytesIO()
-        buf.write(messages.encode('utf-8'))
+        buf.write(messages.encode("utf-8"))
         buf.seek(0)
-        await ctx.send(
-            file=discord.File(buf, filename=f"log.txt")
-        )
+        await ctx.send(file=discord.File(buf, filename=f"log.txt"))
 
         jump_url = ctx.message.jump_url
-        await self.bot.send_to_owners(f'Archive saved to the data directory!\n{filepath}\n{jump_url}')
+        await self.bot.send_to_owners(
+            f"Archive saved to the data directory!\n{filepath}\n{jump_url}"
+        )
 
     @commands.command()
     async def export(
-            self, ctx, *emoji_list: Union[discord.PartialEmoji, discord.Emoji, int, str]
+        self, ctx, *emoji_list: Union[discord.PartialEmoji, discord.Emoji, int, str]
     ):
         """
         Export emoji to zipfile.
@@ -120,7 +124,7 @@ class ExportEmoji(BaseCog):
         with zipfile.ZipFile(zipbuf, "w") as zf:
             for emoji_to_export in emoji_list:
                 if isinstance(emoji_to_export, discord.PartialEmoji) or isinstance(
-                        emoji_to_export, discord.Emoji
+                    emoji_to_export, discord.Emoji
                 ):
                     name, buf = await self._export_emoji(emoji_to_export)
                     zf.writestr(name, buf.getvalue())
@@ -154,7 +158,7 @@ class ExportEmoji(BaseCog):
         )
 
     async def _export_emoji(
-            self, emoji: Union[discord.Emoji, discord.PartialEmoji]
+        self, emoji: Union[discord.Emoji, discord.PartialEmoji]
     ) -> Tuple[str, io.BytesIO]:
         suffix = "png"
         if emoji.animated:
@@ -174,7 +178,7 @@ class ExportEmoji(BaseCog):
             return name, new_buf
 
     async def _export_from_message(
-            self, message: discord.Message
+        self, message: discord.Message
     ) -> List[Tuple[str, io.BytesIO]]:
         reactions = message.reactions
         results = []

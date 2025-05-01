@@ -25,9 +25,21 @@ class GoodBot(BaseCog):
         self.whois = self.bot.get_cog("WhoIs")
 
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
-        self.names = [s for s in (data_dir / "names.txt").read_text(encoding='utf-8').split("\n") if s]
-        self.good = [s for s in (data_dir / "good.txt").read_text(encoding='utf-8').split("\n") if s]
-        self.bad = [s for s in (data_dir / "bad.txt").read_text(encoding='utf-8').split("\n") if s]
+        self.names = [
+            s
+            for s in (data_dir / "names.txt").read_text(encoding="utf-8").split("\n")
+            if s
+        ]
+        self.good = [
+            s
+            for s in (data_dir / "good.txt").read_text(encoding="utf-8").split("\n")
+            if s
+        ]
+        self.bad = [
+            s
+            for s in (data_dir / "bad.txt").read_text(encoding="utf-8").split("\n")
+            if s
+        ]
 
         self.config = Config.get_conf(
             self,
@@ -69,12 +81,12 @@ class GoodBot(BaseCog):
             await ctx.send("Please set a reasonable bound")
             return
 
-        if which not in ['good', 'bad']:
+        if which not in ["good", "bad"]:
             await ctx.send("Please provide `good` or `bad` as input!")
             return
 
         async with self.config.settings() as settings:
-            if which == 'good':
+            if which == "good":
                 settings["good_thresh"] = thresh
             else:
                 settings["bad_thresh"] = thresh
@@ -98,9 +110,10 @@ class GoodBot(BaseCog):
         step=1,
     ):
         # track user scores
-        async with self.config.guild(
-            ctx.guild
-        ).scores() as guildscores, self.config.scores() as globalscores:
+        async with (
+            self.config.guild(ctx.guild).scores() as guildscores,
+            self.config.scores() as globalscores,
+        ):
             # convert emoji to str (leave if unicode)
             reaction_emoji: Union[discord.Emoji, str] = reaction.emoji
             reactionid = reaction_emoji
@@ -134,15 +147,16 @@ class GoodBot(BaseCog):
         og_author: discord.Member = msg.author
 
         # check if we've hit the threshold and notify if so
-        async with self.config.settings() as settings, self.config.guild(
-            ctx.guild
-        ).messages() as messagetracking:
+        async with (
+            self.config.settings() as settings,
+            self.config.guild(ctx.guild).messages() as messagetracking,
+        ):
             has_been_noticed = messagetracking.get(str(msg.id), False)
             good_thresh = int(settings["good_thresh"])
             bad_thresh = int(settings["bad_thresh"])
             if not has_been_noticed:
                 phrase = None
-                if reaction.emoji == '👍' and reaction.count >= good_thresh:
+                if reaction.emoji == "👍" and reaction.count >= good_thresh:
                     phrase = self.generate_message(og_author, good=True)
                 elif reaction.emoji == "👎" and reaction.count >= bad_thresh:
                     phrase = self.generate_message(og_author, good=False)
@@ -192,9 +206,10 @@ class GoodBot(BaseCog):
 
         self._update_cache()
 
-        async with self.config.guild(
-            ctx.guild
-        ).scores() as guildscores, self.config.scores() as globalscores:
+        async with (
+            self.config.guild(ctx.guild).scores() as guildscores,
+            self.config.scores() as globalscores,
+        ):
             user_guild_scores = guildscores.get(str(user.id), {})
             user_global_scores = globalscores.get(str(user.id), {})
 

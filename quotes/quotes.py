@@ -18,7 +18,7 @@ class Quotes(BaseCog):
         self.bot = bot
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
         self.prompts: Dict[str, List] = json.loads(
-            (data_dir / "prompts.json").read_text(encoding='utf-8')
+            (data_dir / "prompts.json").read_text(encoding="utf-8")
         )
 
         # need to also get whois

@@ -425,7 +425,7 @@ class Battle(BaseCog):
             ]
 
             if attribute not in attributes:
-                await ctx.send(f'Please chose one of {", ".join(attributes)}')
+                await ctx.send(f"Please chose one of {', '.join(attributes)}")
                 return
 
             try:

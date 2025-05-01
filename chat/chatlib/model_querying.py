@@ -26,7 +26,9 @@ async def query_text_model(
         user_names = {}
     formatted_usernames = pformat(user_names)
 
-    today_string = dt.datetime.now().strftime("The date is %A, %B %m, %Y. The time is %I:%M %p %Z")
+    today_string = dt.datetime.now().strftime(
+        "The date is %A, %B %m, %Y. The time is %I:%M %p %Z"
+    )
 
     system_prefix = [
         {
@@ -52,7 +54,9 @@ async def query_text_model(
     if contextual_prompt != "":
         system_prefix[0]["content"].append({"type": "text", "text": contextual_prompt})
     kwargs = {"model": model, "temperature": 1, "max_tokens": 2000}
-    response = await construct_async_query(system_prefix + formatted_query, token, **kwargs)
+    response = await construct_async_query(
+        system_prefix + formatted_query, token, **kwargs
+    )
     return response
 
 
@@ -64,7 +68,12 @@ async def query_image_model(
     n_images: int = 1,
     model: str | None = None,
 ) -> io.BytesIO:
-    kwargs = {"n": n_images, "model": model or "dall-e-2", "response_format": "b64_json", "size": "1024x1024"}
+    kwargs = {
+        "n": n_images,
+        "model": model or "dall-e-2",
+        "response_format": "b64_json",
+        "size": "1024x1024",
+    }
     if attachment is not None:  # then it's an edit
         buf = io.BytesIO()
         await attachment.save(buf)
@@ -108,7 +117,9 @@ async def query_image_model(
     return response
 
 
-async def construct_async_query(query: List[Dict], token: str, **kwargs) -> list[str] | io.BytesIO:
+async def construct_async_query(
+    query: List[Dict], token: str, **kwargs
+) -> list[str] | io.BytesIO:
     loop = asyncio.get_running_loop()
     time_to_sleep = 1
     exception_string = None
@@ -133,12 +144,16 @@ async def construct_async_query(query: List[Dict], token: str, **kwargs) -> list
     return response
 
 
-def openai_client_and_query(token: str, messages: str | list[dict], **kwargs) -> str | io.BytesIO | list[io.BytesIO]:
+def openai_client_and_query(
+    token: str, messages: str | list[dict], **kwargs
+) -> str | io.BytesIO | list[io.BytesIO]:
     client = openai.OpenAI(api_key=token)
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     if kwargs["model"].startswith("dall"):
         if "image" in kwargs:
-            images = client.images.edit(prompt="Expand the image to fill the empty space.", **kwargs)
+            images = client.images.edit(
+                prompt="Expand the image to fill the empty space.", **kwargs
+            )
         else:
             images = client.images.generate(prompt=messages, **kwargs)
         results = []

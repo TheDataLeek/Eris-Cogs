@@ -21,7 +21,7 @@ class HotelCalifornia(BaseCog):
 
         self.config = Config.get_conf(
             self,
-            identifier=123458687089708978970987566,   # random unique number
+            identifier=123458687089708978970987566,  # random unique number
             force_registration=True,
             cog_name="hotel_cali",
         )
@@ -55,7 +55,9 @@ class HotelCalifornia(BaseCog):
         is_punished = role in userroles
 
         if is_punished and random.random() <= 0.01:
-            await ctx.send("Hey you're still punished! Please put something in the box!")
+            await ctx.send(
+                "Hey you're still punished! Please put something in the box!"
+            )
 
     @commands.group()
     async def hotel(self, ctx):
@@ -125,7 +127,9 @@ class HotelCalifornia(BaseCog):
 
     @commands.command(pass_context=True)
     @checks.mod()
-    async def mass_assign(self, ctx: commands.Context, base: discord.Role, new_role: discord.Role):
+    async def mass_assign(
+        self, ctx: commands.Context, base: discord.Role, new_role: discord.Role
+    ):
         """
         Mass assigns a role to users based on a current role.
         """
@@ -135,7 +139,9 @@ class HotelCalifornia(BaseCog):
 
     @commands.command(pass_context=True)
     @checks.mod()
-    async def mass_remove(self, ctx: commands.Context, base: discord.Role, new_role: discord.Role):
+    async def mass_remove(
+        self, ctx: commands.Context, base: discord.Role, new_role: discord.Role
+    ):
         """
         Mass assigns a role to users based on a current role.
         """
@@ -161,11 +167,18 @@ class HotelCalifornia(BaseCog):
         N = len(channels)
 
         for i, channel in enumerate(channels):
-            await ctx.send(f"Searching 🔴{channel}🔴 for users to 💀PURGE💀 ({i / N:0.01%})")
+            await ctx.send(
+                f"Searching 🔴{channel}🔴 for users to 💀PURGE💀 ({i / N:0.01%})"
+            )
             last_message_examined: discord.Message = None
             new_enough = True
             while new_enough:
-                chunk = [message async for message in channel.history(limit=2_000, before=last_message_examined)]
+                chunk = [
+                    message
+                    async for message in channel.history(
+                        limit=2_000, before=last_message_examined
+                    )
+                ]
                 # if we run out of messages, stop
                 if len(chunk) == 0:
                     break
@@ -176,7 +189,7 @@ class HotelCalifornia(BaseCog):
                     message_created_date = message.created_at.date()
                     userlog[message.author.id] = max(
                         userlog.get(message.author.id, dt.date(1900, 1, 1)),
-                        message_created_date
+                        message_created_date,
                     )
                     # if the messages are older than a year, stop
                     if message_created_date <= threshold:
@@ -194,10 +207,7 @@ class HotelCalifornia(BaseCog):
             if last_message_dt <= threshold:
                 users_to_purge.append(userid)
 
-        users_to_purge = [
-            guild.get_member(uid)
-            for uid in users_to_purge
-        ]
+        users_to_purge = [guild.get_member(uid) for uid in users_to_purge]
 
         message_to_send = (
             f"Done. Processed {message_count} messages, found {len(userlog)} users. \n"
@@ -207,7 +217,7 @@ class HotelCalifornia(BaseCog):
         await ctx.send(message_to_send)
 
         if users_to_purge:
-            await ctx.send(', '.join([m.name for m in users_to_purge if m]))
+            await ctx.send(", ".join([m.name for m in users_to_purge if m]))
 
         user: discord.Member
         for user in users_to_purge:
@@ -219,5 +229,3 @@ class HotelCalifornia(BaseCog):
                     continue
 
         await ctx.send(f"Users 💀PURGED💀")
-
-

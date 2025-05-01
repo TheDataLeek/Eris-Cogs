@@ -17,7 +17,9 @@ class Spoop(BaseCog, ErisEventMixin):
         self.tried_again = False
 
         data_dir = data_manager.bundled_data_path(self)
-        self.yandere_quotes = (data_dir / "yandere_quotes.txt").read_text(encoding='utf-8').split("\n")
+        self.yandere_quotes = (
+            (data_dir / "yandere_quotes.txt").read_text(encoding="utf-8").split("\n")
+        )
 
         self.bot.add_listener(self.randomly_spoop, "on_message")
 

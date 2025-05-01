@@ -13,7 +13,6 @@ class HostInfo(BaseCog):
     def __init__(self, bot: commands.Cog):
         self.bot: commands.Cog = bot
 
-
     @commands.command()
     async def hostinfo(self, ctx: commands.Context):
         hostname = socket.gethostname()
@@ -21,11 +20,8 @@ class HostInfo(BaseCog):
 
         formatted = f"{hostname}@{ip_addr}"
         embedded_response = discord.Embed(
-            title=f"Host Info",
-            type="rich",
-            description=formatted
+            title=f"Host Info", type="rich", description=formatted
         )
         embedded_response = embed.randomize_colour(embedded_response)
 
         await ctx.send(embed=embedded_response)
-

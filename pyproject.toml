@@ -1,31 +1,25 @@
-[tool.poetry]
+[project]
 name = "eris-cogs"
 version = "0.1.0"
-description = ""
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11.6"
+dependencies = [
+    "aiohttp>=3.9.5",
+    "apscheduler>=3.11.0",
+    "async-lru>=2.0.5",
+    "beautifulsoup4>=4.13.4",
+    "discord>=2.3.2",
+    "markdownify>=1.1.0",
+    "matplotlib>=3.10.1",
+    "nltk>=3.9.1",
+    "openai>=1.76.2",
+    "pillow>=11.2.1",
+    "red-discordbot>=3.5.19",
+]
 authors = ["Zoe Farmer <zoe@dataleek.io>"]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.12"
-discord = "^1.0.1"
-yfinance = "^0.1.55"
-matplotlib = "^3.3.3"
-Pillow = "^8.1.0"
-mplfinance = "^0.12.7-alpha.5"
-twilio = "^6.56.0"
-wolframalpha = "^5.0.0"
-IMDbPY = "^2021.4.18"
-nltk = "^3.6.2"
-syllables = "^0.1.0"
-openai = "^0.27.8"
-qrcode = "^7.4.2"
-red-discordbot = "3.5.5"
-apscheduler = "^3.10.4"
-
-[tool.poetry.dev-dependencies]
-
-[tool.poetry.group.dev.dependencies]
-black = "^23.12.1"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "ruff>=0.11.7",
+]

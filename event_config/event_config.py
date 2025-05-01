@@ -65,11 +65,10 @@ class EventConfig(BaseCog):
         """
         events_status = await self.config.eris_events_enabled()
         guild_status = await self.config.guild(ctx.guild).enabled()
-        async with self.config.guild(
-            ctx.guild
-        ).channel_whitelist() as whitelist, self.config.guild(
-            ctx.guild
-        ).channel_blacklist() as blacklist:
+        async with (
+            self.config.guild(ctx.guild).channel_whitelist() as whitelist,
+            self.config.guild(ctx.guild).channel_blacklist() as blacklist,
+        ):
             if events_status:
                 await ctx.send("Global events are currently ON")
             else:
@@ -161,11 +160,10 @@ class EventConfig(BaseCog):
             await ctx.send("Channel not found!")
             return
 
-        async with self.config.guild(
-            ctx.guild
-        ).channel_whitelist() as whitelist, self.config.guild(
-            ctx.guild
-        ).channel_blacklist() as blacklist:
+        async with (
+            self.config.guild(ctx.guild).channel_whitelist() as whitelist,
+            self.config.guild(ctx.guild).channel_blacklist() as blacklist,
+        ):
             try:
                 whitelist.remove(channel)
             except ValueError:

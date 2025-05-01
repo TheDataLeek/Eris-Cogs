@@ -18,8 +18,12 @@ class Fact(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         data_dir: pathlib.Path = data_manager.bundled_data_path(self)
-        self.bearfacts: List[str] = (data_dir / "bearfacts.txt").read_text(encoding='utf-8').split("\n")
-        self.snekfacts: List[str] = (data_dir / "snekfacts.txt").read_text(encoding='utf-8').split("\n")
+        self.bearfacts: List[str] = (
+            (data_dir / "bearfacts.txt").read_text(encoding="utf-8").split("\n")
+        )
+        self.snekfacts: List[str] = (
+            (data_dir / "snekfacts.txt").read_text(encoding="utf-8").split("\n")
+        )
 
     @commands.group()
     async def fact(self, ctx):

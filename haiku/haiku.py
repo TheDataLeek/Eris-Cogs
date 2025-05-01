@@ -22,14 +22,14 @@ class Haiku(BaseCog, ErisEventMixin):
 
         self.syllable_dict = cmudict.dict()
         self.custom_syllables = {
-            'youre': 1,
-            'theyre': 1,
-            'cant': 1,
-            'havent': 2,
+            "youre": 1,
+            "theyre": 1,
+            "cant": 1,
+            "havent": 2,
         }
 
         self.log = {}
-        self.quote_re = re.compile(r'\|\|([^\|]*)\|\|', re.DOTALL)
+        self.quote_re = re.compile(r"\|\|([^\|]*)\|\|", re.DOTALL)
 
         self.bot.add_listener(self.check_haiku, "on_message")
 
@@ -66,7 +66,7 @@ class Haiku(BaseCog, ErisEventMixin):
         if not isinstance(message, discord.TextChannel):
             return
 
-        if 'http' in message.clean_content:
+        if "http" in message.clean_content:
             return
         # Cleaned is the message with one spoiler removed
         cleaned = self.quote_re.sub(message.clean_content, "")
@@ -132,7 +132,7 @@ class Haiku(BaseCog, ErisEventMixin):
             return
 
         if msg_id in self.log:
-            await ctx.send('\n'.join(str(_) for _ in self.log[msg_id]))
+            await ctx.send("\n".join(str(_) for _ in self.log[msg_id]))
 
 
 if __name__ == "__main__":

@@ -133,13 +133,11 @@ class AutoReact(BaseCog):
 
         guild: discord.Guild = ctx.guild
         formatted = []
-        async with self.config.guild(
-            ctx.guild
-        ).autoreact() as autoreactdict, self.config.guild(
-            ctx.guild
-        ).automsg() as automsgdict, self.config.guild(
-            ctx.guild
-        ).channel() as channeldict:
+        async with (
+            self.config.guild(ctx.guild).autoreact() as autoreactdict,
+            self.config.guild(ctx.guild).automsg() as automsgdict,
+            self.config.guild(ctx.guild).channel() as channeldict,
+        ):
             for userid, emojiids in autoreactdict.items():
                 user: discord.Member = guild.get_member(int(userid))
                 emojis: List[Union[str, discord.Emoji]] = self.convert_from_ids(
@@ -169,11 +167,10 @@ class AutoReact(BaseCog):
         ctx = await self.bot.get_context(message)
         authorid = str(ctx.author.id)
 
-        async with self.config.guild(
-            ctx.guild
-        ).autoreact() as autoreactdict, self.config.guild(
-            ctx.guild
-        ).automsg() as automsgdict:
+        async with (
+            self.config.guild(ctx.guild).autoreact() as autoreactdict,
+            self.config.guild(ctx.guild).automsg() as automsgdict,
+        ):
             has_reacts = authorid in autoreactdict
             has_msg = authorid in automsgdict
 

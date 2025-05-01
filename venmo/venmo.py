@@ -15,7 +15,7 @@ class Venmo(BaseCog):
 
     async def venmo(self, message: discord.Message):
         clean_message: str = message.clean_content.lower()
-        matched = ('venmo' in clean_message) or ('paypal' in clean_message)
+        matched = ("venmo" in clean_message) or ("paypal" in clean_message)
 
         if not matched:
             return
@@ -23,9 +23,9 @@ class Venmo(BaseCog):
         ctx = await self.bot.get_context(message)
 
         await ctx.send(
-                (
-                    "Hey! I’ve been using Cash App to send money and spend using the Cash Card. "
-                    "Try it using my code and you’ll get $5. VPMBXJW https://cash.app/app/VPMBXJW"
-                ),
-                reference=message
+            (
+                "Hey! I’ve been using Cash App to send money and spend using the Cash Card. "
+                "Try it using my code and you’ll get $5. VPMBXJW https://cash.app/app/VPMBXJW"
+            ),
+            reference=message,
         )

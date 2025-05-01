@@ -20,14 +20,21 @@ class QRGenerator(BaseCog):
         https://github.com/lincolnloop/python-qrcode
         """
         message: discord.Message = ctx.message
-        text_to_encode = ' '.join(word for i, word in enumerate(message.clean_content.split(' ')) if i != 0)
-        qr = qrcode.QRCode(version=None, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
+        text_to_encode = " ".join(
+            word for i, word in enumerate(message.clean_content.split(" ")) if i != 0
+        )
+        qr = qrcode.QRCode(
+            version=None,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
         qr.add_data(text_to_encode)
         qr.make(fit=True)
-        img = qr.make_image(fill_color='black', back_color='white')
+        img = qr.make_image(fill_color="black", back_color="white")
 
         buf = io.BytesIO()
-        img.save(buf, format='png')
+        img.save(buf, format="png")
         buf.seek(0)
 
-        await ctx.send(file=discord.File(buf, filename='qr.png'))
+        await ctx.send(file=discord.File(buf, filename="qr.png"))

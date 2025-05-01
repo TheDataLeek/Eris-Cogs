@@ -20,13 +20,11 @@ class EmojSplosion(BaseCog):
 
         self.bot = bot_instance
 
-    async def get_emojis(self, must_contain: str=''):
+    async def get_emojis(self, must_contain: str = ""):
         return [e for e in self.bot.emojis if must_contain in e.name]
 
-    @commands.command(aliases=['emojsploj', 'exploji'])
-    async def emojsplosion(
-        self, ctx: commands.Context, must_contain: str=''
-    ):
+    @commands.command(aliases=["emojsploj", "exploji"])
+    async def emojsplosion(self, ctx: commands.Context, must_contain: str = ""):
         message: discord.Message = ctx.message
 
         if not message.reference:
@@ -37,7 +35,9 @@ class EmojSplosion(BaseCog):
 
         channel: discord.Channel = ctx.channel
         referenced: discord.MessageReference = message.reference
-        referenced_message: discord.Message = await channel.fetch_message(referenced.message_id)
+        referenced_message: discord.Message = await channel.fetch_message(
+            referenced.message_id
+        )
 
         if len(emojis) > 20:
             emojis = random.sample(emojis, 20)

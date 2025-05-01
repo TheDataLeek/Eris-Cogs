@@ -6,13 +6,14 @@ import json
 import io
 from typing import Dict, List, Tuple, Union
 import string
+
+import bs4
 import aiohttp
-import functools
 from async_lru import alru_cache
-
 from markdownify import markdownify as md
-
 import discord
+
+from . import content
 
 
 async def extract_chat_history_and_format(
@@ -47,14 +48,19 @@ async def extract_chat_history_and_format(
                 channel, author, skip_command_word=None, after=after
             )
         else:
-            extracted_message, pages = await extract_message(formatted_query, False, skip_command_word)
+            extracted_message, pages = await extract_message(
+                formatted_query, False, skip_command_word
+            )
             formatted_query = [
                 {
                     "role": "user",
                     "name": clean_username(author.name),
                     "content": [
                         {"type": "text", "text": extracted_message},
-                        *[await format_attachment(attachment) for attachment in message.attachments],
+                        *[
+                            await format_attachment(attachment)
+                            for attachment in message.attachments
+                        ],
                     ],
                 }
             ] + pages
@@ -92,8 +98,14 @@ async def extract_history(
     keep_all_words = skip_command_word is None
     history = []
     users_involved = []
-    async for thread_message in channel_or_thread.history(limit=limit, oldest_first=False, after=after):
-        if thread_message.author.bot or keep_all_words or thread_message.clean_content.startswith(skip_command_word):
+    async for thread_message in channel_or_thread.history(
+        limit=limit, oldest_first=False, after=after
+    ):
+        if (
+            thread_message.author.bot
+            or keep_all_words
+            or thread_message.clean_content.startswith(skip_command_word)
+        ):
             cleaned_message, pages = await extract_message(
                 thread_message.clean_content, keep_all_words, skip_command_word
             )
@@ -104,7 +116,10 @@ async def extract_history(
                     "name": clean_username(thread_message.author.name),
                     "content": [
                         {"type": "text", "text": cleaned_message},
-                        *[{"type": "text", "text": json.dumps(embed.to_dict())} for embed in thread_message.embeds],
+                        *[
+                            {"type": "text", "text": json.dumps(embed.to_dict())}
+                            for embed in thread_message.embeds
+                        ],
                     ],
                 },
             )
@@ -113,7 +128,10 @@ async def extract_history(
                     "role": "user",
                     "name": clean_username(thread_message.author.name),
                     "content": [
-                        *[await format_attachment(attachment) for attachment in thread_message.attachments],
+                        *[
+                            await format_attachment(attachment)
+                            for attachment in thread_message.attachments
+                        ],
                     ],
                 }
             )
@@ -133,7 +151,10 @@ async def extract_history(
                     "name": clean_username(author.name),
                     "content": [
                         {"type": "text", "text": cleaned_message},
-                        *[await format_attachment(attachment) for attachment in starter_message.attachments],
+                        *[
+                            await format_attachment(attachment)
+                            for attachment in starter_message.attachments
+                        ],
                     ],
                 }
             )
@@ -144,15 +165,17 @@ async def extract_history(
     return history, users_involved
 
 
-@alru_cache(maxsize=128)
-async def fetch_url(url: str):
+async def fetch_url(url: str) -> content.Content:
     async with aiohttp.ClientSession() as session:
+        resp: aiohttp.ClientResponse
         async with session.get(url) as resp:
             if resp.status != 200:
                 return ""
             page_content = await resp.text()
+            soup = bs4.BeautifulSoup(page_content, "html.parser")
+            name = soup.title.string
             markdown_content = md(page_content)
-    return markdown_content
+    return name, markdown_content
 
 
 async def extract_message(message, keep_all_words, skip_command_word):
@@ -172,7 +195,10 @@ async def extract_message(message, keep_all_words, skip_command_word):
     pages = [
         {
             "role": "user",
-            "content": [{"type": "text", "text": f"---\n{url}---\n{page}\n---\n"} for url, page in page_contents],
+            "content": [
+                {"type": "text", "text": f"---\n{url}---\n{page}\n---\n"}
+                for url, page in page_contents
+            ],
         }
     ]
 
@@ -186,12 +212,17 @@ async def send_response(
     thread_name: str,
 ) -> discord.abc.Messageable:
     if isinstance(channel_or_thread, discord.TextChannel):
-        channel_or_thread: discord.Thread = await message.create_thread(name=thread_name)
+        channel_or_thread: discord.Thread = await message.create_thread(
+            name=thread_name
+        )
 
     if isinstance(response, list):
         if isinstance(response[0], io.BytesIO):  # then we have multiple images
             await channel_or_thread.send(
-                files=[discord.File(buf, filename=f"{i}.png") for i, buf in enumerate(response)]
+                files=[
+                    discord.File(buf, filename=f"{i}.png")
+                    for i, buf in enumerate(response)
+                ]
             )
         else:
             for page in response:
@@ -248,7 +279,10 @@ async def format_attachment(attachment: discord.Attachment) -> dict:
         text = buf.read().decode("utf-8")
         formatted_attachment = {"type": "text", "text": text}
     elif attachment.width and "image" in attachment.content_type:
-        formatted_attachment = {"type": "image_url", "image_url": {"url": attachment.url}}
+        formatted_attachment = {
+            "type": "image_url",
+            "image_url": {"url": attachment.url},
+        }
     if text is None:
         print(formatted_attachment)
     else:

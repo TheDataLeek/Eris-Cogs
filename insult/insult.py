@@ -16,7 +16,7 @@ class Insult(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         data_dir = data_manager.bundled_data_path(self)
-        insults = (data_dir / "insults.txt").read_text(encoding='utf-8').split("\n")
+        insults = (data_dir / "insults.txt").read_text(encoding="utf-8").split("\n")
         self.insults = insults
 
     @commands.command()
