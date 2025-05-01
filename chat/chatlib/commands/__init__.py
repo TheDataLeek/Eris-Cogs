@@ -16,5 +16,4 @@ class Chat(
     MetaCommands,
     PathfinderCommands,
     TarotCommands,
-):
-    ...
+): ...

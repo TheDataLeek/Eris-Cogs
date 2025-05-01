@@ -29,7 +29,7 @@ async def extract_chat_history_and_format(
     guild: discord.Guild = message.guild
     thread_name = "foo"
     formatted_query = []
-    query = message.clean_content.split(" ")[1:]
+    query = message.clean_content().split(" ")[1:]
     skip_command_word = f"{prefix}chat"
 
     how_far_back = dt.timedelta(hours=12)
@@ -49,7 +49,9 @@ async def extract_chat_history_and_format(
             )
         else:
             extracted_message, pages = await extract_message(
-                formatted_query, False, skip_command_word
+                formatted_query,
+                False,
+                skip_command_word,
             )
             formatted_query = [
                 {
@@ -104,10 +106,12 @@ async def extract_history(
         if (
             thread_message.author.bot
             or keep_all_words
-            or thread_message.clean_content.startswith(skip_command_word)
+            or thread_message.clean_content().startswith(skip_command_word)
         ):
             cleaned_message, pages = await extract_message(
-                thread_message.clean_content, keep_all_words, skip_command_word
+                thread_message.clean_content(),
+                keep_all_words,
+                skip_command_word,
             )
             history += pages
             history.append(
@@ -142,7 +146,9 @@ async def extract_history(
         starter_message = channel_or_thread.starter_message
         if starter_message is not None:
             cleaned_message, pages = await extract_message(
-                starter_message.clean_content, keep_all_words, skip_command_word
+                starter_message.clean_content(),
+                keep_all_words,
+                skip_command_word,
             )
             history += pages
             history.append(
@@ -166,41 +172,27 @@ async def extract_history(
 
 
 async def fetch_url(url: str) -> content.Content:
-    async with aiohttp.ClientSession() as session:
-        resp: aiohttp.ClientResponse
-        async with session.get(url) as resp:
-            if resp.status != 200:
-                return ""
-            page_content = await resp.text()
-            soup = bs4.BeautifulSoup(page_content, "html.parser")
-            name = soup.title.string
-            markdown_content = md(page_content)
-    return name, markdown_content
+    url_content = content.Content(url)
+    await url_content.fetch()
+    return url_content
 
 
-async def extract_message(message, keep_all_words, skip_command_word):
+async def extract_message(message: str, keep_all_words: bool, skip_command_word: str):
     words = message.split(" ")
     keep_words = []
-    page_contents = []
+    page_contents: list[content.Content] = []
     for word in words:
-        match = re.match(r"\+\[(https?://.+?)\]", word, flags=re.IGNORECASE)
+        match = re.match(r"(https?://.+?)", word, flags=re.IGNORECASE)
         if match:
             url = match.group(1)
-            page_contents.append((url, await fetch_url(url)))
+            urlc = await fetch_url(url)
+            page_contents.append(urlc)
         elif keep_all_words or (not word.startswith(skip_command_word)):
             keep_words.append(word)
 
     cleaned_message = " ".join(keep_words)
 
-    pages = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": f"---\n{url}---\n{page}\n---\n"}
-                for url, page in page_contents
-            ],
-        }
-    ]
+    pages = [urlc.format_for_openai() for urlc in page_contents]
 
     return cleaned_message, pages
 

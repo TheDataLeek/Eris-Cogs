@@ -91,7 +91,7 @@ class Content:
 
     def format_for_openai(self) -> dict:
         return {
-            "role": "system",
+            "role": "user",
             "content": [
                 {
                     "type": "text",
