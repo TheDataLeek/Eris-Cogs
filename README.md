@@ -33,8 +33,9 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Lifslastcall](#lifslastcall) | Lif's | ✅ |
 | [Minesweeper](#minesweeper) | Generate solvable minesweeper boards. | ✅ |
 | [Move](#move) | Move message to another channel | ✅ |
+| [Mtg](#mtg) | Magic the Gathering Tools | ✅ |
 | [Nick_prefix](#nick_prefix) | Adds themed prefix to names | ✅ |
-| [No_fuck_you](#no_fuck_you) | Replies 'no fuck you' | ✅ |
+| [No_fuck_you](#no_fuck_you) | Replies 'no fuck you' or 'please fuck me' | ✅ |
 | [Out_of_context](#out_of_context) | Archives a channel of out of context quotes and then posts them randomly during conversation. | ✅ |
 | [Partition](#partition) | Partition Teams | ✅ |
 | [Qr](#qr) | None | ✅ |
@@ -47,6 +48,7 @@ If you're on windows, you'll need to delete the symlinked `eris_event_lib.py` fi
 | [Search](#search) | Search the internet! | ✅ |
 | [Secretsanta](#secretsanta) | None | ✅ |
 | [Spoop](#spoop) | Sneakily spoops users | ✅ |
+| [Statistics](#statistics) | Statistics | ✅ |
 | [Steve](#steve) | Provides LARGE pictures of Steve when asked | ✅ |
 | [Stonks](#stonks) | A stock tracker using yahoofinance | ✅ |
 | [Sudo](#sudo) | Warns when users say sudo | ✅ |
@@ -176,14 +178,18 @@ Description: Generates guaranteed solvable minesweeper boards using emojis and s
 Short: Move message to another channel
 
 Description: Moves message to another channel for easy moderation.
+## Mtg
+Short: Magic the Gathering Tools
+
+Description: Magic the Gathering Tools
 ## Nick_prefix
 Short: Adds themed prefix to names
 
 Description: Theme your nickname, some include NSFW language and themes.
 ## No_fuck_you
-Short: Replies 'no fuck you'
+Short: Replies 'no fuck you' or 'please fuck me'
 
-Description: Replies with 'no fuck you' if someone says 'fuck you'
+Description: Replies with 'no fuck you' if someone says 'fuck you'. Sometimes replied with 'please fuck me'
 ## Out_of_context
 Short: Archives a channel of out of context quotes and then posts them randomly during conversation.
 
@@ -236,6 +242,10 @@ Description: Secret santa with csv
 Short: Sneakily spoops users
 
 Description: Sneakily spoops a user randomly or on mod prompting. NSFW spoops!
+## Statistics
+Short: Statistics
+
+Description: Collects streaming statistics on usage
 ## Steve
 Short: Provides LARGE pictures of Steve when asked
 
