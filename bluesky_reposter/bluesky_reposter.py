@@ -42,8 +42,6 @@ class BlueskyReposter(BaseCog):
             server: discord.Guild = self.bot.get_guild(int(config["server"]))
             hooks = config["hooks"]
             auth = await self.get_bluesky_auth()
-            print(auth)
-            return
             for handle, channel_id in hooks.items():
                 channel: discord.TextChannel = server.get_channel(int(channel_id))
                 posts: list[atproto.models.AppBskyFeedDefs.PostView] = (
