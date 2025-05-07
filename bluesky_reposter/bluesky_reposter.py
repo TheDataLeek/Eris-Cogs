@@ -29,7 +29,7 @@ class BlueskyReposter(BaseCog):
             cog_name="BlueskyReposter",
         )
 
-        self.config.register_global(json_config="{}", seen=[])
+        self.config.register_global(json_config="{}", seen=[], bad_config=False)
 
         self.scheduler = AsyncIOScheduler(
             jobstores={"default": MemoryJobStore()},
@@ -37,6 +37,9 @@ class BlueskyReposter(BaseCog):
         self.scheduler.start()
 
         async def check_for_posts():
+            if await self.config.bad_config():
+                print("Bad Config")
+                return
             config_contents = await self.config.json_config()
             config = json.loads(config_contents)
             server: discord.Guild = self.bot.get_guild(int(config["server"]))
@@ -44,13 +47,18 @@ class BlueskyReposter(BaseCog):
             auth = await self.get_bluesky_auth()
             for handle, channel_id in hooks.items():
                 channel: discord.TextChannel = server.get_channel(int(channel_id))
-                posts: list[atproto.models.AppBskyFeedDefs.PostView] = (
-                    fetch_recent_reposts(
-                        handle.replace("@", "."),
-                        user=auth["user"],
-                        passwd=auth["pass"],
+                try:
+                    posts: list[atproto.models.AppBskyFeedDefs.PostView] = (
+                        fetch_recent_reposts(
+                            handle.replace("@", "."),
+                            user=auth["user"],
+                            passwd=auth["pass"],
+                        )
                     )
-                )
+                except:
+                    print("Bad Config")
+                    await self.config.bad_config.set(True)
+                    return
                 async with self.config.seen() as seen_posts:
                     post: atproto.models.AppBskyFeedDefs.PostView
                     for post in posts:
@@ -87,6 +95,7 @@ class BlueskyReposter(BaseCog):
         message: discord.Message = ctx.message
         contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
         await self.config.json_config.set(contents)
+        await self.config.bad_config.set(False)
         await ctx.send("Done")
 
     @commands.command()
