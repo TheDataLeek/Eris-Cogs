@@ -39,11 +39,11 @@ class BlueskyReposter(BaseCog):
         async def check_for_posts():
             config_contents = await self.config.json_config()
             config = json.loads(config_contents)
-            server: discord.Guild = self.bot.get_guild(config["server"])
+            server: discord.Guild = self.bot.get_guild(int(config["server"]))
             hooks = config["hooks"]
             auth = await self.get_bluesky_auth()
             for handle, channel_id in hooks.items():
-                channel: discord.TextChannel = server.get_channel(channel_id)
+                channel: discord.TextChannel = server.get_channel(int(channel_id))
                 posts: list[atproto.models.AppBskyFeedDefs.PostView] = (
                     fetch_recent_reposts(
                         handle.replace("@", "."),
