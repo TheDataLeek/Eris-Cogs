@@ -22,14 +22,14 @@ class BlueskyReposter(BaseCog):
     def __init__(self, bot_instance: bot):
         super().__init__()
         self.bot: bot.Red = bot_instance
-        self._config = Config.get_conf(
+        self.config = Config.get_conf(
             self,
             identifier=3248975002349,
             force_registration=True,
             cog_name="BlueskyReposter",
         )
 
-        self._config.register_global(json_config="{}", seen=[])
+        self.config.register_global(json_config="{}", seen=[])
 
         self.scheduler = AsyncIOScheduler(
             jobstores={"default": MemoryJobStore()},
@@ -51,7 +51,7 @@ class BlueskyReposter(BaseCog):
                         passwd=auth["pass"],
                     )
                 )
-                async with self._config.seen() as seen_posts:
+                async with self.config.seen() as seen_posts:
                     post: atproto.models.AppBskyFeedDefs.PostView
                     for post in posts:
                         if post.uri in seen_posts:
