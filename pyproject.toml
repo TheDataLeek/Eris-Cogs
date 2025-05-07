@@ -8,6 +8,7 @@ dependencies = [
     "aiohttp>=3.9.5",
     "apscheduler>=3.11.0",
     "async-lru>=2.0.5",
+    "atproto>=0.0.61",
     "beautifulsoup4>=4.13.4",
     "discord>=2.3.2",
     "markdownify>=1.1.0",
@@ -16,6 +17,8 @@ dependencies = [
     "openai>=1.76.2",
     "pillow>=11.2.1",
     "red-discordbot>=3.5.19",
+    "rich>=14.0.0",
+    "typer>=0.15.3",
 ]
 authors = [{name = "Zoe Farmer", email = "zoe@dataleek.io"}]
 

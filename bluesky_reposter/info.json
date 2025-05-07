@@ -1,0 +1,10 @@
+{
+  "author" : ["Eris"],
+  "description" : "Reposts reposts from bluesky",
+  "name" : "Bluesky Reposter",
+  "short": "Reposts from Bluesky",
+  "requirements": [
+    "atproto"
+   ],
+  "ready": true
+}
