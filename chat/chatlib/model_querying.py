@@ -116,7 +116,7 @@ async def query_image_model(
         if (model is not None) and ('dall' in model):
             kwargs = {**{"model": "dall-e-3", "quality": "hd", "style": style}, **kwargs}
         else:
-            kwargs = {"model": model, "n": 1, "moderation": "low", "output_format": "png"}
+            kwargs = {"model": model, "n": 1, "size": "auto", "moderation": "low", "output_format": "png"}
     response = await construct_async_query(formatted_query, token, **kwargs)
 
     return response
@@ -154,7 +154,7 @@ def openai_client_and_query(
 ) -> str | io.BytesIO | list[io.BytesIO]:
     client = openai.OpenAI(api_key=token)
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
-    if kwargs["model"].startswith("dall"):
+    if ('dall' in kwargs['model']) or ('image' in kwargs['model']):
         if "image" in kwargs:
             images = client.images.edit(
                 prompt="Expand the image to fill the empty space.", **kwargs
