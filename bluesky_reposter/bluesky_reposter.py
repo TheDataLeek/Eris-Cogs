@@ -61,6 +61,7 @@ class BlueskyReposter(BaseCog):
                     return
                 async with self.config.seen() as seen_posts:
                     post: atproto.models.AppBskyFeedDefs.PostView
+                    author: atproto.models.AppBskyActorDefs.ProfileViewBasic
                     for post in posts:
                         if post.uri in seen_posts:
                             continue
@@ -68,7 +69,9 @@ class BlueskyReposter(BaseCog):
                         did = uri_parts[1]
                         rkey = uri_parts[3]
                         url = f"https://bsky.app/profile/{did}/post/{rkey}"
-                        await channel.send(url)
+                        author = post.author
+                        contents = f"""{author.display_name} ({author.handle})\n{url}"""
+                        await channel.send(contents)
                         seen_posts.append(post.uri)
 
         self.scheduler.add_job(
