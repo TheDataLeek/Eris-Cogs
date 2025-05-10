@@ -70,7 +70,7 @@ class BlueskyReposter(BaseCog):
                         rkey = uri_parts[3]
                         url = f"https://bsky.app/profile/{did}/post/{rkey}"
                         author = post.author
-                        contents = f"""{author.display_name} ({author.handle})\n{url}"""
+                        contents = f"""{handle} 🔁 {author.display_name} ({author.handle})\n{url}"""
                         await channel.send(contents)
                         seen_posts.append(post.uri)
 
