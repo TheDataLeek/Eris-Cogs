@@ -113,7 +113,10 @@ async def query_image_model(
             style = "vivid"
         elif "natural" in formatted_query:
             style = "natural"
-        kwargs = {**{"model": "dall-e-3", "quality": "hd", "style": style}, **kwargs}
+        if (model is not None) and ('dall' in model):
+            kwargs = {**{"model": "dall-e-3", "quality": "hd", "style": style}, **kwargs}
+        else:
+            kwargs = {"model": model, "n": 1, "size": "auto", "moderation": "low", "output_format": "png"}
     response = await construct_async_query(formatted_query, token, **kwargs)
 
     return response
