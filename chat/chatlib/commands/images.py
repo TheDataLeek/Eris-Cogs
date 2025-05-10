@@ -23,7 +23,7 @@ class ImageCommands(ChatBase):
         if message.guild is None:
             await ctx.send("Can only run in a text channel in a server, not a DM!")
             return
-        await self._image(channel, message, model="dall-e-3")
+        await self._image(channel, message, model="gpt-image-1")
 
     @commands.command()
     async def images(self, ctx: commands.Context):
