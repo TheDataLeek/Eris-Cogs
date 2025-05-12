@@ -55,24 +55,28 @@ class BlueskyReposter(BaseCog):
                             passwd=auth["pass"],
                         )
                     )
-                except:
+                except:  # noqa
                     print("Bad Config")
                     await self.config.bad_config.set(True)
                     return
-                async with self.config.seen() as seen_posts:
-                    post: atproto.models.AppBskyFeedDefs.PostView
-                    author: atproto.models.AppBskyActorDefs.ProfileViewBasic
-                    for post in posts:
-                        if post.uri in seen_posts:
-                            continue
-                        uri_parts = re.split(r"/+", post.uri)
-                        did = uri_parts[1]
-                        rkey = uri_parts[3]
-                        url = f"https://bsky.app/profile/{did}/post/{rkey}"
-                        author = post.author
-                        contents = f"""{handle} 🔁 {author.display_name} ({author.handle})\n{url}"""
-                        await channel.send(contents)
-                        seen_posts.append(post.uri)
+
+                post: atproto.models.AppBskyFeedDefs.PostView
+                author: atproto.models.AppBskyActorDefs.ProfileViewBasic
+                seen_posts = await self.config.seen()
+                for post in posts:
+                    if post.uri in seen_posts:
+                        continue
+
+                    uri_parts = re.split(r"/+", post.uri)
+                    did = uri_parts[1]
+                    rkey = uri_parts[3]
+                    url = f"https://bsky.app/profile/{did}/post/{rkey}"
+                    author = post.author
+                    contents = f"""{handle} 🔁 {author.display_name} ({author.handle})\n{url}"""
+                    await channel.send(contents)
+                    seen_posts.append(post.uri)
+                    seen_posts = list(set(seen_posts))
+                    await self.config.seen.set(seen_posts)
 
         self.scheduler.add_job(
             check_for_posts,
