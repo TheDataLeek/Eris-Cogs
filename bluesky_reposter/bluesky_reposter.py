@@ -42,8 +42,14 @@ class BlueskyReposter(BaseCog):
                 return
 
             config_contents = await self.config.json_config()
-            config = json.loads(config_contents)
-            print(f"Loaded config: {config}")
+            try:
+                config = json.loads(config_contents)
+                print(f"Loaded config: {config}")
+            except:  # noqa
+                print("Bad Config")
+                await self.config.bad_config.set(True)
+                return
+
             server: discord.Guild = self.bot.get_guild(int(config["server"]))
             hooks = config["hooks"]
             auth = await self.get_bluesky_auth()
@@ -51,21 +57,15 @@ class BlueskyReposter(BaseCog):
             for handle, channel_id in hooks.items():
                 print(f"Placing posts from {handle} to {channel_id}")
                 channel: discord.TextChannel = server.get_channel(int(channel_id))
-                try:
-                    print(f"Loading posts")
-                    posts: list[atproto.models.AppBskyFeedDefs.PostView] = (
-                        fetch_recent_reposts(
-                            handle.replace("@", "."),
-                            user=auth["user"],
-                            passwd=auth["pass"],
-                        )
+                print(f"Loading posts")
+                posts: list[atproto.models.AppBskyFeedDefs.PostView] = (
+                    fetch_recent_reposts(
+                        handle.replace("@", "."),
+                        user=auth["user"],
+                        passwd=auth["pass"],
                     )
-                    print(f"Loaded {len(posts)} posts")
-                except:  # noqa
-                    print("Bad Config")
-                    await self.config.bad_config.set(True)
-                    return
-
+                )
+                print(f"Loaded {len(posts)} posts")
                 post: atproto.models.AppBskyFeedDefs.PostView
                 author: atproto.models.AppBskyActorDefs.ProfileViewBasic
                 seen_posts = await self.config.seen()
