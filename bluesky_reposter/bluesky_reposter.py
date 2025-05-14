@@ -17,7 +17,6 @@ BaseCog = getattr(commands, "Cog", object)
 
 RETYPE = type(re.compile("a"))
 
-SEEN_POSTS = []
 
 class BlueskyReposter(BaseCog):
     def __init__(self, bot_instance: bot):
@@ -25,7 +24,7 @@ class BlueskyReposter(BaseCog):
         self.bot: bot.Red = bot_instance
         self.config = Config.get_conf(
             self,
-            identifier=34782349068272109873459,
+            identifier=3248975002349,
             force_registration=True,
             cog_name="BlueskyReposter",
         )
@@ -41,14 +40,19 @@ class BlueskyReposter(BaseCog):
             if await self.config.bad_config():
                 print("Bad Config")
                 return
+
             config_contents = await self.config.json_config()
             config = json.loads(config_contents)
+            print(f"Loaded config: {config}")
             server: discord.Guild = self.bot.get_guild(int(config["server"]))
             hooks = config["hooks"]
             auth = await self.get_bluesky_auth()
+            print("Loaded auth")
             for handle, channel_id in hooks.items():
+                print(f"Placing posts from {handle} to {channel_id}")
                 channel: discord.TextChannel = server.get_channel(int(channel_id))
                 try:
+                    print(f"Loading posts")
                     posts: list[atproto.models.AppBskyFeedDefs.PostView] = (
                         fetch_recent_reposts(
                             handle.replace("@", "."),
@@ -56,6 +60,7 @@ class BlueskyReposter(BaseCog):
                             passwd=auth["pass"],
                         )
                     )
+                    print(f"Loaded {len(posts)} posts")
                 except:  # noqa
                     print("Bad Config")
                     await self.config.bad_config.set(True)
@@ -63,24 +68,27 @@ class BlueskyReposter(BaseCog):
 
                 post: atproto.models.AppBskyFeedDefs.PostView
                 author: atproto.models.AppBskyActorDefs.ProfileViewBasic
-                global SEEN_POSTS
+                seen_posts = await self.config.seen()
                 for post in posts:
-                    if post.uri in SEEN_POSTS:
-                        continue
-
                     uri_parts = re.split(r"/+", post.uri)
                     did = uri_parts[1]
                     rkey = uri_parts[3]
                     url = f"https://bsky.app/profile/{did}/post/{rkey}"
                     author = post.author
+                    if post.uri in seen_posts:
+                        print(f"{url} already posted!")
+                        continue
                     contents = f"""{handle} 🔁 {author.display_name} ({author.handle})\n{url}"""
                     await channel.send(contents)
-                    SEEN_POSTS.append(post.uri)
-                    SEEN_POSTS = SEEN_POSTS[-1000:]
+                    print(f"Post sent!")
+                    seen_posts.append(post.uri)
+                    seen_posts = seen_posts[-1000:]
+                    await self.config.seen.set(seen_posts)
+                    print("Done")
 
         self.scheduler.add_job(
             check_for_posts,
-            trigger=IntervalTrigger(minutes=1),
+            trigger=IntervalTrigger(minutes=3),
             replace_existing=True,
             id="BlueskyReposter",
             name="BlueskyReposter",
@@ -132,13 +140,14 @@ def fetch_recent_reposts(
     did = client.resolve_handle(account).did
     data: atproto.models.AppBskyFeedGetAuthorFeed.Response = client.get_author_feed(
         actor=did,
-        limit=5,
+        limit=15,
     )
     posts = []
     post: atproto.models.AppBskyFeedDefs.FeedViewPost
     for post in data.feed:
         post_view: atproto.models.AppBskyFeedDefs.PostView = post.post
         posts.append(post_view)
+    posts = posts[::-1]  # flip to chronological
     return posts
 
 
