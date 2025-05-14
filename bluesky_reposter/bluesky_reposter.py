@@ -17,6 +17,7 @@ BaseCog = getattr(commands, "Cog", object)
 
 RETYPE = type(re.compile("a"))
 
+SEEN_POSTS = []
 
 class BlueskyReposter(BaseCog):
     def __init__(self, bot_instance: bot):
@@ -24,7 +25,7 @@ class BlueskyReposter(BaseCog):
         self.bot: bot.Red = bot_instance
         self.config = Config.get_conf(
             self,
-            identifier=3248975002349,
+            identifier=34782349068272109873459,
             force_registration=True,
             cog_name="BlueskyReposter",
         )
@@ -62,9 +63,9 @@ class BlueskyReposter(BaseCog):
 
                 post: atproto.models.AppBskyFeedDefs.PostView
                 author: atproto.models.AppBskyActorDefs.ProfileViewBasic
-                seen_posts = await self.config.seen()
+                global SEEN_POSTS
                 for post in posts:
-                    if post.uri in seen_posts:
+                    if post.uri in SEEN_POSTS:
                         continue
 
                     uri_parts = re.split(r"/+", post.uri)
@@ -74,9 +75,8 @@ class BlueskyReposter(BaseCog):
                     author = post.author
                     contents = f"""{handle} 🔁 {author.display_name} ({author.handle})\n{url}"""
                     await channel.send(contents)
-                    seen_posts.append(post.uri)
-                    seen_posts = list(set(seen_posts))
-                    await self.config.seen.set(seen_posts)
+                    SEEN_POSTS.append(post.uri)
+                    SEEN_POSTS = SEEN_POSTS[-1000:]
 
         self.scheduler.add_job(
             check_for_posts,
@@ -132,7 +132,7 @@ def fetch_recent_reposts(
     did = client.resolve_handle(account).did
     data: atproto.models.AppBskyFeedGetAuthorFeed.Response = client.get_author_feed(
         actor=did,
-        limit=10,
+        limit=5,
     )
     posts = []
     post: atproto.models.AppBskyFeedDefs.FeedViewPost
