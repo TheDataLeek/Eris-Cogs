@@ -118,7 +118,7 @@ class MetaCommands(ChatBase):
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         not_in_a_guild = message.guild is None
-        not_in_a_thread = message.thread is None
+        not_in_a_thread = not isinstance(message.channel, discord.Thread)
         if not_in_a_guild or not_in_a_thread:
             await ctx.send(
                 "Rewinding can only be used in an active thread in a guild! Please ask a question first using [p]chat"
