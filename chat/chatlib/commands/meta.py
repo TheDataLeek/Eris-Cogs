@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import discord
 from redbot.core import commands, checks
+from redbot.core.utils.views import ConfirmView
 
 from .base import ChatBase
 
@@ -125,20 +126,26 @@ class MetaCommands(ChatBase):
             )
             return
 
+        view = ConfirmView(ctx.author, disable_buttons=True)
+        view.message = await ctx.send("Are you sure you want to rewind?", view=view)
+        await view.wait()
+        if not view.result:
+            return
+
         found_bot_response = False
         found_last_bot_response = False
         found_chat_input = False
         async for thread_message in channel.history(limit=100, oldest_first=False):
             try:
+                if (not found_chat_input) and thread_message.clean_content.startswith(f"{prefix}chat"):
+                    await thread_message.delete()
+                    found_chat_input = True
+
                 if thread_message.author.bot:
                     await thread_message.delete()
                     found_bot_response = True
                 elif found_bot_response:
                     found_last_bot_response = True
-
-                if thread_message.clean_content.startswith(f"{prefix}chat"):
-                    await thread_message.delete()
-                    found_chat_input = True
 
                 if found_chat_input and found_bot_response and found_last_bot_response:
                     break
