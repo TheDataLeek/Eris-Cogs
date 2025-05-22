@@ -127,7 +127,8 @@ class MetaCommands(ChatBase):
             return
 
         view = ConfirmView(ctx.author, disable_buttons=True)
-        view.message = await ctx.send("Are you sure you want to rewind?", view=view)
+        view.message = await ctx.send("Are you sure you want to rewind? Make sure you copy your original prompt "
+                                      "before continuing (it's gonna get deleted too)!", view=view)
         await view.wait()
         if not view.result:
             return
