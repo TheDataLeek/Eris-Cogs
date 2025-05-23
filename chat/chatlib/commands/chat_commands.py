@@ -67,6 +67,11 @@ class ChatCommands(ChatBase):
         if not bot_mentioned:
             return
 
+        # ignore replies
+        message_type: discord.MessageType = message.type
+        if message_type == discord.MessageType.reply:
+            return
+
         if self.whois_dictionary is None:
             await self.reset_whois_dictionary()
 
