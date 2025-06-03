@@ -135,7 +135,7 @@ async def query_image_model(
 
 
 async def construct_async_query(
-    query: List[Dict], token: str, endpoint: str, **kwargs
+    query: List[Dict], token: str, endpoint: str, **kwargs,
 ) -> list[str] | io.BytesIO:
     loop = asyncio.get_running_loop()
     time_to_sleep = 1
@@ -168,7 +168,7 @@ def openai_client_and_query(
     endpoint: str,
     **kwargs,
 ) -> str | io.BytesIO | list[io.BytesIO]:
-    client = openai.OpenAI(api_key=token, websocket_base_url=endpoint)
+    client = openai.OpenAI(api_key=token, base_url=endpoint)
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     if ("dall" in kwargs["model"]) or ("image" in kwargs["model"]):
         if "image" in kwargs:
