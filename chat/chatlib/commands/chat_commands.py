@@ -46,6 +46,7 @@ class ChatCommands(ChatBase):
         prompt = await self.config.guild(ctx.guild).prompt()
         model = await self.config.guild(ctx.guild).model()
         endpoint = await self.config.guild(ctx.guild).endpoint()
+        print(f"Using {model=} with {endpoint=}")
         response = await model_querying.query_text_model(
             token,
             prompt,
@@ -102,6 +103,7 @@ class ChatCommands(ChatBase):
         prompt = await self.config.guild(ctx.guild).prompt()
         model = await self.config.guild(ctx.guild).model()
         endpoint = await self.config.guild(ctx.guild).endpoint()
+        print(f"Using {model=} with {endpoint=}")
         response = await model_querying.query_text_model(
             token,
             prompt,
