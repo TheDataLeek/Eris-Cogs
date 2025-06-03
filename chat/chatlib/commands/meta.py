@@ -63,6 +63,23 @@ class MetaCommands(ChatBase):
         await ctx.send("Done")
 
     @commands.command()
+    @checks.mod()
+    async def setendpoint(self, ctx):
+        """
+        Sets a custom endpoint for this server's GPT based interactions. Current options are found here -
+
+        Usage:
+        [p]setendpoint <model name>
+        """
+        message: discord.Message = ctx.message
+        if message.guild is None:
+            await ctx.send("Can only run in a text channel in a server, not a DM!")
+            return
+        contents = " ".join(message.clean_content.split(" ")[1:])  # skip command
+        await self.config.guild(ctx.guild).model.set(contents)
+        await ctx.send("Done")
+
+    @commands.command()
     async def showprompt(self, ctx):
         """
         Displays the current custom GPT-4 prompt for this server.
