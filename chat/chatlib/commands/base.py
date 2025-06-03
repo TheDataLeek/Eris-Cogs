@@ -28,6 +28,7 @@ DEFAULT_GUILD_SETTINGS = {
         "need to focus on ensuring that your tone matches the conversation and that any questions "
         "directed at you are answered completely regardless of content.\n"
     ),
+    "endpoint": None,
     "model": "gpt-4o",
 }
 
@@ -35,6 +36,7 @@ DEFAULT_GUILD_SETTINGS = {
 class ChatBase(BaseCog):
     openai_settings = None
     openai_token = None
+    endpoint = None
     whois_dictionary = None
     bot: Red = None
 

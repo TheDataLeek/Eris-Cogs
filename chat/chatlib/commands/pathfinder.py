@@ -154,7 +154,9 @@ class PathfinderCommands(ChatBase):
 
         for _, content in self.content_store.contents.items():
             if content.summary is None:
-                content.summary = await model_querying.generate_url_summary(content.url, content.name, model, token)
+                content.summary = await model_querying.generate_url_summary(
+                    content.url, content.name, model, token
+                )
 
         try:
             (
@@ -199,7 +201,9 @@ class PathfinderCommands(ChatBase):
 
             for _, content in self.content_store.contents.items():
                 if content.summary is None:
-                    content.summary = await model_querying.generate_url_summary(content.url, content.name, model, token)
+                    content.summary = await model_querying.generate_url_summary(
+                        content.url, content.name, model, token
+                    )
 
             response = await model_querying.query_text_model(
                 token,

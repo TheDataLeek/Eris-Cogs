@@ -45,8 +45,14 @@ class ChatCommands(ChatBase):
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
         model = await self.config.guild(ctx.guild).model()
+        endpoint = await self.config.guild(ctx.guild).endpoint()
         response = await model_querying.query_text_model(
-            token, prompt, formatted_query, model=model, user_names=user_names
+            token,
+            prompt,
+            formatted_query,
+            model=model,
+            user_names=user_names,
+            endpoint=endpoint,
         )
         await discord_handling.send_response(response, message, channel, thread_name)
 
@@ -95,6 +101,7 @@ class ChatCommands(ChatBase):
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
         model = await self.config.guild(ctx.guild).model()
+        endpoint = await self.config.guild(ctx.guild).endpoint()
         response = await model_querying.query_text_model(
             token,
             prompt,
@@ -106,6 +113,7 @@ class ChatCommands(ChatBase):
                 "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
                 "strive to blend in the conversation as closely as possible"
             ),
+            endpoint=endpoint,
         )
         for page in response:
             await channel.send(page)

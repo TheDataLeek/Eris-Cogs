@@ -127,8 +127,11 @@ class MetaCommands(ChatBase):
             return
 
         view = ConfirmView(ctx.author, disable_buttons=True)
-        view.message = await ctx.send("Are you sure you want to rewind? Make sure you copy your original prompt "
-                                      "before continuing (it's gonna get deleted too)!", view=view)
+        view.message = await ctx.send(
+            "Are you sure you want to rewind? Make sure you copy your original prompt "
+            "before continuing (it's gonna get deleted too)!",
+            view=view,
+        )
         await view.wait()
         if not view.result:
             return
@@ -138,7 +141,9 @@ class MetaCommands(ChatBase):
         found_chat_input = False
         async for thread_message in channel.history(limit=100, oldest_first=False):
             try:
-                if (not found_chat_input) and thread_message.clean_content.startswith(f"{prefix}chat"):
+                if (not found_chat_input) and thread_message.clean_content.startswith(
+                    f"{prefix}chat"
+                ):
                     await thread_message.delete()
                     found_chat_input = True
 
