@@ -34,10 +34,6 @@ class MTG(BaseCog):
         data_dir = data_manager.bundled_data_path(self)
         # datafile from here https://mtgjson.com/downloads/all-files/
         # only includes the names tho, need to clean up on each new set release
-        raw_cards = (data_dir / "cards.csv").read_text().lower()
-        allowed_chars = string.ascii_lowercase + " \n\r"
-        raw_cards = "".join(char for char in raw_cards if (char in allowed_chars))
-        self.all_cards = list(set(raw_cards.splitlines()))
 
     async def pull_card_references(self, message: discord.Message):
         ctx: commands.Context = await self.bot.get_context(message)
@@ -52,7 +48,7 @@ class MTG(BaseCog):
         ) as session:
             for match in matches:
                 try:
-                    cards += await query_scryfall(session, match, self.all_cards)
+                    cards += await query_scryfall(session, match)
                 except Exception as e:
                     print(e)
 
@@ -73,7 +69,7 @@ class MTG(BaseCog):
             for match in matches:
                 try:
                     cards += await query_scryfall(
-                        session, match, self.all_cards, datatype="json"
+                        session, match, datatype="json"
                     )
                 except Exception as e:
                     print(e)
@@ -112,7 +108,7 @@ class MTG(BaseCog):
 
                 try:
                     referenced_card = await query_scryfall(
-                        session, line, self.all_cards, datatype="json"
+                        session, line, datatype="json"
                     )
                     referenced_card = [
                         {
@@ -157,17 +153,8 @@ class MTG(BaseCog):
 async def query_scryfall(
     session: aiohttp.ClientSession,
     card_name: str,
-    all_cards: list[str],
     datatype="image",
 ) -> list[io.BytesIO] | list[dict]:
-    card_exists = (
-        any(card.startswith(card_name.lower()) for card in all_cards)
-        or any(card_name.lower() in card for card in all_cards)
-        or (card_name.lower() in all_cards)
-    )
-    if not card_exists:
-        card_name, score = process.extractOne(card_name, all_cards)
-
     data = []
     url = "https://api.scryfall.com/cards/named"
     for i in range(2):
