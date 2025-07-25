@@ -355,7 +355,7 @@ wheels = [
 [[package]]
 name = "chat"
 version = "0.1.0"
-source = { virtual = "chat" }
+source = { editable = "chat" }
 dependencies = [
     { name = "async-lru" },
     { name = "beautifulsoup4" },
