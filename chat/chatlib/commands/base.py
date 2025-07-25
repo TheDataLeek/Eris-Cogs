@@ -30,6 +30,7 @@ DEFAULT_GUILD_SETTINGS = {
     ),
     "endpoint": None,
     "model": "gpt-4o",
+    "agent_enabled_cogs": [],
 }
 
 

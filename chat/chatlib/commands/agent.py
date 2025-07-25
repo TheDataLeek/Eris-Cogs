@@ -1,15 +1,19 @@
+import inspect
 import datetime as dt
 import re
 import pprint
+from typing import Any
 
 import discord
-from redbot.core import commands
-
+import discord.ext.commands
+from redbot.core import commands, checks
+from rich import print
 import langchain
 import langchain.chat_models
 import langchain_core
 import langchain_core.language_models
 import langchain_core.messages
+import langchain_core.tools
 import langgraph
 import langgraph.prebuilt
 
@@ -19,10 +23,63 @@ from ..utils import discord_handling
 
 
 class Agent(ChatBase):
+    agent_tools: dict[str, list[discord.ext.commands.Command]]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.agent_tools = dict()
+
         if self.bot_instance is not None:
             self.bot_instance.add_listener(self.agent, "on_message")
+
+    @checks.is_owner()
+    @commands.command()
+    async def enable_cog_for_agentic_actions(self, ctx: commands.Context):
+        message: discord.Message = ctx.message
+        cog_to_load = " ".join(message.clean_content.split(" ")[1:])
+        previously_enabled_cogs = await self.config.guild(
+            ctx.guild
+        ).agent_enabled_cogs()
+        await self.config.guild(ctx.guild).agent_enabled_cogs.set(
+            sorted(list({cog_to_load, *previously_enabled_cogs}))
+        )
+        await self.load_agent_tools(ctx)
+
+    @checks.is_owner()
+    @commands.command()
+    async def remove_agentic_cog(self, ctx: commands.Context):
+        message: discord.Message = ctx.message
+        cog_to_remove = " ".join(message.clean_content.split(" ")[1:])
+        enabled_cogs: list[str]
+        previously_enabled_cogs = await self.config.guild(
+            ctx.guild
+        ).agent_enabled_cogs()
+        try:
+            previously_enabled_cogs.remove(cog_to_remove)
+        except ValueError:
+            pass
+        await self.config.guild(ctx.guild).agent_enabled_cogs.set(
+            previously_enabled_cogs
+        )
+
+    async def load_agent_tools(self, ctx: commands.Context):
+        async with self.config.guild(ctx.guild).agent_enabled_cogs() as enabled_cogs:
+            for cog in enabled_cogs:
+                loaded_cog = self.bot_instance.get_cog(cog)
+                if loaded_cog is None:
+                    continue
+                self.agent_tools[cog] = [
+                    cog for cog in loaded_cog.get_commands() if not len(cog.checks)
+                ]
+        # await ctx.send(
+        #     pprint.pformat(
+        #         {
+        #             cogname: [command.name for command in commands]
+        #             for cogname, commands in self.agent_tools.items()
+        #         }
+        #     )
+        # )
 
     async def agent(self, message: discord.Message):
         # Check if the message author is a bot
@@ -113,9 +170,34 @@ class Agent(ChatBase):
                 base_url=endpoint,
             )
         )
-        agent = langgraph.prebuilt.create_react_agent(model, [])
+
+        await self.load_agent_tools(ctx)
+        tools: list[langchain_core.tools.StructuredTool] = []
+        for cog_name, cog_commands in self.agent_tools.items():
+            for command in cog_commands:
+                loaded_cog = self.bot_instance.get_cog(cog_name)
+
+                def _(*args, **kwargs):
+                    return command.callback(loaded_cog, ctx, *args, **kwargs)
+
+                schema = langchain_core.tools.create_schema_from_function(
+                    command.name,
+                    command.callback,
+                    filter_args=["self", "ctx", "context"],
+                )
+
+                tool = langchain_core.tools.StructuredTool.from_function(
+                    _,
+                    name=command.name,
+                    description=command.description,
+                    args_schema=schema
+                )
+                tools.append(tool)
+
+        agent = langgraph.prebuilt.create_react_agent(model, tools)
         response = agent.invoke({"messages": formatted_query})
         messages: list[langchain_core.messages.BaseMessage] = response["messages"]
+        print(messages[-5:])
         agent_response: str = messages[-1].content
         if isinstance(agent_response, dict):
             agent_response: str = agent_response.get("text")
