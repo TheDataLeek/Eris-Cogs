@@ -362,6 +362,7 @@ dependencies = [
     { name = "langchain", extra = ["openai"] },
     { name = "langgraph" },
     { name = "markdownify" },
+    { name = "openai" },
     { name = "pillow" },
 ]
 
@@ -372,6 +373,7 @@ requires-dist = [
     { name = "langchain", extras = ["openai"], specifier = ">=0.3.27" },
     { name = "langgraph", specifier = ">=0.5.4" },
     { name = "markdownify", specifier = ">=1.1.0" },
+    { name = "openai", specifier = ">=1.97.1" },
     { name = "pillow", specifier = ">=11.2.1" },
 ]
 

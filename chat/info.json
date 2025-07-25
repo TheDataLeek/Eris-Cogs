@@ -6,13 +6,13 @@
   "name": "Chat",
   "short": "Use OpenAI's ChatGPT to respond to the conversation",
   "requirements": [
-    "openai==1.76.2",
-    "pillow==11.2.1",
-    "markdownify==1.1.0",
-    "async-lru==2.0.5",
-    "beautifulsoup4==4.13.4",
-    "langgraph==0.5.4",
-    "langgraph==0.3.27"
+    "async-lru>=2.0.5",
+    "beautifulsoup4>=4.13.4",
+    "langchain[openai]>=0.3.27",
+    "langgraph>=0.5.4",
+    "markdownify>=1.1.0",
+    "openai>=1.97.1",
+    "pillow>=11.2.1"
   ],
   "install_msg": "Ensure that you set the openAI token, using `[p]set api`, and then the name of the secret should be `openai`, while the value needs to be in the format `key <token>`",
   "ready": true
