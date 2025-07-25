@@ -56,7 +56,7 @@ class ImageCommands(ChatBase):
         if len(attachments) > 0:
             attachment: discord.Attachment = attachments[0]
 
-        ctx = await self.bot.get_context(message)
+        ctx = await self.bot_instance.get_context(message)
         prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
         prompt: str = " ".join(prompt_words)
         thread_name = " ".join(prompt_words[:5]) + " image"

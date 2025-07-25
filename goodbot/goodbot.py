@@ -174,7 +174,7 @@ class GoodBot(BaseCog):
         User is the user that added the reaction
         """
         # Prevent acting on DM's and if the bot reacted
-        if reaction.message.guild is None or user.bot:
+        if reaction.message.guild is None or user.bot_instance:
             return
 
         ctx: commands.Context = await self.bot.get_context(reaction.message)

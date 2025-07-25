@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from redbot.core import commands, data_manager, bot, Config, checks
+from redbot.core import commands, bot, Config
 from redbot.core.bot import Red
 
 BaseCog = getattr(commands, "Cog", object)
@@ -38,11 +38,11 @@ class ChatBase(BaseCog):
     openai_token = None
     endpoint = None
     whois_dictionary = None
-    bot: Red = None
+    bot_instance: Red = None
 
     def __init__(self, bot_instance: bot):
-        self.bot: Red = bot_instance
-        if self.bot is not None:
+        self.bot_instance: Red = bot_instance
+        if self.bot_instance is not None:
             self.config = Config.get_conf(
                 self,
                 identifier=23458972349810010102367456567347810101,
@@ -54,12 +54,12 @@ class ChatBase(BaseCog):
         self.logged_messages = {}  # Initialize a dictionary to store messages per channel
 
     async def get_openai_token(self):
-        self.openai_settings = await self.bot.get_shared_api_tokens("openai")
+        self.openai_settings = await self.bot_instance.get_shared_api_tokens("openai")
         self.openai_token = self.openai_settings.get("key", None)
         return self.openai_token
 
     async def get_prefix(self, ctx: commands.Context) -> str:
-        prefix = await self.bot.get_prefix(ctx.message)
+        prefix = await self.bot_instance.get_prefix(ctx.message)
         if isinstance(prefix, list):
             prefix = prefix[0]
         return prefix

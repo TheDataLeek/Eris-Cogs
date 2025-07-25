@@ -100,14 +100,14 @@ class MetaCommands(ChatBase):
             await ctx.send(prompt[i : i + 2000])  # Send each chunk
 
     async def reset_whois_dictionary(self):
-        self.whois = self.bot.get_cog("WhoIs")
+        self.whois = self.bot_instance.get_cog("WhoIs")
         if self.whois is None:
             self.whois_dictionary = {}
             return
 
         whois_config = self.whois.config
 
-        guilds: list[discord.Guild] = self.bot.guilds
+        guilds: list[discord.Guild] = self.bot_instance.guilds
         final_dict = {}
         for guild in guilds:
             guild_name = guild.name

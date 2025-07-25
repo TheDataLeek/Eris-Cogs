@@ -17,22 +17,22 @@ from .base import ChatBase
 class Agent(ChatBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.bot is not None:
-            self.bot.add_listener(self.contextual_chat_handler, "on_message")
+        if self.bot_instance is not None:
+            self.bot_instance.add_listener(self.agent, "on_message")
 
-    async def contextual_chat_handler(self, message: discord.Message):
+    async def agent(self, message: discord.Message):
         # Check if the message author is a bot
         if message.author.bot:
             return
 
-        ctx: commands.Context = await self.bot.get_context(message)
+        ctx: commands.Context = await self.bot_instance.get_context(message)
         channel: discord.abc.Messageable = ctx.channel
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         user: discord.User
         bot_mentioned = False
         for user in message.mentions:
-            if user == self.bot.user:
+            if user == self.bot_instance.user:
                 bot_mentioned = True
         if not bot_mentioned:
             return

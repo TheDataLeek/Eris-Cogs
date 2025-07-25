@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
 
 import inspect
 import subprocess
@@ -16,13 +16,6 @@ def main():
 
     chat = Chat(None)
     print(chat)
-
-    cmd = "redbot eris -v --token $CLIENT_TOKEN -p '>' --no-cogs --dev"
-    print(cmd)
-    subprocess.run(
-        cmd,
-        shell=True,
-    )
 
 
 if __name__ == "__main__":
