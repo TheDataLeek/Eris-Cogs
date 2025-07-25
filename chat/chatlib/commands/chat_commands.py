@@ -7,9 +7,6 @@ from .base import ChatBase
 
 
 class ChatCommands(ChatBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @commands.command()
     async def chat(self, ctx: commands.Context) -> None:
         """
