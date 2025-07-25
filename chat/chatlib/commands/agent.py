@@ -10,7 +10,7 @@ import langchain_core.language_models
 import langgraph
 import langgraph.prebuilt
 
-from .. import model_querying, discord_handling
+from . import model_querying, discord_handling
 from .base import ChatBase
 
 

@@ -6,7 +6,7 @@ import discord
 from redbot.core import data_manager, commands, checks
 
 from .base import ChatBase
-from .. import discord_handling, model_querying
+from . import discord_handling, model_querying
 from ..url_content import ContentStore
 
 SYSTEM_PROMPT = f"""
