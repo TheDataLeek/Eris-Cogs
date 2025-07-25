@@ -135,7 +135,10 @@ async def query_image_model(
 
 
 async def construct_async_query(
-    query: List[Dict], token: str, endpoint: str, **kwargs,
+    query: List[Dict],
+    token: str,
+    endpoint: str,
+    **kwargs,
 ) -> list[str] | io.BytesIO:
     loop = asyncio.get_running_loop()
     time_to_sleep = 1

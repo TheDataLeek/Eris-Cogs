@@ -8,8 +8,6 @@ from .base import ChatBase
 class ChatCommands(ChatBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.bot is not None:
-            self.bot.add_listener(self.contextual_chat_handler, "on_message")
 
     @commands.command()
     async def chat(self, ctx: commands.Context) -> None:
@@ -56,79 +54,3 @@ class ChatCommands(ChatBase):
             endpoint=endpoint,
         )
         await discord_handling.send_response(response, message, channel, thread_name)
-
-    async def contextual_chat_handler(self, message: discord.Message):
-        # Check if the message author is a bot
-        if message.author.bot:
-            return
-
-        ctx: commands.Context = await self.bot.get_context(message)
-        channel: discord.abc.Messageable = ctx.channel
-        message: discord.Message = ctx.message
-        author: discord.Member = message.author
-        user: discord.User
-        bot_mentioned = False
-        for user in message.mentions:
-            if user == self.bot.user:
-                bot_mentioned = True
-        if not bot_mentioned:
-            return
-
-        # ignore replies
-        message_type: discord.MessageType = message.type
-        if message_type == discord.MessageType.reply:
-            return
-
-        if self.whois_dictionary is None:
-            await self.reset_whois_dictionary()
-
-        prefix: str = await self.get_prefix(ctx)
-        try:
-            (
-                _,
-                formatted_query,
-                user_names,
-            ) = await discord_handling.extract_chat_history_and_format(
-                prefix,
-                channel,
-                message,
-                author,
-                extract_full_history=True,
-                whois_dict=self.whois_dictionary,
-            )
-        except ValueError as e:
-            print(e)
-            return
-        token = await self.get_openai_token()
-        prompt = await self.config.guild(ctx.guild).prompt()
-        model = await self.config.guild(ctx.guild).model()
-        endpoint = await self.config.guild(ctx.guild).endpoint()
-        print(f"Using {model=} with {endpoint=}")
-        response = await model_querying.query_text_model(
-            token,
-            prompt,
-            formatted_query,
-            model=model,
-            user_names=user_names,
-            contextual_prompt=(
-                "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
-                "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
-                "strive to blend in the conversation as closely as possible"
-            ),
-            endpoint=endpoint,
-        )
-        for page in response:
-            await channel.send(page)
-
-        # Log the message content to the logged_messages dictionary for the specific channel
-        channel_id = message.channel.id
-        if channel_id not in self.logged_messages:
-            self.logged_messages[
-                channel_id
-            ] = []  # Initialize the list for this channel
-
-        if (
-            len(self.logged_messages[channel_id]) >= 20
-        ):  # Keep only the last 20 messages
-            self.logged_messages[channel_id].pop(0)  # Remove the oldest message
-        self.logged_messages[channel_id].append(message.content)  # Add the new message
