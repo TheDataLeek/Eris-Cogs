@@ -11,7 +11,8 @@ import langgraph
 import langgraph.prebuilt
 
 from .base import ChatBase
-from .. import model_querying, discord_handling
+from ..utils import model_querying
+from ..utils import discord_handling
 
 
 class Agent(ChatBase):
