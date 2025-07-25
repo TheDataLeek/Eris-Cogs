@@ -1,4 +1,6 @@
+import datetime as dt
 import re
+import pprint
 
 import discord
 from redbot.core import commands
@@ -7,6 +9,7 @@ import langchain
 import langchain.chat_models
 import langchain_core
 import langchain_core.language_models
+import langchain_core.messages
 import langgraph
 import langgraph.prebuilt
 
@@ -64,41 +67,67 @@ class Agent(ChatBase):
         except ValueError as e:
             print(e)
             return
+
         token = await self.get_openai_token()
         prompt = await self.config.guild(ctx.guild).prompt()
         model_name = await self.config.guild(ctx.guild).model()
         endpoint = await self.config.guild(ctx.guild).endpoint()
         print(f"Using {model_name=} with {endpoint=}")
+
+        if user_names is None:
+            user_names = {}
+        formatted_usernames = pprint.pformat(user_names)
+
+        today_string = dt.datetime.now().strftime(
+            "The date is %A, %B %m, %Y. The time is %I:%M %p %Z"
+        )
+
+        system_prefix = {
+            "role": "system",
+            "content": [
+                {
+                    "type": "text",
+                    "text": prompt,
+                },
+                {
+                    "type": "text",
+                    "text": (
+                        "Users have names prefixed by an `@`, however we know the following real names and titles of "
+                        f"some of the users involved,\n{formatted_usernames}\nPlease use their names when possible.\n"
+                        "Your creator's handle is @erisaurus, and her name is Zoe.\n"
+                        "To tag a user, use the format, `<@id>`, but only do this if you don't know their real name.\n"
+                        f"{today_string}\n"
+                        "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
+                        "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
+                        "strive to blend in the conversation as closely as possible"
+                    ),
+                },
+            ],
+        }
+        formatted_query = [system_prefix, *formatted_query]
         model: langchain_core.language_models.BaseChatModel = (
             langchain.chat_models.init_chat_model(
                 model_name,
                 model_provider="openai",
-                token=token,
+                api_key=token,
+                base_url=endpoint,
             )
         )
         agent = langgraph.prebuilt.create_react_agent(model, [])
-        response = agent.invoke({'messages': formatted_query})
-        for message in response['messages']:
-            response = re.sub(r"\n{2,}", r"\n", response)  # strip multiple newlines
-            formatted_response = model_querying.pagify_chat_result(response)
-            for chunk in formatted_response:
-                await ctx.send(chunk)
+        response = agent.invoke({"messages": formatted_query})
+        messages: list[langchain_core.messages.BaseMessage] = response["messages"]
+        agent_response: str = messages[-1].content
+        if isinstance(agent_response, dict):
+            agent_response: str = agent_response.get("text")
 
-        # response = await model_querying.query_text_model(
-        #     token,
-        #     prompt,
-        #     formatted_query,
-        #     model=model_name,
-        #     user_names=user_names,
-        #     contextual_prompt=(
-        #         "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
-        #         "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
-        #         "strive to blend in the conversation as closely as possible"
-        #     ),
-        #     endpoint=endpoint,
-        # )
-        # for page in response:
-        #     await channel.send(page)
+        # strip multiple newlines
+        formatted_response = model_querying.pagify_chat_result(
+            re.sub(r"\n{2,}", r"\n", agent_response)
+        )
+
+        # pagify for discord and send
+        for chunk in formatted_response:
+            await ctx.send(chunk)
 
         # Log the message content to the logged_messages dictionary for the specific channel
         channel_id = message.channel.id
