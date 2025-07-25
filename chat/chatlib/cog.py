@@ -8,7 +8,7 @@ from .commands import TarotCommands
 
 class Chat(
     ChatCommands,
-    Agent,
+    # Agent,
     ImageCommands,
     MetaCommands,
     PathfinderCommands,

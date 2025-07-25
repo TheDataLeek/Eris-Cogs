@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import os
 from pathlib import Path
 
 from redbot.core import commands, bot, Config
@@ -54,8 +54,10 @@ class ChatBase(BaseCog):
         self.logged_messages = {}  # Initialize a dictionary to store messages per channel
 
     async def get_openai_token(self):
-        self.openai_settings = await self.bot_instance.get_shared_api_tokens("openai")
-        self.openai_token = self.openai_settings.get("key", None)
+        self.openai_token = os.environ.get('OPENAI_API_KEY')
+        if self.openai_token is None:
+            self.openai_settings = await self.bot_instance.get_shared_api_tokens("openai")
+            self.openai_token = self.openai_settings.get("key", None)
         return self.openai_token
 
     async def get_prefix(self, ctx: commands.Context) -> str:

@@ -171,7 +171,7 @@ def openai_client_and_query(
     endpoint: str,
     **kwargs,
 ) -> str | io.BytesIO | list[io.BytesIO]:
-    client = openai.OpenAI(api_key=token, base_url=endpoint)
+    client: openai.OpenAI = openai.OpenAI(api_key=token, base_url=endpoint)
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     if ("dall" in kwargs["model"]) or ("image" in kwargs["model"]):
         if "image" in kwargs:
