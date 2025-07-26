@@ -1,3 +1,4 @@
+import functools
 import inspect
 import datetime as dt
 import re
@@ -23,7 +24,7 @@ from ..utils import discord_handling
 
 
 class Agent(ChatBase):
-    agent_tools: dict[str, list[discord.ext.commands.Command]]
+    agent_tools: dict[str, list[str]]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -70,7 +71,7 @@ class Agent(ChatBase):
                 if loaded_cog is None:
                     continue
                 self.agent_tools[cog] = [
-                    cog for cog in loaded_cog.get_commands() if not len(cog.checks)
+                    command.qualified_name for command in loaded_cog.get_commands() if not len(command.checks)
                 ]
         # await ctx.send(
         #     pprint.pformat(
@@ -174,30 +175,31 @@ class Agent(ChatBase):
         await self.load_agent_tools(ctx)
         tools: list[langchain_core.tools.StructuredTool] = []
         for cog_name, cog_commands in self.agent_tools.items():
-            for command in cog_commands:
-                loaded_cog = self.bot_instance.get_cog(cog_name)
+            loaded_cog = self.bot_instance.get_cog(cog_name)
+            lookup = {cmd.qualified_name: cmd for cmd in loaded_cog.__cog_commands__}
+            for command_name in cog_commands:
+                loaded_command: discord.ext.commands.Command = lookup[command_name]
 
-                def _(*args, **kwargs):
-                    return command.callback(loaded_cog, ctx, *args, **kwargs)
+                tool_def = functools.partial(loaded_command.callback, loaded_cog, ctx)
 
                 schema = langchain_core.tools.create_schema_from_function(
-                    command.name,
-                    command.callback,
+                    command_name,
+                    loaded_command.callback,
                     filter_args=["self", "ctx", "context"],
                 )
 
                 tool = langchain_core.tools.StructuredTool.from_function(
-                    _,
-                    name=command.name,
-                    description=command.description,
-                    args_schema=schema
+                    coroutine=tool_def,
+                    name=command_name,
+                    description=loaded_command.description,
+                    args_schema=schema,
+                    return_direct=True
                 )
                 tools.append(tool)
 
         agent = langgraph.prebuilt.create_react_agent(model, tools)
-        response = agent.invoke({"messages": formatted_query})
+        response = await agent.ainvoke({"messages": formatted_query})
         messages: list[langchain_core.messages.BaseMessage] = response["messages"]
-        print(messages[-5:])
         agent_response: str = messages[-1].content
         if isinstance(agent_response, dict):
             agent_response: str = agent_response.get("text")
@@ -209,7 +211,8 @@ class Agent(ChatBase):
 
         # pagify for discord and send
         for chunk in formatted_response:
-            await ctx.send(chunk)
+            if len(chunk) and (chunk != 'null'):
+                await ctx.send(chunk)
 
         # Log the message content to the logged_messages dictionary for the specific channel
         channel_id = message.channel.id
