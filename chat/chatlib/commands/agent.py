@@ -81,7 +81,8 @@ class Agent(ChatBase):
             return
 
         ctx: commands.Context = await self.bot_instance.get_context(message)
-        channel: discord.abc.Messageable = ctx.channel
+        channel: discord.abc.MessageableChannel = ctx.channel
+        current_channel_name: str = getattr(channel, "name", "Unknown Channel")
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         user: discord.User
@@ -166,7 +167,7 @@ class Agent(ChatBase):
                         "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
                         "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
                         "strive to blend in the conversation as closely as possible.\n\n"
-                        f"You are currently talking in the #{channel.name} channel in the {guild_name} discord server. "
+                        f"You are currently talking in the #{current_channel_name} channel in the {guild_name} discord server. "
                         f"This server has the following channels,\n{formatted_channel_list}"
                     ),
                 },
