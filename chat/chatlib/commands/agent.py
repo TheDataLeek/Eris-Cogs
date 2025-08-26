@@ -85,8 +85,19 @@ class Agent(ChatBase):
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         user: discord.User
-        guild = ctx.guild
-        channel_list = guild.text_channels
+        guild: discord.Guild = ctx.guild
+        guild_name: str = guild.name
+        channel_summary: dict[str, list[str]] = {}
+        for cursor in guild.channels:
+            category: discord.CategoryChannel = cursor.category
+            category_name: str = "Top Level"
+            if category:
+                category_name = category.name
+
+            if category_name not in channel_summary:
+                channel_summary[category_name] = []
+
+            channel_summary[category_name].append(f"#{cursor.name}")
 
         bot_mentioned = False
         for user in message.mentions:
@@ -135,7 +146,7 @@ class Agent(ChatBase):
 
         today_string = dt.datetime.now().strftime("The date is %A, %B %m, %Y. The time is %I:%M %p %Z")
 
-        formatted_channel_list = yaml.safe_dump(channel_list)
+        formatted_channel_list = yaml.safe_dump(channel_summary)
 
         system_prefix = {
             "role": "system",
@@ -155,7 +166,7 @@ class Agent(ChatBase):
                         "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
                         "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
                         "strive to blend in the conversation as closely as possible.\n\n"
-                        f"You are currently talking in the #{channel} channel in the {guild} discord server. "
+                        f"You are currently talking in the #{channel.name} channel in the {guild_name} discord server. "
                         f"This server has the following channels,\n{formatted_channel_list}"
                     ),
                 },
