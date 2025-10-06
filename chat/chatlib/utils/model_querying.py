@@ -64,7 +64,7 @@ async def query_text_model(
     return response
 
 
-async def query_image_model(
+async def generate_image(
     token: str,
     formatted_query: str | list[dict],
     attachment: discord.Attachment = None,
@@ -79,59 +79,38 @@ async def query_image_model(
         "response_format": "b64_json",
         "size": "1024x1024",
     }
-    if attachment is not None:  # then it's an edit
-        buf = io.BytesIO()
-        await attachment.save(buf)
-        buf.seek(0)
-        input_image = Image.open(buf)
-
-        # crop square image to the smaller dim
-        width, height = input_image.size
-        if width != height:
-            left = top = 0
-            if width < height:
-                new_size = width
-                top = (height - width) // 2
-            else:
-                new_size = height
-                left = (width - height) // 2
-            input_image = input_image.crop((left, top, new_size, new_size))
-
-        input_image = input_image.resize((1024, 1024))
-
-        if image_expansion:
-            mask_image = Image.new("RGBA", (1024, 1024), (255, 255, 255, 0))
-            border_width = 512
-            new_image = input_image.resize((1024 - border_width, 1024 - border_width))
-            mask_image.paste(new_image, (border_width // 2, border_width // 2))
-            input_image = mask_image
-
-        input_image_buffer = io.BytesIO()
-        input_image.save(input_image_buffer, format="png")
-        input_image_buffer.seek(0)
-        kwargs["image"] = input_image_buffer.read()
+    style = None
+    if "vivid" in formatted_query:
+        style = "vivid"
+    elif "natural" in formatted_query:
+        style = "natural"
+    if (model is not None) and ("dall" in model):
+        kwargs = {
+            **{"model": "dall-e-3", "quality": "hd", "style": style},
+            **kwargs,
+        }
     else:
-        style = None
-        if "vivid" in formatted_query:
-            style = "vivid"
-        elif "natural" in formatted_query:
-            style = "natural"
-        if (model is not None) and ("dall" in model):
-            kwargs = {
-                **{"model": "dall-e-3", "quality": "hd", "style": style},
-                **kwargs,
-            }
-        else:
-            kwargs = {
-                "model": model,
-                "n": 1,
-                "size": "auto",
-                "moderation": "low",
-                "output_format": "png",
-            }
+        kwargs = {
+            "model": model,
+            "n": 1,
+            "size": "auto",
+            "moderation": "low",
+            "output_format": "png",
+        }
     response = await construct_async_query(formatted_query, token, endpoint, **kwargs)
 
     return response
+
+async def generate_image_edit(
+    token: str,
+    formatted_query: str | list[dict],
+    attachment: discord.Attachment = None,
+    endpoint: str = "https://api.openai.com/v1/",
+):
+    buf = io.BytesIO()
+    await attachment.save(buf)
+    buf.seek(0)
+    return await construct_async_query(formatted_query, token, endpoint=endpoint, model="gpt-image-1", image=buf)
 
 
 async def construct_async_query(
@@ -176,7 +155,7 @@ def openai_client_and_query(
     if ("dall" in kwargs["model"]) or ("image" in kwargs["model"]):
         if "image" in kwargs:
             images = client.images.edit(
-                prompt="Expand the image to fill the empty space.", **kwargs
+                prompt=messages, **kwargs
             )
         else:
             images = client.images.generate(prompt=messages, **kwargs)
