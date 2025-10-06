@@ -13,6 +13,7 @@
     "markdownify>=1.1.0",
     "openai>=1.97.1",
     "pillow>=11.2.1",
+    "pyyaml>=6",
     "rich>=14.0.0"
   ],
   "install_msg": "Ensure that you set the openAI token, using `[p]set api`, and then the name of the secret should be `openai`, while the value needs to be in the format `key <token>`",

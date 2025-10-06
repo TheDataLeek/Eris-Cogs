@@ -5,6 +5,7 @@ import re
 import pprint
 from typing import Any
 
+import yaml
 import discord
 import discord.ext.commands
 from redbot.core import commands, checks
@@ -39,12 +40,8 @@ class Agent(ChatBase):
     async def enable_cog_for_agentic_actions(self, ctx: commands.Context):
         message: discord.Message = ctx.message
         cog_to_load = " ".join(message.clean_content.split(" ")[1:])
-        previously_enabled_cogs = await self.config.guild(
-            ctx.guild
-        ).agent_enabled_cogs()
-        await self.config.guild(ctx.guild).agent_enabled_cogs.set(
-            sorted(list({cog_to_load, *previously_enabled_cogs}))
-        )
+        previously_enabled_cogs = await self.config.guild(ctx.guild).agent_enabled_cogs()
+        await self.config.guild(ctx.guild).agent_enabled_cogs.set(sorted(list({cog_to_load, *previously_enabled_cogs})))
         await self.load_agent_tools(ctx)
 
     @checks.is_owner()
@@ -53,16 +50,12 @@ class Agent(ChatBase):
         message: discord.Message = ctx.message
         cog_to_remove = " ".join(message.clean_content.split(" ")[1:])
         enabled_cogs: list[str]
-        previously_enabled_cogs = await self.config.guild(
-            ctx.guild
-        ).agent_enabled_cogs()
+        previously_enabled_cogs = await self.config.guild(ctx.guild).agent_enabled_cogs()
         try:
             previously_enabled_cogs.remove(cog_to_remove)
         except ValueError:
             pass
-        await self.config.guild(ctx.guild).agent_enabled_cogs.set(
-            previously_enabled_cogs
-        )
+        await self.config.guild(ctx.guild).agent_enabled_cogs.set(previously_enabled_cogs)
 
     async def load_agent_tools(self, ctx: commands.Context):
         async with self.config.guild(ctx.guild).agent_enabled_cogs() as enabled_cogs:
@@ -88,10 +81,25 @@ class Agent(ChatBase):
             return
 
         ctx: commands.Context = await self.bot_instance.get_context(message)
-        channel: discord.abc.Messageable = ctx.channel
+        channel: discord.abc.MessageableChannel = ctx.channel
+        current_channel_name: str = getattr(channel, "name", "Unknown Channel")
         message: discord.Message = ctx.message
         author: discord.Member = message.author
         user: discord.User
+        guild: discord.Guild = ctx.guild
+        guild_name: str = guild.name
+        channel_summary: dict[str, list[str]] = {}
+        for cursor in guild.channels:
+            category: discord.CategoryChannel = cursor.category
+            category_name: str = "Top Level"
+            if category:
+                category_name = category.name
+
+            if category_name not in channel_summary:
+                channel_summary[category_name] = []
+
+            channel_summary[category_name].append(f"#{cursor.name}")
+
         bot_mentioned = False
         for user in message.mentions:
             if user == self.bot_instance.user:
@@ -134,11 +142,12 @@ class Agent(ChatBase):
 
         if user_names is None:
             user_names = {}
-        formatted_usernames = pprint.pformat(user_names)
 
-        today_string = dt.datetime.now().strftime(
-            "The date is %A, %B %m, %Y. The time is %I:%M %p %Z"
-        )
+        formatted_usernames = yaml.safe_dump(user_names)
+
+        today_string = dt.datetime.now().strftime("The date is %A, %B %m, %Y. The time is %I:%M %p %Z")
+
+        formatted_channel_list = yaml.safe_dump(channel_summary)
 
         system_prefix = {
             "role": "system",
@@ -157,19 +166,19 @@ class Agent(ChatBase):
                         f"{today_string}\n"
                         "Respond in kind, as if you are present and involved. A user has mentioned you and needs your opinion "
                         "on the conversation. Match the tone and style of preceding conversations, do not be overbearing and "
-                        "strive to blend in the conversation as closely as possible"
+                        "strive to blend in the conversation as closely as possible.\n\n"
+                        f"You are currently talking in the #{current_channel_name} channel in the {guild_name} discord server. "
+                        f"This server has the following channels,\n{formatted_channel_list}"
                     ),
                 },
             ],
         }
         formatted_query = [system_prefix, *formatted_query]
-        model: langchain_core.language_models.BaseChatModel = (
-            langchain.chat_models.init_chat_model(
-                model_name,
-                model_provider="openai",
-                api_key=token,
-                base_url=endpoint,
-            )
+        model: langchain_core.language_models.BaseChatModel = langchain.chat_models.init_chat_model(
+            model_name,
+            model_provider="openai",
+            api_key=token,
+            base_url=endpoint,
         )
 
         await self.load_agent_tools(ctx)
@@ -193,7 +202,7 @@ class Agent(ChatBase):
                     name=command_name,
                     description=loaded_command.description,
                     args_schema=schema,
-                    return_direct=True
+                    return_direct=True,
                 )
                 tools.append(tool)
 
@@ -205,24 +214,18 @@ class Agent(ChatBase):
             agent_response: str = agent_response.get("text")
 
         # strip multiple newlines
-        formatted_response = model_querying.pagify_chat_result(
-            re.sub(r"\n{2,}", r"\n", agent_response)
-        )
+        formatted_response = model_querying.pagify_chat_result(re.sub(r"\n{2,}", r"\n", agent_response))
 
         # pagify for discord and send
         for chunk in formatted_response:
-            if len(chunk) and (chunk != 'null'):
+            if len(chunk) and (chunk != "null"):
                 await ctx.send(chunk)
 
         # Log the message content to the logged_messages dictionary for the specific channel
         channel_id = message.channel.id
         if channel_id not in self.logged_messages:
-            self.logged_messages[
-                channel_id
-            ] = []  # Initialize the list for this channel
+            self.logged_messages[channel_id] = []  # Initialize the list for this channel
 
-        if (
-            len(self.logged_messages[channel_id]) >= 20
-        ):  # Keep only the last 20 messages
+        if len(self.logged_messages[channel_id]) >= 20:  # Keep only the last 20 messages
             self.logged_messages[channel_id].pop(0)  # Remove the oldest message
         self.logged_messages[channel_id].append(message.content)  # Add the new message
