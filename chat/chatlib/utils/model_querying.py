@@ -113,7 +113,7 @@ async def generate_image_edit(
         token,
         endpoint=endpoint,
         model="gpt-image-1",
-        image=attachment.read(),
+        image=await attachment.read(),
     )
 
 
