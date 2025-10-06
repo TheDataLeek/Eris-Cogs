@@ -105,15 +105,27 @@ async def generate_image(
 async def generate_image_edit(
     token: str,
     formatted_query: str | list[dict],
-    attachment: discord.Attachment = None,
+    attachments: list[discord.Attachment] = None,
     endpoint: str = "https://api.openai.com/v1/",
 ):
+    images = [
+        (
+            attachment.filename,
+            await attachment.read(),
+            attachment.content_type,
+        )
+        for attachment in attachments
+        if attachment.filename.endswith("png")
+        or attachment.filename.endswith("webp")
+        or attachment.filename.endswith("jpg")
+    ]
+    images = images[:16]  # only first 16 supported
     return await construct_async_query(
         formatted_query,
         token,
         endpoint=endpoint,
         model="gpt-image-1",
-        image=await attachment.read(),
+        image=images,
     )
 
 

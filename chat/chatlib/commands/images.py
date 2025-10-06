@@ -35,9 +35,6 @@ class ImageCommands(ChatBase):
         attachments: list[discord.Attachment] = [
             m for m in message.attachments if m.width
         ]
-        attachment = None
-        if len(attachments) > 0:
-            attachment: discord.Attachment = attachments[0]
 
         ctx = await self.bot_instance.get_context(message)
         prompt_words = [w for i, w in enumerate(message.content.split(" ")) if i != 0]
@@ -46,19 +43,19 @@ class ImageCommands(ChatBase):
         token = await self.get_openai_token()
         endpoint = await self.config.guild(ctx.guild).endpoint()
         try:
-            match attachment:
-                case None:
+            match attachments:
+                case []:
                     response = await model_querying.generate_image(
                         token,
                         prompt,
-                        attachment,
+                        None,
                         n_images=n_images,
                         model=model,
                         endpoint=endpoint,
                     )
                 case _:
                     response = await model_querying.generate_image_edit(
-                        token, prompt, attachment, endpoint=endpoint
+                        token, prompt, attachments, endpoint=endpoint,
                     )
         except ValueError:
             await channel.send("Something went wrong!")
