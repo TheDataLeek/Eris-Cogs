@@ -101,16 +101,20 @@ async def generate_image(
 
     return response
 
+
 async def generate_image_edit(
     token: str,
     formatted_query: str | list[dict],
     attachment: discord.Attachment = None,
     endpoint: str = "https://api.openai.com/v1/",
 ):
-    buf = io.BytesIO()
-    await attachment.save(buf)
-    buf.seek(0)
-    return await construct_async_query(formatted_query, token, endpoint=endpoint, model="gpt-image-1", image=buf)
+    return await construct_async_query(
+        formatted_query,
+        token,
+        endpoint=endpoint,
+        model="gpt-image-1",
+        image=attachment.read(),
+    )
 
 
 async def construct_async_query(
@@ -154,9 +158,7 @@ def openai_client_and_query(
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     if ("dall" in kwargs["model"]) or ("image" in kwargs["model"]):
         if "image" in kwargs:
-            images = client.images.edit(
-                prompt=messages, **kwargs
-            )
+            images = client.images.edit(prompt=messages, **kwargs)
         else:
             images = client.images.generate(prompt=messages, **kwargs)
         results = []

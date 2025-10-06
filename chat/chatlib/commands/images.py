@@ -58,10 +58,7 @@ class ImageCommands(ChatBase):
                     )
                 case _:
                     response = await model_querying.generate_image_edit(
-                        token,
-                        prompt,
-                        attachment,
-                        endpoint=endpoint
+                        token, prompt, attachment, endpoint=endpoint
                     )
         except ValueError:
             await channel.send("Something went wrong!")

@@ -68,9 +68,7 @@ class MTG(BaseCog):
         ) as session:
             for match in matches:
                 try:
-                    cards += await query_scryfall(
-                        session, match, datatype="json"
-                    )
+                    cards += await query_scryfall(session, match, datatype="json")
                 except Exception as e:
                     print(e)
 

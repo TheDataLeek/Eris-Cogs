@@ -40,8 +40,12 @@ class Agent(ChatBase):
     async def enable_cog_for_agentic_actions(self, ctx: commands.Context):
         message: discord.Message = ctx.message
         cog_to_load = " ".join(message.clean_content.split(" ")[1:])
-        previously_enabled_cogs = await self.config.guild(ctx.guild).agent_enabled_cogs()
-        await self.config.guild(ctx.guild).agent_enabled_cogs.set(sorted(list({cog_to_load, *previously_enabled_cogs})))
+        previously_enabled_cogs = await self.config.guild(
+            ctx.guild
+        ).agent_enabled_cogs()
+        await self.config.guild(ctx.guild).agent_enabled_cogs.set(
+            sorted(list({cog_to_load, *previously_enabled_cogs}))
+        )
         await self.load_agent_tools(ctx)
 
     @checks.is_owner()
@@ -50,12 +54,16 @@ class Agent(ChatBase):
         message: discord.Message = ctx.message
         cog_to_remove = " ".join(message.clean_content.split(" ")[1:])
         enabled_cogs: list[str]
-        previously_enabled_cogs = await self.config.guild(ctx.guild).agent_enabled_cogs()
+        previously_enabled_cogs = await self.config.guild(
+            ctx.guild
+        ).agent_enabled_cogs()
         try:
             previously_enabled_cogs.remove(cog_to_remove)
         except ValueError:
             pass
-        await self.config.guild(ctx.guild).agent_enabled_cogs.set(previously_enabled_cogs)
+        await self.config.guild(ctx.guild).agent_enabled_cogs.set(
+            previously_enabled_cogs
+        )
 
     async def load_agent_tools(self, ctx: commands.Context):
         async with self.config.guild(ctx.guild).agent_enabled_cogs() as enabled_cogs:
@@ -64,7 +72,9 @@ class Agent(ChatBase):
                 if loaded_cog is None:
                     continue
                 self.agent_tools[cog] = [
-                    command.qualified_name for command in loaded_cog.get_commands() if not len(command.checks)
+                    command.qualified_name
+                    for command in loaded_cog.get_commands()
+                    if not len(command.checks)
                 ]
         # await ctx.send(
         #     pprint.pformat(
@@ -145,7 +155,9 @@ class Agent(ChatBase):
 
         formatted_usernames = yaml.safe_dump(user_names)
 
-        today_string = dt.datetime.now().strftime("The date is %A, %B %m, %Y. The time is %I:%M %p %Z")
+        today_string = dt.datetime.now().strftime(
+            "The date is %A, %B %m, %Y. The time is %I:%M %p %Z"
+        )
 
         formatted_channel_list = yaml.safe_dump(channel_summary)
 
@@ -174,11 +186,13 @@ class Agent(ChatBase):
             ],
         }
         formatted_query = [system_prefix, *formatted_query]
-        model: langchain_core.language_models.BaseChatModel = langchain.chat_models.init_chat_model(
-            model_name,
-            model_provider="openai",
-            api_key=token,
-            base_url=endpoint,
+        model: langchain_core.language_models.BaseChatModel = (
+            langchain.chat_models.init_chat_model(
+                model_name,
+                model_provider="openai",
+                api_key=token,
+                base_url=endpoint,
+            )
         )
 
         await self.load_agent_tools(ctx)
@@ -214,7 +228,9 @@ class Agent(ChatBase):
             agent_response: str = agent_response.get("text")
 
         # strip multiple newlines
-        formatted_response = model_querying.pagify_chat_result(re.sub(r"\n{2,}", r"\n", agent_response))
+        formatted_response = model_querying.pagify_chat_result(
+            re.sub(r"\n{2,}", r"\n", agent_response)
+        )
 
         # pagify for discord and send
         for chunk in formatted_response:
@@ -224,8 +240,12 @@ class Agent(ChatBase):
         # Log the message content to the logged_messages dictionary for the specific channel
         channel_id = message.channel.id
         if channel_id not in self.logged_messages:
-            self.logged_messages[channel_id] = []  # Initialize the list for this channel
+            self.logged_messages[
+                channel_id
+            ] = []  # Initialize the list for this channel
 
-        if len(self.logged_messages[channel_id]) >= 20:  # Keep only the last 20 messages
+        if (
+            len(self.logged_messages[channel_id]) >= 20
+        ):  # Keep only the last 20 messages
             self.logged_messages[channel_id].pop(0)  # Remove the oldest message
         self.logged_messages[channel_id].append(message.content)  # Add the new message
