@@ -35,7 +35,7 @@ class BlueskyReposter(BaseCog):
         self.bot: bot.Red = bot_instance
         self.config = Config.get_conf(
             self,
-            identifier=3248975002349,
+            identifier=32489750023491,
             force_registration=True,
             cog_name="BlueskyReposter",
         )
@@ -155,11 +155,14 @@ async def build_embed(
     if post.uri in seen_posts:
         return None
 
+    post_text_contents = post.record.text
+    if post_text_contents:
+        post_text_contents = f"{post_text_contents}\n"
+
     embed_description_contents = (
         f"Post by {author.display_name} ({author.handle})\n"
-        f"💬 {post.reply_count}\n"
-        f"❤️ {post.like_count}\n"
-        f"🔁 {post.repost_count}\n"
+        f"{post_text_contents}"
+        f"💬 {post.reply_count} ❤️ {post.like_count} 🔁 {post.repost_count}"
     )
 
     embed_response = (
