@@ -1,6 +1,7 @@
 import re
 import os
 import json
+from typing import TypeVar
 
 import typer
 from rich import print
@@ -16,6 +17,14 @@ app = typer.Typer()
 BaseCog = getattr(commands, "Cog", object)
 
 RETYPE = type(re.compile("a"))
+BskyEmbedType = TypeVar(
+    "BskyEmbedType",
+    atproto.models.AppBskyEmbedImages.View,
+    atproto.models.AppBskyEmbedVideo.View,
+    atproto.models.AppBskyEmbedExternal.View,
+    atproto.models.AppBskyEmbedRecord.View,
+    atproto.models.AppBskyEmbedRecordWithMedia.View,
+)
 
 
 class BlueskyReposter(BaseCog):
@@ -70,21 +79,11 @@ class BlueskyReposter(BaseCog):
                 author: atproto.models.AppBskyActorDefs.ProfileViewBasic
                 seen_posts = await self.config.seen()
                 for post in posts:
-                    uri_parts = re.split(r"/+", post.uri)
-                    did = uri_parts[1]
-                    rkey = uri_parts[3]
-                    url = f"https://bsky.app/profile/{did}/post/{rkey}"
-                    author = post.author
-                    if post.uri in seen_posts:
-                        print(f"{url} already posted!")
-                        continue
-                    contents = f"""{handle} 🔁 {author.display_name} ({author.handle})\n{url}"""
-                    await channel.send(contents)
-                    print(f"Post sent!")
-                    seen_posts.append(post.uri)
-                    seen_posts = seen_posts[-1000:]
-                    await self.config.seen.set(seen_posts)
-                    print("Done")
+                    if contents := await build_embed(handle, post, seen_posts):
+                        await channel.send(embed=contents)
+                        seen_posts.append(post.uri)
+                        seen_posts = seen_posts[-1000:]
+                        await self.config.seen.set(seen_posts)
 
         self.scheduler.add_job(
             check_for_posts,
@@ -127,6 +126,52 @@ class BlueskyReposter(BaseCog):
     async def get_bluesky_auth(self):
         self.bluesky_settings = await self.bot.get_shared_api_tokens("bluesky")
         return self.bluesky_settings
+
+
+async def build_embed(
+    handle: str,
+    post: atproto.models.AppBskyFeedDefs.PostView,
+    seen_posts: list[str],
+) -> None | discord.Embed:
+    author: atproto.models.AppBskyActorDefs.ProfileViewBasic = post.author
+    embed: BskyEmbedType = post.embed
+    match embed:
+        case atproto.models.AppBskyEmbedImages.View():
+            if len(embed.images):
+                image_url = embed.images[0].fullsize
+        case atproto.models.AppBskyEmbedVideo.View():
+            image_url = embed.playlist
+        case atproto.models.AppBskyEmbedExternal.View():
+            image_url = embed.external.uri
+        case _:
+            image_url = None
+
+    uri_parts = re.split(r"/+", post.uri)
+    did = uri_parts[1]
+    rkey = uri_parts[3]
+    url = f"https://bsky.app/profile/{did}/post/{rkey}"
+    if post.uri in seen_posts:
+        return None
+
+    embed_description_contents = (
+        f"Post by {author.display_name} ({author.handle})\n"
+        f"💬 {post.reply_count}\n"
+        f"❤️ {post.like_count}\n"
+        f"🔁 {post.repost_count}\n"
+    )
+
+    embed_response = (
+        discord.Embed(
+            title=f"{handle}🔁{author.handle}",
+            type="rich",
+            url=url,
+            description=embed_description_contents,
+        )
+        .set_thumbnail(url=author.avatar)
+        .set_image(image_url)
+    )
+
+    return embed_response
 
 
 @app.command()
