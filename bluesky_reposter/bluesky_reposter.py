@@ -76,14 +76,11 @@ class BlueskyReposter(BaseCog):
         server: discord.Guild = self.bot.get_guild(int(config["server"]))
         hooks = config["hooks"]
         auth = await self.get_bluesky_auth()
+        client = authenticate(auth["user"], auth["pass"])
         for handle, channel_id in hooks.items():
             print(f"Placing posts from {handle} to {channel_id}")
             channel: discord.TextChannel = server.get_channel(int(channel_id))
-            posts: list[atproto.models.AppBskyFeedDefs.PostView] = fetch_recent_reposts(
-                handle.replace("@", "."),
-                user=auth["user"],
-                passwd=auth["pass"],
-            )
+            posts: list[atproto.models.AppBskyFeedDefs.PostView] = fetch_recent_reposts(client, handle.replace("@", "."))
             post: atproto.models.AppBskyFeedDefs.PostView
             author: atproto.models.AppBskyActorDefs.ProfileViewBasic
             seen_posts = await self.config.seen()
@@ -159,9 +156,8 @@ async def build_embed(
         post_text_contents = f"{post_text_contents}\n"
 
     embed_description_contents = (
-        f"Post by {author.display_name} ({author.handle})\n"
+        f"**{author.display_name} ({author.handle})**\n\n"
         f"{post_text_contents}"
-        f"💬 {post.reply_count} ❤️ {post.like_count} 🔁 {post.repost_count}"
     )
 
     embed_response = (
@@ -171,19 +167,14 @@ async def build_embed(
             url=url,
             description=embed_description_contents,
         )
+        .set_footer(text=f"💬 {post.reply_count} ❤️ {post.like_count} 🔁 {post.repost_count}")
         .set_thumbnail(url=author.avatar)
-        .set_image(url=image_url)
+        .set_image(url=image_url)  # noqa
     )
 
     return embed_response
 
-
-@app.command()
-def fetch_recent_reposts(
-    account: str,
-    user: str = None,
-    passwd: str = None,
-) -> list[atproto.models.AppBskyFeedDefs.PostView]:
+def authenticate(user: str, passwd: str) -> atproto.Client:
     client = atproto.Client()
     try:
         user = os.environ.get("BSKY_USER", user)
@@ -193,6 +184,12 @@ def fetch_recent_reposts(
     except Exception as e:
         print(f"Error occurred while logging in!\n{e}")
         sys.exit(1)
+    return client
+
+def fetch_recent_reposts(
+    client: atproto.Client,
+    account: str,
+) -> list[atproto.models.AppBskyFeedDefs.PostView]:
     did = client.resolve_handle(account).did
     data: atproto.models.AppBskyFeedGetAuthorFeed.Response = client.get_author_feed(
         actor=did,
@@ -209,7 +206,8 @@ def fetch_recent_reposts(
 
 @app.default
 def test(account: str, user: str | None = None, passwd: str | None = None):
-    posts = fetch_recent_reposts(account, user, passwd)
+    client = authenticate(user, passwd)
+    posts = fetch_recent_reposts(client, account)
     for post in posts:
         embed: discord.Embed = asyncio.run(build_embed(account, post, []))
         print(embed.to_dict())
