@@ -1,9 +1,11 @@
+import sys
+import asyncio
 import re
 import os
 import json
 from typing import TypeVar
 
-import typer
+import cyclopts
 from rich import print
 import discord
 from redbot.core import commands, data_manager, Config, checks, bot
@@ -12,7 +14,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.jobstores.memory import MemoryJobStore
 import atproto
 
-app = typer.Typer()
+app = cyclopts.App()
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -168,7 +170,7 @@ async def build_embed(
             description=embed_description_contents,
         )
         .set_thumbnail(url=author.avatar)
-        .set_image(image_url)
+        .set_image(url=image_url)
     )
 
     return embed_response
@@ -181,7 +183,14 @@ def fetch_recent_reposts(
     passwd: str = None,
 ) -> list[atproto.models.AppBskyFeedDefs.PostView]:
     client = atproto.Client()
-    client.login(user or os.environ["BSKY_USER"], passwd or os.environ["BSKY_PASS"])
+    try:
+        user = os.environ.get('BSKY_USER', user)
+        print(f"Authenticating to Bluesky as {user}")
+        passwd = os.environ.get('BSKY_PASS', passwd)
+        client.login(user, passwd)
+    except Exception as e:
+        print(f"Error occurred while logging in!\n{e}")
+        sys.exit(1)
     did = client.resolve_handle(account).did
     data: atproto.models.AppBskyFeedGetAuthorFeed.Response = client.get_author_feed(
         actor=did,
@@ -194,6 +203,14 @@ def fetch_recent_reposts(
         posts.append(post_view)
     posts = posts[::-1]  # flip to chronological
     return posts
+
+
+@app.default
+def test(account: str, user: str | None = None, passwd: str | None = None):
+    posts = fetch_recent_reposts(account, user, passwd)
+    for post in posts:
+        embed: discord.Embed = asyncio.run(build_embed(account, post, []))
+        print(embed.to_dict())
 
 
 if __name__ == "__main__":
