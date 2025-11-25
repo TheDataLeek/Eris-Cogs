@@ -55,48 +55,9 @@ class BlueskyReposter(BaseCog):
             jobstores={"default": self.jobstore},
         )
 
-        async def check_for_posts():
-            if await self.config.bad_config():
-                return
-
-            config_contents = await self.config.json_config()
-            try:
-                config = json.loads(config_contents)
-            except:  # noqa
-                await self.config.bad_config.set(True)
-                return
-
-            server: discord.Guild = self.bot.get_guild(int(config["server"]))
-            hooks = config["hooks"]
-            auth = await self.get_bluesky_auth()
-            for handle, channel_id in hooks.items():
-                print(f"Placing posts from {handle} to {channel_id}")
-                channel: discord.TextChannel = server.get_channel(int(channel_id))
-                posts: list[atproto.models.AppBskyFeedDefs.PostView] = (
-                    fetch_recent_reposts(
-                        handle.replace("@", "."),
-                        user=auth["user"],
-                        passwd=auth["pass"],
-                    )
-                )
-                post: atproto.models.AppBskyFeedDefs.PostView
-                author: atproto.models.AppBskyActorDefs.ProfileViewBasic
-                seen_posts = await self.config.seen()
-                for post in posts:
-                    if contents := await build_embed(handle, post, seen_posts):
-                        await channel.send(embed=contents)
-                        seen_posts.append(post.uri)
-                        seen_posts = seen_posts[-1000:]
-                        await self.config.seen.set(seen_posts)
-
         job_id = "BlueskyReposter"
-        try:
-            self.scheduler.remove_job(job_id)
-        except:  # noqa
-            pass
-
         self.scheduler.add_job(
-            check_for_posts,
+            self.check_for_posts,
             trigger=IntervalTrigger(minutes=2),
             replace_existing=True,
             id=job_id,
@@ -104,6 +65,38 @@ class BlueskyReposter(BaseCog):
         )
 
         self.scheduler.start()
+
+    async def check_for_posts(self):
+        if await self.config.bad_config():
+            return
+
+        config_contents = await self.config.json_config()
+        try:
+            config = json.loads(config_contents)
+        except:  # noqa
+            await self.config.bad_config.set(True)
+            return
+
+        server: discord.Guild = self.bot.get_guild(int(config["server"]))
+        hooks = config["hooks"]
+        auth = await self.get_bluesky_auth()
+        for handle, channel_id in hooks.items():
+            print(f"Placing posts from {handle} to {channel_id}")
+            channel: discord.TextChannel = server.get_channel(int(channel_id))
+            posts: list[atproto.models.AppBskyFeedDefs.PostView] = fetch_recent_reposts(
+                handle.replace("@", "."),
+                user=auth["user"],
+                passwd=auth["pass"],
+            )
+            post: atproto.models.AppBskyFeedDefs.PostView
+            author: atproto.models.AppBskyActorDefs.ProfileViewBasic
+            seen_posts = await self.config.seen()
+            for post in posts:
+                if contents := await build_embed(handle, post, seen_posts):
+                    await channel.send(embed=contents)
+                    seen_posts.append(post.uri)
+                    seen_posts = seen_posts[-1000:]
+                    await self.config.seen.set(seen_posts)
 
     @commands.command()
     @checks.mod()
