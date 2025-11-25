@@ -35,7 +35,7 @@ class BlueskyReposter(BaseCog):
         self.bot: bot.Red = bot_instance
         self.config = Config.get_conf(
             self,
-            identifier=32489750023491,
+            identifier=3248975002349,
             force_registration=True,
             cog_name="BlueskyReposter",
         )
