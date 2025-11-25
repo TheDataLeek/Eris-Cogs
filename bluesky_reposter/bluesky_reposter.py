@@ -17,7 +17,6 @@ from redbot.core import commands, data_manager, Config, checks, bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.jobstores.base import BaseJobStore
-from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.job import Job
 import apscheduler.util as apscheduler_util
 from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
